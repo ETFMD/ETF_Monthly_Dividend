@@ -33,17 +33,7 @@
     overflow-x: hidden;
   }
 
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,229,176,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,229,176,0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
-    pointer-events: none;
-    z-index: 0;
-  }
+  body::before { display: none; }
 
   .wrap {
     position: relative;
@@ -490,7 +480,7 @@
     font-family: var(--font);
     font-size: 13px;
     font-weight: 500;
-    padding: 10px 20px;
+    padding: 10px 18px;
     border: none;
     background: transparent;
     color: var(--text3);
@@ -500,6 +490,9 @@
     transition: color 0.2s, border-color 0.2s;
     border-radius: 0;
     white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
   }
   .app-tab:hover { color: var(--text2); }
   .app-tab.active {
@@ -652,9 +645,14 @@
 
   <!-- ── 앱 탭 네비게이션 ── -->
   <nav class="app-nav">
-    <button class="app-tab active" onclick="switchAppTab('simulator',this)">📊 <span class="txt-div">분배</span> 시뮬레이터</button>
-    <button class="app-tab"        onclick="switchAppTab('cagr',this)">📈 CAGR 계산기</button>
-    <button class="app-tab"        onclick="switchAppTab('kospi',this)">🇰🇷 KOSPI 성장률</button>
+    <button class="app-tab active" onclick="switchAppTab('simulator',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M9 6v6M7 7.5h2.5a1.5 1.5 0 0 1 0 3H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M14.5 4.5 L16.5 2.5 M14.5 2.5 h2 v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="txt-div">분배</span>&nbsp;시뮬레이터</button>
+    <button class="app-tab"        onclick="switchAppTab('cagr',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="1.5" width="13" height="15" rx="2" stroke="currentColor" stroke-width="1.4"/><rect x="4.5" y="3.5" width="9" height="3" rx="0.8" fill="currentColor" opacity="0.5"/><path d="M4.5 11 L7.5 8.5 L10.5 10 L13.5 6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13.5" cy="6.5" r="1.2" fill="currentColor"/></svg>CAGR 계산기</button>
+    <button class="app-tab"        onclick="switchAppTab('kospi',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>KOSPI 성장률</button>
+    <button class="app-tab"        onclick="switchAppTab('kospi200',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.5" y="13" width="2.5" height="3.5" rx="0.6" fill="currentColor" opacity="0.4"/><rect x="5.5" y="9" width="2.5" height="7.5" rx="0.6" fill="currentColor" opacity="0.6"/><rect x="9.5" y="5.5" width="2.5" height="11" rx="0.6" fill="currentColor" opacity="0.8"/><rect x="13.5" y="2" width="2.5" height="14.5" rx="0.6" fill="currentColor"/><path d="M1.5 10 L5.5 7.5 L9.5 5 L14 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>KOSPI 200 성장률</button>
+    <button class="app-tab"        onclick="switchAppTab('nasdaq',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="6" y="6" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M3 7.5 H6 M3 10.5 H6 M12 7.5 H15 M12 10.5 H15" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M7.5 3 V6 M10.5 3 V6 M7.5 12 V15 M10.5 12 V15" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/></svg>나스닥 종합 성장률</button>
+    <button class="app-tab"        onclick="switchAppTab('nasdaq100',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.5" y="6" width="4" height="10.5" rx="0.8" fill="currentColor" opacity="0.35"/><rect x="7" y="3" width="4" height="13.5" rx="0.8" fill="currentColor" opacity="0.65"/><rect x="12.5" y="1.5" width="4" height="15" rx="0.8" fill="currentColor"/><path d="M1.5 5 Q4 2 6.5 5 Q9 8 11 4 Q13 1 16.5 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>나스닥 100 성장률</button>
+    <button class="app-tab"        onclick="switchAppTab('dowjones',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="9" width="5" height="7.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="6" width="5.5" height="10.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="3.5" y="6" width="1.5" height="3" fill="currentColor" opacity="0.5"/><path d="M2 8 L6 5 L10 6.5 L15.5 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 1.5 h3 v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>다우존스 성장률</button>
+    <button class="app-tab"        onclick="switchAppTab('sp500',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M9 2 Q13 9 9 16 M9 2 Q5 9 9 16" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M2.5 7 Q9 5.5 15.5 7 M2 11 Q9 12.5 16 11" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M5 12 L9 8 L12 10 L15 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>S&P 500 성장률</button>
   </nav>
 
   <!-- ── 시뮬레이터 페이지 ── -->
@@ -663,12 +661,12 @@
   <div class="header">
     <div class="header-left">
       <span class="badge">WEEKLY COVERED CALL ETF</span>
-      <h1>KODEX 200 <span>타겟위클리커버드콜</span></h1>
+      <h1>KODEX 200 <span>타겟위클리커버드콜</span> <span id="kodex-price-badge" style="font-size:14px;font-weight:400;color:var(--accent);background:rgba(0,229,176,0.1);border:1px solid rgba(0,229,176,0.25);border-radius:8px;padding:4px 10px;vertical-align:middle;cursor:pointer;" onclick="fetchKodexPrice()" title="클릭하여 갱신">—</span></h1>
       <p class="subtitle"><span class="txt-div">분배</span> 수익 시뮬레이터 — 투자 금액과 기간을 설정하여 예상 <span class="txt-div">분배금</span>을 확인하세요</p>
     </div>
     <div class="mode-toggle">
-      <button class="mode-btn active" onclick="setMode('receive',this)"><span class="txt-div">분배금</span> 수령</button>
-      <button class="mode-btn" onclick="setMode('reinvest',this)"><span class="txt-div">분배</span> 재투자</button>
+      <button class="mode-btn" onclick="setMode('receive',this)"><span class="txt-div">분배금</span> 수령</button>
+      <button class="mode-btn active" onclick="setMode('reinvest',this)"><span class="txt-div">분배</span> 재투자</button>
     </div>
   </div>
 
@@ -718,14 +716,14 @@
           <span class="slider-label">투자 금액</span>
           <div style="display:flex;align-items:center;gap:4px;">
             <div class="num-pill" style="flex-shrink:0;">
-              <input class="num-input comma-input" id="ni-amount" type="text" inputmode="numeric" value="10,000"
+              <input class="num-input comma-input" id="ni-amount" type="text" inputmode="numeric" value="100,000,000"
                      style="padding-right:8px;width:110px;"
                      oninput="onFancyInput('amount')" onblur="onFancyBlur('amount')">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="amount" data-unit="eok" onclick="setFancyUnit('amount','eok',this)">억원</button>
-              <button class="unit-btn active" data-field="amount" data-unit="man" onclick="setFancyUnit('amount','man',this)">만원</button>
-              <button class="unit-btn" data-field="amount" data-unit="won" onclick="setFancyUnit('amount','won',this)">원</button>
+              <button class="unit-btn" data-field="amount" data-unit="man" onclick="setFancyUnit('amount','man',this)">만원</button>
+              <button class="unit-btn active" data-field="amount" data-unit="won" onclick="setFancyUnit('amount','won',this)">원</button>
             </div>
           </div>
         </div>
@@ -799,14 +797,14 @@
           <span class="slider-label">월 적립 금액</span>
           <div style="display:flex;align-items:center;gap:4px;">
             <div class="num-pill" style="flex-shrink:0;">
-              <input class="num-input comma-input" id="ni-monthly" type="text" inputmode="numeric" value="100"
+              <input class="num-input comma-input" id="ni-monthly" type="text" inputmode="numeric" value="1,000,000"
                      style="padding-right:8px;width:100px;"
                      oninput="onFancyInput('monthly')" onblur="onFancyBlur('monthly')">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="monthly" data-unit="eok" onclick="setFancyUnit('monthly','eok',this)">억원</button>
-              <button class="unit-btn active" data-field="monthly" data-unit="man" onclick="setFancyUnit('monthly','man',this)">만원</button>
-              <button class="unit-btn" data-field="monthly" data-unit="won" onclick="setFancyUnit('monthly','won',this)">원</button>
+              <button class="unit-btn" data-field="monthly" data-unit="man" onclick="setFancyUnit('monthly','man',this)">만원</button>
+              <button class="unit-btn active" data-field="monthly" data-unit="won" onclick="setFancyUnit('monthly','won',this)">원</button>
             </div>
           </div>
         </div>
@@ -892,14 +890,14 @@
                 <span style="font-size:12px;color:var(--text2);">다른 종합소득 과세표준</span>
                 <div style="display:flex;align-items:center;gap:4px;">
                   <div class="num-pill" style="flex-shrink:0;">
-                    <input class="num-input comma-input" id="ni-otherincome" type="text" inputmode="numeric" value="5,000"
+                    <input class="num-input comma-input" id="ni-otherincome" type="text" inputmode="numeric" value="50,000,000"
                            style="padding-right:8px;width:90px;"
                            oninput="onFancyInput('otherincome')" onblur="onFancyBlur('otherincome')">
                   </div>
                   <div class="unit-tabs">
                     <button class="unit-btn" data-field="otherincome" data-unit="eok" onclick="setFancyUnit('otherincome','eok',this)">억원</button>
-                    <button class="unit-btn active" data-field="otherincome" data-unit="man" onclick="setFancyUnit('otherincome','man',this)">만원</button>
-                    <button class="unit-btn" data-field="otherincome" data-unit="won" onclick="setFancyUnit('otherincome','won',this)">원</button>
+                    <button class="unit-btn" data-field="otherincome" data-unit="man" onclick="setFancyUnit('otherincome','man',this)">만원</button>
+                    <button class="unit-btn active" data-field="otherincome" data-unit="won" onclick="setFancyUnit('otherincome','won',this)">원</button>
                   </div>
                 </div>
               </div>
@@ -953,7 +951,7 @@
 
       <!-- ④ KODEX 위클리 과세구조 -->
       <div class="acc-header" onclick="toggleAcc('acc-kodex', this)">
-        <span class="acc-title">KODEX 200타겟위클리커버드콜 과세구조</span>
+        <span class="acc-title">KODEX 200타겟위클리커버드콜 과세구조 설정</span>
         <span class="acc-arrow">▼</span>
       </div>
       <div class="acc-body" id="acc-kodex">
@@ -1036,14 +1034,14 @@
           <span class="slider-label">목표 월 분배금</span>
           <div style="display:flex;align-items:center;gap:4px;">
             <div class="num-pill" style="flex-shrink:0;">
-              <input class="num-input comma-input" id="ni-target" type="text" inputmode="numeric" value="500"
+              <input class="num-input comma-input" id="ni-target" type="text" inputmode="numeric" value="5,000,000"
                      style="padding-right:8px;width:100px;"
                      oninput="onFancyInput('target')" onblur="onFancyBlur('target')">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="target" data-unit="eok" onclick="setFancyUnit('target','eok',this)">억원</button>
-              <button class="unit-btn active" data-field="target" data-unit="man" onclick="setFancyUnit('target','man',this)">만원</button>
-              <button class="unit-btn" data-field="target" data-unit="won" onclick="setFancyUnit('target','won',this)">원</button>
+              <button class="unit-btn" data-field="target" data-unit="man" onclick="setFancyUnit('target','man',this)">만원</button>
+              <button class="unit-btn active" data-field="target" data-unit="won" onclick="setFancyUnit('target','won',this)">원</button>
             </div>
           </div>
         </div>
@@ -1160,7 +1158,7 @@
       <div class="header-left">
         <span class="badge">COMPOUND ANNUAL GROWTH RATE</span>
         <h1>연평균 성장률 <span>CAGR 계산기</span></h1>
-        <p class="subtitle">초기 투자금액과 최종 금액으로 연평균 수익률을 계산합니다</p>
+        <p class="subtitle">초기 금액과 최종 금액으로 연평균 수익률을 계산합니다</p>
       </div>
     </div>
 
@@ -1172,11 +1170,18 @@
 
         <div class="slider-block">
           <div class="slider-header">
-            <span class="slider-label">초기 투자금액</span>
-            <div class="num-pill">
-              <input class="num-input" id="cagr-start" type="number" min="1" step="100" value="10000"
-                     oninput="calcCAGR()" style="color:var(--accent);">
-              <span class="num-unit">만원</span>
+            <span class="slider-label">초기 금액</span>
+            <div style="display:flex;align-items:center;gap:4px;">
+              <div class="num-pill" style="flex-shrink:0;">
+                <input class="num-input comma-input" id="cagr-start" type="text" inputmode="numeric" value="100,000,000"
+                       style="padding-right:8px;width:120px;color:var(--accent);"
+                       oninput="onCagrAmtInput('start')" onblur="onCagrAmtBlur('start')">
+              </div>
+              <div class="unit-tabs">
+                <button class="unit-btn" data-field="cagr-start" data-unit="eok" onclick="setCagrUnit('start','eok',this)">억원</button>
+                <button class="unit-btn" data-field="cagr-start" data-unit="man" onclick="setCagrUnit('start','man',this)">만원</button>
+                <button class="unit-btn active" data-field="cagr-start" data-unit="won" onclick="setCagrUnit('start','won',this)">원</button>
+              </div>
             </div>
           </div>
         </div>
@@ -1184,25 +1189,62 @@
         <div class="slider-block">
           <div class="slider-header">
             <span class="slider-label">최종 금액</span>
-            <div class="num-pill">
-              <input class="num-input" id="cagr-end" type="number" min="1" step="100" value="18000"
-                     oninput="calcCAGR()" style="color:var(--accent2);">
-              <span class="num-unit">만원</span>
+            <div style="display:flex;align-items:center;gap:4px;">
+              <div class="num-pill" style="flex-shrink:0;">
+                <input class="num-input comma-input" id="cagr-end" type="text" inputmode="numeric" value="180,000,000"
+                       style="padding-right:8px;width:120px;color:var(--accent2);"
+                       oninput="onCagrAmtInput('end')" onblur="onCagrAmtBlur('end')">
+              </div>
+              <div class="unit-tabs">
+                <button class="unit-btn" data-field="cagr-end" data-unit="eok" onclick="setCagrUnit('end','eok',this)">억원</button>
+                <button class="unit-btn" data-field="cagr-end" data-unit="man" onclick="setCagrUnit('end','man',this)">만원</button>
+                <button class="unit-btn active" data-field="cagr-end" data-unit="won" onclick="setCagrUnit('end','won',this)">원</button>
+              </div>
             </div>
           </div>
         </div>
 
         <div class="slider-block">
-          <div class="slider-header">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:6px;flex-wrap:wrap;">
             <span class="slider-label">투자 기간</span>
-            <div class="num-pill">
-              <input class="num-input" id="cagr-years" type="number" min="1" max="50" step="1" value="5"
-                     oninput="calcCAGR()">
-              <span class="num-unit">년</span>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <!-- 년수 / 날짜범위 토글 -->
+              <div class="unit-tabs" style="margin:0;">
+                <button class="unit-btn active" id="cagr-period-years-btn" onclick="setCagrPeriodMode('years',this)">년수</button>
+                <button class="unit-btn" id="cagr-period-date-btn"  onclick="setCagrPeriodMode('date',this)">날짜</button>
+              </div>
             </div>
           </div>
-          <input type="range" id="cagr-years-sl" min="1" max="50" step="1" value="5"
-                 oninput="document.getElementById('cagr-years').value=this.value; calcCAGR();">
+          <!-- 년수 입력 -->
+          <div id="cagr-period-years-panel">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+              <div class="num-pill" style="flex-shrink:0;">
+                <input class="num-input" id="cagr-years" type="number" min="0.1" max="100" step="0.1" value="5"
+                       style="width:80px;" oninput="calcCAGR()">
+                <span class="num-unit">년</span>
+              </div>
+            </div>
+            <input type="range" id="cagr-years-sl" min="1" max="50" step="1" value="5"
+                   oninput="document.getElementById('cagr-years').value=this.value; calcCAGR();">
+          </div>
+          <!-- 날짜 범위 입력 -->
+          <div id="cagr-period-date-panel" style="display:none;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div>
+                <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">시작일</p>
+                <input type="date" id="cagr-date-start" value="2020-01-01"
+                       style="width:100%;background:var(--bg3);border:1px solid var(--card-border);border-radius:8px;padding:6px 8px;color:var(--text);font-family:var(--mono);font-size:12px;outline:none;"
+                       oninput="calcCAGRFromDates()">
+              </div>
+              <div>
+                <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">종료일</p>
+                <input type="date" id="cagr-date-end"
+                       style="width:100%;background:var(--bg3);border:1px solid var(--card-border);border-radius:8px;padding:6px 8px;color:var(--text);font-family:var(--mono);font-size:12px;outline:none;"
+                       oninput="calcCAGRFromDates()">
+              </div>
+            </div>
+            <p style="font-size:11px;color:var(--text3);margin-top:6px;" id="cagr-date-period-label">기간: —</p>
+          </div>
         </div>
 
         <hr class="divider">
@@ -1245,11 +1287,24 @@
 
         <!-- 결과 카드 -->
         <div class="card">
-          <p class="card-title" style="margin-bottom:8px;">연평균 성장률 (CAGR)</p>
-          <div class="cagr-result-big" id="cagr-result">—</div>
+          <!-- 성장률 3종 -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">
+            <div>
+              <p style="font-size:11px;color:var(--text3);margin-bottom:6px;letter-spacing:0.04em;">연평균 성장률 (CAGR)</p>
+              <div class="cagr-result-big" id="cagr-result" style="font-size:34px;">—</div>
+            </div>
+            <div>
+              <p style="font-size:11px;color:var(--text3);margin-bottom:6px;letter-spacing:0.04em;">월평균 성장률</p>
+              <div style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--accent2);line-height:1;" id="cagr-monthly-rate">—</div>
+            </div>
+            <div>
+              <p style="font-size:11px;color:var(--text3);margin-bottom:6px;letter-spacing:0.04em;">일평균 성장률</p>
+              <div style="font-family:var(--mono);font-size:28px;font-weight:500;color:#ffaa55;line-height:1;" id="cagr-daily-rate">—</div>
+            </div>
+          </div>
           <p class="cagr-result-label" id="cagr-result-sub">계산 중...</p>
 
-          <div class="cagr-metric-grid">
+          <div class="cagr-metric-grid" style="margin-top:14px;">
             <div class="cagr-metric">
               <p class="cagr-metric-label">총 수익률</p>
               <p class="cagr-metric-val" id="cagr-total-return">—</p>
@@ -1392,11 +1447,329 @@
 
   </div><!-- /page-kospi -->
 
+  <!-- ── KOSPI 200 페이지 ── -->
+  <div class="app-page" id="page-kospi200">
+
+    <div class="header">
+      <div class="header-left">
+        <span class="badge">KOREA STOCK PRICE INDEX 200</span>
+        <h1>KOSPI 200 <span>성장률 분석</span></h1>
+        <p class="subtitle">1990년 1월 3일 기준지수 100 출발 — 코스피 200 대형우량주 기반 연평균·월평균·일평균 성장률</p>
+      </div>
+      <button id="k200-refresh-btn" onclick="fetchKospi200()"
+        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
+        <span id="k200-refresh-icon">↺</span> 지수 갱신
+      </button>
+    </div>
+
+    <!-- KOSPI 200 설명 박스 -->
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:20px 24px;margin-bottom:20px;">
+      <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px;">KOSPI 200이란?</p>
+      <p style="font-size:13px;color:var(--text2);line-height:1.9;">
+        <strong style="color:var(--accent2);">KOSPI 200</strong>은 한국거래소(KRX) 유가증권시장에 상장된 대형 우량주 <strong style="color:var(--text);">200종목</strong>을 선별해 산출하는 주가지수입니다.<br>
+        1990년 1월 3일을 기준시점(지수 100)으로 삼으며, 삼성전자·SK하이닉스·LG에너지솔루션 등 시가총액 상위 종목이 포함됩니다.<br>
+        선물·옵션·ETF 등 파생상품의 기초자산으로 널리 사용되며, KODEX 200 등 주요 ETF의 추적지수입니다.
+      </p>
+    </div>
+
+    <!-- 현재 지수 배너 -->
+    <div style="background:var(--bg3);border:1px solid var(--card-border);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">현재 KOSPI 200 지수</p>
+        <p style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--text);" id="k200-current-val">—</p>
+      </div>
+      <div style="flex:1;min-width:160px;">
+        <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">기준일</p>
+        <p style="font-size:13px;color:var(--text2);" id="k200-date-label">데이터 없음</p>
+        <p style="font-size:11px;color:var(--text3);margin-top:2px;" id="k200-source-label"></p>
+      </div>
+      <div id="k200-loading" style="display:none;font-size:12px;color:var(--text3);">⏳ 데이터 조회 중...</div>
+    </div>
+
+    <!-- 성장률 카드 -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;" id="k200-rate-grid">
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">연평균 성장률 (CAGR)</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:var(--accent);" id="k200-annual">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="k200-annual-sub">기준 1990.01.03 → 현재</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">월평균 성장률</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:var(--accent2);" id="k200-monthly">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="k200-monthly-sub">CAGR의 월 환산</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">일평균 성장률</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#ffaa55;" id="k200-daily">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="k200-daily-sub">CAGR의 일 환산</p>
+      </div>
+    </div>
+
+    <!-- 1억 투자 시뮬 -->
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+      <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:16px;">KOSPI 200 CAGR 기준 1억 투자 시뮬레이션</p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;" id="k200-sim-grid">
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);">
+          <p style="font-size:11px;color:var(--text3);margin-bottom:5px;">10년 후</p>
+          <p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="k200-sim-10">—</p>
+        </div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);">
+          <p style="font-size:11px;color:var(--text3);margin-bottom:5px;">20년 후</p>
+          <p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="k200-sim-20">—</p>
+        </div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);">
+          <p style="font-size:11px;color:var(--text3);margin-bottom:5px;">30년 후</p>
+          <p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="k200-sim-30">—</p>
+        </div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);">
+          <p style="font-size:11px;color:var(--text3);margin-bottom:5px;">40년 후</p>
+          <p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="k200-sim-40">—</p>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.7;">
+        ※ KOSPI 200 기준지수 100은 1990년 1월 3일 기준입니다. 과거 성장률이 미래를 보장하지 않습니다.
+      </p>
+    </div>
+
+  </div><!-- /page-kospi200 -->
+
+  <!-- ── 나스닥 종합지수 페이지 ── -->
+  <div class="app-page" id="page-nasdaq">
+    <div class="header">
+      <div class="header-left">
+        <span class="badge">NASDAQ COMPOSITE</span>
+        <h1>나스닥 종합지수 <span>성장률 분석</span></h1>
+        <p class="subtitle">1971년 2월 8일 기준지수 100 출발 — 현재 지수 기반 연평균·월평균·일평균 성장률</p>
+      </div>
+      <button id="nasdaq-refresh-btn" onclick="fetchIndex('nasdaq')"
+        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
+        <span id="nasdaq-refresh-icon">↺</span> 지수 갱신
+      </button>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:20px 24px;margin-bottom:20px;">
+      <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px;">NASDAQ Composite란?</p>
+      <p style="font-size:13px;color:var(--text2);line-height:1.9;">나스닥(NASDAQ) 종합지수는 나스닥 거래소에 상장된 전체 종목의 시가총액 가중 주가지수입니다. 애플·마이크로소프트·엔비디아·알파벳(구글)·아마존·메타 등 글로벌 빅테크 기업이 대거 포함되어 있으며, 기술주 중심의 미국 증시 흐름을 대표합니다.</p>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--card-border);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">현재 NASDAQ Composite 지수</p>
+        <p style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--text);" id="nasdaq-current-val">—</p>
+      </div>
+      <div style="flex:1;min-width:160px;">
+        <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">기준일</p>
+        <p style="font-size:13px;color:var(--text2);" id="nasdaq-date-label">데이터 없음</p>
+        <p style="font-size:11px;color:var(--text3);margin-top:2px;" id="nasdaq-source-label"></p>
+      </div>
+      <div id="nasdaq-loading" style="display:none;font-size:12px;color:var(--text3);">⏳ 조회 중...</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">연평균 성장률 (CAGR)</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:var(--accent);" id="nasdaq-annual">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="nasdaq-annual-sub">기준 1971.02.08 → 현재</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">월평균 성장률</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:var(--accent2);" id="nasdaq-monthly">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="nasdaq-monthly-sub">CAGR의 월 환산</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">일평균 성장률</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#ffaa55;" id="nasdaq-daily">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="nasdaq-daily-sub">CAGR의 일 환산</p>
+      </div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+      <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:16px;">NASDAQ Composite CAGR 기준 1억 투자 시뮬레이션</p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">10년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="nasdaq-sim-10">—</p></div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">20년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="nasdaq-sim-20">—</p></div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">30년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="nasdaq-sim-30">—</p></div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">40년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="nasdaq-sim-40">—</p></div>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.7;">※ 과거 성장률이 미래를 보장하지 않습니다.</p>
+    </div>
+  </div><!-- /page-nasdaq -->
+
+  <!-- ── 나스닥 100 페이지 ── -->
+  <div class="app-page" id="page-nasdaq100">
+    <div class="header">
+      <div class="header-left">
+        <span class="badge">NASDAQ 100</span>
+        <h1>나스닥 100 <span>성장률 분석</span></h1>
+        <p class="subtitle">1985년 1월 31일 기준지수 250 출발 — 현재 지수 기반 연평균·월평균·일평균 성장률</p>
+      </div>
+      <button id="nasdaq100-refresh-btn" onclick="fetchIndex('nasdaq100')"
+        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
+        <span id="nasdaq100-refresh-icon">↺</span> 지수 갱신
+      </button>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:20px 24px;margin-bottom:20px;">
+      <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px;">NASDAQ 100란?</p>
+      <p style="font-size:13px;color:var(--text2);line-height:1.9;">나스닥 100은 나스닥 거래소 상장 비금융 기업 중 시가총액 상위 100개 종목으로 구성됩니다. 기술·바이오·소비재 섹터 대형주가 집중되어 있으며, QQQ ETF의 추적지수로 널리 사용됩니다.</p>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--card-border);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">현재 NASDAQ 100 지수</p>
+        <p style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--text);" id="nasdaq100-current-val">—</p>
+      </div>
+      <div style="flex:1;min-width:160px;">
+        <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">기준일</p>
+        <p style="font-size:13px;color:var(--text2);" id="nasdaq100-date-label">데이터 없음</p>
+        <p style="font-size:11px;color:var(--text3);margin-top:2px;" id="nasdaq100-source-label"></p>
+      </div>
+      <div id="nasdaq100-loading" style="display:none;font-size:12px;color:var(--text3);">⏳ 조회 중...</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">연평균 성장률 (CAGR)</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:var(--accent);" id="nasdaq100-annual">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="nasdaq100-annual-sub">기준 1985.01.31 → 현재</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">월평균 성장률</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:var(--accent2);" id="nasdaq100-monthly">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="nasdaq100-monthly-sub">CAGR의 월 환산</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">일평균 성장률</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#ffaa55;" id="nasdaq100-daily">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="nasdaq100-daily-sub">CAGR의 일 환산</p>
+      </div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+      <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:16px;">NASDAQ 100 CAGR 기준 1억 투자 시뮬레이션</p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">10년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="nasdaq100-sim-10">—</p></div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">20년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="nasdaq100-sim-20">—</p></div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">30년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="nasdaq100-sim-30">—</p></div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">40년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="nasdaq100-sim-40">—</p></div>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.7;">※ 과거 성장률이 미래를 보장하지 않습니다.</p>
+    </div>
+  </div><!-- /page-nasdaq100 -->
+
+  <!-- ── 다우존스 산업평균지수 페이지 ── -->
+  <div class="app-page" id="page-dowjones">
+    <div class="header">
+      <div class="header-left">
+        <span class="badge">DOW JONES INDUSTRIAL AVERAGE</span>
+        <h1>다우존스 산업평균지수 <span>성장률 분석</span></h1>
+        <p class="subtitle">1896년 5월 26일 산출 시작 — 현재 지수 기반 연평균·월평균·일평균 성장률</p>
+      </div>
+      <button id="dowjones-refresh-btn" onclick="fetchIndex('dowjones')"
+        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
+        <span id="dowjones-refresh-icon">↺</span> 지수 갱신
+      </button>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:20px 24px;margin-bottom:20px;">
+      <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px;">Dow Jones란?</p>
+      <p style="font-size:13px;color:var(--text2);line-height:1.9;">다우존스 산업평균지수(DJIA)는 미국을 대표하는 30개 우량 대형주의 주가 평균을 기반으로 산출합니다. 가장 오래된 주가지수 중 하나로, 보잉·골드만삭스·JP모건·애플·나이키 등이 포함되어 있습니다.</p>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--card-border);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">현재 Dow Jones 지수</p>
+        <p style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--text);" id="dowjones-current-val">—</p>
+      </div>
+      <div style="flex:1;min-width:160px;">
+        <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">기준일</p>
+        <p style="font-size:13px;color:var(--text2);" id="dowjones-date-label">데이터 없음</p>
+        <p style="font-size:11px;color:var(--text3);margin-top:2px;" id="dowjones-source-label"></p>
+      </div>
+      <div id="dowjones-loading" style="display:none;font-size:12px;color:var(--text3);">⏳ 조회 중...</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">연평균 성장률 (CAGR)</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:var(--accent);" id="dowjones-annual">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="dowjones-annual-sub">기준 1896.05.26 → 현재</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">월평균 성장률</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:var(--accent2);" id="dowjones-monthly">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="dowjones-monthly-sub">CAGR의 월 환산</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">일평균 성장률</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#ffaa55;" id="dowjones-daily">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="dowjones-daily-sub">CAGR의 일 환산</p>
+      </div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+      <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:16px;">Dow Jones CAGR 기준 1억 투자 시뮬레이션</p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">10년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="dowjones-sim-10">—</p></div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">20년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="dowjones-sim-20">—</p></div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">30년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="dowjones-sim-30">—</p></div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">40년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="dowjones-sim-40">—</p></div>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.7;">※ 과거 성장률이 미래를 보장하지 않습니다.</p>
+    </div>
+  </div><!-- /page-dowjones -->
+
+  <!-- ── S&P 500 페이지 ── -->
+  <div class="app-page" id="page-sp500">
+    <div class="header">
+      <div class="header-left">
+        <span class="badge">S&P 500</span>
+        <h1>S&P 500 <span>성장률 분석</span></h1>
+        <p class="subtitle">1928년 1월 3일 기준지수 산출 시작 — 현재 지수 기반 연평균·월평균·일평균 성장률</p>
+      </div>
+      <button id="sp500-refresh-btn" onclick="fetchIndex('sp500')"
+        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
+        <span id="sp500-refresh-icon">↺</span> 지수 갱신
+      </button>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:20px 24px;margin-bottom:20px;">
+      <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px;">S&P 500란?</p>
+      <p style="font-size:13px;color:var(--text2);line-height:1.9;">S&P 500은 뉴욕증권거래소(NYSE)와 나스닥에 상장된 미국 대형주 500개 종목으로 구성되는 시가총액 가중 지수입니다. 미국 전체 주식 시가총액의 약 80%를 커버하며, 전 세계에서 가장 널리 추적되는 주가지수입니다.</p>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--card-border);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">현재 S&P 500 지수</p>
+        <p style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--text);" id="sp500-current-val">—</p>
+      </div>
+      <div style="flex:1;min-width:160px;">
+        <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">기준일</p>
+        <p style="font-size:13px;color:var(--text2);" id="sp500-date-label">데이터 없음</p>
+        <p style="font-size:11px;color:var(--text3);margin-top:2px;" id="sp500-source-label"></p>
+      </div>
+      <div id="sp500-loading" style="display:none;font-size:12px;color:var(--text3);">⏳ 조회 중...</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">연평균 성장률 (CAGR)</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:var(--accent);" id="sp500-annual">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="sp500-annual-sub">기준 1928.01.03 → 현재</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">월평균 성장률</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:var(--accent2);" id="sp500-monthly">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="sp500-monthly-sub">CAGR의 월 환산</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">일평균 성장률</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#ffaa55;" id="sp500-daily">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="sp500-daily-sub">CAGR의 일 환산</p>
+      </div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+      <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:16px;">S&P 500 CAGR 기준 1억 투자 시뮬레이션</p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">10년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="sp500-sim-10">—</p></div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">20년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="sp500-sim-20">—</p></div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">30년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="sp500-sim-30">—</p></div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">40년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="sp500-sim-40">—</p></div>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.7;">※ 과거 성장률이 미래를 보장하지 않습니다.</p>
+    </div>
+  </div><!-- /page-sp500 -->
+
 </div>
 
 <script>
 /* ── 상태 ── */
-let investMode = 'receive';   // 분배수령 / 재투자
+let investMode = 'reinvest';  // 분배수령 / 재투자
 let chartTab   = 'annual';    // 연간 / 월간
 let dcaOn      = false;       // 적립식 ON/OFF
 let taxOn           = true;     // 분배세 ON/OFF
@@ -1794,7 +2167,7 @@ function setChartTab(tab, btn) {
 /* ════════════════════════════════════════
    콤마 입력 + 단위 탭 시스템
 ════════════════════════════════════════ */
-const fancyUnit = { amount: 'man', otherincome: 'man', target: 'man', monthly: 'man' };
+const fancyUnit = { amount: 'won', otherincome: 'won', target: 'won', monthly: 'won' };
 
 /* 단위 → 원 변환 배율 */
 function unitToWon(unit) {
@@ -2121,7 +2494,7 @@ function update() {
   document.getElementById('s-annual').textContent     = fmt(firstDiv);
   document.getElementById('s-weekly').textContent     = '월간 ' + fmt(rows[0].monthDiv1st);
   const _wG = kodexOn ? '분배금' : '분배금';
-  document.getElementById('s-label2').textContent     = yrs + '년차 연간 ' + _wG;
+  document.getElementById('s-label2').textContent     = yrs + '년차 연간 ' + _wG + (taxOn ? ' (세후)' : '');
   document.getElementById('s-final').textContent      = fmt(lastDiv);
   document.getElementById('s-final-sub').textContent  = '월간 ' + fmt(lastRow.monthDiv1st);
   document.getElementById('s-total').textContent      = fmt(totalDiv);
@@ -2345,9 +2718,44 @@ function buildOpts(isBar, hasDualAxis, isMonthly) {
   return o;
 }
 
+/* ── KODEX 200타겟위클리커버드콜 현재가 조회 ── */
+async function fetchKodexPrice() {
+  const badge = document.getElementById('kodex-price-badge');
+  if (!badge) return;
+  badge.textContent = '조회중...';
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{ role: 'user',
+          content: 'KODEX 200타겟위클리커버드콜 ETF 현재 주가를 검색해줘. 숫자만 {"v":숫자} 형식으로 답해.' }]
+      })
+    });
+    if (!resp.ok) throw new Error('fail');
+    const data = await resp.json();
+    const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join(' ');
+    const m = text.match(/"v"\s*:\s*([\d,]+(?:\.\d+)?)/);
+    const price = m ? parseFloat(m[1].replace(/,/g,'')) : null;
+    if (price && price > 100) {
+      badge.textContent = price.toLocaleString('ko-KR') + '원';
+      badge.title = '마지막 조회: ' + new Date().toLocaleTimeString('ko-KR');
+    } else {
+      badge.textContent = '조회 실패';
+    }
+  } catch {
+    badge.textContent = '조회 실패';
+  }
+}
+
 /* ── 초기 실행 ── */
 /* 콤마 입력 초기 포맷 */
 (function initFancyInputs() {
+  /* 원 단위 기본값: amount=1억, target=500만, monthly=100만 */
+  const _defWon = { amount: 100000000, otherincome: 50000000, target: 5000000, monthly: 1000000 };
   [['amount', 10000], ['otherincome', 5000], ['target', 500], ['monthly', 100]].forEach(([id, defaultWan]) => {
     const el = document.getElementById('ni-' + id);
     if (el) {
@@ -2559,10 +2967,315 @@ function switchAppTab(tab, btn) {
   document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('page-' + tab).classList.add('active');
-  if (tab === 'cagr')  calcCAGR();
-  if (tab === 'kospi' && document.getElementById('kospi-current-val').textContent === '—') {
-    useDefaultKospi();
+  if (tab === 'cagr')    calcCAGR();
+  if (tab === 'kospi'    && document.getElementById('kospi-current-val').textContent === '—')  useDefaultKospi();
+  if (tab === 'kospi200' && document.getElementById('k200-current-val').textContent  === '—')  useDefaultKospi200();
+  const usIdx = ['nasdaq','nasdaq100','dowjones','sp500'];
+  if (usIdx.includes(tab) && document.getElementById(tab+'-current-val').textContent === '—') {
+    useDefaultIndex(tab);
   }
+}
+
+/* ═══════════════════════════════════════
+   미국 4대 지수 — 제너릭 조회 시스템
+═══════════════════════════════════════ */
+const INDEX_CONFIG = {
+  nasdaq:   { name:'나스닥 종합', ticker:'%5EIXIC', baseDate:'1971-02-08', baseVal:100,   defaultVal:18000, minP:1000,  maxP:100000 },
+  nasdaq100:{ name:'나스닥 100',  ticker:'%5ENDX',  baseDate:'1985-01-31', baseVal:250,   defaultVal:22000, minP:1000,  maxP:200000 },
+  dowjones: { name:'다우존스',    ticker:'%5EDJI',  baseDate:'1896-05-26', baseVal:40.94, defaultVal:42000, minP:100,   maxP:500000 },
+  sp500:    { name:'S&P 500',    ticker:'%5EGSPC', baseDate:'1928-01-03', baseVal:17.66, defaultVal:5800,  minP:100,   maxP:50000  },
+};
+
+const _indexCache    = {};
+const _indexFetching = {};
+
+function calcIndexRates(id, price, asOf) {
+  const cfg      = INDEX_CONFIG[id];
+  const baseDate = new Date(cfg.baseDate);
+  const diffYrs  = (asOf - baseDate) / (1000 * 60 * 60 * 24 * 365.25);
+  const cagr     = Math.pow(price / cfg.baseVal, 1 / diffYrs) - 1;
+  const monthly  = Math.pow(1 + cagr, 1/12) - 1;
+  const daily    = Math.pow(1 + cagr, 1/365.25) - 1;
+
+  const annEl = document.getElementById(id+'-annual');
+  const monEl = document.getElementById(id+'-monthly');
+  const dayEl = document.getElementById(id+'-daily');
+  if (annEl) { annEl.textContent = (cagr*100).toFixed(4) + '%';    annEl.style.color = 'var(--accent)'; }
+  if (monEl) { monEl.textContent = (monthly*100).toFixed(4) + '%'; monEl.style.color = 'var(--accent2)'; }
+  if (dayEl) { dayEl.textContent = (daily*100).toFixed(6) + '%';   dayEl.style.color = '#ffaa55'; }
+  document.getElementById(id+'-annual-sub').textContent  = '기준 ' + cfg.baseDate.replace(/-/g,'.') + ' → 경과 ' + diffYrs.toFixed(1) + '년';
+  document.getElementById(id+'-monthly-sub').textContent = '연 ' + (cagr*100).toFixed(2) + '% → 월 환산';
+  document.getElementById(id+'-daily-sub').textContent   = '연 ' + (cagr*100).toFixed(2) + '% → 일 환산';
+
+  [10,20,30,40].forEach(y => {
+    const el = document.getElementById(id+'-sim-'+y);
+    if (el) el.textContent = fmtWon(Math.round(1e8 * Math.pow(1+cagr, y)));
+  });
+}
+
+function applyIndexValue(id, price, src) {
+  const cfg = INDEX_CONFIG[id];
+  price = parseFloat(String(price).replace(/,/g,''));
+  if (!price || price < cfg.minP || price > cfg.maxP) return false;
+  _indexCache[id] = price;
+  document.getElementById(id+'-current-val').textContent =
+    price.toLocaleString('ko-KR', {minimumFractionDigits:2, maximumFractionDigits:2});
+  const now    = new Date();
+  const nowStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-'
+    + String(now.getDate()).padStart(2,'0') + ' ' + now.toTimeString().slice(0,8);
+  document.getElementById(id+'-date-label').textContent    = nowStr + ' 기준';
+  document.getElementById(id+'-source-label').textContent  = '출처: ' + src;
+  calcIndexRates(id, price, now);
+  return true;
+}
+
+async function tryAnthropicIndex(id) {
+  const cfg  = INDEX_CONFIG[id];
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 300,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      messages: [{ role:'user',
+        content: '지금 ' + cfg.name + ' 현재 지수를 검색해줘. 숫자만 {"v":숫자} 형식으로 답해.' }]
+    })
+  });
+  if (!resp.ok) throw new Error('fail');
+  const data = await resp.json();
+  const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join(' ');
+  const m    = text.match(/"v"\s*:\s*([\d,]+(?:\.\d+)?)/);
+  if (m) {
+    const p = parseFloat(m[1].replace(/,/g,''));
+    if (p >= cfg.minP && p <= cfg.maxP) return p;
+  }
+  // fallback: 범위 내 숫자 추출
+  const all = [...text.matchAll(/(\d[\d,]*(?:\.\d{1,2})?)/g)]
+    .map(m => parseFloat(m[1].replace(/,/g,''))).filter(n => n >= cfg.minP && n <= cfg.maxP);
+  if (all.length) return all[0];
+  throw new Error('no valid price');
+}
+
+async function tryYahooIndex(id) {
+  const cfg    = INDEX_CONFIG[id];
+  const yfUrl  = 'https://query1.finance.yahoo.com/v8/finance/chart/' + cfg.ticker + '?interval=1d&range=3d';
+  const proxies = [
+    'https://corsproxy.io/?' + encodeURIComponent(yfUrl),
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent(yfUrl),
+    'https://thingproxy.freeboard.io/fetch/' + yfUrl,
+    yfUrl,
+  ];
+  for (const url of proxies) {
+    try {
+      const ctrl = new AbortController();
+      const tid  = setTimeout(() => ctrl.abort(), 8000);
+      let resp;
+      try { resp = await fetch(url, { signal: ctrl.signal, cache: 'no-cache' }); }
+      finally { clearTimeout(tid); }
+      if (!resp || !resp.ok) continue;
+      const txt  = await resp.text();
+      let json;
+      try { json = JSON.parse(txt); } catch { continue; }
+      if (json.contents) { try { json = JSON.parse(json.contents); } catch { continue; } }
+      const r = json?.chart?.result?.[0];
+      if (!r) continue;
+      const m = r.meta;
+      const cls = r.indicators?.quote?.[0]?.close;
+      const p   = m.regularMarketPrice || m.previousClose || (cls ? cls.filter(Boolean).slice(-1)[0] : null);
+      if (p && p >= cfg.minP) return parseFloat(p);
+    } catch {}
+  }
+  return null;
+}
+
+async function fetchIndex(id) {
+  if (_indexFetching[id]) return;
+  _indexFetching[id] = true;
+  const btn  = document.getElementById(id+'-refresh-btn');
+  const icon = document.getElementById(id+'-refresh-icon');
+  const load = document.getElementById(id+'-loading');
+  btn.disabled = true; icon.textContent = '⏳'; load.style.display = 'block';
+  document.getElementById(id+'-date-label').textContent   = '조회 중...';
+  document.getElementById(id+'-source-label').textContent = '';
+  try {
+    try {
+      const p = await tryAnthropicIndex(id);
+      if (applyIndexValue(id, p, 'Anthropic Web Search')) return;
+    } catch {}
+    const p = await tryYahooIndex(id);
+    if (p && applyIndexValue(id, p, 'Yahoo Finance')) return;
+    // 실패 — 이전값 유지
+    const prev = _indexCache[id] || INDEX_CONFIG[id].defaultVal;
+    const now  = new Date();
+    const ns   = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-'
+      + String(now.getDate()).padStart(2,'0') + ' ' + now.toTimeString().slice(0,8);
+    document.getElementById(id+'-date-label').textContent    = ns + ' 기준 (이전값 유지)';
+    document.getElementById(id+'-source-label').textContent  = '⚠ 조회 실패 — 직전 지수 ' + prev.toLocaleString('ko-KR') + ' 유지';
+    calcIndexRates(id, prev, now);
+  } finally {
+    btn.disabled = false; icon.textContent = '↺'; load.style.display = 'none';
+    _indexFetching[id] = false;
+  }
+}
+
+function useDefaultIndex(id) {
+  const cfg = INDEX_CONFIG[id];
+  const def = _indexCache[id] || cfg.defaultVal;
+  const now = new Date();
+  const ns  = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-'
+    + String(now.getDate()).padStart(2,'0') + ' ' + now.toTimeString().slice(0,8);
+  document.getElementById(id+'-current-val').textContent =
+    def.toLocaleString('ko-KR', {minimumFractionDigits:2, maximumFractionDigits:2});
+  document.getElementById(id+'-date-label').textContent    = ns + ' 기준';
+  document.getElementById(id+'-source-label').textContent  = '↺ 갱신 버튼으로 최신 지수 조회';
+  calcIndexRates(id, def, now);
+}
+
+/* ═══════════════════════════════════════
+   KOSPI 200 성장률
+   기준: 1990-01-03 / 지수 100
+   티커: ^KS200 (Yahoo Finance)
+═══════════════════════════════════════ */
+const K200_BASE_DATE = new Date('1990-01-03');
+const K200_BASE_VAL  = 100;
+let   _lastKospi200  = 350;
+let   _isFetching200 = false;
+
+function applyK200Value(price, src) {
+  price = parseFloat(String(price).replace(/,/g,''));
+  if (!price || isNaN(price) || price < 50 || price > 10000) return false;
+  _lastKospi200 = price;
+  document.getElementById('k200-current-val').textContent =
+    price.toLocaleString('ko-KR', {minimumFractionDigits:2, maximumFractionDigits:2});
+  const now    = new Date();
+  const nowStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-'
+    + String(now.getDate()).padStart(2,'0') + ' ' + now.toTimeString().slice(0,8);
+  document.getElementById('k200-date-label').textContent    = nowStr + ' 기준';
+  document.getElementById('k200-source-label').textContent  = '출처: ' + src;
+  calcKospi200Rates(price, now);
+  return true;
+}
+
+function calcKospi200Rates(currentVal, asOfDate) {
+  const now      = asOfDate || new Date();
+  const diffMs   = now - K200_BASE_DATE;
+  const diffDays = diffMs / (1000 * 60 * 60 * 24);
+  const diffYrs  = diffDays / 365.25;
+
+  const cagr    = Math.pow(currentVal / K200_BASE_VAL, 1 / diffYrs) - 1;
+  const monthly = Math.pow(1 + cagr, 1/12) - 1;
+  const daily   = Math.pow(1 + cagr, 1/365.25) - 1;
+
+  document.getElementById('k200-annual').textContent   = (cagr*100).toFixed(4) + '%';
+  document.getElementById('k200-monthly').textContent  = (monthly*100).toFixed(4) + '%';
+  document.getElementById('k200-daily').textContent    = (daily*100).toFixed(6) + '%';
+
+  const yrsInt = diffYrs.toFixed(1);
+  document.getElementById('k200-annual-sub').textContent  = '기준 1990.01.03 → 경과 ' + yrsInt + '년';
+  document.getElementById('k200-monthly-sub').textContent = '연 ' + (cagr*100).toFixed(2) + '% → 월 환산';
+  document.getElementById('k200-daily-sub').textContent   = '연 ' + (cagr*100).toFixed(2) + '% → 일 환산';
+
+  const base = 1e8;
+  [10, 20, 30, 40].forEach(y => {
+    const val = base * Math.pow(1 + cagr, y);
+    document.getElementById('k200-sim-' + y).textContent = fmtWon(Math.round(val));
+  });
+}
+
+async function tryAnthropicK200() {
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 300,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      messages: [{ role: 'user',
+        content: '지금 당장 KOSPI 200 지수 현재가를 검색해줘. 숫자만 {"v":숫자} 형식으로 답해.' }]
+    })
+  });
+  if (!resp.ok) throw new Error('fail');
+  const data = await resp.json();
+  const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join(' ');
+  const m1 = text.match(/"v"\s*:\s*([\d,]+(?:\.\d+)?)/);
+  if (m1) { const p = parseFloat(m1[1].replace(/,/g,'')); if (p >= 50 && p <= 10000) return p; }
+  const nums = [...text.matchAll(/([1-9]\d{2,3}(?:\.\d{1,2})?)/g)]
+    .map(m => parseFloat(m[1])).filter(n => n >= 200 && n <= 5000);
+  if (nums.length > 0) return nums[0];
+  throw new Error('parse fail');
+}
+
+async function tryYahooK200() {
+  const yfUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/%5EKS200?interval=1d&range=3d';
+  const enc   = encodeURIComponent(yfUrl);
+  const proxies = [
+    'https://corsproxy.io/?' + enc,
+    'https://api.allorigins.win/raw?url=' + enc,
+    'https://thingproxy.freeboard.io/fetch/' + yfUrl,
+    yfUrl,
+  ];
+  for (const url of proxies) {
+    try {
+      const ctrl = new AbortController();
+      const tid  = setTimeout(() => ctrl.abort(), 8000);
+      let resp;
+      try { resp = await fetch(url, { signal: ctrl.signal, cache: 'no-cache' }); }
+      finally { clearTimeout(tid); }
+      if (!resp || !resp.ok) continue;
+      const txt  = await resp.text();
+      let json;
+      try { json = JSON.parse(txt); } catch { continue; }
+      if (json.contents) { try { json = JSON.parse(json.contents); } catch { continue; } }
+      const r = json?.chart?.result?.[0];
+      if (!r) continue;
+      const m = r.meta;
+      const closes = r.indicators?.quote?.[0]?.close;
+      const price  = m.regularMarketPrice || m.previousClose
+                  || (closes ? closes.filter(Boolean).slice(-1)[0] : null);
+      if (price && price >= 50) return parseFloat(price);
+    } catch {}
+  }
+  return null;
+}
+
+async function fetchKospi200() {
+  if (_isFetching200) return;
+  _isFetching200 = true;
+  const btn  = document.getElementById('k200-refresh-btn');
+  const icon = document.getElementById('k200-refresh-icon');
+  const load = document.getElementById('k200-loading');
+  btn.disabled = true; icon.textContent = '⏳'; load.style.display = 'block';
+  document.getElementById('k200-date-label').textContent   = '조회 중...';
+  document.getElementById('k200-source-label').textContent = '';
+  try {
+    try {
+      const price = await tryAnthropicK200();
+      if (applyK200Value(price, 'Anthropic Web Search')) return;
+    } catch {}
+    const price = await tryYahooK200();
+    if (price && applyK200Value(price, 'Yahoo Finance (^KS200)')) return;
+    /* 실패 — 이전값 유지 */
+    const now = new Date();
+    const nowStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-'
+      + String(now.getDate()).padStart(2,'0') + ' ' + now.toTimeString().slice(0,8);
+    document.getElementById('k200-date-label').textContent    = nowStr + ' 기준 (이전값 유지)';
+    document.getElementById('k200-source-label').textContent  = '⚠ 조회 실패 — 직전 지수 ' + _lastKospi200.toLocaleString('ko-KR') + ' 유지';
+    calcKospi200Rates(_lastKospi200, now);
+  } finally {
+    btn.disabled = false; icon.textContent = '↺'; load.style.display = 'none'; _isFetching200 = false;
+  }
+}
+
+function useDefaultKospi200() {
+  _lastKospi200 = 350;
+  const now = new Date();
+  const nowStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-'
+    + String(now.getDate()).padStart(2,'0') + ' ' + now.toTimeString().slice(0,8);
+  document.getElementById('k200-current-val').textContent = '350.00';
+  document.getElementById('k200-date-label').textContent  = nowStr + ' 기준';
+  document.getElementById('k200-source-label').textContent = '↺ 갱신 버튼으로 최신 지수 조회';
+  calcKospi200Rates(350, now);
 }
 
 /* ════════════════════════════════════════
@@ -2571,12 +3284,82 @@ function switchAppTab(tab, btn) {
 let cagrChart2    = null;
 let cagrChartTab2 = 'value';
 let _cagrCache    = null;
+const cagrUnit    = { start: 'won', end: 'won' };
+let cagrPeriodMode = 'years'; // 'years' | 'date'
 
 function fmtC(n) {
   if (Math.abs(n) >= 1e12) return (n/1e12).toFixed(2) + '조원';
   if (Math.abs(n) >= 1e8)  return (n/1e8).toFixed(2)  + '억원';
   if (Math.abs(n) >= 1e4)  return Math.round(n/1e4).toLocaleString() + '만원';
   return Math.round(n).toLocaleString('ko-KR') + '원';
+}
+
+/* ── CAGR 금액 단위 탭 ── */
+function getCagrWon(id) {
+  const raw = (document.getElementById('cagr-' + id).value || '0').replace(/,/g,'');
+  const n   = parseFloat(raw) || 0;
+  const u   = cagrUnit[id];
+  return n * (u === 'eok' ? 1e8 : u === 'man' ? 1e4 : 1);
+}
+function setCagrUnit(id, unit, btn) {
+  const won  = getCagrWon(id);
+  cagrUnit[id] = unit;
+  const disp = won / (unit === 'eok' ? 1e8 : unit === 'man' ? 1e4 : 1);
+  document.getElementById('cagr-' + id).value = commaFmt(
+    unit === 'won' ? Math.round(disp) : parseFloat(disp.toFixed(4))
+  );
+  document.querySelectorAll('[data-field="cagr-' + id + '"]')
+    .forEach(b => b.classList.toggle('active', b === btn));
+  calcCAGR();
+}
+function onCagrAmtInput(id) {
+  const el = document.getElementById('cagr-' + id);
+  const cv = el.selectionStart;
+  const ov = el.value;
+  const ns = ov.replace(/[^0-9.]/g,'');
+  const fmt = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '';
+  el.value = fmt;
+  try { el.setSelectionRange(Math.max(0, cv + fmt.length - ov.length), Math.max(0, cv + fmt.length - ov.length)); } catch{}
+  calcCAGR();
+}
+function onCagrAmtBlur(id) {
+  const won  = getCagrWon(id);
+  const unit = cagrUnit[id];
+  const disp = won / (unit === 'eok' ? 1e8 : unit === 'man' ? 1e4 : 1);
+  document.getElementById('cagr-' + id).value = commaFmt(
+    unit === 'won' ? Math.round(disp) : parseFloat(disp.toFixed(4))
+  );
+}
+
+/* ── CAGR 기간 모드 (년수/날짜) ── */
+function setCagrPeriodMode(mode, btn) {
+  cagrPeriodMode = mode;
+  document.getElementById('cagr-period-years-btn').classList.toggle('active', mode === 'years');
+  document.getElementById('cagr-period-date-btn').classList.toggle('active', mode === 'date');
+  document.getElementById('cagr-period-years-panel').style.display = mode === 'years' ? '' : 'none';
+  document.getElementById('cagr-period-date-panel').style.display  = mode === 'date'  ? '' : 'none';
+  if (mode === 'date') {
+    const today = new Date().toISOString().slice(0,10);
+    if (!document.getElementById('cagr-date-end').value) {
+      document.getElementById('cagr-date-end').value = today;
+    }
+    calcCAGRFromDates();
+  } else {
+    calcCAGR();
+  }
+}
+function calcCAGRFromDates() {
+  const s = document.getElementById('cagr-date-start').value;
+  const e = document.getElementById('cagr-date-end').value;
+  if (!s || !e) return;
+  const ms   = new Date(e) - new Date(s);
+  const yrs  = ms / (1000 * 60 * 60 * 24 * 365.25);
+  if (yrs <= 0) return;
+  document.getElementById('cagr-years').value = yrs.toFixed(2);
+  document.getElementById('cagr-years-sl').value = Math.min(Math.round(yrs), 50);
+  document.getElementById('cagr-date-period-label').textContent =
+    '기간: ' + yrs.toFixed(2) + '년 (' + Math.round(ms/(1000*60*60*24)) + '일)';
+  calcCAGR();
 }
 
 function setCagrChartTab(tab, btn) {
@@ -2587,16 +3370,16 @@ function setCagrChartTab(tab, btn) {
 }
 
 function calcCAGR() {
-  const startWan = parseFloat(document.getElementById('cagr-start').value);
-  const endWan   = parseFloat(document.getElementById('cagr-end').value);
-  const years    = parseFloat(document.getElementById('cagr-years').value);
+  const start = getCagrWon('start');
+  const end   = getCagrWon('end');
+  const years  = parseFloat(document.getElementById('cagr-years').value);
   /* 슬라이더 동기화 */
-  document.getElementById('cagr-years-sl').value = years;
+  if (cagrPeriodMode === 'years') document.getElementById('cagr-years-sl').value = Math.min(Math.round(years),50);
 
-  if ([startWan, endWan, years].some(isNaN) || startWan <= 0 || endWan <= 0 || years <= 0) return;
+  if ([start, end, years].some(isNaN) || start <= 0 || end <= 0 || years <= 0) return;
 
-  const start = startWan * 10000;
-  const end   = endWan   * 10000;
+  const startWan = start / 10000;
+  const endWan   = end   / 10000;
   const cagr  = Math.pow(end / start, 1 / years) - 1;
   const totalReturn = (end / start - 1) * 100;
   const totalProfit = end - start;
@@ -2612,7 +3395,7 @@ function calcCAGR() {
   cagrEl.style.color = cagr >= 0 ? 'var(--accent)' : '#ff7070';
 
   document.getElementById('cagr-result-sub').textContent =
-    `${years}년 동안 ${fmtC(start)} → ${fmtC(end)}`;
+    years.toFixed(2) + '년 동안 ' + fmtC(start) + ' → ' + fmtC(end);
   document.getElementById('cagr-total-return').textContent =
     (totalReturn >= 0 ? '+' : '') + totalReturn.toFixed(2) + '%';
   document.getElementById('cagr-total-return').className =
@@ -2625,6 +3408,14 @@ function calcCAGR() {
     isFinite(double) ? double.toFixed(1) + '년' : '—';
   document.getElementById('cagr-ten').textContent =
     isFinite(ten) ? ten.toFixed(1) + '년' : '—';
+
+  /* 월평균·일평균 성장률 */
+  const monthly_r = Math.pow(1 + cagr, 1/12) - 1;
+  const daily_r   = Math.pow(1 + cagr, 1/365.25) - 1;
+  const mEl = document.getElementById('cagr-monthly-rate');
+  const dEl = document.getElementById('cagr-daily-rate');
+  if (mEl) { mEl.textContent = (monthly_r >= 0 ? '+' : '') + (monthly_r*100).toFixed(4) + '%'; mEl.style.color = monthly_r >= 0 ? 'var(--accent2)' : '#ff7070'; }
+  if (dEl) { dEl.textContent = (daily_r   >= 0 ? '+' : '') + (daily_r  *100).toFixed(6) + '%'; dEl.style.color = daily_r   >= 0 ? '#ffaa55'        : '#ff7070'; }
 
   /* 연도별 테이블 */
   const tbody = document.getElementById('cagrTableBody');
@@ -2657,11 +3448,10 @@ function calcCAGR() {
 }
 
 function calcCAGRReverse() {
-  const startWan   = parseFloat(document.getElementById('cagr-start').value);
+  const start      = getCagrWon('start');
   const years      = parseFloat(document.getElementById('cagr-years').value);
   const targetRate = parseFloat(document.getElementById('cagr-target-rate').value);
-  if ([startWan, years, targetRate].some(isNaN) || startWan <= 0) return;
-  const start    = startWan * 10000;
+  if ([start, years, targetRate].some(isNaN) || start <= 0) return;
   const cagrR    = targetRate / 100;
   const endVal   = start * Math.pow(1 + cagrR, years);
   const needYrs  = targetRate > 0 ? Math.log(endVal / start) / Math.log(1 + cagrR) : Infinity;
