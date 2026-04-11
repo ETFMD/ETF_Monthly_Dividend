@@ -944,8 +944,25 @@
   <div class="header">
     <div class="header-left">
       <span class="badge">WEEKLY COVERED CALL ETF</span>
-      <h1>KODEX 200 <span>타겟위클리커버드콜</span> <span id="kodex-price-badge" style="font-size:14px;font-weight:400;color:var(--accent);background:rgba(0,229,176,0.1);border:1px solid rgba(0,229,176,0.25);border-radius:8px;padding:4px 10px;vertical-align:middle;cursor:pointer;" onclick="fetchKodexPrice()" title="클릭하여 갱신">—</span></h1>
+      <h1>KODEX 200 <span>타겟위클리커버드콜</span></h1>
       <p class="subtitle"><span class="txt-div">분배</span> 수익 시뮬레이터 — 투자 금액과 기간을 설정하여 예상 <span class="txt-div">분배금</span>을 확인하세요</p>
+      <!-- 현재가 패널 -->
+      <div style="display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:baseline;gap:8px;">
+          <span style="font-size:11px;color:var(--text3);">현재가</span>
+          <span id="kodex-price-val" style="font-family:var(--mono);font-size:22px;font-weight:500;color:var(--accent);">—</span>
+          <span style="font-size:11px;color:var(--text3);">원</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <span id="kodex-price-date" style="font-size:11px;color:var(--text3);">—</span>
+          <span id="kodex-price-src"  style="font-size:10px;color:var(--text3);">클릭하여 갱신</span>
+        </div>
+        <button onclick="fetchKodexPrice()" id="kodex-refresh-btn"
+          style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
+          <span id="kodex-refresh-icon">↺</span> 갱신
+        </button>
+        <span id="kodex-loading" style="display:none;font-size:12px;color:var(--text3);">⏳ 조회 중...</span>
+      </div>
     </div>
     <div class="mode-toggle">
       <button class="mode-btn" onclick="setMode('receive',this)"><span class="txt-div">분배금</span> 수령</button>
@@ -2984,19 +3001,43 @@ function buildOpts(isBar, hasDualAxis, isMonthly) {
 }
 
 /* ── KODEX 200타겟위클리커버드콜 현재가 조회 ── */
-let _lastKodexPrice = null;
+let _lastKodexPrice  = null;
 let _isFetchingKodex = false;
+
+function applyKodexPrice(price, src) {
+  price = parseFloat(String(price).replace(/,/g,''));
+  if (!price || price < 3000 || price > 100000) return false;
+  _lastKodexPrice = price;
+  const now = new Date();
+  const ns  = now.getFullYear() + '-'
+    + String(now.getMonth()+1).padStart(2,'0') + '-'
+    + String(now.getDate()).padStart(2,'0')
+    + ' ' + now.toTimeString().slice(0,8);
+  const valEl  = document.getElementById('kodex-price-val');
+  const dateEl = document.getElementById('kodex-price-date');
+  const srcEl  = document.getElementById('kodex-price-src');
+  if (valEl)  valEl.textContent  = price.toLocaleString('ko-KR');
+  if (dateEl) dateEl.textContent = ns + ' 기준';
+  if (srcEl)  srcEl.textContent  = '출처: ' + src;
+  return true;
+}
 
 async function fetchKodexPrice() {
   if (_isFetchingKodex) return;
   _isFetchingKodex = true;
-  const badge = document.getElementById('kodex-price-badge');
-  if (!badge) { _isFetchingKodex = false; return; }
-  badge.textContent = '조회중...';
-  badge.style.opacity = '0.6';
+  const btn  = document.getElementById('kodex-refresh-btn');
+  const icon = document.getElementById('kodex-refresh-icon');
+  const load = document.getElementById('kodex-loading');
+  const dateEl = document.getElementById('kodex-price-date');
+  const srcEl  = document.getElementById('kodex-price-src');
+  if (btn)  btn.disabled     = true;
+  if (icon) icon.textContent = '⏳';
+  if (load) load.style.display = 'block';
+  if (dateEl) dateEl.textContent = '조회 중...';
+  if (srcEl)  srcEl.textContent  = '';
 
   try {
-    /* 1순위: Anthropic API */
+    /* 1순위: Anthropic API + web_search */
     try {
       const resp = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -3006,32 +3047,27 @@ async function fetchKodexPrice() {
           max_tokens: 400,
           tools: [{ type: 'web_search_20250305', name: 'web_search' }],
           messages: [{ role: 'user',
-            content: '지금 당장 KODEX 200타겟위클리커버드콜 ETF (종목코드 266360) 현재 주가를 검색해줘. 숫자만 {"v":숫자} 형식으로 답해.' }]
+            content: '한국 ETF KODEX 200타겟위클리커버드콜 종목코드 266360 현재 주가를 검색해줘. 반드시 {"v":숫자} 형식으로만 답해.' }]
         })
       });
       if (resp.ok) {
         const data = await resp.json();
         const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join(' ');
-        const m1 = text.match(/"v"\s*:\s*([\d,]+(?:\.\d+)?)/);
-        let price = m1 ? parseFloat(m1[1].replace(/,/g,'')) : null;
+        const m = text.match(/"v"\s*:\s*([\d,]+(?:\.\d+)?)/);
+        let price = m ? parseFloat(m[1].replace(/,/g,'')) : null;
         if (!price) {
-          const nums = [...text.matchAll(/([5-9]\d{3}|[1-9]\d{4})/g)]
-            .map(m => parseFloat(m[1])).filter(n => n >= 5000 && n <= 50000);
+          /* fallback: 3000~30000 범위 숫자 추출 */
+          const nums = [...text.matchAll(/(\d[\d,]{3,5})/g)]
+            .map(n => parseFloat(n[1].replace(/,/g,'')))
+            .filter(n => n >= 3000 && n <= 30000);
           if (nums.length) price = nums[0];
         }
-        if (price && price >= 5000 && price <= 50000) {
-          _lastKodexPrice = price;
-          badge.textContent = price.toLocaleString('ko-KR') + '원';
-          badge.title = '조회: ' + new Date().toLocaleTimeString('ko-KR') + ' (Anthropic)';
-          badge.style.opacity = '1';
-          _isFetchingKodex = false;
-          return;
-        }
+        if (applyKodexPrice(price, 'Anthropic Web Search')) return;
       }
     } catch {}
 
-    /* 2순위: Yahoo Finance 266360.KS */
-    const yfUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/266360.KS?interval=1d&range=2d';
+    /* 2순위: Yahoo Finance 266360.KS CORS 프록시 순차 */
+    const yfUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/266360.KS?interval=1d&range=3d';
     const proxies = [
       'https://corsproxy.io/?' + encodeURIComponent(yfUrl),
       'https://api.allorigins.win/raw?url=' + encodeURIComponent(yfUrl),
@@ -3041,41 +3077,40 @@ async function fetchKodexPrice() {
     for (const url of proxies) {
       try {
         const ctrl = new AbortController();
-        const tid  = setTimeout(() => ctrl.abort(), 7000);
+        const tid  = setTimeout(() => ctrl.abort(), 8000);
         let resp;
         try { resp = await fetch(url, { signal: ctrl.signal, cache: 'no-cache' }); }
         finally { clearTimeout(tid); }
         if (!resp || !resp.ok) continue;
-        const txt  = await resp.text();
+        const txt = await resp.text();
         let json;
         try { json = JSON.parse(txt); } catch { continue; }
         if (json.contents) { try { json = JSON.parse(json.contents); } catch { continue; } }
         const r = json?.chart?.result?.[0];
         if (!r) continue;
-        const m   = r.meta;
-        const cls = r.indicators?.quote?.[0]?.close;
+        const m  = r.meta;
+        const cl = r.indicators?.quote?.[0]?.close;
         const price = m.regularMarketPrice || m.previousClose
-                   || (cls ? cls.filter(Boolean).slice(-1)[0] : null);
-        if (price && price >= 5000 && price <= 50000) {
-          _lastKodexPrice = parseFloat(price);
-          badge.textContent = _lastKodexPrice.toLocaleString('ko-KR') + '원';
-          badge.title = '조회: ' + new Date().toLocaleTimeString('ko-KR') + ' (Yahoo)';
-          badge.style.opacity = '1';
-          _isFetchingKodex = false;
-          return;
-        }
+                   || (cl ? cl.filter(Boolean).slice(-1)[0] : null);
+        if (applyKodexPrice(price, 'Yahoo Finance (266360.KS)')) return;
       } catch {}
     }
 
-    /* 모두 실패 — 이전값 또는 표시 */
+    /* 모두 실패 */
     if (_lastKodexPrice) {
-      badge.textContent = _lastKodexPrice.toLocaleString('ko-KR') + '원';
-      badge.title = '이전 조회값 유지';
+      const now = new Date();
+      const ns  = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-'
+        + String(now.getDate()).padStart(2,'0') + ' ' + now.toTimeString().slice(0,8);
+      if (dateEl) dateEl.textContent = ns + ' 기준 (이전값 유지)';
+      if (srcEl)  srcEl.textContent  = '⚠ 조회 실패 — 직전가 ' + _lastKodexPrice.toLocaleString('ko-KR') + '원 유지';
     } else {
-      badge.textContent = '조회 실패';
+      if (dateEl) dateEl.textContent = '조회 실패';
+      if (srcEl)  srcEl.textContent  = '↺ 갱신 버튼으로 재시도';
     }
-    badge.style.opacity = '1';
   } finally {
+    if (btn)  btn.disabled     = false;
+    if (icon) icon.textContent = '↺';
+    if (load) load.style.display = 'none';
     _isFetchingKodex = false;
   }
 }
