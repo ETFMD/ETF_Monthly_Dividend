@@ -786,6 +786,14 @@
       font-size: 26px !important;
     }
 
+    /* CAGR 계산기 결과 3열 → 1열, 글씨 축소 */
+    #cagr-result         { font-size: 22px !important; }
+    #cagr-monthly-rate   { font-size: 18px !important; }
+    #cagr-daily-rate     { font-size: 18px !important; }
+    #page-cagr .card > div[style*="grid-template-columns:repeat(3"] {
+      grid-template-columns: 1fr !important;
+    }
+
     /* CAGR 결과 */
     .cagr-metric-grid { grid-template-columns: 1fr 1fr !important; }
     .cagr-layout > div:last-child { min-width: 0; }
@@ -817,8 +825,13 @@
     #sp500-sim-grid  { grid-template-columns: 1fr 1fr !important; }
 
     /* 현재 지수 배너 넘침 방지 */
-    #kospi-status,
+    #kospi-status, #k200-status,
     [id$="-loading"] { flex-wrap: wrap; }
+    /* 두 탭 배너 동일 스타일 */
+    #kospi-status, #k200-status {
+      flex-direction: column;
+      align-items: flex-start;
+    }
 
     /* 성장률 숫자 크기 모바일 축소 */
     #nasdaq-annual, #nasdaq100-annual, #dowjones-annual, #sp500-annual,
