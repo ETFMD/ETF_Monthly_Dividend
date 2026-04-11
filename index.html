@@ -3635,15 +3635,10 @@ function calcIndexRatesByPeriod(indexId, currentVal, asOfDate, periodYears, star
 
 function calcKospiRates(currentVal, asOfDate) {
   _kospiLastVal.kospi = currentVal;
-  ['5','10','15','20','30'].forEach(y => delete _histCache['kospi_'+y]);
-  const py = _kospiPeriod.kospi || 0;
-  const sv = py === 0 ? null : getFallbackVal('kospi', (asOfDate||new Date()).getFullYear()-py);
-  calcIndexRatesByPeriod('kospi', currentVal, asOfDate, py, sv);
-}
-
-function calcKospiRates(currentVal, asOfDate) {
-  _kospiLastVal.kospi = currentVal;
-  calcIndexRatesByPeriod('kospi', currentVal, asOfDate, _kospiPeriod.kospi || 0);
+  const py  = _kospiPeriod.kospi || 0;
+  const sv  = py === 0 ? null : (_histCache['kospi_'+py] || getFallbackVal('kospi', (asOfDate||new Date()).getFullYear()-py));
+  const hd  = _histCache['kospi_'+py+'_date'] || null;
+  calcIndexRatesByPeriod('kospi', currentVal, asOfDate, py, sv, hd);
 }
 
 /* ═══════════════════════════════════════
@@ -4550,10 +4545,10 @@ function applyK200Value(price, src) {
 
 function calcKospi200Rates(currentVal, asOfDate) {
   _kospiLastVal.k200 = currentVal;
-  ['5','10','15','20','30'].forEach(y => delete _histCache['k200_'+y]);
   const py = _kospiPeriod.k200 || 0;
-  const sv = py === 0 ? null : getFallbackVal('k200', (asOfDate||new Date()).getFullYear()-py);
-  calcIndexRatesByPeriod('k200', currentVal, asOfDate, py, sv);
+  const sv = py === 0 ? null : (_histCache['k200_'+py] || getFallbackVal('k200', (asOfDate||new Date()).getFullYear()-py));
+  const hd = _histCache['k200_'+py+'_date'] || null;
+  calcIndexRatesByPeriod('k200', currentVal, asOfDate, py, sv, hd);
 }
 
 async function tryAnthropicK200() {
