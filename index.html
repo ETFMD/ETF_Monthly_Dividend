@@ -3899,7 +3899,17 @@ function switchSubTab(tab, grpId, btn) {
   if (tab === 'kospi')     fetchKospi();
   if (tab === 'kospi200')  fetchKospi200();
   const usIdx = ['nasdaq','nasdaq100','dowjones','sp500'];
-  if (usIdx.includes(tab)) fetchIndex(tab);
+  if (usIdx.includes(tab)) {
+    fetchIndex(tab).then(() => {
+      const py = _indexPeriod[tab] || 0;
+      if (py > 0) {
+        /* 현재가 갱신 완료 후 기간별 과거값 조회 */
+        const tabsEl = document.getElementById(tab+'-period-tabs');
+        const activeBtn = tabsEl ? tabsEl.querySelector('.period-btn.active') : null;
+        setIndexPeriod(tab, py, activeBtn);
+      }
+    });
+  }
 }
 
 // 외부 클릭 시 드롭다운 닫기
