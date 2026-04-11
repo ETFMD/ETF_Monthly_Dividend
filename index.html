@@ -3488,10 +3488,10 @@ function getFallbackVal(indexId, year) {
 }
 
 async function fetchHistoricalPrice(ticker, targetDate) {
-  const p1 = Math.floor(targetDate.getTime()/1000) - 86400*5;
-  const p2 = Math.floor(targetDate.getTime()/1000) + 86400*40;
+  const p1 = Math.floor(targetDate.getTime()/1000) - 86400*7;
+  const p2 = Math.floor(targetDate.getTime()/1000) + 86400*7;
   const yfUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/'
-    + ticker + '?interval=1mo&period1=' + p1 + '&period2=' + p2;
+    + ticker + '?interval=1d&period1=' + p1 + '&period2=' + p2;
   const proxies = [
     'https://corsproxy.io/?' + encodeURIComponent(yfUrl),
     'https://api.allorigins.win/get?url=' + encodeURIComponent(yfUrl),
@@ -3559,7 +3559,7 @@ async function setKospiPeriod(indexId, years, btn) {
     const origText = btn ? btn.textContent : '';
     if (btn) btn.textContent = '⏳';
     const ticker   = indexId === 'kospi' ? '%5EKS11' : '%5EKS200';
-    const targetDt = new Date(startYear, 0, 15);
+    const targetDt = new Date(startYear, now.getMonth(), now.getDate());
     const result   = await fetchHistoricalPrice(ticker, targetDt);
     if (btn) btn.textContent = origText;
     if (result && result.price > 0) {
@@ -3589,7 +3589,7 @@ function calcIndexRatesByPeriod(indexId, currentVal, asOfDate, periodYears, star
     periodLabel = '상장이후 전체 (' + BASE_LABEL + ' ~)';
   } else {
     sv = startVal || getFallbackVal(indexId, now.getFullYear()-periodYears);
-    startDate = new Date(now.getFullYear()-periodYears, 0, 1);
+    startDate = new Date(now.getFullYear()-periodYears, now.getMonth(), now.getDate());
     const ck  = indexId + '_' + periodYears;
     const cachedDate = histDateStr || _histCache[ck+'_date'];
     if (cachedDate) {
