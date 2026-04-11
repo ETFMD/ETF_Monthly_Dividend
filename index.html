@@ -502,6 +502,88 @@
   .app-page { display: none; }
   .app-page.active { display: block; }
 
+  /* ── 탭 그룹 (서브탭 행 방식) ── */
+  .tab-group {
+    display: inline-flex;
+    align-items: stretch;
+  }
+  .tab-group-btn {
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 18px;
+    border: none;
+    background: transparent;
+    color: var(--text3);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .tab-group-btn:hover { color: var(--text2); }
+  .tab-group-btn.open,
+  .tab-group-btn.has-active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .tab-group-arrow {
+    font-size: 9px;
+    opacity: 0.6;
+    transition: transform 0.2s;
+    display: inline-block;
+  }
+  .tab-group-btn.open .tab-group-arrow { transform: rotate(180deg); }
+
+  /* ── fixed 드롭다운 (overflow 탈출) ── */
+  .tab-dropdown {
+    position: fixed;
+    display: none;
+    flex-direction: column;
+    gap: 3px;
+    padding: 6px;
+    background: var(--bg2);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
+    z-index: 9999;
+    min-width: 210px;
+    animation: dropIn 0.15s ease;
+  }
+  @keyframes dropIn {
+    from { opacity:0; transform:translateY(-6px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .tab-dropdown.open { display: flex; }
+  .drop-item {
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 400;
+    padding: 9px 12px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: background 0.12s, color 0.12s;
+    text-align: left;
+  }
+  .drop-item:hover {
+    background: rgba(255,255,255,0.07);
+    color: var(--text);
+  }
+  .drop-item.active {
+    background: var(--accent-dim);
+    color: var(--accent);
+  }
+
   /* ── CAGR 계산기 ── */
   .cagr-layout {
     display: grid;
@@ -511,6 +593,8 @@
   }
   @media(max-width:900px){ .cagr-layout { grid-template-columns: 300px 1fr; } }
   @media(max-width:700px){ .cagr-layout { grid-template-columns: 1fr; } }
+  @media(max-width:900px){ #cpd-layout { grid-template-columns: 320px 1fr !important; } }
+  @media(max-width:700px){ #cpd-layout { grid-template-columns: 1fr !important; } }
 
   .cagr-result-big {
     font-family: var(--mono);
@@ -644,16 +728,215 @@
 <div class="wrap">
 
   <!-- ── 앱 탭 네비게이션 ── -->
-  <nav class="app-nav">
-    <button class="app-tab active" onclick="switchAppTab('simulator',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M9 6v6M7 7.5h2.5a1.5 1.5 0 0 1 0 3H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M14.5 4.5 L16.5 2.5 M14.5 2.5 h2 v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="txt-div">분배</span>&nbsp;시뮬레이터</button>
-    <button class="app-tab"        onclick="switchAppTab('cagr',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="1.5" width="13" height="15" rx="2" stroke="currentColor" stroke-width="1.4"/><rect x="4.5" y="3.5" width="9" height="3" rx="0.8" fill="currentColor" opacity="0.5"/><path d="M4.5 11 L7.5 8.5 L10.5 10 L13.5 6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13.5" cy="6.5" r="1.2" fill="currentColor"/></svg>CAGR 계산기</button>
-    <button class="app-tab"        onclick="switchAppTab('kospi',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>KOSPI 성장률</button>
-    <button class="app-tab"        onclick="switchAppTab('kospi200',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.5" y="13" width="2.5" height="3.5" rx="0.6" fill="currentColor" opacity="0.4"/><rect x="5.5" y="9" width="2.5" height="7.5" rx="0.6" fill="currentColor" opacity="0.6"/><rect x="9.5" y="5.5" width="2.5" height="11" rx="0.6" fill="currentColor" opacity="0.8"/><rect x="13.5" y="2" width="2.5" height="14.5" rx="0.6" fill="currentColor"/><path d="M1.5 10 L5.5 7.5 L9.5 5 L14 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>KOSPI 200 성장률</button>
-    <button class="app-tab"        onclick="switchAppTab('nasdaq',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="6" y="6" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M3 7.5 H6 M3 10.5 H6 M12 7.5 H15 M12 10.5 H15" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M7.5 3 V6 M10.5 3 V6 M7.5 12 V15 M10.5 12 V15" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/></svg>나스닥 종합 성장률</button>
-    <button class="app-tab"        onclick="switchAppTab('nasdaq100',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.5" y="6" width="4" height="10.5" rx="0.8" fill="currentColor" opacity="0.35"/><rect x="7" y="3" width="4" height="13.5" rx="0.8" fill="currentColor" opacity="0.65"/><rect x="12.5" y="1.5" width="4" height="15" rx="0.8" fill="currentColor"/><path d="M1.5 5 Q4 2 6.5 5 Q9 8 11 4 Q13 1 16.5 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>나스닥 100 성장률</button>
-    <button class="app-tab"        onclick="switchAppTab('dowjones',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="9" width="5" height="7.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="6" width="5.5" height="10.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="3.5" y="6" width="1.5" height="3" fill="currentColor" opacity="0.5"/><path d="M2 8 L6 5 L10 6.5 L15.5 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 1.5 h3 v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>다우존스 성장률</button>
-    <button class="app-tab"        onclick="switchAppTab('sp500',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M9 2 Q13 9 9 16 M9 2 Q5 9 9 16" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M2.5 7 Q9 5.5 15.5 7 M2 11 Q9 12.5 16 11" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M5 12 L9 8 L12 10 L15 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>S&P 500 성장률</button>
+  <nav class="app-nav" id="mainNav">
+    <button class="app-tab active" onclick="switchAppTab('simulator',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M9 6v6M7 7.5h2.5a1.5 1.5 0 0 1 0 3H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M14.5 4.5 L16.5 2.5 M14.5 2.5 h2 v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>분배&nbsp;시뮬레이터</button>
+    <button class="app-tab" onclick="switchAppTab('compound',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M9 3.5 C5.96 3.5 3.5 5.96 3.5 9 C3.5 12.04 5.96 14.5 9 14.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9 14.5 C12.04 14.5 14.5 12.04 14.5 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="2 1.5"/><path d="M12 7 L14.5 9 L12 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 7.5 L9.5 9 L11 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/><circle cx="9" cy="9" r="1" fill="currentColor"/></svg>복리 계산기</button>
+    <button class="app-tab" onclick="switchAppTab('cagr',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="1.5" width="13" height="15" rx="2" stroke="currentColor" stroke-width="1.4"/><rect x="4.5" y="3.5" width="9" height="3" rx="0.8" fill="currentColor" opacity="0.5"/><path d="M4.5 11 L7.5 8.5 L10.5 10 L13.5 6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13.5" cy="6.5" r="1.2" fill="currentColor"/></svg>CAGR 계산기</button>
+
+    <!-- 국내 지수 그룹 -->
+    <div class="tab-group" id="grp-domestic">
+      <button class="tab-group-btn" id="grp-domestic-btn" onclick="toggleTabGroup('domestic')">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="11" width="2.5" height="5" rx="0.5" fill="currentColor" opacity="0.5"/><rect x="6" y="8" width="2.5" height="8" rx="0.5" fill="currentColor" opacity="0.75"/><rect x="10" y="5" width="2.5" height="11" rx="0.5" fill="currentColor"/><circle cx="14.5" cy="4" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M14.5 1.5 v5 M12 4 h5" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.5"/></svg>국내 지수 성장률<span class="tab-group-arrow">▼</span>
+      </button>
+    </div>
+
+    <!-- 해외 지수 그룹 -->
+    <div class="tab-group" id="grp-overseas">
+      <button class="tab-group-btn" id="grp-overseas-btn" onclick="toggleTabGroup('overseas')">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M9 2.5 Q12.5 9 9 15.5 M9 2.5 Q5.5 9 9 15.5" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M2.5 6.5 Q9 5 15.5 6.5 M2.5 11.5 Q9 13 15.5 11.5" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M9 6.5 v1.5 M9 10 v1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M7.5 8 h2 a1 1 0 1 1 0 2 h-2 a1 1 0 1 0 0 2 h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>해외 지수 성장률<span class="tab-group-arrow">▼</span>
+      </button>
+    </div>
   </nav>
+
+  <!-- ── 복리 계산기 페이지 ── -->
+  <div class="app-page" id="page-compound">
+    <div class="header">
+      <div class="header-left">
+        <span class="badge">COMPOUND INTEREST CALCULATOR</span>
+        <h1>복리 계산기 <span>& 적립식 복리</span></h1>
+        <p class="subtitle">원금·적립금·이율·기간으로 최종 자산과 수익을 시뮬레이션합니다</p>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:380px 1fr;gap:24px;align-items:start;" id="cpd-layout">
+
+      <!-- 왼쪽 입력 -->
+      <div class="card" style="padding-top:8px;padding-bottom:12px;">
+
+        <!-- 투자 방식 -->
+        <div style="display:flex;background:var(--bg3);border:1px solid var(--card-border);border-radius:10px;padding:4px;gap:2px;margin:12px 0 16px;">
+          <button class="mode-btn active" id="cpd-mode-simple" onclick="setCpdMode('simple',this)" style="flex:1;border-radius:7px;">일반 복리</button>
+          <button class="mode-btn"        id="cpd-mode-dca"    onclick="setCpdMode('dca',this)"    style="flex:1;border-radius:7px;">적립식 복리</button>
+        </div>
+
+        <!-- 초기 투자금 -->
+        <div class="acc-header" onclick="toggleAcc('cpd-acc-invest',this)" style="margin-top:0;">
+          <span class="acc-title">투자 조건 설정</span>
+          <span class="acc-arrow open">▼</span>
+        </div>
+        <div class="acc-body default-open" id="cpd-acc-invest">
+          <div class="slider-block">
+            <div class="slider-header">
+              <span class="slider-label">초기 투자금액</span>
+              <div style="display:flex;align-items:center;gap:4px;">
+                <div class="num-pill"><input class="num-input comma-input" id="cpd-principal" type="text" inputmode="numeric" value="100,000,000" style="padding-right:8px;width:120px;" oninput="onCpdInput('principal')" onblur="onCpdBlur('principal')"></div>
+                <div class="unit-tabs">
+                  <button class="unit-btn" data-field="cpd-principal" data-unit="eok" onclick="setCpdUnit('principal','eok',this)">억원</button>
+                  <button class="unit-btn" data-field="cpd-principal" data-unit="man" onclick="setCpdUnit('principal','man',this)">만원</button>
+                  <button class="unit-btn active" data-field="cpd-principal" data-unit="won" onclick="setCpdUnit('principal','won',this)">원</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="slider-block">
+            <div class="slider-header">
+              <span class="slider-label">연 이율</span>
+              <div class="num-pill"><input class="num-input" id="cpd-rate" type="number" min="0.01" max="100" step="0.1" value="7" style="width:70px;" oninput="calcCompound()"><span class="num-unit">%</span></div>
+            </div>
+            <input type="range" id="cpd-rate-sl" min="0.1" max="30" step="0.1" value="7" oninput="document.getElementById('cpd-rate').value=parseFloat(this.value).toFixed(1);calcCompound();">
+          </div>
+          <div class="slider-block">
+            <div class="slider-header">
+              <span class="slider-label">투자 기간</span>
+              <div class="num-pill"><input class="num-input" id="cpd-years" type="number" min="1" max="50" step="1" value="10" style="width:70px;" oninput="calcCompound()"><span class="num-unit">년</span></div>
+            </div>
+            <input type="range" id="cpd-years-sl" min="1" max="50" step="1" value="10" oninput="document.getElementById('cpd-years').value=this.value;calcCompound();">
+          </div>
+          <div class="slider-block">
+            <div class="slider-header">
+              <span class="slider-label">복리 주기</span>
+              <div class="num-pill" style="padding:0;overflow:visible;background:transparent;border:none;">
+                <select id="cpd-freq" onchange="calcCompound()" style="background:var(--bg3);border:1px solid var(--card-border);border-radius:8px;padding:5px 10px;color:var(--text);font-family:var(--font);font-size:12px;outline:none;cursor:pointer;">
+                  <option value="1">연 1회</option>
+                  <option value="2">반기 2회</option>
+                  <option value="4">분기 4회</option>
+                  <option value="12" selected>월 12회</option>
+                  <option value="52">주 52회</option>
+                  <option value="365">일 365회</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 적립식 설정 (DCA 모드에서만) -->
+        <div id="cpd-dca-section" style="display:none;">
+          <div class="acc-header" onclick="toggleAcc('cpd-acc-dca',this)">
+            <span class="acc-title">적립식 설정</span>
+            <span class="acc-arrow open">▼</span>
+          </div>
+          <div class="acc-body default-open" id="cpd-acc-dca">
+            <div class="slider-block">
+              <div class="slider-header">
+                <span class="slider-label">월 적립금</span>
+                <div style="display:flex;align-items:center;gap:4px;">
+                  <div class="num-pill"><input class="num-input comma-input" id="cpd-monthly" type="text" inputmode="numeric" value="1,000,000" style="padding-right:8px;width:110px;" oninput="onCpdInput('monthly')" onblur="onCpdBlur('monthly')"></div>
+                  <div class="unit-tabs">
+                    <button class="unit-btn" data-field="cpd-monthly" data-unit="eok" onclick="setCpdUnit('monthly','eok',this)">억원</button>
+                    <button class="unit-btn" data-field="cpd-monthly" data-unit="man" onclick="setCpdUnit('monthly','man',this)">만원</button>
+                    <button class="unit-btn active" data-field="cpd-monthly" data-unit="won" onclick="setCpdUnit('monthly','won',this)">원</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(0,229,176,0.12);">
+              <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">연간 추가 투자액</p>
+              <p style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500;" id="cpd-annual-dep">—</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 세금 설정 -->
+        <div class="acc-header" onclick="toggleAcc('cpd-acc-tax',this)">
+          <span class="acc-title">세금 설정</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body" id="cpd-acc-tax">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <span class="slider-label">이자소득세 공제</span>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+              <span style="font-size:12px;color:var(--text3);" id="cpd-tax-off">OFF</span>
+              <div class="switch on" id="cpd-tax-sw" onclick="toggleCpdTax()"><div class="switch-thumb"></div></div>
+              <span style="font-size:12px;color:#ff7070;" id="cpd-tax-on">ON</span>
+            </label>
+          </div>
+          <div class="slider-block" id="cpd-tax-block">
+            <div class="slider-header">
+              <span class="slider-label">세율</span>
+              <div class="num-pill"><input class="num-input" id="cpd-tax-rate" type="number" min="0" max="49.5" step="0.1" value="15.4" style="width:70px;" oninput="calcCompound()"><span class="num-unit">%</span></div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+              <button class="preset-btn" onclick="setCpdTaxPreset(15.4)">일반 15.4%</button>
+              <button class="preset-btn" onclick="setCpdTaxPreset(9.9)">소득세 9.9%</button>
+              <button class="preset-btn" onclick="setCpdTaxPreset(0)">비과세 0%</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="notice" style="margin-top:12px;">
+          ※ 복리 계산은 세전 이율 기준이며, 세금 공제 선택 시 이자에만 적용됩니다.<br>
+          ※ 과거 수익률이 미래를 보장하지 않습니다.
+        </div>
+      </div>
+
+      <!-- 오른쪽 결과 -->
+      <div style="display:flex;flex-direction:column;gap:20px;">
+
+        <!-- 요약 카드 -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+          <div class="card" style="padding:18px 20px;">
+            <p style="font-size:11px;color:var(--text3);margin-bottom:6px;">최종 자산</p>
+            <p style="font-family:var(--mono);font-size:22px;font-weight:500;color:var(--accent);" id="cpd-s-final">—</p>
+            <p style="font-size:11px;color:var(--text3);margin-top:4px;" id="cpd-s-final-sub">—</p>
+          </div>
+          <div class="card" style="padding:18px 20px;">
+            <p style="font-size:11px;color:var(--text3);margin-bottom:6px;">총 수익금</p>
+            <p style="font-family:var(--mono);font-size:22px;font-weight:500;color:var(--accent2);" id="cpd-s-profit">—</p>
+            <p style="font-size:11px;color:var(--text3);margin-top:4px;" id="cpd-s-profit-sub">수익률 —</p>
+          </div>
+          <div class="card" style="padding:18px 20px;">
+            <p style="font-size:11px;color:var(--text3);margin-bottom:6px;">실효 CAGR</p>
+            <p style="font-family:var(--mono);font-size:22px;font-weight:500;color:#ffaa55;" id="cpd-s-cagr">—</p>
+            <p style="font-size:11px;color:var(--text3);margin-top:4px;" id="cpd-s-cagr-sub">월평균 —</p>
+          </div>
+        </div>
+
+        <!-- 차트 -->
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <p class="card-title" style="margin-bottom:0;">연도별 자산 성장</p>
+            <div class="chart-tabs">
+              <button class="chart-tab active" id="cpd-ctab-val" onclick="setCpdChartTab('val',this)">자산 규모</button>
+              <button class="chart-tab"        id="cpd-ctab-ret" onclick="setCpdChartTab('ret',this)">수익률</button>
+            </div>
+          </div>
+          <div style="position:relative;height:220px;">
+            <canvas id="cpdChart"></canvas>
+          </div>
+        </div>
+
+        <!-- 연도별 표 -->
+        <div class="card">
+          <p class="card-title" style="margin-bottom:14px;">연도별 성장 내역</p>
+          <div class="table-scroll">
+            <table class="cagr-table">
+              <thead>
+                <tr>
+                  <th style="text-align:left;">연도</th>
+                  <th>원금 누계</th>
+                  <th id="cpd-th-dep" style="display:none;color:var(--accent);">적립 누계</th>
+                  <th>이자 누계</th>
+                  <th>총 자산</th>
+                  <th>수익률</th>
+                </tr>
+              </thead>
+              <tbody id="cpdTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /page-compound -->
 
   <!-- ── 시뮬레이터 페이지 ── -->
   <div class="app-page active" id="page-simulator">
@@ -2168,6 +2451,8 @@ function setChartTab(tab, btn) {
    콤마 입력 + 단위 탭 시스템
 ════════════════════════════════════════ */
 const fancyUnit = { amount: 'won', otherincome: 'won', target: 'won', monthly: 'won' };
+let cpdMode = 'simple'; let cpdTaxOn = true; let cpdChart = null; let cpdChartTab = 'val';
+const cpdUnit = { principal: 'won', monthly: 'won' };
 
 /* 단위 → 원 변환 배율 */
 function unitToWon(unit) {
@@ -2962,18 +3247,268 @@ function useDefaultKospi() {
 /* ════════════════════════════════════════
    앱 탭 전환
 ════════════════════════════════════════ */
+/* ════════════════════════════════════════
+   탭 그룹 드롭다운
+════════════════════════════════════════ */
+function toggleTabGroup(grpId) {
+  const btn  = document.getElementById('grp-' + grpId + '-btn');
+  const drop = document.getElementById('grp-' + grpId + '-drop');
+  const isOpen = drop.classList.contains('open');
+  // 모든 드롭다운 닫기
+  document.querySelectorAll('.tab-dropdown').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.tab-group-btn').forEach(b => b.classList.remove('open'));
+  if (!isOpen) {
+    // 버튼 위치 기준으로 드롭다운 위치 계산 (fixed)
+    const rect = btn.getBoundingClientRect();
+    drop.style.top  = (rect.bottom + 4) + 'px';
+    drop.style.left = rect.left + 'px';
+    // 화면 오른쪽 밖으로 나가면 조정
+    drop.classList.add('open');
+    const dw = drop.offsetWidth;
+    if (rect.left + dw > window.innerWidth - 8) {
+      drop.style.left = (window.innerWidth - dw - 8) + 'px';
+    }
+    btn.classList.add('open');
+  }
+}
+
+function switchSubTab(tab, grpId, btn) {
+  // 드롭다운 닫기
+  document.querySelectorAll('.tab-dropdown').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.tab-group-btn').forEach(b => b.classList.remove('open'));
+  // 페이지 전환
+  document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + tab).classList.add('active');
+  // drop-item active
+  document.querySelectorAll('.drop-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // 그룹 버튼 has-active
+  document.querySelectorAll('.tab-group-btn').forEach(b => b.classList.remove('has-active'));
+  const grpBtn = document.getElementById('grp-' + grpId + '-btn');
+  if (grpBtn) { grpBtn.classList.add('has-active'); }
+  // 메인 탭 active 해제
+  document.querySelectorAll('#mainNav .app-tab').forEach(b => b.classList.remove('active'));
+  // 해당 지수 초기화
+  if (tab === 'kospi'    && document.getElementById('kospi-current-val').textContent === '—') useDefaultKospi();
+  if (tab === 'kospi200' && document.getElementById('k200-current-val').textContent  === '—') useDefaultKospi200();
+  const usIdx = ['nasdaq','nasdaq100','dowjones','sp500'];
+  if (usIdx.includes(tab) && document.getElementById(tab+'-current-val').textContent === '—') useDefaultIndex(tab);
+}
+
+// 외부 클릭 시 드롭다운 닫기
+document.addEventListener('click', e => {
+  if (!e.target.closest('.tab-group') && !e.target.closest('.tab-dropdown')) {
+    document.querySelectorAll('.tab-dropdown').forEach(d => d.classList.remove('open'));
+    document.querySelectorAll('.tab-group-btn').forEach(b => b.classList.remove('open'));
+  }
+}, true);
+
+/* ════════════════════════════════════════
+   복리 계산기
+════════════════════════════════════════ */
+
+function getCpdWon(id) {
+  const raw = (document.getElementById('cpd-' + id).value || '0').replace(/,/g, '');
+  const n   = parseFloat(raw) || 0;
+  const u   = cpdUnit[id];
+  return n * (u === 'eok' ? 1e8 : u === 'man' ? 1e4 : 1);
+}
+function setCpdUnit(id, unit, btn) {
+  const won  = getCpdWon(id);
+  cpdUnit[id] = unit;
+  const disp = won / (unit === 'eok' ? 1e8 : unit === 'man' ? 1e4 : 1);
+  document.getElementById('cpd-' + id).value = commaFmt(
+    unit === 'won' ? Math.round(disp) : parseFloat(disp.toFixed(4))
+  );
+  document.querySelectorAll('[data-field="cpd-' + id + '"]')
+    .forEach(b => b.classList.toggle('active', b === btn));
+  calcCompound();
+}
+function onCpdInput(id) {
+  const el = document.getElementById('cpd-' + id);
+  const cv = el.selectionStart; const ov = el.value;
+  const ns = ov.replace(/[^0-9.]/g, '');
+  const fmt = ns ? parseInt(ns, 10).toLocaleString('ko-KR') : '';
+  el.value = fmt;
+  try { el.setSelectionRange(Math.max(0, cv + fmt.length - ov.length), Math.max(0, cv + fmt.length - ov.length)); } catch {}
+  calcCompound();
+}
+function onCpdBlur(id) {
+  const won  = getCpdWon(id);
+  const unit = cpdUnit[id];
+  const disp = won / (unit === 'eok' ? 1e8 : unit === 'man' ? 1e4 : 1);
+  document.getElementById('cpd-' + id).value = commaFmt(
+    unit === 'won' ? Math.round(disp) : parseFloat(disp.toFixed(4))
+  );
+}
+function setCpdMode(mode, btn) {
+  cpdMode = mode;
+  document.getElementById('cpd-mode-simple').classList.toggle('active', mode === 'simple');
+  document.getElementById('cpd-mode-dca').classList.toggle('active', mode === 'dca');
+  document.getElementById('cpd-dca-section').style.display = mode === 'dca' ? '' : 'none';
+  document.getElementById('cpd-th-dep').style.display = mode === 'dca' ? '' : 'none';
+  calcCompound();
+}
+function toggleCpdTax() {
+  cpdTaxOn = !cpdTaxOn;
+  const sw  = document.getElementById('cpd-tax-sw');
+  const blk = document.getElementById('cpd-tax-block');
+  sw.classList.toggle('on', cpdTaxOn);
+  document.getElementById('cpd-tax-off').style.color = cpdTaxOn ? 'var(--text3)' : 'var(--text2)';
+  document.getElementById('cpd-tax-on').style.color  = cpdTaxOn ? '#ff7070' : 'var(--text3)';
+  blk.style.opacity = cpdTaxOn ? '1' : '0.3';
+  blk.style.pointerEvents = cpdTaxOn ? 'auto' : 'none';
+  calcCompound();
+}
+function setCpdTaxPreset(v) {
+  document.getElementById('cpd-tax-rate').value = v;
+  calcCompound();
+}
+function setCpdChartTab(tab, btn) {
+  cpdChartTab = tab;
+  document.querySelectorAll('#cpd-ctab-val, #cpd-ctab-ret').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  calcCompound();
+}
+
+function calcCompound() {
+  const principal = getCpdWon('principal');
+  const rateY     = parseFloat(document.getElementById('cpd-rate').value) / 100;
+  const years     = parseInt(document.getElementById('cpd-years').value) || 1;
+  const freq      = parseInt(document.getElementById('cpd-freq').value) || 12;
+  const taxRate   = cpdTaxOn ? (parseFloat(document.getElementById('cpd-tax-rate').value) || 0) / 100 : 0;
+  const monthly   = cpdMode === 'dca' ? getCpdWon('monthly') : 0;
+
+  if (isNaN(principal) || isNaN(rateY) || principal <= 0 || rateY <= 0) return;
+
+  // 슬라이더 동기화
+  document.getElementById('cpd-rate-sl').value  = Math.min(rateY * 100, 30);
+  document.getElementById('cpd-years-sl').value = Math.min(years, 50);
+
+  if (monthly > 0) {
+    const annDep = fmt(monthly * 12);
+    document.getElementById('cpd-annual-dep').textContent = annDep + ' / 년';
+  }
+
+  // 월 단위 시뮬레이션 (가장 정확)
+  const rateM       = rateY / freq; // 주기별 이율
+  const periodsPerY = freq;
+  const totalPeriods = years * freq;
+  const contribPerPeriod = monthly * 12 / freq; // 적립금 주기별 분배
+
+  let balance      = principal;
+  let totalInvest  = principal;
+  let totalInterest = 0;
+  const yearRows   = [];
+
+  // 연도별 계산
+  for (let y = 1; y <= years; y++) {
+    let yInterestGross = 0;
+    for (let p = 0; p < periodsPerY; p++) {
+      const interest = balance * rateM;
+      yInterestGross += interest;
+      const netInterest = interest * (1 - taxRate);
+      balance = balance + netInterest + contribPerPeriod;
+      totalInvest += contribPerPeriod;
+    }
+    totalInterest += yInterestGross * (1 - taxRate);
+    yearRows.push({
+      y, balance: Math.round(balance),
+      totalInvest: Math.round(totalInvest),
+      totalDeposit: Math.round(totalInvest - principal),
+      totalInterest: Math.round(totalInterest),
+      ret: (balance / totalInvest - 1) * 100,
+    });
+  }
+
+  const final    = yearRows[years - 1].balance;
+  const profit   = final - totalInvest;
+  const retPct   = (final / totalInvest - 1) * 100;
+  const cagr     = Math.pow(final / principal, 1 / years) - 1;
+  const cagrMon  = Math.pow(1 + cagr, 1/12) - 1;
+
+  // 요약 카드
+  document.getElementById('cpd-s-final').textContent = fmt(final);
+  document.getElementById('cpd-s-final-sub').textContent = '총 투입 ' + fmt(Math.round(totalInvest));
+  document.getElementById('cpd-s-profit').textContent = (profit >= 0 ? '+' : '') + fmt(Math.round(profit));
+  document.getElementById('cpd-s-profit-sub').textContent = '수익률 ' + retPct.toFixed(2) + '%';
+  document.getElementById('cpd-s-cagr').textContent = (cagr >= 0 ? '+' : '') + (cagr * 100).toFixed(2) + '%';
+  document.getElementById('cpd-s-cagr-sub').textContent = '월평균 ' + (cagrMon >= 0 ? '+' : '') + (cagrMon * 100).toFixed(3) + '%';
+
+  // 테이블
+  const tbody = document.getElementById('cpdTableBody');
+  tbody.innerHTML = '';
+  yearRows.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    if (i === yearRows.length - 1) tr.classList.add('cagr-highlight');
+    tr.innerHTML = `
+      <td>${r.y}년차</td>
+      <td>${fmt(r.totalInvest - (cpdMode === 'dca' ? r.totalDeposit : 0))}</td>
+      ${cpdMode === 'dca' ? `<td style="color:var(--accent);">+${fmt(r.totalDeposit)}</td>` : ''}
+      <td class="pos">+${fmt(r.totalInterest)}</td>
+      <td>${fmt(r.balance)}</td>
+      <td class="${r.ret >= 0 ? 'pos' : 'neg'}">${r.ret >= 0 ? '+' : ''}${r.ret.toFixed(2)}%</td>`;
+    tbody.appendChild(tr);
+  });
+
+  // 차트
+  const labels   = yearRows.map(r => r.y + '년차');
+  const valData  = yearRows.map(r => r.balance);
+  const retData  = yearRows.map(r => parseFloat(r.ret.toFixed(2)));
+  const invData  = yearRows.map(r => r.totalInvest);
+
+  if (cpdChart) cpdChart.destroy();
+  let datasets, yLabel, isBar = false;
+  if (cpdChartTab === 'val') {
+    datasets = [
+      { label: '원금+적립', data: invData, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 4, borderSkipped: false, order: 2, type: 'bar' },
+      { label: '총 자산', data: valData, borderColor: '#00e5b0', backgroundColor: 'rgba(0,229,176,0.08)', fill: true, type: 'line', pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, tension: 0.4, yAxisID: 'y', order: 1 },
+    ];
+    isBar = true;
+    yLabel = v => fmt(v, true);
+  } else {
+    datasets = [{ label: '수익률', data: retData, borderColor: 'var(--accent2)', backgroundColor: 'rgba(0,145,255,0.08)', fill: true, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, tension: 0.4 }];
+    yLabel = v => v.toFixed(1) + '%';
+  }
+  cpdChart = new Chart(document.getElementById('cpdChart'), {
+    type: isBar ? 'bar' : 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0e1525', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
+          titleColor: '#8899bb', bodyColor: '#f0f4ff', padding: 12,
+          callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + (cpdChartTab === 'val' ? fmt(ctx.parsed.y) : ctx.parsed.y.toFixed(2) + '%') }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#4a5878', font: { size: 11 } }, grid: { display: false }, border: { display: false } },
+        y: { ticks: { color: '#4a5878', font: { size: 11 }, callback: yLabel }, grid: { color: 'rgba(255,255,255,0.04)' }, border: { display: false } }
+      }
+    }
+  });
+}
+
 function switchAppTab(tab, btn) {
-  document.querySelectorAll('.app-tab').forEach(b => b.classList.remove('active'));
+  /* 모든 app-tab active 제거 (드롭다운 내부 포함) */
+  document.querySelectorAll('#mainNav .app-tab').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('page-' + tab).classList.add('active');
-  if (tab === 'cagr')    calcCAGR();
+  if (tab === 'cagr')     calcCAGR();
+  if (tab === 'compound') calcCompound();
   if (tab === 'kospi'    && document.getElementById('kospi-current-val').textContent === '—')  useDefaultKospi();
   if (tab === 'kospi200' && document.getElementById('k200-current-val').textContent  === '—')  useDefaultKospi200();
   const usIdx = ['nasdaq','nasdaq100','dowjones','sp500'];
   if (usIdx.includes(tab) && document.getElementById(tab+'-current-val').textContent === '—') {
     useDefaultIndex(tab);
   }
+  // 메인 탭 클릭 시 서브탭 행 닫기
+  document.querySelectorAll('.tab-dropdown').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.tab-group-btn').forEach(b => { b.classList.remove('open'); b.classList.remove('has-active'); });
 }
 
 /* ═══════════════════════════════════════
@@ -3543,5 +4078,16 @@ function renderCagrChart(cache) {
   });
 }
 </script>
+  <!-- ── 탭 드롭다운 (fixed, overflow 탈출) ── -->
+  <div class="tab-dropdown" id="grp-domestic-drop">
+    <button class="drop-item" id="drop-kospi" onclick="switchSubTab('kospi','domestic',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>KOSPI 성장률</button>
+    <button class="drop-item" id="drop-kospi200" onclick="switchSubTab('kospi200','domestic',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.5" y="13" width="2.5" height="3.5" rx="0.6" fill="currentColor" opacity="0.4"/><rect x="5.5" y="9" width="2.5" height="7.5" rx="0.6" fill="currentColor" opacity="0.6"/><rect x="9.5" y="5.5" width="2.5" height="11" rx="0.6" fill="currentColor" opacity="0.8"/><rect x="13.5" y="2" width="2.5" height="14.5" rx="0.6" fill="currentColor"/><path d="M1.5 10 L5.5 7.5 L9.5 5 L14 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>KOSPI 200 성장률</button>
+  </div>
+  <div class="tab-dropdown" id="grp-overseas-drop">
+    <button class="drop-item" id="drop-nasdaq" onclick="switchSubTab('nasdaq','overseas',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="6" y="6" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M3 7.5 H6 M3 10.5 H6 M12 7.5 H15 M12 10.5 H15" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M7.5 3 V6 M10.5 3 V6 M7.5 12 V15 M10.5 12 V15" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/></svg>나스닥 종합 성장률</button>
+    <button class="drop-item" id="drop-nasdaq100" onclick="switchSubTab('nasdaq100','overseas',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.5" y="6" width="4" height="10.5" rx="0.8" fill="currentColor" opacity="0.35"/><rect x="7" y="3" width="4" height="13.5" rx="0.8" fill="currentColor" opacity="0.65"/><rect x="12.5" y="1.5" width="4" height="15" rx="0.8" fill="currentColor"/><path d="M1.5 5 Q4 2 6.5 5 Q9 8 11 4 Q13 1 16.5 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>나스닥 100 성장률</button>
+    <button class="drop-item" id="drop-dowjones" onclick="switchSubTab('dowjones','overseas',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="9" width="5" height="7.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="6" width="5.5" height="10.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="3.5" y="6" width="1.5" height="3" fill="currentColor" opacity="0.5"/><path d="M2 8 L6 5 L10 6.5 L15.5 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 1.5 h3 v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>다우존스 성장률</button>
+    <button class="drop-item" id="drop-sp500" onclick="switchSubTab('sp500','overseas',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M9 2 Q13 9 9 16 M9 2 Q5 9 9 16" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M2.5 7 Q9 5.5 15.5 7 M2 11 Q9 12.5 16 11" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M5 12 L9 8 L12 10 L15 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>S&P 500 성장률</button>
+  </div>
 </body>
 </html>
