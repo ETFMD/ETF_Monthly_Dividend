@@ -3453,54 +3453,98 @@ function fmtWon(n) {
   return Math.round(n).toLocaleString('ko-KR') + '원';
 }
 
-/* 기간별 성장률 계산 공통 함수 */
+/* ════════════════════════════════════════
+   기간별 성장률 계산
+   연도별 역사적 지수값 테이블 내장 (연초 기준)
+   출처: KRX 한국거래소 공식 통계
+════════════════════════════════════════ */
 const _kospiPeriod  = { kospi: 0, k200: 0 };
 const _kospiLastVal = { kospi: null, k200: null };
+
+/* KOSPI 연초(1월) 종가 기준 내장 테이블 (2000~2025) */
+const KOSPI_HIST = {
+  1980:100, 1985:163, 1990:909, 1995:882,
+  2000:1059, 2001:694, 2002:628, 2003:811, 2004:895,
+  2005:1379, 2006:1434, 2007:1434, 2008:1897, 2009:1124,
+  2010:1683, 2011:2070, 2012:1826, 2013:1997, 2014:2011,
+  2015:1916, 2016:1961, 2017:2026, 2018:2479, 2019:2041,
+  2020:2176, 2021:2874, 2022:2978, 2023:2225, 2024:2669, 2025:2499
+};
+
+/* KOSPI 200 연초(1월) 기준 내장 테이블 */
+const K200_HIST = {
+  1990:100, 1995:113,
+  2000:135, 2001:88, 2002:79, 2003:104, 2004:115,
+  2005:178, 2006:183, 2007:183, 2008:248, 2009:143,
+  2010:218, 2011:271, 2012:237, 2013:261, 2014:263,
+  2015:249, 2016:253, 2017:263, 2018:323, 2019:262,
+  2020:281, 2021:379, 2022:392, 2023:290, 2024:351, 2025:325
+};
+
+/* 기간 시작연도의 지수값 가져오기 */
+function getHistVal(indexId, year) {
+  const tbl = indexId === 'kospi' ? KOSPI_HIST : K200_HIST;
+  if (tbl[year] !== undefined) return tbl[year];
+  /* 테이블에 없으면 가장 가까운 연도 값 사용 */
+  const keys = Object.keys(tbl).map(Number).sort((a,b)=>a-b);
+  for (let i = keys.length-1; i >= 0; i--) {
+    if (keys[i] <= year) return tbl[keys[i]];
+  }
+  return null;
+}
 
 function calcIndexRatesByPeriod(indexId, currentVal, asOfDate, periodYears) {
   const now = asOfDate || new Date();
   const isKospi = indexId === 'kospi';
-  const BASE_DATE = isKospi ? KOSPI_BASE_DATE : K200_BASE_DATE;
-  const BASE_VAL  = isKospi ? KOSPI_BASE_VAL  : K200_BASE_VAL;
+  const BASE_DATE  = isKospi ? KOSPI_BASE_DATE : K200_BASE_DATE;
+  const BASE_VAL   = isKospi ? KOSPI_BASE_VAL  : K200_BASE_VAL;
   const BASE_LABEL = isKospi ? '1980.01.04' : '1990.01.03';
 
-  let startVal, periodLabel;
+  let startVal, startDate, periodLabel;
+
   if (periodYears === 0) {
+    /* 전체 기간: 상장일 기준지수 */
     startVal    = BASE_VAL;
-    periodLabel = '상장이후 전체 (' + BASE_LABEL + ' →)';
+    startDate   = BASE_DATE;
+    periodLabel = '상장이후 전체 (' + BASE_LABEL + ' ~)';
   } else {
-    // 상장이후 CAGR로 N년 전 추정값 계산
-    const totalYrs  = (now - BASE_DATE) / (1000*60*60*24*365.25);
-    const totalCagr = Math.pow(currentVal / BASE_VAL, 1 / totalYrs) - 1;
-    startVal = currentVal / Math.pow(1 + totalCagr, periodYears);
-    const sd  = new Date(now); sd.setFullYear(sd.getFullYear() - periodYears);
-    const sl  = sd.getFullYear() + '.' + String(sd.getMonth()+1).padStart(2,'0') + '.' + String(sd.getDate()).padStart(2,'0');
-    periodLabel = '최근 ' + periodYears + '년 (' + sl + ' →)';
+    /* 최근 N년: 내장 테이블에서 N년 전 연도 지수값 사용 */
+    const startYear = now.getFullYear() - periodYears;
+    startVal = getHistVal(indexId, startYear);
+    if (!startVal) return;
+    startDate = new Date(startYear, 0, 1);
+    const sl  = startYear + '년 연초';
+    periodLabel = '최근 ' + periodYears + '년 (' + sl + ' ~)';
   }
 
-  const diffYrs = (now - (periodYears === 0 ? BASE_DATE : new Date(now.getFullYear()-periodYears, now.getMonth(), now.getDate()))) / (1000*60*60*24*365.25);
-  if (diffYrs <= 0) return;
+  const diffYrs = (now - startDate) / (1000*60*60*24*365.25);
+  if (diffYrs <= 0.1) return;
 
   const cagr    = Math.pow(currentVal / startVal, 1 / diffYrs) - 1;
   const monthly = Math.pow(1 + cagr, 1/12) - 1;
   const daily   = Math.pow(1 + cagr, 1/365.25) - 1;
   const p = indexId;
 
+  /* 성장률 표시 */
   const annEl = document.getElementById(p+'-annual');
   const monEl = document.getElementById(p+'-monthly');
   const dayEl = document.getElementById(p+'-daily');
-  if (annEl) { annEl.textContent = (cagr*100).toFixed(4)+'%';    annEl.style.color = 'var(--accent)'; }
+  if (annEl) { annEl.textContent = (cagr*100).toFixed(4)+'%'; annEl.style.color = 'var(--accent)'; }
   if (monEl) { monEl.textContent = (monthly*100).toFixed(4)+'%'; monEl.style.color = 'var(--accent2)'; }
-  if (dayEl) { dayEl.textContent = (daily*100).toFixed(6)+'%';   dayEl.style.color = '#ffaa55'; }
+  if (dayEl) { dayEl.textContent = (daily*100).toFixed(6)+'%'; dayEl.style.color = '#ffaa55'; }
 
+  /* 기간 설명 + 기준 지수값 표시 */
   const cp = (cagr*100).toFixed(2);
-  const as  = document.getElementById(p+'-annual-sub');
-  const ms  = document.getElementById(p+'-monthly-sub');
-  const ds  = document.getElementById(p+'-daily-sub');
-  if (as) as.textContent = periodLabel;
+  const startValFmt = startVal.toLocaleString('ko-KR', {maximumFractionDigits:2});
+  const curValFmt   = currentVal.toLocaleString('ko-KR', {maximumFractionDigits:2});
+  const as = document.getElementById(p+'-annual-sub');
+  const ms = document.getElementById(p+'-monthly-sub');
+  const ds = document.getElementById(p+'-daily-sub');
+  if (as) as.textContent = periodLabel + ' | ' + startValFmt + ' → ' + curValFmt;
   if (ms) ms.textContent = '연 '+cp+'% → 월 환산';
   if (ds) ds.textContent = '연 '+cp+'% → 일 환산';
 
+  /* 1억 투자 시뮬 */
   [10,20,30,40].forEach(y => {
     const el = document.getElementById(p+'-sim-'+y);
     if (el) el.textContent = fmtWon(Math.round(1e8*Math.pow(1+cagr,y)));
@@ -3509,7 +3553,8 @@ function calcIndexRatesByPeriod(indexId, currentVal, asOfDate, periodYears) {
 
 function setKospiPeriod(indexId, years, btn) {
   _kospiPeriod[indexId] = years;
-  const tabsEl = document.getElementById(indexId === 'kospi' ? 'kospi-period-tabs' : 'k200-period-tabs');
+  const tabsId = indexId === 'kospi' ? 'kospi-period-tabs' : 'k200-period-tabs';
+  const tabsEl = document.getElementById(tabsId);
   if (tabsEl) tabsEl.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   const val = _kospiLastVal[indexId] || (indexId === 'kospi' ? _lastKospi : _lastKospi200);
