@@ -3288,11 +3288,13 @@ function switchSubTab(tab, grpId, btn) {
   if (grpBtn) { grpBtn.classList.add('has-active'); }
   // 메인 탭 active 해제
   document.querySelectorAll('#mainNav .app-tab').forEach(b => b.classList.remove('active'));
-  // 해당 지수 초기화
-  if (tab === 'kospi'    && document.getElementById('kospi-current-val').textContent === '—') useDefaultKospi();
-  if (tab === 'kospi200' && document.getElementById('k200-current-val').textContent  === '—') useDefaultKospi200();
-  const usIdx = ['nasdaq','nasdaq100','dowjones','sp500'];
-  if (usIdx.includes(tab) && document.getElementById(tab+'-current-val').textContent === '—') useDefaultIndex(tab);
+  // 탭 진입 시 항상 자동 갱신
+  if (tab === 'kospi')    fetchKospi();
+  else if (tab === 'kospi200') fetchKospi200();
+  else {
+    const usIdx = ['nasdaq','nasdaq100','dowjones','sp500'];
+    if (usIdx.includes(tab)) fetchIndex(tab);
+  }
 }
 
 // 외부 클릭 시 드롭다운 닫기
