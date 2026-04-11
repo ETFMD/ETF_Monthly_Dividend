@@ -1270,9 +1270,9 @@
       </div>
     </div>
     <div class="mode-toggle" style="flex-wrap:wrap;">
-      <button class="mode-btn" onclick="setMode('receive',this)">분배금 수령</button>
-      <button class="mode-btn active" onclick="setMode('reinvest',this)">분배금 재투자</button>
-      <button class="mode-btn" onclick="setMode('partial',this)">분배금 일부 재투자</button>
+      <button class="mode-btn" onclick="setMode('receive',this)" style="white-space:normal;line-height:1.3;">분배금<br>수령</button>
+      <button class="mode-btn active" onclick="setMode('reinvest',this)" style="white-space:normal;line-height:1.3;">분배금<br>재투자</button>
+      <button class="mode-btn" onclick="setMode('partial',this)" style="white-space:normal;line-height:1.3;">분배금 일부<br>재투자</button>
     </div>
   </div>
 
@@ -1317,7 +1317,7 @@
           <span class="slider-label">재투자 비율</span>
           <div class="num-pill"><input class="num-input" id="ni-partial" type="number" min="1" max="99" step="1" value="50" style="width:60px;" oninput="syncPartial()"><span class="num-unit">%</span></div>
         </div>
-        <input type="range" id="sl-partial" min="1" max="99" step="1" value="50" oninput="document.getElementById('ni-partial').value=this.value; syncPartial();">
+        <input type="range" id="sl-partial" min="1" max="99" step="1" value="50" style="background:rgba(0,229,176,0.25);" oninput="document.getElementById('ni-partial').value=this.value; syncPartial();">
         <p style="font-size:11px;color:var(--text3);margin-top:6px;" id="partial-desc">분배금의 50%는 재투자, 50%는 수령</p>
       </div>
       <!-- ① 투자 조건 설정 -->
