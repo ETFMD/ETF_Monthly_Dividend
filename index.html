@@ -2091,7 +2091,6 @@ function syncToNum(key, scale, dec) {
   ni.value = (parseFloat(document.getElementById('sl-' + key).value) / scale).toFixed(dec);
   ni.classList.remove('error');
   update();
-fetchKodexPrice();
 }
 
 function syncToSlider(key) {
@@ -3130,6 +3129,7 @@ async function fetchKodexPrice() {
   });
 })();
 update();
+window.addEventListener('load', function() { fetchKodexPrice(); });
 
 /* ════════════════════════════════════════
    KOSPI 성장률 분석
