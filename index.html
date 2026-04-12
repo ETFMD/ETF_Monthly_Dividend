@@ -493,17 +493,24 @@
     border-bottom: 1px solid var(--card-border);
     overflow-x: auto;
     overflow-y: hidden;
-    touch-action: pan-x;
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: none;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pinch-zoom;
     scrollbar-width: thin;
-    scrollbar-color: rgba(0,229,176,0.4) transparent;
+    scrollbar-color: rgba(0,229,176,0.45) transparent;
     padding-bottom: 6px;
     margin-bottom: 26px;
+    scroll-snap-type: none;
+    will-change: scroll-position;
   }
   .app-nav::-webkit-scrollbar { display: block; height: 3px; }
   .app-nav::-webkit-scrollbar-track { background: transparent; }
-  .app-nav::-webkit-scrollbar-thumb { background: rgba(0,229,176,0.35); border-radius: 3px; }
-  .app-nav::-webkit-scrollbar-thumb:hover { background: rgba(0,229,176,0.6); }
+  .app-nav::-webkit-scrollbar-thumb { background: rgba(0,229,176,0.4); border-radius: 3px; }
+  .app-nav::-webkit-scrollbar-thumb:hover { background: rgba(0,229,176,0.65); }
+  /* 탭 버튼들 터치 영역 확보 */
+  .app-nav .app-tab,
+  .app-nav .tab-group-btn { touch-action: manipulation; }
   .app-tab {
     font-family: var(--font);
     font-size: 13px;
@@ -7683,22 +7690,5 @@ function renderCagrChart(cache) {
     <button class="drop-item" id="drop-dowjones" onclick="switchSubTab('dowjones','overseas',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="9" width="5" height="7.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="6" width="5.5" height="10.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="3.5" y="6" width="1.5" height="3" fill="currentColor" opacity="0.5"/><path d="M2 8 L6 5 L10 6.5 L15.5 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 1.5 h3 v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>다우존스 성장률</button>
     <button class="drop-item" id="drop-sp500" onclick="switchSubTab('sp500','overseas',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M9 2 Q13 9 9 16 M9 2 Q5 9 9 16" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M2.5 7 Q9 5.5 15.5 7 M2 11 Q9 12.5 16 11" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M5 12 L9 8 L12 10 L15 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>S&P 500 성장률</button>
   </div>
-<script>
-/* 상단 nav 수평 스크롤 전용 터치 처리 */
-(function() {
-  var nav = document.getElementById('mainNav');
-  if (!nav) return;
-  var startX=0, startY=0, isHoriz=false, decided=false;
-  nav.addEventListener('touchstart', function(e) {
-    startX=e.touches[0].clientX; startY=e.touches[0].clientY;
-    isHoriz=false; decided=false;
-  }, {passive:true});
-  nav.addEventListener('touchmove', function(e) {
-    if (decided) { if (isHoriz) e.preventDefault(); return; }
-    var dx=Math.abs(e.touches[0].clientX-startX), dy=Math.abs(e.touches[0].clientY-startY);
-    if (dx>4||dy>4) { decided=true; isHoriz=dx>dy; if(isHoriz) e.preventDefault(); }
-  }, {passive:false});
-})();
-</script>
 </body>
 </html>
