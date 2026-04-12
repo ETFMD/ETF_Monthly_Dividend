@@ -5487,44 +5487,60 @@ async function fetchFxRates() {
   }
 
   /* Yahoo Finance v8: 1개 통화쌍 조회 */
-  async function fetchOneYF(code) {
-    const sym = code + 'KRW=X';
+  /* Yahoo Finance 단일 심볼 조회 — 두 프록시를 동시에 경쟁 */
+  async function fetchOneYF(sym) {
     const yfUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/' + sym + '?interval=1d&range=5d';
-    const proxies = [
-      'https://corsproxy.io/?' + encodeURIComponent(yfUrl),
-      'https://api.allorigins.win/get?url=' + encodeURIComponent(yfUrl),
-    ];
-    for (const pu of proxies) {
-      try {
+    function tryProxy(pu) {
+      return new Promise((resolve) => {
         const ctrl = new AbortController();
-        const tid  = setTimeout(() => ctrl.abort(), 8000);
-        let resp;
-        try { resp = await fetch(pu, { cache: 'no-cache', signal: ctrl.signal }); }
-        finally { clearTimeout(tid); }
-        if (!resp || !resp.ok) continue;
-        let txt = await resp.text();
-        try { const w = JSON.parse(txt); if (w.contents) txt = w.contents; } catch {}
-        const j = JSON.parse(txt);
-        const meta = j?.chart?.result?.[0]?.meta;
-        const price = meta?.regularMarketPrice || meta?.previousClose;
-        if (price && price > 0) return price;
-      } catch {}
+        const tid  = setTimeout(() => { ctrl.abort(); resolve(null); }, 3500);
+        fetch(pu, { cache: 'no-cache', signal: ctrl.signal })
+          .then(r => r.ok ? r.text() : Promise.reject())
+          .then(txt => {
+            clearTimeout(tid);
+            try { const w = JSON.parse(txt); if (w.contents) txt = w.contents; } catch {}
+            const meta = JSON.parse(txt)?.chart?.result?.[0]?.meta;
+            const price = meta?.regularMarketPrice || meta?.previousClose;
+            resolve(price > 0 ? price : null);
+          })
+          .catch(() => { clearTimeout(tid); resolve(null); });
+      });
     }
+    /* 두 프록시 동시 실행 → 먼저 성공한 것 사용 */
+    return new Promise(resolve => {
+      let done = false;
+      const finish = (v) => { if (!done && v) { done = true; resolve(v); } };
+      const p1 = tryProxy('https://corsproxy.io/?' + encodeURIComponent(yfUrl));
+      const p2 = tryProxy('https://api.allorigins.win/get?url=' + encodeURIComponent(yfUrl));
+      p1.then(finish); p2.then(finish);
+      Promise.all([p1,p2]).then(([a,b]) => { if (!done) resolve(a || b || null); });
+    });
+  }
+
+  /* VND는 Yahoo에 VNDKRW=X 쌍이 없어 교차환율로 계산: USDVND=X + USDKRW=X */
+  async function fetchVND() {
+    const [usdVnd, usdKrw] = await Promise.all([
+      fetchOneYF('USDVND=X'),
+      _fxRates.USD ? Promise.resolve(_fxRates.USD) : fetchOneYF('USDKRW=X'),
+    ]);
+    if (usdVnd && usdKrw) return usdKrw / usdVnd;
     return null;
   }
 
   try {
-    /* ── 1순위: Yahoo Finance 12개 병렬 조회 ── */
-    const results = await Promise.allSettled(
-      FX_CURRENCIES.map(cur => fetchOneYF(cur.code))
-    );
+    /* ── Yahoo Finance: VND 제외 11개 + VND 교차환율 병렬 조회 ── */
+    const nonVnd = FX_CURRENCIES.filter(c => c.code !== 'VND');
+    const [mainResults, vndRate] = await Promise.all([
+      Promise.allSettled(nonVnd.map(cur => fetchOneYF(cur.code + 'KRW=X'))),
+      fetchVND(),
+    ]);
     let cnt = 0;
-    results.forEach((res, i) => {
+    mainResults.forEach((res, i) => {
       if (res.status === 'fulfilled' && res.value) {
-        _fxRates[FX_CURRENCIES[i].code] = res.value;
-        cnt++;
+        _fxRates[nonVnd[i].code] = res.value; cnt++;
       }
     });
+    if (vndRate) { _fxRates.VND = vndRate; cnt++; }
 
     if (cnt >= 4) {
       setTimestamp('Yahoo Finance');
