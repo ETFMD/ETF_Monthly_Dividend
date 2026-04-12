@@ -6739,42 +6739,51 @@ async function fetchHistoricalPrice(ticker, targetDate) {
   const p2 = Math.floor(targetDate.getTime()/1000) + 86400*7;
   const yfUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/'
     + ticker + '?interval=1d&period1=' + p1 + '&period2=' + p2;
+
+  function parseYF(txt) {
+    try { const w = JSON.parse(txt); if (w.contents) txt = w.contents; } catch {}
+    let json; try { json = JSON.parse(txt); } catch { return null; }
+    const r = json?.chart?.result?.[0];
+    if (!r) return null;
+    const closes     = r.indicators?.quote?.[0]?.close || [];
+    const timestamps = r.timestamp || [];
+    for (let i = 0; i < closes.length; i++) {
+      if (closes[i] && closes[i] > 0) {
+        let dateStr = '';
+        if (timestamps[i]) {
+          const d = new Date(timestamps[i] * 1000);
+          dateStr = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+        }
+        return { price: parseFloat(closes[i]), date: dateStr };
+      }
+    }
+    return null;
+  }
+
+  function tryProxy(pu) {
+    return new Promise(resolve => {
+      const ctrl = new AbortController();
+      const tid  = setTimeout(() => { ctrl.abort(); resolve(null); }, 4000);
+      fetch(pu, { cache:'no-cache', signal:ctrl.signal })
+        .then(r => r.ok ? r.text() : Promise.reject())
+        .then(txt => { clearTimeout(tid); resolve(parseYF(txt)); })
+        .catch(() => { clearTimeout(tid); resolve(null); });
+    });
+  }
+
+  /* 두 프록시 동시 경쟁 — 먼저 성공한 것 사용 */
   const proxies = [
     'https://corsproxy.io/?' + encodeURIComponent(yfUrl),
     'https://api.allorigins.win/get?url=' + encodeURIComponent(yfUrl),
-    'https://api.allorigins.win/raw?url=' + encodeURIComponent(yfUrl),
   ];
-  for (const pu of proxies) {
-    try {
-      const ctrl = new AbortController();
-      const tid  = setTimeout(() => ctrl.abort(), 9000);
-      let resp;
-      try { resp = await fetch(pu, {cache:'no-cache', signal:ctrl.signal}); }
-      finally { clearTimeout(tid); }
-      if (!resp || !resp.ok) continue;
-      let txt = await resp.text();
-      try { const w = JSON.parse(txt); if (w.contents) txt = w.contents; } catch {}
-      let json; try { json = JSON.parse(txt); } catch { continue; }
-      const r = json?.chart?.result?.[0];
-      if (!r) continue;
-      const closes    = r.indicators?.quote?.[0]?.close || [];
-      const timestamps = r.timestamp || [];
-      for (let i = 0; i < closes.length; i++) {
-        if (closes[i] && closes[i] > 0) {
-          /* 실제 날짜 문자열 생성 */
-          let dateStr = '';
-          if (timestamps[i]) {
-            const d = new Date(timestamps[i] * 1000);
-            dateStr = d.getFullYear() + '-'
-              + String(d.getMonth()+1).padStart(2,'0') + '-'
-              + String(d.getDate()).padStart(2,'0');
-          }
-          return { price: parseFloat(closes[i]), date: dateStr };
-        }
-      }
-    } catch {}
-  }
-  return null;
+  return new Promise(resolve => {
+    let done = false;
+    const finish = v => { if (!done && v) { done = true; resolve(v); } };
+    const p1p = tryProxy(proxies[0]);
+    const p2p = tryProxy(proxies[1]);
+    p1p.then(finish); p2p.then(finish);
+    Promise.all([p1p, p2p]).then(([a, b]) => { if (!done) resolve(a || b || null); });
+  });
 }
 
 async function setKospiPeriod(indexId, years, btn) {
@@ -7118,8 +7127,26 @@ function switchSubTab(tab, grpId, btn) {
   if (tab === 'cagr')      calcCAGR();
   if (tab === 'fx')        fetchFxRates();
   if (tab === 'health')    calcHealth();
-  if (tab === 'kospi')     fetchKospi();
-  if (tab === 'kospi200')  fetchKospi200();
+  if (tab === 'kospi') {
+    fetchKospi().then(() => {
+      const py = _kospiPeriod.kospi || 0;
+      if (py > 0) {
+        const tabsEl = document.getElementById('kospi-period-tabs');
+        const activeBtn = tabsEl ? tabsEl.querySelector('.period-btn.active') : null;
+        setKospiPeriod('kospi', py, activeBtn);
+      }
+    });
+  }
+  if (tab === 'kospi200') {
+    fetchKospi200().then(() => {
+      const py = _kospiPeriod.k200 || 0;
+      if (py > 0) {
+        const tabsEl = document.getElementById('k200-period-tabs');
+        const activeBtn = tabsEl ? tabsEl.querySelector('.period-btn.active') : null;
+        setKospiPeriod('k200', py, activeBtn);
+      }
+    });
+  }
   if (tab === 'kosdaq')    {
     fetchKosdaq().then(() => {
       const py = _kosdaqPeriod || 0;
