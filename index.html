@@ -560,6 +560,14 @@
     gap: 5px;
   }
   .tab-group-btn:hover { color: var(--text2); }
+
+  /* 건강보험료 단위 선택 버튼 */
+  .h-unit-btn {
+    font-size:10px; padding:2px 6px; border-radius:4px; border:1px solid var(--card-border);
+    background:transparent; color:var(--text3); cursor:pointer; transition:all 0.15s; white-space:nowrap;
+  }
+  .h-unit-btn.active { background:var(--accent-dim); border-color:rgba(0,229,176,0.4); color:var(--accent); }
+
   .tab-group-btn.open,
   .tab-group-btn.has-active {
     color: var(--accent);
@@ -735,6 +743,8 @@
     #fx-rate-grid { grid-template-columns: 1fr 1fr !important; }
     #fx-multi-grid { grid-template-columns: 1fr 1fr !important; }
     #fx-converter-grid { grid-template-columns: 1fr !important; }
+    #health-layout { grid-template-columns: 1fr !important; }
+    #health-guide-grid { grid-template-columns: 1fr !important; }
     .cagr-layout { grid-template-columns: 1fr !important; }
     #cpd-layout { grid-template-columns: 1fr !important; }
 
@@ -2903,6 +2913,381 @@
       </div>
     </div>
   </div><!-- /page-fx -->
+
+
+  <!-- ── 건강보험료 계산기 페이지 ── -->
+  <div class="app-page" id="page-health">
+    <div class="header">
+      <div class="header-left">
+        <span class="badge">NATIONAL HEALTH INSURANCE</span>
+        <h1>건강보험료 <span>계산기</span></h1>
+        <p class="subtitle">2026년 기준 · 직장 가입자 및 지역 가입자 건강보험료 + 장기요양보험료 산출</p>
+      </div>
+    </div>
+
+    <!-- 가입자 유형 탭 -->
+    <div class="mode-toggle" style="margin-bottom:24px;">
+      <button class="mode-btn active" id="health-tab-work" onclick="healthSetType('work',this)">직장 가입자</button>
+      <button class="mode-btn" id="health-tab-local" onclick="healthSetType('local',this)">지역 가입자</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;" id="health-layout">
+
+      <!-- ── 직장 가입자 입력 ── -->
+      <div class="card" id="health-work-panel">
+        <p class="card-title" style="margin-bottom:12px;">직장 가입자 입력</p>
+        <div style="display:grid;gap:0;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
+            <div style="min-width:0;">
+              <span style="font-size:12px;color:var(--text2);">보수연액 (세전 연봉)</span>
+              <p style="font-size:10px;color:var(--text3);margin-top:1px;">수당·상여 포함, 비과세 제외</p>
+              <p style="font-size:10px;color:var(--text3);">2026년 중위임금 ≈ 38,880,000원</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <div class="num-pill">
+                <input class="num-input" id="h-salary" type="text" inputmode="decimal"
+                  value="38,880,000" oninput="calcHealth()" onblur="hUnitBlur('h-salary')"
+                  style="width:150px;text-align:right;padding-right:10px;">
+              </div>
+              <div class="unit-tabs" id="h-salary-units">
+                <button class="unit-btn" onclick="hSetUnit('h-salary','eok',this)">억원</button>
+                <button class="unit-btn" onclick="hSetUnit('h-salary','man',this)">만원</button>
+                <button class="unit-btn active" onclick="hSetUnit('h-salary','won',this)">원</button>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
+            <div style="min-width:0;">
+              <span style="font-size:12px;color:var(--text2);">추가 소득 (연간)</span>
+              <p style="font-size:10px;color:var(--text3);margin-top:1px;">근로 외 소득 · 연 2,000만원 초과 시 추가 부과</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <div class="num-pill">
+                <input class="num-input" id="h-extra" type="text" inputmode="decimal"
+                  value="0" oninput="calcHealth()" onblur="hUnitBlur('h-extra')"
+                  style="width:150px;text-align:right;padding-right:10px;">
+              </div>
+              <div class="unit-tabs" id="h-extra-units">
+                <button class="unit-btn" onclick="hSetUnit('h-extra','eok',this)">억원</button>
+                <button class="unit-btn" onclick="hSetUnit('h-extra','man',this)">만원</button>
+                <button class="unit-btn active" onclick="hSetUnit('h-extra','won',this)">원</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;padding:12px 14px;background:var(--bg3);border-radius:10px;">
+          <p style="font-size:12px;color:var(--text3);margin-bottom:8px;">2026년 보험료율</p>
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:12px;color:var(--text2);">건강보험료율</span>
+            <span style="font-family:var(--mono);font-size:12px;color:var(--accent);">7.19%</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:12px;color:var(--text2);">장기요양보험료율</span>
+            <span style="font-family:var(--mono);font-size:12px;color:var(--accent);">12.95% (건강보험료 × )</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span style="font-size:12px;color:var(--text2);">근로자 / 사업주 각 부담</span>
+            <span style="font-family:var(--mono);font-size:12px;color:var(--accent);">각 3.595%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 지역 가입자 입력 ── -->
+      <div class="card" id="health-local-panel" style="display:none;">
+        <p class="card-title" style="margin-bottom:16px;">지역 가입자 입력</p>
+
+        <!-- 소득 항목별 입력 -->
+        <p style="font-size:12px;color:var(--accent);font-weight:500;margin-bottom:10px;">소득 항목별 입력 (연간)</p>
+
+        <div style="display:grid;gap:0;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
+            <div style="padding-top:2px;min-width:0;">
+              <span style="font-size:12px;color:var(--text2);">사업소득</span>
+              <span style="font-size:10px;color:var(--text3);margin-left:4px;">100% 반영</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <div class="num-pill">
+                <input class="num-input" id="h-i-biz" type="text" inputmode="decimal"
+                  value="0" oninput="calcHealth()" onblur="hUnitBlur('h-i-biz')"
+                  style="width:150px;text-align:right;padding-right:10px;">
+              </div>
+              <div class="unit-tabs" id="h-i-biz-units">
+                <button class="unit-btn" onclick="hSetUnit('h-i-biz','eok',this)">억원</button>
+                <button class="unit-btn" onclick="hSetUnit('h-i-biz','man',this)">만원</button>
+                <button class="unit-btn active" onclick="hSetUnit('h-i-biz','won',this)">원</button>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
+            <div style="padding-top:2px;min-width:0;">
+              <span style="font-size:12px;color:var(--text2);">근로소득</span>
+              <span style="font-size:10px;color:var(--text3);margin-left:4px;">100% 반영</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <div class="num-pill">
+                <input class="num-input" id="h-i-work" type="text" inputmode="decimal"
+                  value="0" oninput="calcHealth()" onblur="hUnitBlur('h-i-work')"
+                  style="width:150px;text-align:right;padding-right:10px;">
+              </div>
+              <div class="unit-tabs" id="h-i-work-units">
+                <button class="unit-btn" onclick="hSetUnit('h-i-work','eok',this)">억원</button>
+                <button class="unit-btn" onclick="hSetUnit('h-i-work','man',this)">만원</button>
+                <button class="unit-btn active" onclick="hSetUnit('h-i-work','won',this)">원</button>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
+            <div style="padding-top:2px;min-width:0;">
+              <span style="font-size:12px;color:var(--text2);">이자소득</span>
+              <span style="font-size:10px;color:var(--text3);margin-left:4px;">100% 반영</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <div class="num-pill">
+                <input class="num-input" id="h-i-interest" type="text" inputmode="decimal"
+                  value="0" oninput="calcHealth()" onblur="hUnitBlur('h-i-interest')"
+                  style="width:150px;text-align:right;padding-right:10px;">
+              </div>
+              <div class="unit-tabs" id="h-i-interest-units">
+                <button class="unit-btn" onclick="hSetUnit('h-i-interest','eok',this)">억원</button>
+                <button class="unit-btn" onclick="hSetUnit('h-i-interest','man',this)">만원</button>
+                <button class="unit-btn active" onclick="hSetUnit('h-i-interest','won',this)">원</button>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
+            <div style="padding-top:2px;min-width:0;">
+              <span style="font-size:12px;color:var(--text2);">배당소득</span>
+              <span style="font-size:10px;color:var(--text3);margin-left:4px;">100% 반영</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <div class="num-pill">
+                <input class="num-input" id="h-i-div" type="text" inputmode="decimal"
+                  value="30,000,000" oninput="calcHealth()" onblur="hUnitBlur('h-i-div')"
+                  style="width:150px;text-align:right;padding-right:10px;">
+              </div>
+              <div class="unit-tabs" id="h-i-div-units">
+                <button class="unit-btn" onclick="hSetUnit('h-i-div','eok',this)">억원</button>
+                <button class="unit-btn" onclick="hSetUnit('h-i-div','man',this)">만원</button>
+                <button class="unit-btn active" onclick="hSetUnit('h-i-div','won',this)">원</button>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
+            <div style="padding-top:2px;min-width:0;">
+              <span style="font-size:12px;color:var(--text2);">공적연금소득</span>
+              <span style="font-size:10px;color:var(--accent);margin-left:4px;">50% 반영</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <div class="num-pill">
+                <input class="num-input" id="h-i-pension" type="text" inputmode="decimal"
+                  value="0" oninput="calcHealth()" onblur="hUnitBlur('h-i-pension')"
+                  style="width:150px;text-align:right;padding-right:10px;">
+              </div>
+              <div class="unit-tabs" id="h-i-pension-units">
+                <button class="unit-btn" onclick="hSetUnit('h-i-pension','eok',this)">억원</button>
+                <button class="unit-btn" onclick="hSetUnit('h-i-pension','man',this)">만원</button>
+                <button class="unit-btn active" onclick="hSetUnit('h-i-pension','won',this)">원</button>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
+            <div style="padding-top:2px;min-width:0;">
+              <span style="font-size:12px;color:var(--text2);">기타소득</span>
+              <span style="font-size:10px;color:var(--text3);margin-left:4px;">100% 반영</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <div class="num-pill">
+                <input class="num-input" id="h-i-etc" type="text" inputmode="decimal"
+                  value="0" oninput="calcHealth()" onblur="hUnitBlur('h-i-etc')"
+                  style="width:150px;text-align:right;padding-right:10px;">
+              </div>
+              <div class="unit-tabs" id="h-i-etc-units">
+                <button class="unit-btn" onclick="hSetUnit('h-i-etc','eok',this)">억원</button>
+                <button class="unit-btn" onclick="hSetUnit('h-i-etc','man',this)">만원</button>
+                <button class="unit-btn active" onclick="hSetUnit('h-i-etc','won',this)">원</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;padding:10px 12px;background:rgba(0,229,176,0.06);border-radius:8px;display:flex;justify-content:space-between;">
+          <span style="font-size:12px;color:var(--text2);">과세 소득 합계</span>
+          <span style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500;" id="h-income-sum">—</span>
+        </div>
+
+        <div style="height:1px;background:var(--card-border);margin:14px 0;"></div>
+        <p style="font-size:12px;color:var(--accent);font-weight:500;margin-bottom:10px;">재산</p>
+
+        <div style="display:grid;gap:0;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
+            <div style="padding-top:2px;min-width:0;">
+              <span style="font-size:12px;color:var(--text2);">재산세 과세표준</span>
+              <p style="font-size:10px;color:var(--text3);margin-top:1px;">토지·건물 (기본공제 5,000만원)</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <div class="num-pill">
+                <input class="num-input" id="h-prop" type="text" inputmode="decimal"
+                  value="0" oninput="calcHealth()" onblur="hUnitBlur('h-prop')"
+                  style="width:150px;text-align:right;padding-right:10px;">
+              </div>
+              <div class="unit-tabs" id="h-prop-units">
+                <button class="unit-btn" onclick="hSetUnit('h-prop','eok',this)">억원</button>
+                <button class="unit-btn" onclick="hSetUnit('h-prop','man',this)">만원</button>
+                <button class="unit-btn active" onclick="hSetUnit('h-prop','won',this)">원</button>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
+            <div style="padding-top:2px;min-width:0;">
+              <span style="font-size:12px;color:var(--text2);">전월세 보증금</span>
+              <p style="font-size:10px;color:var(--text3);margin-top:1px;">× 30% → 재산 과세표준에 합산</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <div class="num-pill">
+                <input class="num-input" id="h-deposit" type="text" inputmode="decimal"
+                  value="0" oninput="calcHealth()" onblur="hUnitBlur('h-deposit')"
+                  style="width:150px;text-align:right;padding-right:10px;">
+              </div>
+              <div class="unit-tabs" id="h-deposit-units">
+                <button class="unit-btn" onclick="hSetUnit('h-deposit','eok',this)">억원</button>
+                <button class="unit-btn" onclick="hSetUnit('h-deposit','man',this)">만원</button>
+                <button class="unit-btn active" onclick="hSetUnit('h-deposit','won',this)">원</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="margin-top:14px;padding:12px 14px;background:var(--bg3);border-radius:10px;">
+          <p style="font-size:12px;color:var(--text3);margin-bottom:6px;">2026년 지역 가입자 기준</p>
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:12px;color:var(--text2);">소득 보험료율 (정률제)</span>
+            <span style="font-family:var(--mono);font-size:12px;color:var(--accent);">7.19%</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:12px;color:var(--text2);">재산 점수당 금액</span>
+            <span style="font-family:var(--mono);font-size:12px;color:var(--accent);">211.3원</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:12px;color:var(--text2);">최저 보험료</span>
+            <span style="font-family:var(--mono);font-size:12px;color:var(--accent);">20,060원</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span style="font-size:12px;color:var(--text2);">장기요양보험료율</span>
+            <span style="font-family:var(--mono);font-size:12px;color:var(--accent);">12.95% (건강보험료 × )</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 결과 패널 ── -->
+      <div class="card" id="health-result-panel">
+        <p class="card-title" style="margin-bottom:20px;">보험료 산출 결과</p>
+
+        <!-- 직장 가입자 결과 -->
+        <div id="health-work-result">
+          <div style="background:var(--bg3);border-radius:10px;padding:16px;margin-bottom:12px;">
+            <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">본인 부담 건강보험료</p>
+            <p style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--accent);" id="h-w-health">—</p>
+            <p style="font-size:11px;color:var(--text3);margin-top:2px;" id="h-w-health-sub">—</p>
+          </div>
+          <div style="background:var(--bg3);border-radius:10px;padding:16px;margin-bottom:12px;">
+            <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">본인 부담 장기요양보험료</p>
+            <p style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--accent2);" id="h-w-ltc">—</p>
+            <p style="font-size:11px;color:var(--text3);margin-top:2px;" id="h-w-ltc-sub">—</p>
+          </div>
+          <div style="background:rgba(0,229,176,0.08);border:1px solid rgba(0,229,176,0.25);border-radius:10px;padding:16px;margin-bottom:12px;">
+            <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">월 본인 부담 합계</p>
+            <p style="font-family:var(--mono);font-size:32px;font-weight:500;color:#ffaa55;" id="h-w-total" style="color:#ffaa55;">—</p>
+          </div>
+          <div id="h-w-extra-block" style="display:none;background:var(--bg3);border-radius:10px;padding:14px;margin-bottom:12px;">
+            <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">소득월액보험료 (추가 소득)</p>
+            <p style="font-family:var(--mono);font-size:18px;font-weight:500;color:#ffaa55;" id="h-w-extra-prem">—</p>
+            <p style="font-size:11px;color:var(--text3);margin-top:2px;" id="h-w-extra-sub">—</p>
+          </div>
+          <div style="border-top:1px solid var(--card-border);padding-top:12px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div style="background:var(--bg3);border-radius:8px;padding:12px;">
+                <p style="font-size:10px;color:var(--text3);margin-bottom:3px;">사업주 부담</p>
+                <p style="font-family:var(--mono);font-size:14px;color:var(--text2);" id="h-w-employer">—</p>
+              </div>
+              <div style="background:var(--bg3);border-radius:8px;padding:12px;">
+                <p style="font-size:10px;color:var(--text3);margin-bottom:3px;">연간 본인 부담 합계</p>
+                <p style="font-family:var(--mono);font-size:14px;color:var(--text2);" id="h-w-annual">—</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 지역 가입자 결과 -->
+        <div id="health-local-result" style="display:none;">
+          <div style="background:var(--bg3);border-radius:10px;padding:14px;margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:12px;color:var(--text3);">연간 과세 소득</span>
+              <span style="font-family:var(--mono);font-size:13px;color:var(--text);" id="h-l-income-pts">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+              <span style="font-size:12px;color:var(--text3);">소득 월 보험료 (×7.19%÷12)</span>
+              <span style="font-family:var(--mono);font-size:13px;color:var(--text);" id="h-l-income-prem">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+              <span style="font-size:12px;color:var(--text3);">재산 점수</span>
+              <span style="font-family:var(--mono);font-size:13px;color:var(--text);" id="h-l-prop-pts">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+              <span style="font-size:12px;color:var(--text3);">재산 보험료 (점수×211.3)</span>
+              <span style="font-family:var(--mono);font-size:13px;color:var(--text);" id="h-l-prop-prem">—</span>
+            </div>
+          </div>
+          <div style="background:var(--bg3);border-radius:10px;padding:16px;margin-bottom:10px;">
+            <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">월 건강보험료</p>
+            <p style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--accent);" id="h-l-health">—</p>
+            <p style="font-size:11px;color:var(--text3);margin-top:2px;" id="h-l-health-sub">—</p>
+          </div>
+          <div style="background:var(--bg3);border-radius:10px;padding:16px;margin-bottom:10px;">
+            <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">월 장기요양보험료</p>
+            <p style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--accent2);" id="h-l-ltc">—</p>
+          </div>
+          <div style="background:rgba(0,229,176,0.08);border:1px solid rgba(0,229,176,0.25);border-radius:10px;padding:16px;margin-bottom:10px;">
+            <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">월 합계</p>
+            <p style="font-family:var(--mono);font-size:32px;font-weight:500;color:#ffaa55;" id="h-l-total" style="color:#ffaa55;">—</p>
+          </div>
+          <div style="background:var(--bg3);border-radius:8px;padding:12px;">
+            <p style="font-size:10px;color:var(--text3);margin-bottom:3px;">연간 합계</p>
+            <p style="font-family:var(--mono);font-size:14px;color:var(--text2);" id="h-l-annual">—</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 보험료 안내 -->
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:20px 24px;margin-top:20px;">
+      <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px;">📌 계산 기준 안내 (2026년 적용)</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" id="health-guide-grid">
+        <div>
+          <p style="font-size:12px;color:var(--accent);font-weight:500;margin-bottom:6px;">직장 가입자</p>
+          <p style="font-size:12px;color:var(--text2);line-height:1.8;">
+            • 건강보험료율: <b>7.19%</b> (근로자 3.595% + 사업주 3.595%)<br>
+            • 장기요양보험료: 건강보험료(본인) × <b>12.95%</b><br>
+            • 월 상한: 보수월액 <b>1억 293만원</b> 한도<br>
+            • 월 하한: 보수월액 <b>283만원</b> 이상 시 정상 부과<br>
+            • 추가 소득 연 2,000만원 초과분: 소득월액보험료 별도 부과
+          </p>
+        </div>
+        <div>
+          <p style="font-size:12px;color:var(--accent);font-weight:500;margin-bottom:6px;">지역 가입자</p>
+          <p style="font-size:12px;color:var(--text2);line-height:1.8;">
+            • 점수당 금액: <b>211.3원</b><br>
+            • 소득 보험료: 연간 과세소득 × 7.19% ÷ 12 (정률제)<br>
+            • 재산 보험료: 과세표준 구간별 점수 × 211.3원 (기본공제 5,000만원)<br>
+            • 자동차: 2026년부터 부과 폐지<br>
+            • 최저 보험료: 월 <b>20,060원</b>
+          </p>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-top:12px;">※ 본 계산기는 참고용이며 실제 부과액은 건강보험공단 확인 바랍니다.</p>
+    </div>
+  </div><!-- /page-health -->
 
 
   <!-- ── CAGR 계산기 페이지 ── -->
@@ -5843,6 +6228,269 @@ function fxSwap() {
 /* 모바일 반응형: fx-rate-grid 2열 */
 
 
+/* ════════════════════════════════════════
+   건강보험료 계산기 (2025년 기준)
+════════════════════════════════════════ */
+let _healthType = 'work';
+
+function healthSetType(type, btn) {
+  _healthType = type;
+  document.getElementById('page-health').querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('health-work-panel').style.display   = type==='work'  ? '' : 'none';
+  document.getElementById('health-local-panel').style.display  = type==='local' ? '' : 'none';
+  document.getElementById('health-work-result').style.display  = type==='work'  ? '' : 'none';
+  document.getElementById('health-local-result').style.display = type==='local' ? '' : 'none';
+  calcHealth();
+}
+
+function hFmt(n) { return Math.round(n).toLocaleString('ko-KR') + '원'; }
+function hGetNum(id) {
+  const el = document.getElementById(id);
+  return el ? parseFloat(el.value.replace(/,/g,'')) || 0 : 0;
+}
+function hSetComma(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const n = parseFloat(el.value.replace(/,/g,'')) || 0;
+  el.value = n > 0 ? Math.round(n).toLocaleString('ko-KR') : '0';
+}
+function hSalaryBlur()  { hUnitBlur('h-salary');  }
+function hExtraBlur()   { hUnitBlur('h-extra');   }
+function hIncomeBlur()  { hUnitBlur('h-income');  }
+function hPropBlur()    { hUnitBlur('h-prop');    }
+function hCarBlur()     { hUnitBlur('h-car');     }
+function hDepositBlur() { hUnitBlur('h-deposit'); }
+function hBlurField(id) { hUnitBlur(id); }
+
+/* ── 단위 시스템 ── */
+const _hUnits = {};   // fieldId → 'won'|'man'|'eok'
+const _hWon   = {};   // fieldId → 원 단위 내부 값
+
+function hGetUnitMul(id) {
+  const u = _hUnits[id] || 'won';
+  return u === 'eok' ? 1e8 : u === 'man' ? 1e4 : 1;
+}
+
+/* 입력 → 원 단위 내부값 변환 */
+function hGetWon(id) {
+  const el = document.getElementById(id);
+  if (!el) return 0;
+  const v = parseFloat(el.value.replace(/,/g,'')) || 0;
+  return v * hGetUnitMul(id);
+}
+
+/* 단위 변경 시 표시값 변환 */
+function hSetUnit(id, unit, btn) {
+  const won = hGetWon(id);   // 현재 원 단위 값 저장
+  _hUnits[id] = unit;
+  // 버튼 active
+  const container = document.getElementById(id + '-units');
+  if (container) container.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  // 새 단위로 표시
+  const mul = hGetUnitMul(id);
+  const el  = document.getElementById(id);
+  if (el) {
+    const disp = won / mul;
+    el.value = disp % 1 === 0 ? disp.toLocaleString('ko-KR') : parseFloat(disp.toFixed(4)).toString();
+  }
+  calcHealth();
+}
+
+/* blur: 포맷 정리 */
+function hUnitBlur(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const v = parseFloat(el.value.replace(/,/g,'')) || 0;
+  el.value = v % 1 === 0 ? v.toLocaleString('ko-KR') : parseFloat(v.toFixed(4)).toString();
+  calcHealth();
+}
+
+/* ── 2026 상수 ── */
+const H_RATE      = 0.0719;    // 건강보험료율 7.19%
+const H_EMP_RATE  = 0.03595;   // 근로자 부담 3.595%
+const H_LTC_RATE  = 0.1295;    // 장기요양보험료율 12.95%
+const H_PT_VAL    = 211.3;     // 점수당 금액 (지역) 211.3원
+const H_MIN_PREM  = 20060;     // 지역 최저보험료 20,060원
+const H_SALARY_CAP = 102930000; // 직장 보수월액 상한 (1억 293만원)
+const H_SALARY_MIN = 2830000;   // 직장 보수월액 하한 (283만원)
+
+/* ── 지역 가입자 소득 점수 테이블 (2025) ──
+   [소득 상한(만원), 점수] 구간별 */
+const H_INCOME_PTS = [
+  [0,0],[100,28],[200,43],[300,56],[400,66],[500,75],
+  [600,83],[700,90],[800,97],[900,103],[1000,108],
+  [1200,118],[1400,127],[1600,134],[1800,141],[2000,147],
+  [2500,159],[3000,170],[4000,188],[5000,203],[6000,215],
+  [7000,225],[8000,234],[9000,242],[10000,249],
+  [12000,262],[15000,278],[20000,298],[30000,325],
+  [40000,345],[50000,361],[Infinity,700]
+];
+
+/* ── 지역 가입자 재산 점수 테이블 (2025, 과세표준 구간)
+   [과세표준 상한(만원), 점수] */
+const H_PROP_PTS = [
+  [0,0],[450,22],[900,44],[1350,66],[1800,88],[2700,110],
+  [3600,132],[4800,154],[6000,176],[7500,198],[9000,220],
+  [11250,242],[13500,264],[16875,286],[20250,308],[25650,330],
+  [30600,352],[38250,374],[45900,396],[57375,418],[68850,440],
+  [86250,462],[103500,484],[129375,506],[155250,528],
+  [194250,550],[233250,572],[291375,594],[349500,616],
+  [Infinity,700]
+];
+
+/* ── 지역 가입자 자동차 점수 (차량기준가액 기준) ── */
+function hCarPts(carVal) {
+  if (carVal <= 0) return 0;
+  const wan = carVal / 10000;
+  if (wan < 4000) return 0; // 4천만원 미만 제외(생계형 등)
+  // 4천만원 이상: 가액 × 0.01 (간이)
+  if (wan >= 4000 && wan < 6000) return 30;
+  if (wan >= 6000 && wan < 8000) return 40;
+  if (wan >= 8000 && wan < 10000) return 50;
+  return 60;
+}
+
+function hGetIncomePts(annualIncome) {
+  const wan = annualIncome / 10000;
+  for (let i = 0; i < H_INCOME_PTS.length; i++) {
+    if (wan <= H_INCOME_PTS[i][0]) {
+      /* 구간 내 선형 보간 */
+      if (i === 0) return 0;
+      const [hi, pts] = H_INCOME_PTS[i];
+      const [lo, plo] = H_INCOME_PTS[i-1];
+      if (lo === hi) return pts;
+      return Math.round(plo + (pts-plo) * (wan-lo) / (hi-lo));
+    }
+  }
+  return 700;
+}
+
+function hGetPropPts(propVal) {
+  const basic_deduct = 50000000; // 기본공제 5000만원
+  const net = Math.max(0, propVal - basic_deduct);
+  const wan = net / 10000;
+  for (let i = 0; i < H_PROP_PTS.length; i++) {
+    if (wan <= H_PROP_PTS[i][0]) {
+      if (i === 0) return 0;
+      const [hi, pts] = H_PROP_PTS[i];
+      const [lo, plo] = H_PROP_PTS[i-1];
+      if (lo === hi) return pts;
+      return Math.round(plo + (pts-plo) * (wan-lo) / (hi-lo));
+    }
+  }
+  return 700;
+}
+
+function calcHealth() {
+  /* 초기 단위 설정 (미설정 시 HTML active 버튼 읽기) */
+  ['h-salary','h-extra','h-i-biz','h-i-work','h-i-interest','h-i-div',
+   'h-i-pension','h-i-etc','h-prop','h-deposit'].forEach(id => {
+    if (!_hUnits[id]) {
+      const cont = document.getElementById(id+'-units');
+      if (cont) {
+        const ab = cont.querySelector('.unit-btn.active');
+        if (ab) {
+          _hUnits[id] = ab.textContent.includes('억') ? 'eok' : ab.textContent.includes('만') ? 'man' : 'won';
+        }
+      }
+    }
+  });
+  const type = _healthType;
+
+  if (type === 'work') {
+    /* ── 직장 가입자 계산 ── */
+    const annualSalary = Math.min(Math.max(hGetWon('h-salary'), 0), H_SALARY_CAP * 12);
+    const salary       = annualSalary / 12;   // 보수월액
+    const extra        = hGetWon('h-extra');  // 연간 추가 소득
+
+    /* 보수월액보험료 */
+    const totalPrem    = Math.round(salary * H_RATE);
+    const empPrem      = Math.round(salary * H_EMP_RATE);
+    const emplrPrem    = totalPrem - empPrem;
+    const ltcPrem      = Math.round(empPrem * H_LTC_RATE);
+    const monthTotal   = empPrem + ltcPrem;
+
+    /* 소득월액보험료 (연 2000만원 초과분) */
+    let extraPrem = 0;
+    const extraThresh = 20000000;
+    if (extra > extraThresh) {
+      const extraIncome = extra - extraThresh;
+      const extraMonthly = extraIncome / 12;
+      extraPrem = Math.round(extraMonthly * H_RATE / 2); // 본인 부담
+    }
+
+    const finalMonthly = monthTotal + extraPrem;
+
+    const setH = (id, v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+    setH('h-w-health',     hFmt(empPrem));
+    setH('h-w-health-sub', '보수월액 ' + hFmt(salary) + ' (연봉 ' + hFmt(annualSalary) + '/12) × 3.595%');
+    setH('h-w-ltc',        hFmt(ltcPrem));
+    setH('h-w-ltc-sub',    '건강보험료 ' + hFmt(empPrem) + ' × 12.95%');
+    setH('h-w-total',      hFmt(finalMonthly));
+    setH('h-w-employer',   hFmt(emplrPrem + Math.round(emplrPrem * H_LTC_RATE)));
+    setH('h-w-annual',     hFmt(finalMonthly * 12));
+
+    const extraBlock = document.getElementById('h-w-extra-block');
+    if (extraPrem > 0) {
+      extraBlock.style.display = '';
+      setH('h-w-extra-prem', hFmt(extraPrem));
+      setH('h-w-extra-sub',  '연봉 외 소득 ' + hFmt(extra) + ' → 초과분 × 7.19% ÷ 12 ÷ 2');
+    } else {
+      extraBlock.style.display = 'none';
+    }
+
+  } else {
+    /* ── 지역 가입자 계산 ── */
+    /* 소득 항목별 과세 소득 계산 */
+    const iBiz      = hGetWon('h-i-biz');       // 사업소득 100%
+    const iWork     = hGetWon('h-i-work');      // 근로소득 100%
+    const iInterest = hGetWon('h-i-interest');  // 이자소득 100%
+    const iDiv2     = hGetWon('h-i-div');       // 배당소득 100%
+    const iPension  = hGetWon('h-i-pension');   // 공적연금소득 50%만
+    const iEtc      = hGetWon('h-i-etc');       // 기타소득 100%
+
+    /* 과세 소득 합산 (공적연금 50% 반영) */
+    const taxableIncome = iBiz + iWork + iInterest + iDiv2 + (iPension * 0.5) + iEtc;
+
+    /* 소득 합계 표시 */
+    const incomeSum = document.getElementById('h-income-sum');
+    if (incomeSum) incomeSum.textContent = hFmt(Math.round(taxableIncome)) + ' (연간 과세소득)';
+
+    /* 소득 보험료: 정률제 (연간 과세소득 × 7.19% ÷ 12) */
+    const incomeMonthPrem = Math.round(taxableIncome * H_RATE / 12);
+
+    const prop    = hGetWon('h-prop');
+    const deposit = hGetWon('h-deposit');
+
+    /* 전월세 보증금 30% → 재산 과세표준 합산 */
+    const propTotal = prop + deposit * 0.3;
+
+    /* 재산 보험료: 점수제 (과세표준 구간 점수 × 211.3원) */
+    const propPts  = hGetPropPts(propTotal);
+    const propPrem = Math.round(propPts * H_PT_VAL);
+
+    /* 총 건강보험료 = 소득 보험료 + 재산 보험료 (최저 적용) */
+    const rawHealthPrem  = incomeMonthPrem + propPrem;
+    const healthPrem     = Math.max(H_MIN_PREM, rawHealthPrem);
+    const ltcPrem        = Math.round(healthPrem * H_LTC_RATE);
+    const monthTotal     = healthPrem + ltcPrem;
+
+    const setH = (id, v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+    setH('h-l-income-pts',  hFmt(Math.round(taxableIncome)) + ' / 년');
+    setH('h-l-income-prem', hFmt(incomeMonthPrem) + ' / 월');
+    setH('h-l-prop-pts',    propPts + '점');
+    setH('h-l-prop-prem',   hFmt(propPrem) + ' / 월' + (propPts===0?' (해당 없음)':''));
+    setH('h-l-health',      hFmt(healthPrem));
+    setH('h-l-health-sub',  '소득' + hFmt(incomeMonthPrem) + ' + 재산' + hFmt(propPrem) + (healthPrem===H_MIN_PREM?' (최저 적용)':''));
+    setH('h-l-ltc',         hFmt(ltcPrem));
+    setH('h-l-total',       hFmt(monthTotal));
+    setH('h-l-annual',      hFmt(monthTotal * 12));
+  }
+}
+
+
 window.addEventListener('load', function() { fetchKodexPrice(); });
 
 /* ════════════════════════════════════════
@@ -6469,6 +7117,7 @@ function switchSubTab(tab, grpId, btn) {
   if (tab === 'compound')  { setCpdMode('simple', document.getElementById('cpd-mode-simple')); calcCompound(); }
   if (tab === 'cagr')      calcCAGR();
   if (tab === 'fx')        fetchFxRates();
+  if (tab === 'health')    calcHealth();
   if (tab === 'kospi')     fetchKospi();
   if (tab === 'kospi200')  fetchKospi200();
   if (tab === 'kosdaq')    {
@@ -7003,6 +7652,7 @@ function switchAppTab(tab, btn) {
   if (tab === 'cagr')     calcCAGR();
   if (tab === 'compound') { setCpdMode('simple', document.getElementById('cpd-mode-simple')); calcCompound(); }
   if (tab === 'fx')        fetchFxRates();
+  if (tab === 'health')    calcHealth();
   if (tab === 'kospi'    && document.getElementById('kospi-current-val').textContent === '—')  useDefaultKospi();
   if (tab === 'kospi200' && document.getElementById('k200-current-val').textContent  === '—')  useDefaultKospi200();
   const usIdx = ['nasdaq','nasdaq100','dowjones','sp500'];
@@ -7680,6 +8330,7 @@ function renderCagrChart(cache) {
     <button class="drop-item" id="drop-compound" onclick="switchSubTab('compound','finance',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M9 3.5 C5.96 3.5 3.5 5.96 3.5 9 C3.5 12.04 5.96 14.5 9 14.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9 14.5 C12.04 14.5 14.5 12.04 14.5 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="2 1.5"/><path d="M12 7 L14.5 9 L12 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 7.5 L9.5 9 L11 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/><circle cx="9" cy="9" r="1" fill="currentColor"/></svg>복리 계산기</button>
     <button class="drop-item" id="drop-cagr"     onclick="switchSubTab('cagr','finance',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="1.5" width="13" height="15" rx="2" stroke="currentColor" stroke-width="1.4"/><rect x="4.5" y="3.5" width="9" height="3" rx="0.8" fill="currentColor" opacity="0.5"/><path d="M4.5 11 L7.5 8.5 L10.5 10 L13.5 6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13.5" cy="6.5" r="1.2" fill="currentColor"/></svg>CAGR 계산기</button>
     <button class="drop-item" id="drop-fx" onclick="switchSubTab('fx','finance',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M9 2.5 Q12.5 9 9 15.5 M9 2.5 Q5.5 9 9 15.5" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M2.5 6.5 Q9 5 15.5 6.5 M2.5 11.5 Q9 13 15.5 11.5" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M7 8 h1.5 a1 1 0 1 1 0 2 H7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>환율 계산기</button>
+    <button class="drop-item" id="drop-health" onclick="switchSubTab('health','finance',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="4" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M9 7v4M7 9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 4V3M13 4V3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>건강보험료 계산기</button>
   </div>
   <div class="tab-dropdown" id="grp-domestic-drop">
     <button class="drop-item" id="drop-kospi" onclick="switchSubTab('kospi','domestic',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>KOSPI 성장률</button>
