@@ -719,6 +719,9 @@
     /* 레이아웃 1컬럼, 전체 너비 100% */
     .layout { grid-template-columns: 1fr !important; gap: 14px !important; }
     #loan-layout { grid-template-columns: 1fr !important; }
+    #fx-rate-grid { grid-template-columns: 1fr 1fr !important; }
+    #fx-multi-grid { grid-template-columns: 1fr 1fr !important; }
+    #fx-converter-grid { grid-template-columns: 1fr !important; }
     .cagr-layout { grid-template-columns: 1fr !important; }
     #cpd-layout { grid-template-columns: 1fr !important; }
 
@@ -2818,6 +2821,75 @@
     </div>
   </div>
 </div><!-- /page-tiger -->
+
+  <!-- ── 환율 계산기 페이지 ── -->
+  <div class="app-page" id="page-fx">
+    <div class="header">
+      <div class="header-left">
+        <span class="badge">FOREIGN EXCHANGE CALCULATOR</span>
+        <h1>환율 <span>계산기</span></h1>
+        <p class="subtitle">실시간 환율 조회 및 주요 통화 변환 계산기</p>
+      </div>
+      <button onclick="fetchFxRates()" id="fx-refresh-btn"
+        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
+        <span id="fx-refresh-icon">↺</span> 환율 갱신
+      </button>
+    </div>
+
+    <!-- 환율 상태 배너 -->
+    <div style="background:var(--bg3);border:1px solid var(--card-border);border-radius:12px;padding:12px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span style="font-size:12px;color:var(--text3);" id="fx-status-label">↺ 갱신 버튼으로 최신 환율 조회</span>
+      <span style="font-size:11px;color:var(--text3);" id="fx-date-label"></span>
+      <span id="fx-loading" style="display:none;font-size:12px;color:var(--text3);">⏳ 조회 중...</span>
+    </div>
+
+    <!-- 환율 카드 그리드 -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;" id="fx-rate-grid">
+      <!-- JS로 채워짐 -->
+    </div>
+
+    <!-- 변환 계산기 -->
+    <div class="card">
+      <p class="card-title" style="margin-bottom:20px;">통화 변환</p>
+      <!-- 통화 변환 — 그리드: 3열(입력 | 버튼 | 결과) -->
+      <div style="display:grid;grid-template-columns:1fr 44px 1fr;gap:10px;align-items:center;" id="fx-converter-grid">
+
+        <!-- 라벨 행 -->
+        <span style="font-size:11px;color:var(--text3);margin-bottom:5px;display:block;">금액 입력</span>
+        <span></span>
+        <span style="font-size:11px;color:var(--text3);margin-bottom:5px;display:block;">변환 결과</span>
+
+        <!-- 입력/버튼/결과 행 -->
+        <input class="comma-input" id="fx-amount" type="text" inputmode="numeric"
+          value="10,000" style="width:100%;background:var(--bg3);border:1px solid var(--card-border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:var(--mono);font-size:14px;outline:none;box-sizing:border-box;"
+          oninput="fxConvert()" onblur="fxAmtBlur()">
+        <div style="display:flex;align-items:center;justify-content:center;">
+          <button onclick="fxSwap()" style="background:var(--bg3);border:1px solid var(--card-border);border-radius:8px;padding:7px 8px;color:var(--accent);cursor:pointer;font-size:16px;line-height:1;transition:all 0.15s;width:36px;height:36px;display:flex;align-items:center;justify-content:center;" title="화폐 교환">⇄</button>
+        </div>
+        <div style="width:100%;background:var(--bg3);border:1px solid rgba(0,229,176,0.3);border-radius:8px;padding:9px 12px;font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:500;box-sizing:border-box;min-height:40px;display:flex;align-items:center;" id="fx-result">—</div>
+
+        <!-- 통화 선택 라벨 -->
+        <span style="font-size:11px;color:var(--text3);margin-bottom:5px;display:block;margin-top:8px;">출발 통화</span>
+        <span></span>
+        <span style="font-size:11px;color:var(--text3);margin-bottom:5px;display:block;margin-top:8px;">도착 통화</span>
+
+        <!-- select 행 -->
+        <select id="fx-from" onchange="fxConvert()" style="width:100%;background:var(--bg3);border:1px solid var(--card-border);border-radius:8px;padding:9px 10px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;cursor:pointer;box-sizing:border-box;"></select>
+        <span></span>
+        <select id="fx-to" onchange="fxConvert()" style="width:100%;background:var(--bg3);border:1px solid var(--card-border);border-radius:8px;padding:9px 10px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;cursor:pointer;box-sizing:border-box;"></select>
+
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-top:10px;" id="fx-rate-label">적용 환율: —</p>
+
+      <!-- 주요 통화 한번에 보기 -->
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--card-border);">
+        <p style="font-size:12px;color:var(--text3);margin-bottom:12px;" id="fx-multi-title">— 기준 주요 통화 환산</p>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;" id="fx-multi-grid">
+        </div>
+      </div>
+    </div>
+  </div><!-- /page-fx -->
+
 
   <!-- ── CAGR 계산기 페이지 ── -->
   <div class="app-page" id="page-cagr">
@@ -5361,6 +5433,260 @@ update();
 
 
 
+/* ════════════════════════════════════════
+   환율 계산기
+   1순위: Anthropic Web Search (실시간)
+   2순위: exchangerate-api 공개 엔드포인트
+   기준통화: KRW (원화)
+════════════════════════════════════════ */
+const FX_CURRENCIES = [
+  { code:'USD', name:'미국 달러',    flag:'🇺🇸', symbol:'$'   },
+  { code:'EUR', name:'유로',         flag:'🇪🇺', symbol:'€'   },
+  { code:'JPY', name:'일본 엔',      flag:'🇯🇵', symbol:'¥'   },
+  { code:'CNY', name:'중국 위안',    flag:'🇨🇳', symbol:'¥'   },
+  { code:'GBP', name:'영국 파운드',  flag:'🇬🇧', symbol:'£'   },
+  { code:'HKD', name:'홍콩 달러',    flag:'🇭🇰', symbol:'HK$' },
+  { code:'SGD', name:'싱가포르 달러',flag:'🇸🇬', symbol:'S$'  },
+  { code:'AUD', name:'호주 달러',    flag:'🇦🇺', symbol:'A$'  },
+  { code:'CAD', name:'캐나다 달러',  flag:'🇨🇦', symbol:'C$'  },
+  { code:'CHF', name:'스위스 프랑',  flag:'🇨🇭', symbol:'Fr'  },
+  { code:'THB', name:'태국 바트',    flag:'🇹🇭', symbol:'฿'   },
+  { code:'VND', name:'베트남 동',    flag:'🇻🇳', symbol:'₫'   },
+];
+
+/* 환율 캐시 (KRW 기준, 1 외화 = N원) */
+const _fxRates = {};
+let _fxFetching = false;
+
+function fxFmt(n, code) {
+  if (code === 'KRW') return Math.round(n).toLocaleString('ko-KR') + '원';
+  if (code === 'JPY' || code === 'VND') return Math.round(n).toLocaleString();
+  return n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:4});
+}
+
+/* ── 환율 조회 ── */
+async function fetchFxRates() {
+  if (_fxFetching) return;
+  _fxFetching = true;
+  const btn  = document.getElementById('fx-refresh-btn');
+  const icon = document.getElementById('fx-refresh-icon');
+  const load = document.getElementById('fx-loading');
+  const stat = document.getElementById('fx-status-label');
+  if (btn)  btn.disabled = true;
+  if (icon) icon.textContent = '⏳';
+  if (load) load.style.display = 'block';
+  if (stat) stat.textContent = '조회 중...';
+
+  try {
+    /* 1순위: exchangerate-api 무료 공개 엔드포인트 (CORS 지원) */
+    let success = false;
+    try {
+      const ctrl = new AbortController();
+      const tid  = setTimeout(() => ctrl.abort(), 8000);
+      let resp;
+      try { resp = await fetch('https://open.er-api.com/v6/latest/KRW', {cache:'no-cache', signal:ctrl.signal}); }
+      finally { clearTimeout(tid); }
+      if (resp && resp.ok) {
+        const json = await resp.json();
+        if (json.rates) {
+          FX_CURRENCIES.forEach(cur => {
+            const rate = json.rates[cur.code];
+            if (rate && rate > 0) _fxRates[cur.code] = 1 / rate; /* 1외화 = N원 */
+          });
+          success = true;
+          const now = new Date();
+          const ds  = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+now.toTimeString().slice(0,8);
+          if (stat) stat.textContent = '최종 갱신: ' + ds;
+          const dateEl = document.getElementById('fx-date-label');
+          if (dateEl) dateEl.textContent = '(출처: Open Exchange Rates)';
+        }
+      }
+    } catch {}
+
+    /* 2순위: Anthropic Web Search */
+    if (!success) {
+      try {
+        const resp = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514', max_tokens: 600,
+            tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+            messages: [{ role: 'user', content: '오늘 현재 환율을 검색해줘. 1달러(USD), 1유로(EUR), 100엔(JPY), 1위안(CNY), 1파운드(GBP) 각각 한국 원화(KRW)로 얼마인지 {"USD":숫자,"EUR":숫자,"JPY100":숫자,"CNY":숫자,"GBP":숫자} JSON 형식으로만 답해.' }]
+          })
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          const txt  = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join(' ');
+          const m    = txt.match(/\{[^}]*"USD"\s*:\s*[\d.]+[^}]*\}/);
+          if (m) {
+            try {
+              const j = JSON.parse(m[0]);
+              if (j.USD) _fxRates.USD = j.USD;
+              if (j.EUR) _fxRates.EUR = j.EUR;
+              if (j.JPY100) _fxRates.JPY = j.JPY100 / 100;
+              if (j.CNY) _fxRates.CNY = j.CNY;
+              if (j.GBP) _fxRates.GBP = j.GBP;
+              success = true;
+              const now = new Date();
+              if (stat) stat.textContent = '최종 갱신: ' + now.toLocaleString('ko-KR');
+              const dateEl = document.getElementById('fx-date-label');
+              if (dateEl) dateEl.textContent = '(출처: Anthropic Web Search)';
+            } catch {}
+          }
+        }
+      } catch {}
+    }
+
+    if (!success) {
+      if (stat) stat.textContent = '조회 실패 — ↺ 버튼으로 재시도';
+    }
+  } finally {
+    _fxFetching = false;
+    if (btn)  btn.disabled = false;
+    if (icon) icon.textContent = '↺';
+    if (load) load.style.display = 'none';
+    renderFxCards();
+    buildFxSelects();
+    fxConvert();
+  }
+}
+
+/* ── 환율 카드 렌더 ── */
+function renderFxCards() {
+  const grid = document.getElementById('fx-rate-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  FX_CURRENCIES.forEach(cur => {
+    const rate = _fxRates[cur.code];
+    const rateStr = rate ? '₩' + rate.toLocaleString('ko-KR', {maximumFractionDigits:2}) : '—';
+    const div = document.createElement('div');
+    div.style.cssText = 'background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color 0.15s;';
+    div.onclick = () => {
+      document.getElementById('fx-from').value = cur.code;
+      fxConvert();
+    };
+    div.onmouseover = () => div.style.borderColor = 'rgba(0,229,176,0.3)';
+    div.onmouseout  = () => div.style.borderColor = 'var(--card-border)';
+    div.innerHTML =
+      '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">' +
+        '<span style="font-size:16px;">' + cur.flag + '</span>' +
+        '<span style="font-size:11px;color:var(--text3);font-weight:500;">' + cur.code + ' (' + cur.symbol + ', ' + cur.name + ')' + '</span>' +
+      '</div>' +
+      '<p style="font-family:var(--mono);font-size:15px;font-weight:500;color:var(--accent);margin-bottom:2px;">' + rateStr + '</p>' +
+      '<p style="font-size:10px;color:var(--text3);">1' + cur.code + ' 기준</p>';
+    grid.appendChild(div);
+  });
+}
+
+/* ── select 옵션 생성 ── */
+function buildFxSelects() {
+  ['fx-from','fx-to'].forEach(selId => {
+    const sel = document.getElementById(selId);
+    if (!sel) return;
+    const cur = sel.value;
+    sel.innerHTML = '<option value="KRW">🇰🇷 KRW (₩, 원화)</option>';
+    FX_CURRENCIES.forEach(cur2 => {
+      sel.innerHTML += '<option value="' + cur2.code + '">' + cur2.flag + ' ' + cur2.code + ' (' + cur2.symbol + ', ' + cur2.name + ')' + '</option>';
+    });
+    /* 기본값: from=USD, to=KRW */
+    if (selId === 'fx-from' && !cur) sel.value = 'USD';
+    else if (cur) sel.value = cur;
+  });
+}
+
+/* ── 변환 계산 ── */
+function fxConvert() {
+  const fromSel = document.getElementById('fx-from');
+  const toSel   = document.getElementById('fx-to');
+  const amtEl   = document.getElementById('fx-amount');
+  if (!fromSel || !toSel || !amtEl) return;
+
+  const fromCode = fromSel.value;
+  const toCode   = toSel.value;
+  const rawAmt   = parseFloat(amtEl.value.replace(/,/g,'')) || 0;
+
+  /* KRW 기준으로 변환 */
+  function toKRW(amt, code) {
+    if (code === 'KRW') return amt;
+    const rate = _fxRates[code];
+    return rate ? amt * rate : null;
+  }
+  function fromKRW(krw, code) {
+    if (code === 'KRW') return krw;
+    const rate = _fxRates[code];
+    return rate ? krw / rate : null;
+  }
+
+  const krwAmt = toKRW(rawAmt, fromCode);
+  const result = krwAmt !== null ? fromKRW(krwAmt, toCode) : null;
+
+  const resultEl    = document.getElementById('fx-result');
+  const rateLabelEl = document.getElementById('fx-rate-label');
+  if (resultEl) resultEl.textContent = result !== null ? fxFmt(result, toCode) : '환율 정보 없음';
+
+  /* 적용 환율 표시 */
+  if (rateLabelEl) {
+    if (result !== null && rawAmt > 0) {
+      const r = result / rawAmt;
+      rateLabelEl.textContent = '적용 환율: 1 ' + fromCode + ' = ' + fxFmt(r * (rawAmt / rawAmt), toCode);
+    } else {
+      rateLabelEl.textContent = '환율 정보 없음';
+    }
+  }
+
+  /* 멀티 통화 환산 */
+  renderFxMulti(rawAmt, fromCode);
+}
+
+function renderFxMulti(amt, fromCode) {
+  const grid  = document.getElementById('fx-multi-grid');
+  const title = document.getElementById('fx-multi-title');
+  if (!grid) return;
+  if (title) title.textContent = amt.toLocaleString() + ' ' + fromCode + ' 기준 주요 통화 환산';
+
+  function toKRW(a, code) { return code==='KRW'?a:(_fxRates[code]?a*_fxRates[code]:null); }
+  function fromKRW(krw, code) { return code==='KRW'?krw:(_fxRates[code]?krw/_fxRates[code]:null); }
+
+  const krwAmt = toKRW(amt, fromCode);
+  const targets = ['KRW', ...FX_CURRENCIES.map(c=>c.code)].filter(c => c !== fromCode);
+
+  grid.innerHTML = '';
+  targets.forEach(code => {
+    const cur = FX_CURRENCIES.find(c=>c.code===code) || {flag:'🇰🇷',name:'원화'};
+    const val = krwAmt !== null ? fromKRW(krwAmt, code) : null;
+    const div = document.createElement('div');
+    div.style.cssText = 'background:var(--bg3);border-radius:8px;padding:10px 12px;';
+    div.innerHTML =
+      '<p style="font-size:10px;color:var(--text3);margin-bottom:3px;">' + (cur.flag||'🇰🇷') + ' ' + code + ' (' + (cur.symbol||'₩') + ', ' + (cur.name||'원화') + ')' + '</p>' +
+      '<p style="font-family:var(--mono);font-size:13px;color:var(--text);font-weight:500;">' + (val!==null?fxFmt(val,code):'—') + '</p>';
+    grid.appendChild(div);
+  });
+}
+
+/* ── 금액 입력 blur ── */
+function fxAmtBlur() {
+  const el = document.getElementById('fx-amount');
+  if (!el) return;
+  const ns = el.value.replace(/[^0-9.]/g,'');
+  const n  = parseFloat(ns) || 0;
+  el.value = n.toLocaleString('ko-KR');
+  fxConvert();
+}
+
+/* ── 화폐 교환 버튼 ── */
+function fxSwap() {
+  const from = document.getElementById('fx-from');
+  const to   = document.getElementById('fx-to');
+  if (!from || !to) return;
+  const tmp = from.value;
+  from.value = to.value;
+  to.value   = tmp;
+  fxConvert();
+}
+
+/* 모바일 반응형: fx-rate-grid 2열 */
+
+
 window.addEventListener('load', function() { fetchKodexPrice(); });
 
 /* ════════════════════════════════════════
@@ -5791,6 +6117,7 @@ function switchSubTab(tab, grpId, btn) {
   if (tab === 'loan')      calcLoan();
   if (tab === 'compound')  { setCpdMode('simple', document.getElementById('cpd-mode-simple')); calcCompound(); }
   if (tab === 'cagr')      calcCAGR();
+  if (tab === 'fx')        fetchFxRates();
   if (tab === 'kospi')     fetchKospi();
   if (tab === 'kospi200')  fetchKospi200();
   const usIdx = ['nasdaq','nasdaq100','dowjones','sp500'];
@@ -6314,6 +6641,7 @@ function switchAppTab(tab, btn) {
   if (tab === 'loan')      calcLoan();
   if (tab === 'cagr')     calcCAGR();
   if (tab === 'compound') { setCpdMode('simple', document.getElementById('cpd-mode-simple')); calcCompound(); }
+  if (tab === 'fx')        fetchFxRates();
   if (tab === 'kospi'    && document.getElementById('kospi-current-val').textContent === '—')  useDefaultKospi();
   if (tab === 'kospi200' && document.getElementById('k200-current-val').textContent  === '—')  useDefaultKospi200();
   const usIdx = ['nasdaq','nasdaq100','dowjones','sp500'];
@@ -6990,6 +7318,7 @@ function renderCagrChart(cache) {
     <button class="drop-item" id="drop-loan"     onclick="switchSubTab('loan','finance',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="3" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M2 7h14" stroke="currentColor" stroke-width="1.3"/><path d="M5 11h2M9 11h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>대출 이자 계산기</button>
     <button class="drop-item" id="drop-compound" onclick="switchSubTab('compound','finance',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M9 3.5 C5.96 3.5 3.5 5.96 3.5 9 C3.5 12.04 5.96 14.5 9 14.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9 14.5 C12.04 14.5 14.5 12.04 14.5 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="2 1.5"/><path d="M12 7 L14.5 9 L12 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 7.5 L9.5 9 L11 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/><circle cx="9" cy="9" r="1" fill="currentColor"/></svg>복리 계산기</button>
     <button class="drop-item" id="drop-cagr"     onclick="switchSubTab('cagr','finance',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="1.5" width="13" height="15" rx="2" stroke="currentColor" stroke-width="1.4"/><rect x="4.5" y="3.5" width="9" height="3" rx="0.8" fill="currentColor" opacity="0.5"/><path d="M4.5 11 L7.5 8.5 L10.5 10 L13.5 6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13.5" cy="6.5" r="1.2" fill="currentColor"/></svg>CAGR 계산기</button>
+    <button class="drop-item" id="drop-fx" onclick="switchSubTab('fx','finance',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M9 2.5 Q12.5 9 9 15.5 M9 2.5 Q5.5 9 9 15.5" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M2.5 6.5 Q9 5 15.5 6.5 M2.5 11.5 Q9 13 15.5 11.5" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M7 8 h1.5 a1 1 0 1 1 0 2 H7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>환율 계산기</button>
   </div>
   <div class="tab-dropdown" id="grp-domestic-drop">
     <button class="drop-item" id="drop-kospi" onclick="switchSubTab('kospi','domestic',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>KOSPI 성장률</button>
