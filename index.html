@@ -744,6 +744,8 @@
     #fx-multi-grid { grid-template-columns: 1fr 1fr !important; }
     #fx-converter-grid { grid-template-columns: 1fr !important; }
     #health-layout { grid-template-columns: 1fr !important; }
+    #loan-summary-cards { grid-template-columns: 1fr !important; }
+    #loan-summary-cards .card p:nth-child(2) { font-size:17px !important; }
     #health-guide-grid { grid-template-columns: 1fr !important; }
     .cagr-layout { grid-template-columns: 1fr !important; }
     #cpd-layout { grid-template-columns: 1fr !important; }
@@ -936,6 +938,22 @@
     padding-top: 16px;
     padding-bottom: 4px;
   }
+
+  /* 월간 테이블 연차 아코디언 헤더 */
+  .yr-acc-hdr {
+    background: var(--bg3);
+    cursor: pointer;
+    user-select: none;
+  }
+  .yr-acc-hdr:hover { background: rgba(0,229,176,0.05); }
+  .yr-acc-hdr td {
+    padding: 7px 12px !important;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text2);
+  }
+  .yr-acc-rows tr { transition: none; }
+
 </style>
 </head>
 <body>
@@ -1009,6 +1027,7 @@
             <button class="mode-btn active" id="loan-method-equal"     onclick="setLoanMethod('equal',this)"     style="flex:1;border-radius:7px;font-size:12px;padding:7px 4px;">원리금균등</button>
             <button class="mode-btn"        id="loan-method-principal" onclick="setLoanMethod('principal',this)" style="flex:1;border-radius:7px;font-size:12px;padding:7px 4px;">원금균등</button>
             <button class="mode-btn"        id="loan-method-bullet"    onclick="setLoanMethod('bullet',this)"    style="flex:1;border-radius:7px;font-size:12px;padding:7px 4px;">만기일시</button>
+            <button class="mode-btn"        id="loan-method-graduated" onclick="setLoanMethod('graduated',this)" style="flex:1;border-radius:7px;font-size:12px;padding:7px 4px;">체증식</button>
           </div>
           <p style="font-size:11px;color:var(--text3);line-height:1.7;" id="loan-method-desc">매월 원금+이자를 동일하게 납부. 초기 이자 비중이 높고 후반 원금 비중이 높아집니다.</p>
         </div>
@@ -1034,17 +1053,41 @@
           <div class="slider-block">
             <div class="slider-header">
               <span class="slider-label">연 이율</span>
-              <div class="num-pill"><input class="num-input" id="loan-rate" type="number" min="0.1" max="30" step="0.05" value="4.5" style="width:70px;" oninput="calcLoan()"><span class="num-unit">%</span></div>
+              <div class="num-pill"><input class="num-input" id="loan-rate" type="number" min="0.1" max="30" step="0.05" value="4.5" style="width:80px;" oninput="calcLoan()"><span class="num-unit">%</span></div>
             </div>
             <input type="range" id="loan-rate-sl" min="0.1" max="20" step="0.05" value="4.5" oninput="document.getElementById('loan-rate').value=parseFloat(this.value).toFixed(2);calcLoan();">
           </div>
           <div class="slider-block">
             <div class="slider-header">
               <span class="slider-label">대출 기간</span>
-              <div class="num-pill"><input class="num-input" id="loan-years" type="number" min="1" max="50" step="1" value="30" style="width:60px;" oninput="calcLoan()"><span class="num-unit">년</span></div>
+              <div class="num-pill"><input class="num-input" id="loan-years" type="number" min="1" max="50" step="1" value="30" style="width:80px;" oninput="calcLoan()"><span class="num-unit">년</span></div>
             </div>
             <input type="range" id="loan-years-sl" min="1" max="50" step="1" value="30" oninput="document.getElementById('loan-years').value=this.value;calcLoan();">
           </div>
+          <!-- 체증식 전용 옵션 패널 -->
+          <div id="loan-grade-options" style="display:none;">
+
+            <!-- 연 체증률 -->
+            <div class="slider-block">
+              <div class="slider-header">
+                <span class="slider-label">연 체증률 <span style="font-size:10px;color:var(--text3);">(1회차 납입금 기준)</span></span>
+                <div class="num-pill"><input class="num-input" id="loan-grad-rate-input" type="number" min="0.01" max="30" step="0.01" value="0.35" style="width:80px;" oninput="syncGradRateSl();calcLoan()"><span class="num-unit">%</span></div>
+              </div>
+              <input type="range" id="loan-grad-rate-sl" min="0.01" max="20" step="0.01" value="0.35"
+                oninput="document.getElementById('loan-grad-rate-input').value=parseFloat(this.value).toFixed(2);calcLoan();">
+              <p style="font-size:10px;color:var(--text3);margin-top:4px;">매년 1회차 납입금 대비 입력한 비율만큼 납입금 증가</p>
+            </div>
+
+            <!-- 거치기간 -->
+            <div class="slider-block" id="loan-grace-block" style="margin-top:4px;">
+              <div class="slider-header">
+                <span class="slider-label">거치기간 <span style="font-size:10px;color:var(--text3);">(이자만 납부)</span></span>
+                <div class="num-pill"><input class="num-input" id="loan-grace" type="number" min="0" max="12" step="1" value="0" style="width:80px;" oninput="calcLoan()"><span class="num-unit">개월</span></div>
+              </div>
+              <input type="range" id="loan-grace-sl" min="0" max="12" step="1" value="0" oninput="document.getElementById('loan-grace').value=this.value;calcLoan();">
+            </div>
+
+          </div><!-- /loan-grade-options -->
         </div>
         <div class="notice" style="margin-top:12px;">
           ※ 세금·수수료 미포함 순수 이자 계산입니다.<br>
@@ -1053,7 +1096,29 @@
       </div>
       <!-- 오른쪽 결과 -->
       <div style="display:flex;flex-direction:column;gap:20px;">
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+        <!-- 체증식 전용 요약 -->
+        <div id="loan-grad-summary" style="display:none;background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:14px 16px;">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+            <div>
+              <p style="font-size:10px;color:var(--text3);margin-bottom:3px;">1회차 납입금</p>
+              <p style="font-family:var(--mono);font-size:15px;font-weight:500;color:var(--accent);" id="loan-g-first">—</p>
+            </div>
+            <div>
+              <p style="font-size:10px;color:var(--text3);margin-bottom:3px;">마지막 납입금</p>
+              <p style="font-family:var(--mono);font-size:15px;font-weight:500;color:var(--text);" id="loan-g-last">—</p>
+            </div>
+            <div>
+              <p style="font-size:10px;color:var(--text3);margin-bottom:3px;">연 체증금액</p>
+              <p style="font-family:var(--mono);font-size:15px;font-weight:500;color:var(--accent2);" id="loan-g-step">—</p>
+            </div>
+            <div>
+              <p style="font-size:10px;color:var(--text3);margin-bottom:3px;">체증률</p>
+              <p style="font-family:var(--mono);font-size:15px;font-weight:500;color:#ffaa55;" id="loan-g-rate">—</p>
+              <p style="font-size:10px;color:var(--text3);">월체증금 ÷ 1회차</p>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;" id="loan-summary-cards">
           <div class="card" style="padding:18px 20px;">
             <p style="font-size:11px;color:var(--text3);margin-bottom:6px;" id="loan-s-label1">월 납입금</p>
             <p style="font-family:var(--mono);font-size:20px;font-weight:500;color:var(--accent);" id="loan-s-monthly">—</p>
@@ -1071,12 +1136,38 @@
           </div>
         </div>
         <div class="card">
-          <p class="card-title" style="margin-bottom:14px;">연간 납입 내역</p>
-          <div class="table-scroll" style="max-height:340px;overflow-y:auto;">
-            <table class="cagr-table">
-              <thead><tr><th>연도</th><th>연간 납입액</th><th>연간 원금</th><th>연간 이자</th><th>잔여 원금</th></tr></thead>
-              <tbody id="loanTableBody"></tbody>
-            </table>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <p class="card-title" style="margin:0;" id="loan-detail-title">연간 납입 내역</p>
+            <div style="display:flex;background:var(--bg3);border:1px solid var(--card-border);border-radius:8px;padding:3px;gap:2px;">
+              <button class="mode-btn active" id="loan-view-annual"  onclick="setLoanView('annual',this)"  style="font-size:11px;padding:4px 12px;border-radius:5px;">연간</button>
+              <button class="mode-btn"        id="loan-view-monthly" onclick="setLoanView('monthly',this)" style="font-size:11px;padding:4px 12px;border-radius:5px;">월간</button>
+            </div>
+          </div>
+          <!-- 연간 테이블 -->
+          <div id="loan-annual-view">
+            <div class="table-scroll" style="max-height:360px;overflow-y:auto;">
+              <table class="cagr-table">
+                <thead><tr><th>연도</th><th>연간 납입액</th><th>연간 원금</th><th>연간 이자</th><th>잔여 원금</th></tr></thead>
+                <tbody id="loanTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <!-- 월간 테이블 -->
+          <div id="loan-monthly-view" style="display:none;">
+            <div class="table-scroll" style="max-height:420px;overflow-y:auto;">
+              <table class="cagr-table">
+                <thead>
+                  <tr>
+                    <th>월</th>
+                    <th>납입액</th>
+                    <th>원금</th>
+                    <th>이자</th>
+                    <th>잔여 원금</th>
+                  </tr>
+                </thead>
+                <tbody id="loanMonthlyBody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -1764,7 +1855,6 @@
                   <th id="th-div">연간 <span class="txt-div">분배금</span></th>
                   <th id="th-taxbase" style="display:none;color:#ffaa55;">과세표준</th>
                   <th id="th-tax" style="display:none;color:#ff7070;">세금(연)</th>
-                  <th id="th-monthly">월 <span class="txt-div">분배금</span></th>
                   <th>누적 분배</th>
                 </tr>
               </thead>
@@ -2288,7 +2378,6 @@
                   <th id="sol-th-div">연간 <span class="txt-div">분배금</span></th>
                   <th id="sol-th-taxbase" style="display:none;color:#ffaa55;">과세표준</th>
                   <th id="sol-th-tax" style="display:none;color:#ff7070;">세금(연)</th>
-                  <th id="sol-th-monthly">월 <span class="txt-div">분배금</span></th>
                   <th>누적 분배</th>
                 </tr>
               </thead>
@@ -2812,7 +2901,6 @@
                   <th id="tiger-th-div">연간 <span class="txt-div">분배금</span></th>
                   <th id="tiger-th-taxbase" style="display:none;color:#ffaa55;">과세표준</th>
                   <th id="tiger-th-tax" style="display:none;color:#ff7070;">세금(연)</th>
-                  <th id="tiger-th-monthly">월 <span class="txt-div">분배금</span></th>
                   <th>누적 분배</th>
                 </tr>
               </thead>
@@ -4419,30 +4507,26 @@ function renderMonthlyTable(cache) {
 
   let cumDiv = 0;
 
+  const colSpan = 4 + (dcaOn?1:0) + (taxOn?2:0);
   rows.forEach((r, yi) => {
-    /* 월 세율 비율 (연간 세금/분배 비율로 역산) */
+    const yearNum = yi + 1;
     const mTaxRatio = r.div > 0 ? r.tax / r.div : 0;
-    /* 세전 분배 역산용 keep rate */
     const keepRate  = r.div > 0 && r.divGross > 0 ? r.div / r.divGross : 1;
 
-    r.monthlyDivs.forEach((mDiv, mi) => {
-      const yearLabel = (yi + 1) + '년차';
-      const monLabel  = (mi + 1) + '월';
-      const label     = mi === 0 ? `${yearLabel} ${monLabel}` : monLabel;
+    /* 연차 헤더 행 (접힌 상태) */
+    insertYearAccordionRow(tbody, yearNum, colSpan);
 
-      /* 월초 잔고(적립 전) — 보유자산은 적립금 합산 후 표시 */
+    r.monthlyDivs.forEach((mDiv, mi) => {
       const portAfterDep = r.monthlyPortAfterDeposit[mi];
       const mDepAmt      = r.monthlyDeposits[mi];
-
-      /* 월 과세표준: 세전 분배 × divRatio */
       const mDivGross = keepRate > 0 ? mDiv / keepRate : mDiv;
       const mTaxBase  = Math.round(mDivGross * divRatio);
-      /* 월 세금: 연간 세금 비율 그대로 적용 */
       const mTax      = taxOn ? Math.round(mDiv * mTaxRatio) : 0;
       cumDiv += mDiv;
 
       const tr = document.createElement('tr');
-      if (mi === 0) tr.style.borderTop = '1px solid rgba(255,255,255,0.06)';
+      tr.dataset.yrRow = yearNum;
+      tr.style.display = 'none'; /* 기본 접힘 */
       if (yi === rows.length - 1 && mi === 11) tr.classList.add('highlight');
 
       const depCell = dcaOn
@@ -4450,7 +4534,7 @@ function renderMonthlyTable(cache) {
         : '';
 
       tr.innerHTML = `
-        <td style="color:${mi===0?'var(--text2)':'var(--text3)'};">${label}</td>
+        <td style="color:var(--text3);">${(mi + 1)}월</td>
         <td>${fmt(portAfterDep)}</td>
         ${dcaOn ? `<td>${depCell}</td>` : ''}
         <td>${fmt(mDiv)}</td>
@@ -4851,7 +4935,6 @@ function update() {
       <td>${fmt(r.div)}</td>
       <td style="display:${taxOn?'table-cell':'none'};color:#ffaa55;">${taxOn ? fmt(r.taxBase) : '—'}</td>
       <td style="display:${taxOn?'table-cell':'none'};color:#ff7070;">${taxOn ? fmt(r.tax) : '—'}</td>
-      <td>${fmt(r.monthDiv1st)}</td>
       <td>${fmt(r.total)}</td>`;
     tbody.appendChild(tr);
   });
@@ -4863,7 +4946,6 @@ function update() {
   document.getElementById('th-deposit').style.display = dcaOn  ? '' : 'none';
   const _divW = kodexOn ? '분배' : '분배'; const _divWG = kodexOn ? '분배금' : '분배금';
   document.getElementById('th-div').textContent       = taxOn ? ('연간 ' + _divW + ' (세후)') : ('연간 ' + _divWG);
-  document.getElementById('th-monthly').textContent   = taxOn ? ('월 ' + _divW + ' (세후)') : ('월 ' + _divWG);
 
   /* 요약 바 세후 표시 */
   const taxSuffix = taxOn ? ' (세후)' : '';
@@ -5331,9 +5413,8 @@ update();
     if (thTaxbase) thTaxbase.style.display = S.taxOn ? '' : 'none';
     if (thTax)     thTax.style.display     = S.taxOn ? '' : 'none';
     if (thDeposit) thDeposit.style.display = S.dcaOn ? '' : 'none';
-    const thDiv = $id('th-div'), thMon = $id('th-monthly');
+    const thDiv = $id('th-div');
     if (thDiv) thDiv.textContent   = S.taxOn ? '연간 분배금 (세후)' : '연간 분배금';
-    if (thMon) thMon.textContent   = S.taxOn ? '월 분배금 (세후)'  : '월 분배금';
 
     // ── 연간 테이블 행 ───────────────────────
     const tbody = $id('tableBody');
@@ -5349,7 +5430,6 @@ update();
           '<td>'+fmt(r.div)+'</td>' +
           (S.taxOn ? '<td style="color:#ffaa55;">'+fmt(r.taxBase)+'</td>' : '') +
           (S.taxOn ? '<td style="color:#ff7070;">'+fmt(r.tax)+'</td>' : '') +
-          '<td>'+fmt(r.m1st)+'</td>' +
           '<td>'+fmt(r.total)+'</td>';
         tbody.appendChild(tr);
       });
@@ -5499,12 +5579,14 @@ update();
     if (mthDiv)     mthDiv.textContent = showTax ? '월 분배금 (세후)' : '월 분배금';
 
     let cumDiv = 0;
-    rows.forEach(r => {
+    const solCS = 4 + (showDCA?1:0) + (showTax?2:0);
+    rows.forEach((r, ri) => {
+      const yearNum = r.y || (ri + 1);
+      insertYearAccordionRow(tbody, yearNum, solCS);
       for (let m = 0; m < 12; m++) {
         const dN = r.mDivs[m] || 0;
         cumDiv += dN;
         const dep = r.mDeposits ? r.mDeposits[m] : 0;
-        // 월 과세표준 & 세금 추정
         let taxBase = 0, tax = 0;
         if (showTax) {
           const portM = r.mPortsAfter ? r.mPortsAfter[m] : 0;
@@ -5517,10 +5599,11 @@ update();
           tax = dG - dN;
         }
         const tr = document.createElement('tr');
-        if (m === 0) tr.style.borderTop = '1px solid rgba(255,255,255,0.06)';
+        tr.dataset.yrRow = yearNum;
+        tr.style.display = 'none';
         if (m === 11 && r.y === rows.length) tr.classList.add('highlight');
         tr.innerHTML =
-          '<td style="color:'+(m===0?'var(--text2)':'var(--text3)')+';">'+(m===0 ? r.y+'년차 '+(m+1)+'월' : (m+1)+'월')+'</td>' +
+          '<td style="color:var(--text3);">'+(m+1)+'월</td>' +
           '<td>'+(r.mPortsAfter?fmt(r.mPortsAfter[m]):'—')+'원</td>' +
           (showDCA ? '<td>'+(dep>0?'<span style="color:var(--accent);">+'+fmt(dep)+'</span>':'<span style="color:var(--text3);">—</span>')+'</td>' : '') +
           '<td>'+fmt(dN)+'원</td>' +
@@ -5776,9 +5859,8 @@ update();
     if (thTaxbase) thTaxbase.style.display = S.taxOn?'':'none';
     if (thTax)     thTax.style.display     = S.taxOn?'':'none';
     if (thDeposit) thDeposit.style.display = S.dcaOn?'':'none';
-    const thDiv=$id('th-div'), thMon=$id('th-monthly');
+    const thDiv=$id('th-div');
     if (thDiv) thDiv.textContent = S.taxOn?'연간 분배금 (세후)':'연간 분배금';
-    if (thMon) thMon.textContent = S.taxOn?'월 분배금 (세후)':'월 분배금';
 
     const tbody = $id('tableBody');
     if (tbody) {
@@ -5792,7 +5874,7 @@ update();
           '<td>'+fmt(r.div)+'</td>'+
           (S.taxOn?'<td style="color:#ffaa55;">'+fmt(r.taxBase)+'</td>':'')+
           (S.taxOn?'<td style="color:#ff7070;">'+fmt(r.tax)+'</td>':'')+
-          '<td>'+fmt(r.m1st)+'</td><td>'+fmt(r.total)+'</td>';
+          '<td>'+fmt(r.total)+'</td>';
         tbody.appendChild(tr);
       });
     }
@@ -5830,16 +5912,20 @@ update();
     if(mthDeposit) mthDeposit.style.display=S.dcaOn?'':'none';
     if(mthDiv) mthDiv.textContent=S.taxOn?'월 분배금 (세후)':'월 분배금';
     let cumDiv=0;
-    rows.forEach(r => {
+    const tigerCS=4+(S.dcaOn?1:0)+(S.taxOn?2:0);
+    rows.forEach((r,ri)=>{
+      const yearNum=r.y||(ri+1);
+      insertYearAccordionRow(tbody,yearNum,tigerCS);
       for(let m=0;m<12;m++){
         const dN=r.mDivs[m]||0; cumDiv+=dN;
         const dep=r.mDeposits?r.mDeposits[m]:0;
         let taxBase=0, tax=0;
         if(S.taxOn){const portM=r.mPortsAfter?r.mPortsAfter[m]:0;const mRate=cache.rate/12;const dG=portM*mRate;const cp=S.kodexOn?(parseFloat(($id('ni-calloption')||{value:'5'}).value)||5):0;const dp=S.kodexOn?(parseFloat(($id('ni-divportion')||{value:'2'}).value)||2):0;const tp=cp+dp;taxBase=S.kodexOn&&tp>0?dG*(dp/tp):dG;tax=dG-dN;}
         const tr=document.createElement('tr');
-        if(m===0) tr.style.borderTop='1px solid rgba(255,255,255,0.06)';
+        tr.dataset.yrRow=yearNum;
+        tr.style.display='none';
         if(m===11&&r.y===rows.length) tr.classList.add('highlight');
-        tr.innerHTML='<td style="color:'+(m===0?'var(--text2)':'var(--text3)')+';">'+(m===0?r.y+'년차 '+(m+1)+'월':(m+1)+'월')+'</td>'+'<td>'+(r.mPortsAfter?fmt(r.mPortsAfter[m]):'—')+'원</td>'+(S.dcaOn?'<td>'+(dep>0?'<span style="color:var(--accent);">+'+fmt(dep)+'</span>':'<span style="color:var(--text3);">—</span>')+'</td>':'')+'<td>'+fmt(dN)+'원</td>'+(S.taxOn?'<td style="color:#ffaa55;">'+fmt(Math.round(taxBase))+'원</td>':'')+(S.taxOn?'<td style="color:#ff7070;">'+fmt(Math.round(tax))+'원</td>':'')+'<td>'+fmt(Math.round(cumDiv))+'원</td>';
+        tr.innerHTML='<td style="color:var(--text3);">'+(m+1)+'월</td>'+'<td>'+(r.mPortsAfter?fmt(r.mPortsAfter[m]):'—')+'원</td>'+(S.dcaOn?'<td>'+(dep>0?'<span style="color:var(--accent);">+'+fmt(dep)+'</span>':'<span style="color:var(--text3);">—</span>')+'</td>':'')+'<td>'+fmt(dN)+'원</td>'+(S.taxOn?'<td style="color:#ffaa55;">'+fmt(Math.round(taxBase))+'원</td>':'')+(S.taxOn?'<td style="color:#ff7070;">'+fmt(Math.round(tax))+'원</td>':'')+'<td>'+fmt(Math.round(cumDiv))+'원</td>';
         tbody.appendChild(tr);
       }
     });
@@ -6490,6 +6576,35 @@ function calcHealth() {
   }
 }
 
+
+/* ═══════════════════════════════════════════
+   월간 테이블 연차 아코디언 헬퍼
+   insertYearAccordionRow(tbody, yearNum, colSpan)
+   toggleYearGroup(hdrRow)
+═══════════════════════════════════════════ */
+function insertYearAccordionRow(tbody, yearNum, colSpan) {
+  const tr = document.createElement('tr');
+  tr.className = 'yr-acc-hdr';
+  tr.dataset.yr = yearNum;
+  tr.innerHTML = '<td colspan="' + colSpan + '" style="border-top:1px solid rgba(255,255,255,0.06);">' +
+    '<span style="display:flex;align-items:center;gap:8px;">' +
+    '<span class="yr-acc-arrow" style="font-size:11px;color:var(--text3);transition:transform 0.15s;">▶</span>' +
+    '<span>' + yearNum + '년차</span>' +
+    '</span></td>';
+  tr.onclick = function() { toggleYearGroup(this); };
+  tbody.appendChild(tr);
+  return tr;
+}
+
+function toggleYearGroup(hdrRow) {
+  const yr = hdrRow.dataset.yr;
+  const tbody = hdrRow.parentElement;
+  const rows = tbody.querySelectorAll('tr[data-yr-row="' + yr + '"]');
+  const arrow = hdrRow.querySelector('.yr-acc-arrow');
+  const isOpen = rows.length > 0 && rows[0].style.display !== 'none';
+  rows.forEach(r => r.style.display = isOpen ? 'none' : '');
+  if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(90deg)';
+}
 
 window.addEventListener('load', function() { fetchKodexPrice(); });
 
@@ -7385,6 +7500,7 @@ const LOAN_DESC = {
   equal:     '매월 원금+이자를 동일하게 납부. 초기 이자 비중이 높고 후반 원금 비중이 높아집니다.',
   principal: '매월 원금을 균등하게 상환, 이자는 잔여원금에 따라 감소. 초기 부담이 크지만 총이자가 적습니다.',
   bullet:    '대출 기간 동안 이자만 납부하고 만기에 원금 전액 상환. 월납입액이 가장 적지만 총이자가 가장 많습니다.',
+  graduated: '초기에는 납입금이 적고 매년 일정 비율로 증가. 초기 부담이 가볍고 소득 증가에 맞춰 상환하는 방식입니다.',
 };
 function getLoanWon(id) {
   const raw = (document.getElementById('loan-' + id).value || '0').replace(/,/g,'');
@@ -7409,10 +7525,26 @@ function onLoanBlur(id) {
   const disp=won/(unit==='eok'?1e8:unit==='man'?1e4:1);
   document.getElementById('loan-'+id).value=commaFmt(unit==='won'?Math.round(disp):parseFloat(disp.toFixed(4)));
 }
+let gradType = 'manual';
+
+function syncGradRateSl() {
+  const v = parseFloat(document.getElementById('loan-grad-rate-input').value)||0.35;
+  const sl = document.getElementById('loan-grad-rate-sl');
+  if(sl) sl.value = v;
+}
+
 function setLoanMethod(method,btn) {
   loanMethod=method;
-  ['equal','principal','bullet'].forEach(m=>document.getElementById('loan-method-'+m).classList.toggle('active',m===method));
+  ['equal','principal','bullet','graduated'].forEach(m=>document.getElementById('loan-method-'+m).classList.toggle('active',m===method));
   document.getElementById('loan-method-desc').textContent=LOAN_DESC[method];
+  /* 체증식 전용 옵션 패널 */
+  const gradeOpts = document.getElementById('loan-grade-options');
+  if(gradeOpts) gradeOpts.style.display = method==='graduated' ? '' : 'none';
+  const isGrad = method==='graduated';
+  const graceBlock = document.getElementById('loan-grace-block');
+  const gradSummary = document.getElementById('loan-grad-summary');
+  if(graceBlock)  graceBlock.style.display  = isGrad ? '' : 'none';
+  if(gradSummary) gradSummary.style.display = isGrad ? '' : 'none';
   calcLoan();
 }
 /* ════════════════════════════════════════
@@ -7620,6 +7752,10 @@ function calcLoan() {
   const years=parseInt(document.getElementById('loan-years').value)||1;
   document.getElementById('loan-rate-sl').value=Math.min(rateY*100,20);
   document.getElementById('loan-years-sl').value=Math.min(years,50);
+  /* 거치기간 슬라이더 동기화 */
+  const graceEl=document.getElementById('loan-grace');
+  const graceSlEl=document.getElementById('loan-grace-sl');
+  if(graceEl&&graceSlEl) graceSlEl.value=Math.min(parseInt(graceEl.value)||0,60);
   if(!principal||!rateY||principal<=0)return;
   const rateM=rateY/12, months=years*12;
   let schedule=[];
@@ -7642,7 +7778,7 @@ function calcLoan() {
     document.getElementById('loan-s-label1').textContent='첫달 납입금';
     document.getElementById('loan-s-monthly').textContent=fmt(Math.round(first));
     document.getElementById('loan-s-monthly-sub').textContent='→ '+fmt(Math.round(schedule[months-1].payment))+'로 감소';
-  } else {
+  } else if(loanMethod==='bullet') {
     const ip=principal*rateM;
     for(let i=1;i<=months;i++){
       const pay=i<months?ip:ip+principal;
@@ -7651,6 +7787,102 @@ function calcLoan() {
     document.getElementById('loan-s-label1').textContent='월 이자 납입금';
     document.getElementById('loan-s-monthly').textContent=fmt(Math.round(ip));
     document.getElementById('loan-s-monthly-sub').textContent='만기 원금 '+fmt(Math.round(principal))+' 일시상환';
+  } else {
+    /* ── 체증식원리금상환 (우리은행 방식) ─────────────────────
+       구조:
+         1) 거치기간(graceMo): 이자만 납부 → 원금 고정
+         2) 상환기간(repayMo): 매달 납입금이 고정금액(D)씩 증가
+            m회차 납입금 = P1 + (m-1)*D   (m=1..repayMo)
+
+       현가합산법으로 P1, D 결정:
+         Σ [P1+(m-1)*D] / (1+rateM)^m = principal  (for m=1..repayMo)
+         → P1*A + D*B = principal
+           A = Σ 1/(1+rateM)^m = [1-(1+rateM)^-n]/rateM
+           B = Σ (m-1)/(1+rateM)^m
+
+         두 번째 조건: 1회차 납입금 = 원리금균등의 65% 수준
+           P1 = PMT_equal * 0.65
+           → D = (principal - P1*A) / B
+    ──────────────────────────────────────────────────────── */
+    /* ───────────────────────────────────────────────────────
+       우리은행 체증식원리금상환 (현가합산법)
+       ▸ 1차년도 월납입금 A = P × r_m  (순이자 = 초회 이자)
+       ▸ 연체증금액 D = (P - A×α) / β
+         α = A_fac × Σ_{y=0}^{Y-1} v_y^y   (연금현가 합계)
+         β = A_fac × Σ_{y=0}^{Y-1} y × v_y^y
+         A_fac = (1-(1+r)^{-12})/r,  v_y = (1+r)^{-12}
+       ▸ y년차 월납입금 = A + (y-1)×D
+       ▸ 거치기간: 이자만 납부
+    ─────────────────────────────────────────────────────── */
+    const graceMo = parseInt(document.getElementById('loan-grace').value)||0;
+    const repayMo = months - graceMo;
+    if(repayMo <= 0) return;
+    const repayYrs = Math.floor(repayMo / 12);
+    const extraMo  = repayMo % 12;
+
+    /* 거치기간: 이자만 납부 */
+    for(let m=0;m<graceMo;m++){
+      const ip=Math.round(principal*rateM);
+      schedule.push({payment:ip,principal:0,interest:ip,balance:Math.round(principal),grace:true});
+    }
+
+    if(repayYrs > 0){
+      /* 현가 계수 계산 */
+      const A_fac = rateM===0 ? 12 : (1-Math.pow(1+rateM,-12))/rateM;
+      const v_y   = Math.pow(1+rateM,-12);
+
+      /* α = A_fac × (1-v_y^Y)/(1-v_y) */
+      const alpha = A_fac * (1-Math.pow(v_y,repayYrs))/(1-v_y);
+
+      /* β = A_fac × Σ y*v_y^y */
+      let betaSum=0;
+      for(let y=0;y<repayYrs;y++) betaSum += y*Math.pow(v_y,y);
+      const beta = A_fac * betaSum;
+
+      /* 초회 납입금 및 연체증금액 계산 (직접입력 방식) */
+      const k = (parseFloat(document.getElementById('loan-grad-rate-input')?.value)||0.35) / 100;
+      const A = (alpha + k*beta) > 0 ? principal/(alpha + k*beta) : principal*rateM;
+      const D = A * k;
+
+      /* 스케줄 생성 (연 단위로 납입금 결정) */
+      let balR=principal;
+      for(let y=0;y<repayYrs;y++){
+        const pmt = A + y*D;
+        const pmt_r = Math.round(pmt);
+        for(let m=0;m<12;m++){
+          const ip=Math.round(balR*rateM);
+          const pp=pmt_r-ip;
+          balR=Math.max(0,balR-pp);
+          schedule.push({payment:pmt_r,principal:pp,interest:ip,balance:Math.round(balR)});
+        }
+      }
+      /* 남은 개월 (잔여 원금 마저 상환) */
+      for(let m=0;m<extraMo;m++){
+        const pmt = Math.round(A + repayYrs*D);
+        const ip  = Math.round(balR*rateM);
+        const pp  = m===extraMo-1 ? balR : pmt-ip;
+        balR = Math.max(0,balR-pp);
+        schedule.push({payment:m===extraMo-1?(ip+pp):pmt,principal:pp,interest:ip,balance:Math.round(balR)});
+      }
+
+      const firstPmt = Math.round(A);
+      const lastYrPmt = Math.round(A + (repayYrs-1)*D);
+      const annualD   = Math.round(D);
+      const chRate    = A>0 ? (D/A*100).toFixed(2)+'%' : '0%';
+
+      document.getElementById('loan-s-label1').textContent='1년차 월 납입금';
+      document.getElementById('loan-s-monthly').textContent=fmt(firstPmt);
+      document.getElementById('loan-s-monthly-sub').textContent=
+        '→ '+fmt(lastYrPmt)+' ('+repayYrs+'년차) · 연 +'+fmt(annualD)+' 체증';
+
+      const gs=document.getElementById('loan-grad-summary');
+      if(gs) gs.style.display='';
+      const setG=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+      setG('loan-g-first', fmt(firstPmt));
+      setG('loan-g-last',  fmt(lastYrPmt));
+      setG('loan-g-step',  '연 +'+fmt(annualD));
+      setG('loan-g-rate',  '체증률 '+chRate);
+    }
   }
   const totPay=schedule.reduce((s,r)=>s+r.payment,0);
   const totInt=schedule.reduce((s,r)=>s+r.interest,0);
@@ -7658,13 +7890,76 @@ function calcLoan() {
   document.getElementById('loan-s-interest-sub').textContent='이자율 '+((totInt/principal)*100).toFixed(1)+'%';
   document.getElementById('loan-s-total').textContent=fmt(Math.round(totPay));
   document.getElementById('loan-s-total-sub').textContent='대출금 대비 '+(totPay/principal).toFixed(2)+'배';
+  /* ── 연간 테이블 ── */
   const tbody=document.getElementById('loanTableBody'); tbody.innerHTML='';
-  for(let y=1;y<=years;y++){
+  const totalMo=schedule.length;
+  const totalYears=Math.ceil(totalMo/12);
+  for(let y=1;y<=totalYears;y++){
     const sl=schedule.slice((y-1)*12,y*12);
-    const yP=sl.reduce((s,r)=>s+r.payment,0),yPr=sl.reduce((s,r)=>s+r.principal,0),yI=sl.reduce((s,r)=>s+r.interest,0),yB=sl[sl.length-1].balance;
-    const tr=document.createElement('tr'); if(y===years)tr.classList.add('cagr-highlight');
-    tr.innerHTML=`<td>${y}년차</td><td>${fmt(Math.round(yP))}</td><td>${fmt(Math.round(yPr))}</td><td style="color:#ff9090;">${fmt(Math.round(yI))}</td><td>${fmt(Math.round(yB))}</td>`;
+    if(!sl.length) break;
+    const yP=sl.reduce((s,r)=>s+r.payment,0);
+    const yPr=sl.reduce((s,r)=>s+r.principal,0);
+    const yI=sl.reduce((s,r)=>s+r.interest,0);
+    const yB=sl[sl.length-1].balance;
+    const isGraceOnly=sl.every(r=>r.grace);
+    const tr=document.createElement('tr'); if(y===totalYears)tr.classList.add('cagr-highlight');
+    const labelSuffix=isGraceOnly?' <span style="font-size:9px;color:var(--text3);">(거치)</span>':'';
+    tr.innerHTML=`<td>${y}년차${labelSuffix}</td><td>${fmt(Math.round(yP))}</td><td>${fmt(Math.round(yPr))}</td><td style="color:#ff9090;">${fmt(Math.round(yI))}</td><td>${fmt(Math.round(yB))}</td>`;
     tbody.appendChild(tr);
+  }
+  /* ── 월간 테이블 (현재 뷰가 월간이면 즉시 렌더) ── */
+  window._loanSchedule = schedule;
+  window._loanTotalYears = totalYears;
+  if(document.getElementById('loan-monthly-view')?.style.display !== 'none'){
+    renderLoanMonthly();
+  }
+}
+
+let _loanView = 'annual';
+function setLoanView(view, btn) {
+  _loanView = view;
+  ['annual','monthly'].forEach(v => {
+    document.getElementById('loan-view-'+v).classList.toggle('active', v===view);
+  });
+  document.getElementById('loan-annual-view').style.display  = view==='annual'  ? '' : 'none';
+  document.getElementById('loan-monthly-view').style.display = view==='monthly' ? '' : 'none';
+  /* 카드 타이틀 변경 */
+  const titleEl = document.getElementById('loan-detail-title');
+  if(titleEl) titleEl.textContent = view==='annual' ? '연간 납입 내역' : '월간 납입 내역';
+  if(view === 'monthly') renderLoanMonthly();
+}
+
+function renderLoanMonthly() {
+  const tbody = document.getElementById('loanMonthlyBody');
+  if(!tbody) return;
+  const schedule   = window._loanSchedule || [];
+  const totalYears = window._loanTotalYears || 0;
+  tbody.innerHTML = '';
+
+  for(let y=1; y<=totalYears; y++){
+    const sl = schedule.slice((y-1)*12, y*12);
+    if(!sl.length) break;
+    const isGraceOnly = sl.every(r=>r.grace);
+    /* 연차 헤더 행 */
+    const hdrTr = insertYearAccordionRow(tbody, y, 5);
+    if(isGraceOnly){
+      const td = hdrTr.querySelector('td');
+      if(td) td.innerHTML += ' <span style="font-size:9px;color:var(--text3);">(거치)</span>';
+    }
+    sl.forEach((r, i) => {
+      const tr = document.createElement('tr');
+      tr.dataset.yrRow = y;
+      tr.style.display = 'none'; /* 기본 접힘 */
+      if(y === totalYears && i === sl.length-1) tr.classList.add('cagr-highlight');
+      const ppColor = r.principal < 0 ? 'color:#ff7070;' : '';
+      tr.innerHTML = `
+        <td style="color:var(--text3);">${i+1}월</td>
+        <td>${fmt(r.payment)}</td>
+        <td style="${ppColor}">${fmt(r.principal)}</td>
+        <td style="color:#ff9090;">${fmt(r.interest)}</td>
+        <td>${fmt(r.balance)}</td>`;
+      tbody.appendChild(tr);
+    });
   }
 }
 
