@@ -1856,7 +1856,7 @@
                   <th id="th-div">연간 <span class="txt-div">분배금</span></th>
                   <th id="th-taxbase" style="display:none;color:#ffaa55;">과세표준</th>
                   <th id="th-tax" style="display:none;color:#ff7070;">세금(연)</th>
-                  <th>누적 분배</th>
+                  <th>누적 자산</th>
                 </tr>
               </thead>
               <tbody id="tableBody"></tbody>
@@ -1874,13 +1874,13 @@
             <table>
               <thead>
                 <tr>
-                  <th>월</th>
-                  <th>보유 자산</th>
+                  <th>기간</th>
+                  <th>시작 자산</th>
                   <th id="mth-deposit" style="color:var(--accent);">월 적립금</th>
                   <th id="mth-div">월 <span class="txt-div">분배금</span></th>
                   <th id="mth-taxbase" style="display:none;color:#ffaa55;">월 과세표준</th>
                   <th id="mth-tax" style="display:none;color:#ff7070;">월 세금</th>
-                  <th>누적 분배</th>
+                  <th>누적 자산</th>
                 </tr>
               </thead>
               <tbody id="monthlyTableBody"></tbody>
@@ -2383,7 +2383,7 @@
                   <th id="sol-th-div">연간 <span class="txt-div">분배금</span></th>
                   <th id="sol-th-taxbase" style="display:none;color:#ffaa55;">과세표준</th>
                   <th id="sol-th-tax" style="display:none;color:#ff7070;">세금(연)</th>
-                  <th>누적 분배</th>
+                  <th>누적 자산</th>
                 </tr>
               </thead>
               <tbody id="sol-tableBody"></tbody>
@@ -2401,13 +2401,13 @@
             <table>
               <thead>
                 <tr>
-                  <th>월</th>
-                  <th>보유 자산</th>
+                  <th>기간</th>
+                  <th>시작 자산</th>
                   <th id="sol-mth-deposit" style="color:var(--accent);">월 적립금</th>
                   <th id="sol-mth-div">월 <span class="txt-div">분배금</span></th>
                   <th id="sol-mth-taxbase" style="display:none;color:#ffaa55;">월 과세표준</th>
                   <th id="sol-mth-tax" style="display:none;color:#ff7070;">월 세금</th>
-                  <th>누적 분배</th>
+                  <th>누적 자산</th>
                 </tr>
               </thead>
               <tbody id="sol-monthlyTableBody"></tbody>
@@ -2910,7 +2910,7 @@
                   <th id="tiger-th-div">연간 <span class="txt-div">분배금</span></th>
                   <th id="tiger-th-taxbase" style="display:none;color:#ffaa55;">과세표준</th>
                   <th id="tiger-th-tax" style="display:none;color:#ff7070;">세금(연)</th>
-                  <th>누적 분배</th>
+                  <th>누적 자산</th>
                 </tr>
               </thead>
               <tbody id="tiger-tableBody"></tbody>
@@ -2928,13 +2928,13 @@
             <table>
               <thead>
                 <tr>
-                  <th>월</th>
-                  <th>보유 자산</th>
+                  <th>기간</th>
+                  <th>시작 자산</th>
                   <th id="tiger-mth-deposit" style="color:var(--accent);">월 적립금</th>
                   <th id="tiger-mth-div">월 <span class="txt-div">분배금</span></th>
                   <th id="tiger-mth-taxbase" style="display:none;color:#ffaa55;">월 과세표준</th>
                   <th id="tiger-mth-tax" style="display:none;color:#ff7070;">월 세금</th>
-                  <th>누적 분배</th>
+                  <th>누적 자산</th>
                 </tr>
               </thead>
               <tbody id="tiger-monthlyTableBody"></tbody>
@@ -3438,7 +3438,7 @@
                   <th id="tigerdiv-th-div">연간 <span class="txt-div">분배금</span></th>
                   <th id="tigerdiv-th-taxbase" style="display:none;color:#ffaa55;">과세표준</th>
                   <th id="tigerdiv-th-tax" style="display:none;color:#ff7070;">세금(연)</th>
-                  <th>누적 분배</th>
+                  <th>누적 자산</th>
                 </tr>
               </thead>
               <tbody id="tigerdiv-tableBody"></tbody>
@@ -3456,13 +3456,13 @@
             <table>
               <thead>
                 <tr>
-                  <th>월</th>
-                  <th>보유 자산</th>
+                  <th>기간</th>
+                  <th>시작 자산</th>
                   <th id="tigerdiv-mth-deposit" style="color:var(--accent);">월 적립금</th>
                   <th id="tigerdiv-mth-div">월 <span class="txt-div">분배금</span></th>
                   <th id="tigerdiv-mth-taxbase" style="display:none;color:#ffaa55;">월 과세표준</th>
                   <th id="tigerdiv-mth-tax" style="display:none;color:#ff7070;">월 세금</th>
-                  <th>누적 분배</th>
+                  <th>누적 자산</th>
                 </tr>
               </thead>
               <tbody id="tigerdiv-monthlyTableBody"></tbody>
@@ -5060,8 +5060,6 @@ function renderMonthlyTable(cache) {
   const totalPct = callPct + divPct;
   const divRatio = (kodexOn && totalPct > 0) ? divPct / totalPct : 1;
 
-  let cumDiv = 0;
-
   const colSpan = 4 + (dcaOn?1:0) + (taxOn?2:0);
   rows.forEach((r, yi) => {
     const yearNum = yi + 1;
@@ -5072,12 +5070,15 @@ function renderMonthlyTable(cache) {
     insertYearAccordionRow(tbody, yearNum, colSpan);
 
     r.monthlyDivs.forEach((mDiv, mi) => {
-      const portAfterDep = r.monthlyPortAfterDeposit[mi];
+      const monthNum     = yi * 12 + mi + 1;          // 전체 누적 개월 수
+      const portStart    = r.monthlyPortStart[mi];     // 시작 자산 (월초 적립 전)
       const mDepAmt      = r.monthlyDeposits[mi];
+      const portEnd      = r.monthlyPortEnd
+                           ? r.monthlyPortEnd[mi]
+                           : r.monthlyPortAfterDeposit[mi]; // 누적 자산 (월말)
       const mDivGross = keepRate > 0 ? mDiv / keepRate : mDiv;
       const mTaxBase  = Math.round(mDivGross * divRatio);
       const mTax      = taxOn ? Math.round(mDiv * mTaxRatio) : 0;
-      cumDiv += mDiv;
 
       const tr = document.createElement('tr');
       tr.dataset.yrRow = yearNum;
@@ -5089,13 +5090,13 @@ function renderMonthlyTable(cache) {
         : '';
 
       tr.innerHTML = `
-        <td style="color:var(--text3);">${(mi + 1)}월</td>
-        <td>${fmt(portAfterDep)}</td>
+        <td style="color:var(--text3);">${monthNum}개월</td>
+        <td>${fmt(portStart)}</td>
         ${dcaOn ? `<td>${depCell}</td>` : ''}
         <td>${fmt(mDiv)}</td>
         <td style="display:${taxOn?'table-cell':'none'};color:#ffaa55;">${taxOn ? fmt(mTaxBase) : '—'}</td>
         <td style="display:${taxOn?'table-cell':'none'};color:#ff7070;">${taxOn ? fmt(mTax) : '—'}</td>
-        <td>${fmt(cumDiv)}</td>`;
+        <td>${fmt(portEnd)}</td>`;
       tbody.appendChild(tr);
     });
   });
@@ -5405,6 +5406,7 @@ function update() {
     const monthlyPortStart       = [];  // 월초 잔고(적립 전) — 1년차 1월 = 초기 투자금
     const monthlyDeposits        = [];  // 월 적립금
     const monthlyPortAfterDeposit = []; // 적립 후 잔고(분배 기준 잔고)
+    const monthlyPortEnd         = [];  // 월말 잔고(분배+재투자+주가변동 후)
 
     for (let m = 0; m < 12; m++) {
       /* 월초 잔고 저장 (DCA 투입 전) */
@@ -5440,6 +5442,7 @@ function update() {
       } else {
         portfolio = portfolio * (1 + monthGrow);
       }
+      monthlyPortEnd.push(Math.round(portfolio));  // 월말 잔고
     }
 
     /* 연초 기준 월·주 분배 (직관적 참고값: 재투자 복리 전 원점 기준) */
@@ -5468,6 +5471,7 @@ function update() {
       monthlyPortStart,          // 월초 잔고(적립 전) 12개
       monthlyDeposits,           // 월 적립금 12개
       monthlyPortAfterDeposit,   // 적립 후 잔고 12개
+      monthlyPortEnd,            // 월말 잔고 12개
       tax:         Math.round(yearTax),
       deposit:     Math.round(yearDeposit),
       total:       Math.round(totalDiv),
@@ -6066,7 +6070,7 @@ update();
     let port = amount, totDiv = 0, totTax = 0, totInvest = amount, rows = [];
     for (let y = 1; y <= years; y++) {
       let yDiv=0, yDivG=0, yTax=0, yDeposit=0, portStart=port;
-      let mDivs=[], mPorts=[], mDeposits=[], mPortsAfter=[];
+      let mDivs=[], mPorts=[], mDeposits=[], mPortsAfter=[], mPortsEnd=[];
       for (let m = 0; m < 12; m++) {
         mPorts.push(Math.round(port));
         const dep = monthly > 0 ? monthly : 0;
@@ -6083,6 +6087,7 @@ update();
           const pr = (parseFloat(($id('ni-partial')||{}).value)||50)/100;
           port = (port + dN*pr) * (1 + mGrow);
         } else                                port = port * (1 + mGrow);
+        mPortsEnd.push(Math.round(port));
       }
       const m1st    = Math.round(portStart * mRate * keepRate);
       const weekDiv = Math.round(portStart * (rate/52) * keepRate);
@@ -6095,7 +6100,7 @@ update();
       rows.push({ y, port:Math.round(port), portStart:Math.round(portStart),
         div:Math.round(yDiv), divG:Math.round(yDivG), tax:Math.round(yTax),
         taxBase:Math.round(taxBase), deposit:Math.round(yDeposit),
-        m1st, weekDiv, mDivs, mPorts, mDeposits, mPortsAfter,
+        m1st, weekDiv, mDivs, mPorts, mDeposits, mPortsAfter, mPortsEnd,
         total: Math.round(totDiv) });
     }
 
@@ -6332,14 +6337,12 @@ update();
     if (mthDeposit) mthDeposit.style.display = showDCA ? '' : 'none';
     if (mthDiv)     mthDiv.textContent = showTax ? '월 분배금 (세후)' : '월 분배금';
 
-    let cumDiv = 0;
-    const solCS = 4 + (showDCA?1:0) + (showTax?2:0);
+      const solCS = 4 + (showDCA?1:0) + (showTax?2:0);
     rows.forEach((r, ri) => {
       const yearNum = r.y || (ri + 1);
       insertYearAccordionRow(tbody, yearNum, solCS);
       for (let m = 0; m < 12; m++) {
         const dN = r.mDivs[m] || 0;
-        cumDiv += dN;
         const dep = r.mDeposits ? r.mDeposits[m] : 0;
         let taxBase = 0, tax = 0;
         if (showTax) {
@@ -6357,13 +6360,13 @@ update();
         tr.style.display = 'none';
         if (m === 11 && r.y === rows.length) tr.classList.add('highlight');
         tr.innerHTML =
-          '<td style="color:var(--text3);">'+(m+1)+'월</td>' +
-          '<td>'+(r.mPortsAfter?fmt(r.mPortsAfter[m]):'—')+'원</td>' +
+          '<td style="color:var(--text3);">'+(ri*12+m+1)+'개월</td>' +
+          '<td>'+(r.mPorts?fmt(r.mPorts[m]):'—')+'원</td>' +
           (showDCA ? '<td>'+(dep>0?'<span style="color:var(--accent);">+'+fmt(dep)+'</span>':'<span style="color:var(--text3);">—</span>')+'</td>' : '') +
           '<td>'+fmt(dN)+'원</td>' +
           (showTax ? '<td style="color:#ffaa55;">'+fmt(Math.round(taxBase))+'원</td>' : '') +
           (showTax ? '<td style="color:#ff7070;">'+fmt(Math.round(tax))+'원</td>' : '') +
-          '<td>'+fmt(Math.round(cumDiv))+'원</td>';
+          '<td>'+(r.mPortsEnd?fmt(r.mPortsEnd[m]):'—')+'원</td>';
         tbody.appendChild(tr);
       }
     });
@@ -6619,7 +6622,7 @@ window.solSetDetailTab = function(tab, btn) {
     let port = amount, totDiv = 0, totTax = 0, totInvest = amount, rows = [];
     for (let y = 1; y <= years; y++) {
       let yDiv=0, yDivG=0, yTax=0, yDeposit=0, portStart=port;
-      let mDivs=[], mPorts=[], mDeposits=[], mPortsAfter=[];
+      let mDivs=[], mPorts=[], mDeposits=[], mPortsAfter=[], mPortsEnd=[];
       for (let m = 0; m < 12; m++) {
         mPorts.push(Math.round(port));
         const dep = monthly > 0 ? monthly : 0;
@@ -6636,6 +6639,7 @@ window.solSetDetailTab = function(tab, btn) {
           const pr = (parseFloat(($id('ni-partial')||{}).value)||50)/100;
           port = (port + dN*pr) * (1 + mGrow);
         } else                                port = port * (1 + mGrow);
+        mPortsEnd.push(Math.round(port));
       }
       const m1st    = Math.round(portStart * mRate * keepRate);
       let taxBase = yDivG;
@@ -6643,7 +6647,7 @@ window.solSetDetailTab = function(tab, btn) {
       rows.push({ y, port:Math.round(port), portStart:Math.round(portStart),
         div:Math.round(yDiv), divG:Math.round(yDivG), tax:Math.round(yTax),
         taxBase:Math.round(taxBase), deposit:Math.round(yDeposit),
-        m1st, mDivs, mPorts, mDeposits, mPortsAfter, total:Math.round(totDiv) });
+        m1st, mDivs, mPorts, mDeposits, mPortsAfter, mPortsEnd, total:Math.round(totDiv) });
     }
 
     const r1=rows[0]||{}, rN=rows[rows.length-1]||{};
@@ -6727,21 +6731,19 @@ window.solSetDetailTab = function(tab, btn) {
     if(mthTaxbase) mthTaxbase.style.display=S.taxOn?'':'none';
     if(mthDeposit) mthDeposit.style.display=S.dcaOn?'':'none';
     if(mthDiv) mthDiv.textContent=S.taxOn?'월 분배금 (세후)':'월 분배금';
-    let cumDiv=0;
     const tigerCS=4+(S.dcaOn?1:0)+(S.taxOn?2:0);
     rows.forEach((r,ri)=>{
       const yearNum=r.y||(ri+1);
       insertYearAccordionRow(tbody,yearNum,tigerCS);
       for(let m=0;m<12;m++){
-        const dN=r.mDivs[m]||0; cumDiv+=dN;
-        const dep=r.mDeposits?r.mDeposits[m]:0;
+        const dN=r.mDivs[m]||0;        const dep=r.mDeposits?r.mDeposits[m]:0;
         let taxBase=0, tax=0;
         if(S.taxOn){const portM=r.mPortsAfter?r.mPortsAfter[m]:0;const mRate=cache.rate/12;const dG=portM*mRate;const cp=S.kodexOn?(parseFloat(($id('ni-calloption')||{value:'5'}).value)||5):0;const dp=S.kodexOn?(parseFloat(($id('ni-divportion')||{value:'2'}).value)||2):0;const tp=cp+dp;taxBase=S.kodexOn&&tp>0?dG*(dp/tp):dG;tax=dG-dN;}
         const tr=document.createElement('tr');
         tr.dataset.yrRow=yearNum;
         tr.style.display='none';
         if(m===11&&r.y===rows.length) tr.classList.add('highlight');
-        tr.innerHTML='<td style="color:var(--text3);">'+(m+1)+'월</td>'+'<td>'+(r.mPortsAfter?fmt(r.mPortsAfter[m]):'—')+'원</td>'+(S.dcaOn?'<td>'+(dep>0?'<span style="color:var(--accent);">+'+fmt(dep)+'</span>':'<span style="color:var(--text3);">—</span>')+'</td>':'')+'<td>'+fmt(dN)+'원</td>'+(S.taxOn?'<td style="color:#ffaa55;">'+fmt(Math.round(taxBase))+'원</td>':'')+(S.taxOn?'<td style="color:#ff7070;">'+fmt(Math.round(tax))+'원</td>':'')+'<td>'+fmt(Math.round(cumDiv))+'원</td>';
+        tr.innerHTML='<td style="color:var(--text3);">'+(ri*12+m+1)+'개월</td>'+'<td>'+(r.mPorts?fmt(r.mPorts[m]):'—')+'원</td>'+(S.dcaOn?'<td>'+(dep>0?'<span style="color:var(--accent);">+'+fmt(dep)+'</span>':'<span style="color:var(--text3);">—</span>')+'</td>':'')+'<td>'+fmt(dN)+'원</td>'+(S.taxOn?'<td style="color:#ffaa55;">'+fmt(Math.round(taxBase))+'원</td>':'')+(S.taxOn?'<td style="color:#ff7070;">'+fmt(Math.round(tax))+'원</td>':'')+'<td>'+(r.mPortsEnd?fmt(r.mPortsEnd[m]):'—')+'원</td>';
         tbody.appendChild(tr);
       }
     });
@@ -7011,7 +7013,7 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
     let port = amount, totDiv = 0, totTax = 0, totInvest = amount, rows = [];
     for (let y = 1; y <= years; y++) {
       let yDiv=0, yDivG=0, yTax=0, yDeposit=0, portStart=port;
-      let mDivs=[], mPorts=[], mDeposits=[], mPortsAfter=[];
+      let mDivs=[], mPorts=[], mDeposits=[], mPortsAfter=[], mPortsEnd=[];
       for (let m = 0; m < 12; m++) {
         mPorts.push(Math.round(port));
         const dep = monthly > 0 ? monthly : 0;
@@ -7028,6 +7030,7 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
           const pr = (parseFloat(($id('ni-partial')||{}).value)||50)/100;
           port = (port + dN*pr) * (1 + mGrow);
         } else                                port = port * (1 + mGrow);
+        mPortsEnd.push(Math.round(port));
       }
       const m1st    = Math.round(portStart * mRate * keepRate);
       let taxBase = yDivG;
@@ -7035,7 +7038,7 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
       rows.push({ y, port:Math.round(port), portStart:Math.round(portStart),
         div:Math.round(yDiv), divG:Math.round(yDivG), tax:Math.round(yTax),
         taxBase:Math.round(taxBase), deposit:Math.round(yDeposit),
-        m1st, mDivs, mPorts, mDeposits, mPortsAfter, total:Math.round(totDiv) });
+        m1st, mDivs, mPorts, mDeposits, mPortsAfter, mPortsEnd, total:Math.round(totDiv) });
     }
 
     const r1=rows[0]||{}, rN=rows[rows.length-1]||{};
@@ -7119,21 +7122,19 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
     if(mthTaxbase) mthTaxbase.style.display=S.taxOn?'':'none';
     if(mthDeposit) mthDeposit.style.display=S.dcaOn?'':'none';
     if(mthDiv) mthDiv.textContent=S.taxOn?'월 분배금 (세후)':'월 분배금';
-    let cumDiv=0;
     const tigerCS=4+(S.dcaOn?1:0)+(S.taxOn?2:0);
     rows.forEach((r,ri)=>{
       const yearNum=r.y||(ri+1);
       insertYearAccordionRow(tbody,yearNum,tigerCS);
       for(let m=0;m<12;m++){
-        const dN=r.mDivs[m]||0; cumDiv+=dN;
-        const dep=r.mDeposits?r.mDeposits[m]:0;
+        const dN=r.mDivs[m]||0;        const dep=r.mDeposits?r.mDeposits[m]:0;
         let taxBase=0, tax=0;
         if(S.taxOn){const portM=r.mPortsAfter?r.mPortsAfter[m]:0;const mRate=cache.rate/12;const dG=portM*mRate;const cp=S.kodexOn?(parseFloat(($id('ni-calloption')||{value:'5'}).value)||5):0;const dp=S.kodexOn?(parseFloat(($id('ni-divportion')||{value:'2'}).value)||2):0;const tp=cp+dp;taxBase=S.kodexOn&&tp>0?dG*(dp/tp):dG;tax=dG-dN;}
         const tr=document.createElement('tr');
         tr.dataset.yrRow=yearNum;
         tr.style.display='none';
         if(m===11&&r.y===rows.length) tr.classList.add('highlight');
-        tr.innerHTML='<td style="color:var(--text3);">'+(m+1)+'월</td>'+'<td>'+(r.mPortsAfter?fmt(r.mPortsAfter[m]):'—')+'원</td>'+(S.dcaOn?'<td>'+(dep>0?'<span style="color:var(--accent);">+'+fmt(dep)+'</span>':'<span style="color:var(--text3);">—</span>')+'</td>':'')+'<td>'+fmt(dN)+'원</td>'+(S.taxOn?'<td style="color:#ffaa55;">'+fmt(Math.round(taxBase))+'원</td>':'')+(S.taxOn?'<td style="color:#ff7070;">'+fmt(Math.round(tax))+'원</td>':'')+'<td>'+fmt(Math.round(cumDiv))+'원</td>';
+        tr.innerHTML='<td style="color:var(--text3);">'+(ri*12+m+1)+'개월</td>'+'<td>'+(r.mPorts?fmt(r.mPorts[m]):'—')+'원</td>'+(S.dcaOn?'<td>'+(dep>0?'<span style="color:var(--accent);">+'+fmt(dep)+'</span>':'<span style="color:var(--text3);">—</span>')+'</td>':'')+'<td>'+fmt(dN)+'원</td>'+(S.taxOn?'<td style="color:#ffaa55;">'+fmt(Math.round(taxBase))+'원</td>':'')+(S.taxOn?'<td style="color:#ff7070;">'+fmt(Math.round(tax))+'원</td>':'')+'<td>'+(r.mPortsEnd?fmt(r.mPortsEnd[m]):'—')+'원</td>';
         tbody.appendChild(tr);
       }
     });
