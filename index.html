@@ -5021,6 +5021,7 @@ function renderMonthlyTable(cache) {
       });
     }
     _yPCK = Math.round(_yPCK);
+    if (Math.abs(_yPCK) <= 5) _yPCK = 0;
     hdrCells += '<td style="border-top:1px solid rgba(255,255,255,0.06);color:' + (_yPCK>=0?'#64b5f6':'#ff7070') + ';">' + (_yPCK>=0?'+':'') + fmt(_yPCK) + '</td>';
     hdrCells += '<td style="border-top:1px solid rgba(255,255,255,0.06);">' + fmt(r.port) + '</td>';
 
@@ -5042,6 +5043,7 @@ function renderMonthlyTable(cache) {
       var _pr  = typeof partialRatio !== 'undefined' ? partialRatio : 0.5;
       var _rv  = investMode==='reinvest' ? mDiv : (investMode==='partial' ? Math.round(mDiv*_pr) : 0);
       var mPriceChg = portEnd - _pad - _rv;
+      if (Math.abs(mPriceChg) <= 2) mPriceChg = 0;
 
       var tr = document.createElement('tr');
       tr.dataset.yrRow = yearNum;
@@ -6332,7 +6334,7 @@ update();
         div:         r.div,
         taxBase:     r.taxBase,
         tax:         r.tax,
-        priceChange: Math.round(_yPCS),
+        priceChange: Math.abs(_yPCS) <= 5 ? 0 : Math.round(_yPCS),
         port:        r.port,
         taxOn:       S.taxOn,
         dcaOn:       S.dcaOn,
@@ -6356,6 +6358,7 @@ update();
         var _prSM = (($id('ni-partial')||{value:'50'}).value||50)/100;
         var _rvSM = S.investMode==='reinvest' ? dN : (S.investMode==='partial' ? Math.round(dN*_prSM) : 0);
         var _pcSM = _peS - _mpaS - _rvSM;
+        if (Math.abs(_pcSM) <= 2) _pcSM = 0;
         const tr = document.createElement('tr');
         tr.dataset.yrRow = yearNum;
         tr.style.display = 'none';
@@ -6757,7 +6760,7 @@ window.solSetDetailTab = function(tab, btn) {
         div:         r.div,
         taxBase:     r.taxBase,
         tax:         r.tax,
-        priceChange: Math.round(_yPCS),
+        priceChange: Math.abs(_yPCS) <= 5 ? 0 : Math.round(_yPCS),
         port:        r.port,
         taxOn:       S.taxOn,
         dcaOn:       S.dcaOn,
@@ -6771,6 +6774,7 @@ window.solSetDetailTab = function(tab, btn) {
         var _prS = (($id('ni-partial')||{value:'50'}).value||50)/100;
         var _rvS = S.investMode==='reinvest' ? dN : (S.investMode==='partial' ? Math.round(dN*_prS) : 0);
         var _pcS = portEnd - _mpa - _rvS;
+        if (Math.abs(_pcS) <= 2) _pcS = 0;
         const tr=document.createElement('tr');
         tr.dataset.yrRow=yearNum;
         tr.style.display='none';
@@ -7178,7 +7182,7 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
         div:         r.div,
         taxBase:     r.taxBase,
         tax:         r.tax,
-        priceChange: Math.round(_yPCS),
+        priceChange: Math.abs(_yPCS) <= 5 ? 0 : Math.round(_yPCS),
         port:        r.port,
         taxOn:       S.taxOn,
         dcaOn:       S.dcaOn,
@@ -7192,6 +7196,7 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
         var _prS = (($id('ni-partial')||{value:'50'}).value||50)/100;
         var _rvS = S.investMode==='reinvest' ? dN : (S.investMode==='partial' ? Math.round(dN*_prS) : 0);
         var _pcS = portEnd - _mpa - _rvS;
+        if (Math.abs(_pcS) <= 2) _pcS = 0;
         const tr=document.createElement('tr');
         tr.dataset.yrRow=yearNum;
         tr.style.display='none';
