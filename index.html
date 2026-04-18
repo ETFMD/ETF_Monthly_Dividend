@@ -105,8 +105,8 @@
   .mode-btn.active { background:var(--accent); color:#000; }
 
   /* ── Layout ── */
-  .layout { display:grid; grid-template-columns:380px 1fr; gap:24px; align-items:start; }
-  @media(max-width:900px){ .layout { grid-template-columns:320px 1fr; gap:16px; } }
+  .layout { display:grid; grid-template-columns:380px minmax(0, 1fr); gap:24px; align-items:start; }
+  @media(max-width:900px){ .layout { grid-template-columns:320px minmax(0, 1fr); gap:16px; } }
   @media(max-width:700px){ .layout { grid-template-columns:1fr; } }
 
   .card {
@@ -260,10 +260,18 @@
   .col-hidden { width:0 !important; min-width:0 !important; max-width:0 !important;
     padding:0 !important; border-left:none !important; border-right:none !important;
     overflow:hidden !important; white-space:nowrap; font-size:0 !important; }
+  /* 상세 내역 테이블 컨테이너 크기 고정 */
+  #detail-monthly, #sol-detail-monthly, #tiger-detail-monthly, #tigerdiv-detail-monthly {
+    width: 100%; box-sizing: border-box;
+  }
+  #detail-monthly .table-scroll, #sol-detail-monthly .table-scroll,
+  #tiger-detail-monthly .table-scroll, #tigerdiv-detail-monthly .table-scroll {
+    width: 100%; box-sizing: border-box; overflow-x: auto; overflow-y: visible;
+  }
   table { width:100%; border-collapse:collapse; font-size:12px; }
   thead th {
     text-align:right; font-weight:500; color:var(--text3);
-    padding:8px 10px; border-bottom:1px solid var(--card-border);
+    padding:8px 10px; white-space:nowrap; border-bottom:1px solid var(--card-border);
     font-size:11px; letter-spacing:0.04em; white-space:nowrap;
     position: sticky;
     top: 0;
@@ -276,8 +284,9 @@
     text-align:right; padding:9px 10px;
     border-bottom:1px solid rgba(255,255,255,0.03);
     font-family:var(--mono); color:var(--text2); white-space:nowrap;
+    min-width:90px;
   }
-  tbody td:first-child { text-align:left; font-family:var(--font); color:var(--text3); }
+  tbody td:first-child { text-align:left; font-family:var(--font); color:var(--text3); min-width:60px; }
   tbody tr:hover td { background:rgba(255,255,255,0.02); }
   tbody tr.highlight td { color:var(--accent); font-weight:500; }
   tbody tr.highlight td:first-child { color:var(--accent); }
@@ -929,6 +938,7 @@
     max-height: 0;
     transition: max-height 0.28s ease, padding 0.22s ease;
     padding-top: 0;
+    padding-bottom: 0;
   }
   .acc-body.open {
     max-height: 2400px;
@@ -954,10 +964,17 @@
     font-size: 12px;
     font-weight: 500;
     color: var(--text2);
+    min-width: 90px;
+    white-space: nowrap;
   }
   .yr-acc-rows tr { transition: none; }
 
-</style>
+
+  /* 차트 acc-body 열렸을 때 좌우 여백 */
+  #sol-acc-chart, #tiger-acc-chart, #tigerdiv-acc-chart {
+    padding-left: 20px;
+    padding-right: 20px;
+  }</style>
 </head>
 <body>
 <div class="wrap">
@@ -1806,7 +1823,7 @@
     </div>
 
     <!-- ── 오른쪽: 차트·표 ── -->
-    <div style="display:flex;flex-direction:column;gap:20px;">
+    <div style="display:flex;flex-direction:column;gap:20px;min-width:0;overflow:hidden;">
 
       <!-- 차트 카드 -->
       <div class="card" style="padding:20px 24px;">
@@ -1840,14 +1857,14 @@
       </div>
 
       <!-- 테이블 카드 -->
-      <div class="card">
+      <div class="card" style="min-width:0;">
         <p class="card-title" id="detail-title">연/월간 상세 내역</p>
         <div id="detail-monthly">
           <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
             <button id="btn-expand-kodex" onclick="toggleAllYears('monthlyTableBody',this)"
               style="font-size:11px;color:var(--text3);background:var(--bg3);border:1px solid var(--card-border);border-radius:6px;padding:3px 10px;cursor:pointer;">▶ 전체 펼치기</button>
           </div>
-          <div class="table-scroll" style="max-height:360px;overflow-y:auto;">
+          <div class="table-scroll" style="max-height:360px;overflow-y:auto;overflow-x:auto;">
             <table>
               <thead>
                 <tr>
@@ -2323,7 +2340,7 @@
             <span class="acc-arrow open">▼</span>
           </div>
         </div>
-        <div class="acc-body default-open" id="sol-acc-chart" style="padding:0 20px 20px;">
+        <div class="acc-body default-open" id="sol-acc-chart">
           <!-- 범례 -->
           <div class="legend" id="sol-chartLegend">
             <div class="legend-item" id="sol-leg-div">
@@ -2827,7 +2844,7 @@
             <span class="acc-arrow open">▼</span>
           </div>
         </div>
-        <div class="acc-body default-open" id="tiger-acc-chart" style="padding:0 20px 20px;">
+        <div class="acc-body default-open" id="tiger-acc-chart">
           <!-- 범례 -->
           <div class="legend" id="tiger-chartLegend">
             <div class="legend-item" id="tiger-leg-div">
@@ -3332,7 +3349,7 @@
             <span class="acc-arrow open">▼</span>
           </div>
         </div>
-        <div class="acc-body default-open" id="tigerdiv-acc-chart" style="padding:0 20px 20px;">
+        <div class="acc-body default-open" id="tigerdiv-acc-chart">
           <!-- 범례 -->
           <div class="legend" id="tigerdiv-chartLegend">
             <div class="legend-item" id="tigerdiv-leg-div">
