@@ -4983,6 +4983,7 @@ function calcProgressiveTax(base) {
 /* 연간 분배(세전)과 다른소득 과세표준을 받아 유효세율 반환 */
 function calcYearEffectiveTaxRate(annualDivGross, otherIncome) {
   if (!taxOn) return 0;
+  if (!annualDivGross || annualDivGross <= 0) return 0;
 
   /* ── KODEX 과세구조: 분배 비율만 과세, 콜옵션 비과세 ── */
   if (kodexOn) {
@@ -5436,6 +5437,7 @@ function fmtRate(n) {
 
 /* ── 포맷 ── */
 function fmt(n, short) {
+  if (!isFinite(n) || isNaN(n)) return '—';
   /* short=true : 차트 축 레이블용 축약 */
   if (short) {
     if (n >= 1e12) return (n/1e12).toFixed(1)+'조';
@@ -5472,6 +5474,10 @@ function update() {
       if (el) el.textContent = id.endsWith('-sub') ? '' : '0원';
     });
     document.querySelectorAll('.sum-cell-val').forEach(function(el) { el.textContent = '0원'; });
+    /* 상세 내역 tbody 초기화 */
+    var _tbody = document.getElementById('monthlyTableBody');
+    if (_tbody) _tbody.innerHTML = '';
+    _cache = null;
     return;
   }
 
@@ -5612,7 +5618,7 @@ function update() {
   document.getElementById('s-final').textContent      = fmt(lastDiv);
   document.getElementById('s-final-sub').textContent  = '월간 ' + fmt(lastRow.monthlyDivs ? lastRow.monthlyDivs[11] : lastRow.monthDiv1st);
   document.getElementById('s-total').textContent      = fmt(totalDiv);
-  document.getElementById('s-total-sub').textContent  = '수익률 ' + ((totalDiv / totalInvest) * 100).toFixed(1) + '%';
+  document.getElementById('s-total-sub').textContent  = '수익률 ' + (totalInvest > 0 ? ((totalDiv / totalInvest) * 100).toFixed(1) : '0.0') + '%';
   document.getElementById('s-port-label').textContent = yrs + '년차 종료 자산';
   document.getElementById('target-sub').textContent   = '현재 ' + (kodexOn?'분배':'분배') + '율 기준';
   document.getElementById('s-port').textContent       = fmt(finalPort);
@@ -5637,7 +5643,7 @@ function update() {
   /* 역산 */
   const targetWan = getFancyWan('target');
   if (!isNaN(targetWan)) {
-    const needed = (targetWan * 10000 * 12) / rate;
+    const needed = rate > 0 ? (targetWan * 10000 * 12) / rate : 0;
     document.getElementById('target-result').textContent = fmt(needed);
     document.getElementById('target-sub').textContent    = '분배율 ' + (rate * 100).toFixed(1) + '% 기준';
   }
@@ -6060,7 +6066,7 @@ update();
 
     var otherIncome = getVWon('ni-otherincome');
     var amount  = getVWon('ni-amount');
-    var ratePct = getV('ni-rate') || 15;
+    var ratePct = (!isNaN(getV('ni-rate')) && getV('ni-rate') !== null) ? getV('ni-rate') : 15;
     var monthly = S.dcaOn ? getVWon('ni-monthly') : 0;
 
     /* ── 1년차 총 분배금 추정 ── */
@@ -6139,7 +6145,7 @@ update();
   };
   window.solUpdate = function() {
     const FEE  = 0.003;
-    const rate0  = (getV('ni-rate') || 15) / 100;
+    const rate0  = ((!isNaN(getV('ni-rate')) && getV('ni-rate') !== null) ? getV('ni-rate') : 15) / 100;
     const rate   = Math.max(0, rate0 - FEE);
         const amount = getVWon('ni-amount');
     const _monthlyCheck = S.dcaOn ? getVWon('ni-monthly') : 0;
@@ -6148,6 +6154,10 @@ update();
         .forEach(e => { if(e) e.textContent='0원'; });
       [$id('s-final-sub'),$id('s-total-sub'),$id('s-port-sub'),$id('target-sub')]
         .forEach(e => { if(e) e.textContent=''; });
+      /* 상세 내역 tbody 초기화 */
+      var _tb = $id('monthlyTableBody') || document.getElementById('monthlyTableBody');
+      if (_tb) _tb.innerHTML = '';
+      _solCache = null;
       return;
     }
     const years  = Math.round(getV('ni-years')) || 10;
@@ -6164,7 +6174,7 @@ update();
     let effTax;
     if (S.taxOn && S.taxMode === 'bracket') {
       /* bracket 모드: 직접 계산 (solUpdateBracketUI와 독립적) */
-      const _rate_pct = getV('ni-rate') || 15;
+      const _rate_pct = (!isNaN(getV('ni-rate')) && getV('ni-rate') !== null) ? getV('ni-rate') : 15;
       const _amt = getVWon('ni-amount');
       const _mR = (_rate_pct / 100) / 12;
       let _est = 0;
@@ -6757,7 +6767,7 @@ window.solSetDetailTab = function(tab, btn) {
   };
   window.tigerUpdate = function() {
     const FEE  = 0.0025;
-    const rate0  = (getV('ni-rate') || 7) / 100;
+    const rate0  = ((!isNaN(getV('ni-rate')) && getV('ni-rate') !== null) ? getV('ni-rate') : 7) / 100;
     const rate   = Math.max(0, rate0 - FEE);
         const amount = getVWon('ni-amount');
     const _monthlyCheck = S.dcaOn ? getVWon('ni-monthly') : 0;
@@ -6766,6 +6776,10 @@ window.solSetDetailTab = function(tab, btn) {
         .forEach(e => { if(e) e.textContent='0원'; });
       [$id('s-final-sub'),$id('s-total-sub'),$id('s-port-sub'),$id('target-sub')]
         .forEach(e => { if(e) e.textContent=''; });
+      /* 상세 내역 tbody 초기화 */
+      var _tb = $id('monthlyTableBody') || document.getElementById('tiger-monthlyTableBody');
+      if (_tb) _tb.innerHTML = '';
+      _tigerCache = null;
       return;
     }
     const years  = Math.round(getV('ni-years')) || 10;
@@ -7184,7 +7198,7 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
   };
   window.tigerdivUpdate = function() {
     const FEE  = 0.005;
-    const rate0  = (getV('ni-rate') || 7) / 100;
+    const rate0  = ((!isNaN(getV('ni-rate')) && getV('ni-rate') !== null) ? getV('ni-rate') : 7) / 100;
     const rate   = Math.max(0, rate0 - FEE);
         const amount = getVWon('ni-amount');
     const _monthlyCheck = S.dcaOn ? getVWon('ni-monthly') : 0;
@@ -7193,6 +7207,10 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
         .forEach(e => { if(e) e.textContent='0원'; });
       [$id('s-final-sub'),$id('s-total-sub'),$id('s-port-sub'),$id('target-sub')]
         .forEach(e => { if(e) e.textContent=''; });
+      /* 상세 내역 tbody 초기화 */
+      var _tb = $id('monthlyTableBody') || document.getElementById('tigerdiv-monthlyTableBody');
+      if (_tb) _tb.innerHTML = '';
+      _tigerdivCache = null;
       return;
     }
     const years  = Math.round(getV('ni-years')) || 10;
