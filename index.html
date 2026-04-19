@@ -1887,6 +1887,7 @@
                   <th id="mth-tax" style="display:none;color:#ff7070;">연/월 세금</th>
                   <th id="mth-price-change" style="color:#64b5f6;">연/월 주가 변동</th>
                   <th>누적 자산</th>
+                  <th style="color:#a78bfa;">보유 수량</th>
                 </tr>
               </thead>
               <tbody id="monthlyTableBody"></tbody>
@@ -2391,6 +2392,7 @@
                   <th id="sol-mth-tax" style="display:none;color:#ff7070;">연/월 세금</th>
                   <th id="sol-mth-price-change" style="color:#64b5f6;">연/월 주가 변동</th>
                   <th>누적 자산</th>
+                  <th style="color:#a78bfa;">보유 수량</th>
                 </tr>
               </thead>
               <tbody id="sol-monthlyTableBody"></tbody>
@@ -2895,6 +2897,7 @@
                   <th id="tiger-mth-tax" style="display:none;color:#ff7070;">연/월 세금</th>
                   <th id="tiger-mth-price-change" style="color:#64b5f6;">연/월 주가 변동</th>
                   <th>누적 자산</th>
+                  <th style="color:#a78bfa;">보유 수량</th>
                 </tr>
               </thead>
               <tbody id="tiger-monthlyTableBody"></tbody>
@@ -3400,6 +3403,7 @@
                   <th id="tigerdiv-mth-tax" style="display:none;color:#ff7070;">연/월 세금</th>
                   <th id="tigerdiv-mth-price-change" style="color:#64b5f6;">연/월 주가 변동</th>
                   <th>누적 자산</th>
+                  <th style="color:#a78bfa;">보유 수량</th>
                 </tr>
               </thead>
               <tbody id="tigerdiv-monthlyTableBody"></tbody>
@@ -5105,6 +5109,8 @@ function renderMonthlyTable(cache) {
   if (!cache || !cache.rows) return;
   const { rows } = cache;
   const tbody = document.getElementById('monthlyTableBody');
+  const _priceNow = _lastKodexPrice || parseFloat((document.getElementById('kodex-price-val')||{textContent:'0'}).textContent.replace(/[^0-9.]/g,'')) || 0;
+  const _growth = (parseFloat((document.getElementById('ni-growth')||{value:'0'}).value) || 0) / 100;
   if (!tbody) return;
   try { saveOpenYears(tbody); } catch(e) {}
   tbody.innerHTML = '';
@@ -5125,7 +5131,7 @@ function renderMonthlyTable(cache) {
   const totalPct = callPct + divPct;
   const divRatio = (kodexOn && totalPct > 0) ? divPct / totalPct : 1;
 
-  const colSpan = 5 + (dcaOn?1:0) + (taxOn?2:0);
+  const colSpan = 6 + (dcaOn?1:0) + (taxOn?2:0);
 
   rows.forEach(function(r, yi) {
     var yearNum = yi + 1;
@@ -5160,6 +5166,8 @@ function renderMonthlyTable(cache) {
     if (Math.abs(_yPCK) <= 5) _yPCK = 0;
     hdrCells += '<td style="border-top:1px solid rgba(255,255,255,0.06);color:' + (_yPCK>=0?'#64b5f6':'#ff7070') + ';">' + (_yPCK>=0?'+':'') + fmt(_yPCK) + '</td>';
     hdrCells += '<td style="border-top:1px solid rgba(255,255,255,0.06);">' + fmt(r.port) + '</td>';
+    var _yShares = calcShares(r.port, _priceNow, _growth, yearNum * 12);
+    hdrCells += '<td style="border-top:1px solid rgba(255,255,255,0.06);color:#a78bfa;">' + fmtShares(_yShares) + '</td>';
 
     hdrTr.innerHTML = hdrCells;
     hdrTr.onclick = function() { toggleYearGroup(this); };
@@ -5198,7 +5206,8 @@ function renderMonthlyTable(cache) {
         '<td>' + fmt(mDiv) + '</td>' +
         taxCells +
         '<td style="color:' + (mPriceChg>=0?'#64b5f6':'#ff7070') + ';">' + (mPriceChg>=0?'+':'') + fmt(mPriceChg) + '</td>' +
-        '<td>' + fmt(portEnd) + '</td>';
+        '<td>' + fmt(portEnd) + '</td>' +
+        '<td style="color:#a78bfa;">' + fmtShares(calcShares(portEnd, _priceNow, _growth, monthNum)) + '</td>';
       tbody.appendChild(tr);
     });
   });
@@ -6436,6 +6445,8 @@ update();
   // ── 월간 테이블 렌더 ────────────────────────
   function renderSolMonthlyTable(cache) {
     const { rows, years } = cache;
+    const _priceNow = parseFloat((($id('sol-kodex-price-val')||{textContent:'0'}).textContent).replace(/[^0-9.]/g,'')) || 0;
+    const _growth = (parseFloat(($id('ni-growth')||{value:'0'}).value) || 0) / 100;
     const tbody = $id('monthlyTableBody');
     if (!tbody) return;
     saveOpenYears(tbody);
@@ -6451,7 +6462,7 @@ update();
     if (mthDeposit) mthDeposit.classList.toggle('col-hidden', !showDCA);
     if (mthDiv)     mthDiv.textContent = showTax ? '월 분배금 (세후)' : '월 분배금';
 
-      const solCS = 5 + (showDCA?1:0) + (showTax?2:0);
+      const solCS = 6 + (showDCA?1:0) + (showTax?2:0);
     rows.forEach((r, ri) => {
       const yearNum = r.y || (ri + 1);
       /* 연간 주가 변동 합산 */
@@ -6472,6 +6483,7 @@ update();
         tax:         r.tax,
         priceChange: Math.abs(_yPCS) <= 5 ? 0 : Math.round(_yPCS),
         port:        r.port,
+        shares:      calcShares(r.port, _priceNow, _growth, yearNum * 12),
         taxOn:       S.taxOn,
         dcaOn:       S.dcaOn,
       });
@@ -6507,7 +6519,7 @@ update();
           (showTax ? '<td style="color:#ffaa55;">'+fmt(Math.round(taxBase))+'원</td>' : '') +
           (showTax ? '<td style="color:#ff7070;">'+fmt(Math.round(tax))+'원</td>' : '') +
           '<td style="color:'+(_pcSM>=0?'#64b5f6':'#ff7070')+';">' + (_pcSM>=0?'+':'') + fmt(_pcSM) + '원</td>' +
-          '<td>'+(r.mPortsEnd?fmt(r.mPortsEnd[m]):'—')+'원</td>';
+          '<td>'+(r.mPortsEnd?fmt(r.mPortsEnd[m]):'—')+'원</td>'+'<td style="color:#a78bfa;">'+fmtShares(calcShares(r.mPortsEnd?r.mPortsEnd[m]:0,_priceNow,_growth,ri*12+m+1))+'</td>';
         tbody.appendChild(tr);
       }
     });
@@ -6869,6 +6881,8 @@ window.solSetDetailTab = function(tab, btn) {
 
   function renderTigerMonthlyTable(cache) {
     const {rows,years} = cache;
+    const _priceNow = parseFloat(((document.getElementById('tiger-kodex-price-val')||{textContent:'0'}).textContent).replace(/[^0-9.]/g,'')) || 0;
+    const _growth = (parseFloat((document.getElementById('ni-growth')||{value:'0'}).value) || 0) / 100;
     const tbody=$id('monthlyTableBody'); if(!tbody) return;
     saveOpenYears(tbody);
     tbody.innerHTML='';
@@ -6877,7 +6891,7 @@ window.solSetDetailTab = function(tab, btn) {
     if(mthTaxbase) mthTaxbase.style.display=S.taxOn?'':'none';
     if(mthDeposit) mthDeposit.classList.toggle('col-hidden', !S.dcaOn);
     if(mthDiv) mthDiv.textContent=S.taxOn?'연/월 분배 (세후)':'연/월 분배금';
-    const tigerCS=5+(S.dcaOn?1:0)+(S.taxOn?2:0);
+    const tigerCS=6+(S.dcaOn?1:0)+(S.taxOn?2:0);
     rows.forEach((r,ri)=>{
       const yearNum=r.y||(ri+1);
       /* 연간 주가 변동 합산 */
@@ -6898,6 +6912,7 @@ window.solSetDetailTab = function(tab, btn) {
         tax:         r.tax,
         priceChange: Math.abs(_yPCS) <= 5 ? 0 : Math.round(_yPCS),
         port:        r.port,
+        shares:      calcShares(r.port, _priceNow, _growth, yearNum * 12),
         taxOn:       S.taxOn,
         dcaOn:       S.dcaOn,
       });
@@ -6915,7 +6930,7 @@ window.solSetDetailTab = function(tab, btn) {
         tr.dataset.yrRow=yearNum;
         tr.style.display='none';
         if(m===11&&r.y===rows.length) tr.classList.add('highlight');
-        tr.innerHTML='<td style="color:var(--text3);">'+(ri*12+m+1)+'개월</td>'+'<td>'+(r.mPorts?fmt(r.mPorts[m]):'—')+'원</td>'+'<td class="'+(S.dcaOn?'':'col-hidden')+'">'+(dep>0?'<span style="color:var(--accent);">+'+fmt(dep)+'</span>':'<span style="color:var(--text3);">—</span>')+'</td>'+'<td>'+fmt(dN)+'원</td>'+(S.taxOn?'<td style="color:#ffaa55;">'+fmt(Math.round(taxBase))+'원</td>':'')+(S.taxOn?'<td style="color:#ff7070;">'+fmt(Math.round(tax))+'원</td>':'')+'<td style="color:'+(_pcS>=0?'#64b5f6':'#ff7070')+';">'+ (_pcS>=0?'+':'') + fmt(_pcS) + '원</td>'+'<td>'+(r.mPortsEnd?fmt(r.mPortsEnd[m]):'—')+'원</td>';
+        tr.innerHTML='<td style="color:var(--text3);">'+(ri*12+m+1)+'개월</td>'+'<td>'+(r.mPorts?fmt(r.mPorts[m]):'—')+'원</td>'+'<td class="'+(S.dcaOn?'':'col-hidden')+'">'+(dep>0?'<span style="color:var(--accent);">+'+fmt(dep)+'</span>':'<span style="color:var(--text3);">—</span>')+'</td>'+'<td>'+fmt(dN)+'원</td>'+(S.taxOn?'<td style="color:#ffaa55;">'+fmt(Math.round(taxBase))+'원</td>':'')+(S.taxOn?'<td style="color:#ff7070;">'+fmt(Math.round(tax))+'원</td>':'')+'<td style="color:'+(_pcS>=0?'#64b5f6':'#ff7070')+';">'+ (_pcS>=0?'+':'') + fmt(_pcS) + '원</td>'+'<td>'+(r.mPortsEnd?fmt(r.mPortsEnd[m]):'—')+'원</td>'+'<td style="color:#a78bfa;">'+fmtShares(calcShares(r.mPortsEnd?r.mPortsEnd[m]:0,_priceNow,_growth,ri*12+m+1))+'</td>';
         tbody.appendChild(tr);
       }
     });
@@ -7291,6 +7306,8 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
 
   function renderTigerdivMonthlyTable(cache) {
     const {rows,years} = cache;
+    const _priceNow = parseFloat(((document.getElementById('tiger-kodex-price-val')||{textContent:'0'}).textContent).replace(/[^0-9.]/g,'')) || 0;
+    const _growth = (parseFloat((document.getElementById('ni-growth')||{value:'0'}).value) || 0) / 100;
     const tbody=$id('monthlyTableBody'); if(!tbody) return;
     saveOpenYears(tbody);
     tbody.innerHTML='';
@@ -7299,7 +7316,7 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
     if(mthTaxbase) mthTaxbase.style.display=S.taxOn?'':'none';
     if(mthDeposit) mthDeposit.classList.toggle('col-hidden', !S.dcaOn);
     if(mthDiv) mthDiv.textContent=S.taxOn?'연/월 분배 (세후)':'연/월 분배금';
-    const tigerCS=5+(S.dcaOn?1:0)+(S.taxOn?2:0);
+    const tigerCS=6+(S.dcaOn?1:0)+(S.taxOn?2:0);
     rows.forEach((r,ri)=>{
       const yearNum=r.y||(ri+1);
       /* 연간 주가 변동 합산 */
@@ -7320,6 +7337,7 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
         tax:         r.tax,
         priceChange: Math.abs(_yPCS) <= 5 ? 0 : Math.round(_yPCS),
         port:        r.port,
+        shares:      calcShares(r.port, _priceNow, _growth, yearNum * 12),
         taxOn:       S.taxOn,
         dcaOn:       S.dcaOn,
       });
@@ -7337,7 +7355,7 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
         tr.dataset.yrRow=yearNum;
         tr.style.display='none';
         if(m===11&&r.y===rows.length) tr.classList.add('highlight');
-        tr.innerHTML='<td style="color:var(--text3);">'+(ri*12+m+1)+'개월</td>'+'<td>'+(r.mPorts?fmt(r.mPorts[m]):'—')+'원</td>'+'<td class="'+(S.dcaOn?'':'col-hidden')+'">'+(dep>0?'<span style="color:var(--accent);">+'+fmt(dep)+'</span>':'<span style="color:var(--text3);">—</span>')+'</td>'+'<td>'+fmt(dN)+'원</td>'+(S.taxOn?'<td style="color:#ffaa55;">'+fmt(Math.round(taxBase))+'원</td>':'')+(S.taxOn?'<td style="color:#ff7070;">'+fmt(Math.round(tax))+'원</td>':'')+'<td style="color:'+(_pcS>=0?'#64b5f6':'#ff7070')+';">'+ (_pcS>=0?'+':'') + fmt(_pcS) + '원</td>'+'<td>'+(r.mPortsEnd?fmt(r.mPortsEnd[m]):'—')+'원</td>';
+        tr.innerHTML='<td style="color:var(--text3);">'+(ri*12+m+1)+'개월</td>'+'<td>'+(r.mPorts?fmt(r.mPorts[m]):'—')+'원</td>'+'<td class="'+(S.dcaOn?'':'col-hidden')+'">'+(dep>0?'<span style="color:var(--accent);">+'+fmt(dep)+'</span>':'<span style="color:var(--text3);">—</span>')+'</td>'+'<td>'+fmt(dN)+'원</td>'+(S.taxOn?'<td style="color:#ffaa55;">'+fmt(Math.round(taxBase))+'원</td>':'')+(S.taxOn?'<td style="color:#ff7070;">'+fmt(Math.round(tax))+'원</td>':'')+'<td style="color:'+(_pcS>=0?'#64b5f6':'#ff7070')+';">'+ (_pcS>=0?'+':'') + fmt(_pcS) + '원</td>'+'<td>'+(r.mPortsEnd?fmt(r.mPortsEnd[m]):'—')+'원</td>'+'<td style="color:#a78bfa;">'+fmtShares(calcShares(r.mPortsEnd?r.mPortsEnd[m]:0,_priceNow,_growth,ri*12+m+1))+'</td>';
         tbody.appendChild(tr);
       }
     });
@@ -8245,6 +8263,8 @@ function insertYearAccordionRow(tbody, yearNum, colSpan, summary) {
   cells += '<td style="border-top:1px solid rgba(255,255,255,0.06);color:' + pcColor + ';">' + pcText + '</td>';
   // 누적 자산
   cells += '<td style="border-top:1px solid rgba(255,255,255,0.06);">' + (s.port != null ? fmt(s.port) : '—') + '</td>';
+  // 보유 수량
+  cells += '<td style="border-top:1px solid rgba(255,255,255,0.06);color:#a78bfa;">' + fmtShares(s.shares != null ? s.shares : null) + '</td>';
 
   tr.innerHTML = summary ? cells : ('<td colspan="' + colSpan + '" style="border-top:1px solid rgba(255,255,255,0.06);">' +
     '<span style="display:flex;align-items:center;gap:8px;">' +
@@ -8482,6 +8502,19 @@ async function fetchFearGreed() {
   }
 }
 
+
+/* ── 보유 수량 계산 헬퍼 ── */
+function calcShares(portEnd, priceNow, growth, monthNum) {
+  if (!priceNow || priceNow <= 0 || !portEnd) return null;
+  var growthPerMonth = growth / 12;
+  var priceAtMonth = priceNow * Math.pow(1 + growthPerMonth, monthNum);
+  if (priceAtMonth <= 0) return null;
+  return Math.floor(portEnd / priceAtMonth);
+}
+function fmtShares(shares) {
+  if (shares === null || shares === undefined) return '—';
+  return shares.toLocaleString('ko-KR') + '주';
+}
 window.addEventListener('load', function() { fetchKodexPrice(); setTimeout(function(){ update(); }, 100); });
 
 /* ════════════════════════════════════════
