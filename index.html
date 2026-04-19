@@ -6465,7 +6465,8 @@ update();
     if (mthTax)     mthTax.style.display     = showTax ? '' : 'none';
     if (mthTaxbase) mthTaxbase.style.display = showTax ? '' : 'none';
     if (mthDeposit) mthDeposit.classList.toggle('col-hidden', !showDCA);
-    if (mthDiv)     mthDiv.textContent = showTax ? '월 분배금 (세후)' : '월 분배금';
+    if (mthDiv)     mthDiv.textContent = showTax ? '연/월 분배 (세후)' : '연/월 분배금';
+    const mthPriceChange = $id('mth-price-change');
 
       const solCS = 6 + (showDCA?1:0) + (showTax?2:0);
     rows.forEach((r, ri) => {
@@ -6888,7 +6889,7 @@ window.solSetDetailTab = function(tab, btn) {
   function renderTigerMonthlyTable(cache) {
     const {rows,years} = cache;
     const _priceNow = parseFloat(((document.getElementById('tiger-kodex-price-val')||{textContent:'0'}).textContent).replace(/[^0-9.]/g,'')) || 0;
-    const _growth = (parseFloat((document.getElementById('ni-growth')||{value:'0'}).value) || 0) / 100;
+    const _growth = (parseFloat(($id('ni-growth')||{value:'0'}).value) || 0) / 100;
     const tbody=$id('monthlyTableBody'); if(!tbody) return;
     saveOpenYears(tbody);
     tbody.innerHTML='';
@@ -7315,7 +7316,7 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
   function renderTigerdivMonthlyTable(cache) {
     const {rows,years} = cache;
     const _priceNow = parseFloat(((document.getElementById('tigerdiv-kodex-price-val')||{textContent:'0'}).textContent).replace(/[^0-9.]/g,'')) || 0;
-    const _growth = (parseFloat((document.getElementById('ni-growth')||{value:'0'}).value) || 0) / 100;
+    const _growth = (parseFloat(($id('ni-growth')||{value:'0'}).value) || 0) / 100;
     const tbody=$id('monthlyTableBody'); if(!tbody) return;
     saveOpenYears(tbody);
     tbody.innerHTML='';
