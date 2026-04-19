@@ -5831,6 +5831,8 @@ function applyKodexPrice(price, src) {
   if (valEl)  valEl.textContent  = price.toLocaleString('ko-KR');
   if (dateEl) dateEl.textContent = ns + ' 기준';
   if (srcEl)  srcEl.textContent  = '출처: ' + src;
+  /* 현재가 반영하여 보유 수량 재계산 */
+  update();
   return true;
 }
 
