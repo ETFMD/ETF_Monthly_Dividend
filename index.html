@@ -9749,7 +9749,7 @@ function switchSubTabDirect(tab, grpId, btn) {
   const grpBtn = document.getElementById('grp-' + grpId + '-btn');
   if (grpBtn) grpBtn.classList.add('has-active');
   if (tab === 'fear') fetchFearGreed();
-  if (tab === 'moneyspeed') { setTimeout(fetchMSAll, 300); }
+  if (tab === 'moneyspeed') { setTimeout(function(){ if (typeof fetchMSAll === 'function') fetchMSAll(); }, 400); }
 }
 
 function toggleTabGroup(grpId) {
@@ -9965,7 +9965,8 @@ function switchSubTab(tab, grpId, btn) {
       }
     });
   }
-}
+
+  if (tab === 'moneyspeed') { setTimeout(function(){ if (typeof fetchMSAll === 'function') fetchMSAll(); }, 400); }}
 
 // 외부 클릭 시 드롭다운 닫기
 document.addEventListener('click', e => {
