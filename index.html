@@ -936,15 +936,22 @@
   .acc-body {
     overflow: hidden;
     max-height: 0;
-    transition: max-height 0.3s ease;
     padding: 0;
   }
   .acc-body.open {
     max-height: 4000px;
+    padding-top: 16px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
   }
   /* 첫 번째 아코디언: 기본으로 열려 있음 */
   .acc-body.default-open {
     max-height: 4000px;
+    padding-top: 16px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
   }
 
   /* 월간 테이블 연차 아코디언 헤더 */
@@ -8117,7 +8124,15 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
   };
   window.tigerdivSyncTarget=function(){
     var sl=$id('sl-target'); if(!sl) return;
-    setDispFromWon('ni-target', parseFloat(sl.value));
+    var wonV=parseFloat(sl.value);
+    var ni=$id('ni-target');
+    if(ni){
+      var unit=_tdTargetUnit||'won';
+      var disp=wonV/(unit==='eok'?1e8:unit==='man'?1e4:1);
+      ni.value=unit==='won'
+        ?Math.round(disp).toLocaleString('ko-KR')
+        :parseFloat(disp.toFixed(4)).toLocaleString('ko-KR');
+    }
     tigerdivUpdate();
   };
   
@@ -8181,7 +8196,7 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
   window.tigerdivSyncMonthly = function() {
     const sl=$id('sl-monthly'), ni=$id('ni-monthly');
     if(!sl||!ni) return;
-    ni.value = Math.round(parseFloat(sl.value)/10000).toLocaleString('ko-KR');
+    setDispFromWon('ni-monthly', parseFloat(sl.value));
     tigerdivUpdate();
   };
   window.tigerdivOnMonthlyInput = function() {
@@ -8196,9 +8211,16 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
     ni.value = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '0';
   };
   window.tigerdivSyncTarget  = function() {
-    const sl=$id('sl-target'), ni=$id('ni-target');
-    if(!sl||!ni) return;
-    ni.value = Math.round(parseFloat(sl.value)/10000).toLocaleString('ko-KR');
+    var sl=$id('sl-target'); if(!sl) return;
+    var wonV=parseFloat(sl.value);
+    var ni=$id('ni-target');
+    if(ni){
+      var unit=_tdTargetUnit||'won';
+      var disp=wonV/(unit==='eok'?1e8:unit==='man'?1e4:1);
+      ni.value=unit==='won'
+        ?Math.round(disp).toLocaleString('ko-KR')
+        :parseFloat(disp.toFixed(4)).toLocaleString('ko-KR');
+    }
     tigerdivUpdate();
   };
 
@@ -8216,13 +8238,44 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
     tigerdivUpdate();
   };
 
+
+  /* ── tigerdiv 전용 단위 함수 (전역 fancyUnit 오염 방지) ── */
+  var getVWon = function(fieldId) {
+    var el = $id(fieldId);
+    if (!el) return 0;
+    var num = parseFloat(el.value.replace(/,/g,'')) || 0;
+    var field = fieldId.replace('ni-','');
+    var unit = field === 'target'  ? (_tdTargetUnit  || 'won')
+             : field === 'monthly' ? (_tdMonthlyUnit || 'won')
+             : 'won';
+    return num * (unit === 'eok' ? 1e8 : unit === 'man' ? 1e4 : 1);
+  };
+  var setDispFromWon = function(fieldId, wonValue) {
+    var el = $id(fieldId);
+    if (!el) return;
+    var field = fieldId.replace('ni-','');
+    var unit = field === 'target'  ? (_tdTargetUnit  || 'won')
+             : field === 'monthly' ? (_tdMonthlyUnit || 'won')
+             : 'won';
+    var disp = wonValue / (unit === 'eok' ? 1e8 : unit === 'man' ? 1e4 : 1);
+    el.value = unit === 'won'
+      ? Math.round(disp).toLocaleString('ko-KR')
+      : parseFloat(disp.toFixed(6)).toLocaleString('ko-KR');
+  };
   var _tdTargetUnit = 'won';
   window.tigerdivSetTargetUnit = function(unit, btn) {
     var ni = $id('ni-target');
     if (!ni) return;
-    var wonV = getVWon('ni-target');   /* 현재 단위로 원화 변환 */
-    _tdTargetUnit = unit;              /* 단위 먼저 업데이트 */
-    setDispFromWon('ni-target', wonV);  /* 새 단위로 표시 */
+    /* 현재 _tdTargetUnit 기준으로 원화 환산 */
+    var rawNum = parseFloat((ni.value||'0').replace(/,/g,'')) || 0;
+    var curUnit = _tdTargetUnit || 'won';
+    var wonV = rawNum * (curUnit==='eok'?1e8:curUnit==='man'?1e4:1);
+    _tdTargetUnit = unit;
+    /* 새 단위로 표시 */
+    var disp = wonV / (unit==='eok'?1e8:unit==='man'?1e4:1);
+    ni.value = unit==='won'
+      ? Math.round(disp).toLocaleString('ko-KR')
+      : parseFloat(disp.toFixed(4)).toLocaleString('ko-KR');
     var sl = $id('sl-target');
     if (sl) sl.value = Math.min(Math.max(wonV, parseInt(sl.min)), parseInt(sl.max));
     var pg = document.getElementById('page-tigerdiv');
@@ -8235,7 +8288,12 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
     var ns=ni.value.replace(/[^0-9.]/g,'');
     ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';
     var sl=$id('sl-target');
-    if(sl&&ns){var wonV=getVWon('ni-target');sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max));}
+    if(sl&&ns){
+      var unit=_tdTargetUnit||'won';
+      var rawNum=parseFloat(ns)||0;
+      var wonV=rawNum*(unit==='eok'?1e8:unit==='man'?1e4:1);
+      sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max));
+    }
     tigerdivUpdate();
   };
   window.tigerdivOnTargetBlur = function() {
