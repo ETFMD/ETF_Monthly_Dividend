@@ -5328,64 +5328,21 @@
   </div><!-- /page-moneyspeed -->
 
 
-
   <!-- ───────────────────────────────────────────── page-muhan ── -->
   <div class="app-page" id="page-muhan">
 
-    <!-- ══ SCREEN 0: Firebase 설정 ══ -->
-    <div id="mh-firebase-screen" style="display:none;">
-      <div style="max-width:500px;margin:0 auto;padding:32px 0;">
-        <div style="text-align:center;margin-bottom:28px;">
-          <h2 style="margin:0 0 4px;font-size:20px;font-weight:700;">무한매수법</h2>
-          <p style="margin:0;font-size:13px;color:var(--accent);font-weight:600;">V4.0 — Firebase 설정</p>
-        </div>
-        <div class="card" style="padding:24px;display:flex;flex-direction:column;gap:16px;">
-          <div style="padding:12px 16px;background:rgba(0,229,176,0.06);border-radius:8px;border-left:3px solid var(--accent);">
-            <p style="margin:0 0 6px;font-size:12px;font-weight:600;color:var(--accent);">Firebase 프로젝트 설정 방법</p>
-            <ol style="margin:0;padding-left:16px;font-size:11px;color:var(--text3);line-height:1.8;">
-              <li><a href="https://console.firebase.google.com" target="_blank" style="color:var(--accent);">console.firebase.google.com</a> 접속</li>
-              <li>새 프로젝트 생성 → 웹 앱(&lt;/&gt;) 추가</li>
-              <li>Authentication → 로그인 방법 → Google 사용 설정</li>
-              <li>Firestore Database 생성 (테스트 모드)</li>
-              <li>프로젝트 설정 → 앱의 SDK 구성 복사</li>
-            </ol>
-          </div>
-          <div>
-            <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:6px;">Firebase 구성 JSON 붙여넣기</label>
-            <textarea id="mh-fb-config-input" rows="8" placeholder='{
-  "apiKey": "AIza...",
-  "authDomain": "your-app.firebaseapp.com",
-  "projectId": "your-app-id",
-  "storageBucket": "your-app.appspot.com",
-  "messagingSenderId": "123456789",
-  "appId": "1:123:web:abc123"
-}'
-              style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:11px;resize:vertical;line-height:1.6;"></textarea>
-          </div>
-          <p id="mh-fb-config-err" style="display:none;margin:0;font-size:12px;color:#f87171;"></p>
-          <button onclick="mhSaveFirebaseConfig()"
-            style="width:100%;padding:12px;border-radius:9px;border:none;background:var(--accent);color:#000;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);">
-            저장 및 계속
-          </button>
-          <button onclick="mhSkipFirebase()"
-            style="width:100%;padding:10px;border-radius:9px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--text3);font-size:12px;cursor:pointer;font-family:var(--font);">
-            로컬 저장소로만 사용 (로그인 없이)
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ SCREEN A: 설정 화면 ══ -->
-    <div id="mh-setup-screen" style="display:none;">
+    <!-- ══ SCREEN A: 설정 화면 (세션 없을 때) ══ -->
+    <div id="mh-setup-screen">
       <div style="text-align:center;padding:32px 0 24px;">
         <h2 style="margin:0 0 4px;font-size:22px;font-weight:700;letter-spacing:-0.5px;">무한매수법</h2>
         <p style="margin:0 0 20px;font-size:13px;color:var(--accent);font-weight:600;">V4.0</p>
-        <!-- 로그인 영역 -->
-        <div id="mh-auth-area" style="margin-bottom:8px;">
-          <!-- 동적으로 채워짐 -->
-        </div>
+        <button id="mh-login-btn" onclick="mhShowLoginModal()"
+          style="padding:8px 20px;border-radius:8px;border:1px solid rgba(0,229,176,0.4);background:transparent;color:var(--accent);font-size:12px;cursor:pointer;font-family:var(--font);">
+          로그인하여 데이터 불러오기
+        </button>
       </div>
 
+      <!-- 설정 카드 -->
       <div style="max-width:480px;margin:0 auto;">
         <div class="card" style="padding:24px;display:flex;flex-direction:column;gap:20px;">
 
@@ -5431,7 +5388,7 @@
             </div>
             <input id="mh-bignum-pct" type="number" value="12" min="0" max="30" step="0.5"
               style="width:100%;box-sizing:border-box;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:15px;">
-            <p style="margin:6px 0 0;font-size:11px;color:var(--text3);">증권사 LOC 상한 회피용 매수 가격. 낮을수록 보수적, 높을수록 공격적</p>
+            <p style="margin:6px 0 0;font-size:11px;color:var(--text3);">증권사 LOC 상한 회피용 매수 가격. 낮을수록 보수적(체결 조건 까다로움), 높을수록 공격적. 급등락장에서 조정 필요</p>
           </div>
 
           <!-- 새로 시작 / 중간 진입 -->
@@ -5449,7 +5406,7 @@
               style="width:100%;box-sizing:border-box;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:15px;">
           </div>
 
-          <!-- 시작하기 -->
+          <!-- 시작하기 버튼 -->
           <button onclick="mhStart()"
             style="width:100%;padding:14px;border-radius:10px;border:none;background:var(--accent);color:#000;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);">
             시작하기
@@ -5472,17 +5429,13 @@
           <p id="mh-header-sub" style="margin:4px 0 0;font-size:12px;color:var(--text3);font-family:var(--mono);"></p>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <div id="mh-user-info" style="display:flex;align-items:center;gap:6px;">
-            <img id="mh-user-photo" src="" alt="" style="display:none;width:22px;height:22px;border-radius:50%;">
-            <span id="mh-user-name" style="font-size:11px;color:var(--text3);"></span>
-          </div>
-          <span id="mh-sync-indicator" style="font-size:10px;color:var(--text3);display:none;">☁ 동기화 중...</span>
-          <button onclick="mhSignOut()" id="mh-signout-btn" style="display:none;padding:5px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-size:11px;cursor:pointer;font-family:var(--font);">로그아웃</button>
-          <button onclick="mhToggleSettings()" style="padding:5px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-size:16px;cursor:pointer;">⋮</button>
+          <span id="mh-login-user" style="font-size:12px;color:var(--text3);"></span>
+          <button id="mh-logout-btn" onclick="mhLogout()" style="display:none;padding:5px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-size:11px;cursor:pointer;font-family:var(--font);">로그아웃</button>
+          <button onclick="mhToggleSettings()" style="padding:5px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-size:14px;cursor:pointer;">⋮</button>
         </div>
       </div>
 
-      <!-- 설정 패널 -->
+      <!-- 설정 패널 (⋮ 클릭 시) -->
       <div id="mh-settings-panel" style="display:none;margin-bottom:16px;">
         <div class="card" style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;">
           <p style="margin:0;font-size:12px;font-weight:600;color:var(--text);">설정</p>
@@ -5498,10 +5451,9 @@
             <span style="font-size:12px;color:var(--text3);">%</span>
             <button onclick="mhApplySettings('bignum')" style="padding:5px 12px;border-radius:6px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-size:11px;cursor:pointer;font-family:var(--font);">적용</button>
           </div>
-          <div style="display:flex;gap:8px;padding-top:4px;border-top:1px solid rgba(255,255,255,0.06);flex-wrap:wrap;">
+          <div style="display:flex;gap:8px;padding-top:4px;border-top:1px solid rgba(255,255,255,0.06);">
             <button onclick="mhAddSession()" style="padding:6px 14px;border-radius:6px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-size:12px;cursor:pointer;font-family:var(--font);">+ 세션 추가</button>
             <button onclick="mhResetSession()" style="padding:6px 14px;border-radius:6px;border:1px solid rgba(220,38,38,0.3);background:rgba(220,38,38,0.06);color:#f87171;font-size:12px;cursor:pointer;font-family:var(--font);">세션 초기화</button>
-            <button onclick="mhGoFirebaseSetup()" style="padding:6px 14px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text3);font-size:12px;cursor:pointer;font-family:var(--font);">Firebase 재설정</button>
           </div>
         </div>
       </div>
@@ -5516,9 +5468,10 @@
           </div>
           <button onclick="mhOpenRecordModal()" style="padding:7px 16px;border-radius:8px;border:none;background:var(--accent);color:#000;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);" id="mh-record-btn">처음매수</button>
         </div>
+        <!-- 슬라이더 바 -->
         <div style="position:relative;height:6px;background:var(--bg3);border-radius:3px;margin-bottom:8px;">
-          <div id="mh-progress-fill" style="height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.5),#00e5b0);border-radius:3px;width:0%;"></div>
-          <div id="mh-progress-thumb" style="position:absolute;top:50%;width:12px;height:12px;background:var(--accent);border-radius:50%;transform:translate(-50%,-50%);left:0%;"></div>
+          <div id="mh-progress-fill" style="height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.5),#00e5b0);border-radius:3px;width:0%;transition:width 0.4s;"></div>
+          <div id="mh-progress-thumb" style="position:absolute;top:50%;width:12px;height:12px;background:var(--accent);border-radius:50%;transform:translate(-50%,-50%);left:0%;transition:left 0.4s;"></div>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);font-family:var(--mono);">
           <span>0</span>
@@ -5529,19 +5482,39 @@
 
       <!-- 스탯 행 1 -->
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
-        <div class="card" style="padding:12px 14px;"><p style="margin:0 0 4px;font-size:10px;color:var(--text3);">평단가</p><p id="mh-stat-avg" style="margin:0;font-family:var(--mono);font-size:15px;font-weight:600;color:var(--accent);">-</p></div>
-        <div class="card" style="padding:12px 14px;"><p style="margin:0 0 4px;font-size:10px;color:var(--text3);">보유수량</p><p id="mh-stat-qty" style="margin:0;font-family:var(--mono);font-size:15px;font-weight:600;color:var(--accent);">0주</p></div>
-        <div class="card" style="padding:12px 14px;"><p style="margin:0 0 4px;font-size:10px;color:var(--text3);">잔금</p><p id="mh-stat-cash" style="margin:0;font-family:var(--mono);font-size:15px;font-weight:600;color:var(--accent);">-</p></div>
+        <div class="card" style="padding:12px 14px;">
+          <p style="margin:0 0 4px;font-size:10px;color:var(--text3);">평단가</p>
+          <p id="mh-stat-avg" style="margin:0;font-family:var(--mono);font-size:16px;font-weight:600;color:var(--accent);">-</p>
+        </div>
+        <div class="card" style="padding:12px 14px;">
+          <p style="margin:0 0 4px;font-size:10px;color:var(--text3);">보유수량</p>
+          <p id="mh-stat-qty" style="margin:0;font-family:var(--mono);font-size:16px;font-weight:600;color:var(--accent);">0주</p>
+        </div>
+        <div class="card" style="padding:12px 14px;">
+          <p style="margin:0 0 4px;font-size:10px;color:var(--text3);">잔금</p>
+          <p id="mh-stat-cash" style="margin:0;font-family:var(--mono);font-size:16px;font-weight:600;color:var(--accent);">-</p>
+        </div>
       </div>
       <!-- 스탯 행 2 -->
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
-        <div class="card" style="padding:12px 14px;"><p style="margin:0 0 4px;font-size:10px;color:var(--text3);">할%</p><p id="mh-stat-pct" style="margin:0;font-family:var(--mono);font-size:15px;font-weight:600;color:var(--accent);">+15.00%</p></div>
-        <div class="card" style="padding:12px 14px;"><p style="margin:0 0 4px;font-size:10px;color:var(--text3);">별지정</p><p id="mh-stat-target" style="margin:0;font-family:var(--mono);font-size:15px;font-weight:600;color:#34d399;">-</p></div>
-        <div class="card" style="padding:12px 14px;"><p style="margin:0 0 4px;font-size:10px;color:var(--text3);">1회 매수금</p><p id="mh-stat-onediv" style="margin:0;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--accent);">-</p><p id="mh-stat-onediv-krw" style="margin:2px 0 0;font-size:10px;color:var(--text3);font-family:var(--mono);"></p></div>
+        <div class="card" style="padding:12px 14px;">
+          <p style="margin:0 0 4px;font-size:10px;color:var(--text3);">할%</p>
+          <p id="mh-stat-pct" style="margin:0;font-family:var(--mono);font-size:16px;font-weight:600;color:var(--accent);">+15.00%</p>
+        </div>
+        <div class="card" style="padding:12px 14px;">
+          <p style="margin:0 0 4px;font-size:10px;color:var(--text3);">별지정</p>
+          <p id="mh-stat-target" style="margin:0;font-family:var(--mono);font-size:16px;font-weight:600;color:#34d399;">-</p>
+        </div>
+        <div class="card" style="padding:12px 14px;">
+          <p style="margin:0 0 4px;font-size:10px;color:var(--text3);">1회 매수금</p>
+          <p id="mh-stat-onediv" style="margin:0;font-family:var(--mono);font-size:14px;font-weight:600;color:var(--accent);">-</p>
+          <p id="mh-stat-onediv-krw" style="margin:2px 0 0;font-size:10px;color:var(--text3);font-family:var(--mono);"></p>
+        </div>
       </div>
+      <!-- 환율 표시 -->
       <p id="mh-usdkrw-row" style="text-align:right;font-size:11px;color:var(--text3);margin:0 0 14px;font-family:var(--mono);"></p>
 
-      <!-- 최근 종가 -->
+      <!-- 최근 종가 카드 -->
       <div class="card" style="padding:0;overflow:hidden;margin-bottom:14px;">
         <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px 10px;">
           <p id="mh-recent-title" style="margin:0;font-size:13px;font-weight:600;color:var(--text);">TQQQ 최근 종가</p>
@@ -5550,12 +5523,15 @@
             <button onclick="mhFetchPrices()" style="padding:4px 10px;border-radius:6px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-size:11px;cursor:pointer;font-family:var(--font);">↺</button>
           </div>
         </div>
-        <div id="mh-recent-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:rgba(255,255,255,0.04);">
-          <div style="padding:12px;text-align:center;background:var(--bg2);"><p style="margin:0;font-size:10px;color:var(--text3);">불러오는 중...</p></div>
+        <div id="mh-recent-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:rgba(255,255,255,0.04);padding:0 0 0 0;">
+          <!-- 동적으로 채워짐 -->
+          <div style="padding:12px;text-align:center;background:var(--bg2);">
+            <p style="margin:0;font-size:10px;color:var(--text3);">불러오는 중...</p>
+          </div>
         </div>
       </div>
 
-      <!-- 공포 & 탐욕 -->
+      <!-- 공포 & 탐욕 지수 -->
       <div class="card" style="padding:0;overflow:hidden;margin-bottom:14px;">
         <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px 10px;">
           <p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">공포 &amp; 탐욕 지수</p>
@@ -5566,6 +5542,7 @@
             <span id="mh-fg-val" style="font-family:var(--mono);font-size:28px;font-weight:700;color:var(--accent);">—</span>
             <span id="mh-fg-label" style="font-size:13px;color:var(--text2);">—</span>
           </div>
+          <!-- 게이지 바 -->
           <div style="position:relative;height:10px;border-radius:5px;overflow:hidden;background:linear-gradient(90deg,#dc2626 0%,#ef4444 16%,#f97316 33%,#eab308 50%,#84cc16 66%,#22c55e 83%,#16a34a 100%);margin-bottom:8px;">
             <div id="mh-fg-cursor" style="position:absolute;top:50%;width:14px;height:14px;background:white;border:2px solid rgba(0,0,0,0.3);border-radius:50%;transform:translate(-50%,-50%);left:50%;transition:left 0.5s;"></div>
           </div>
@@ -5575,12 +5552,20 @@
         </div>
       </div>
 
-      <!-- 새 시이클 -->
+      <!-- 새 시이클 시작 -->
       <div class="card" style="padding:0;overflow:hidden;margin-bottom:14px;">
-        <div style="padding:14px 18px 10px;"><p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">☆ 새 시이클 시작</p></div>
+        <div style="padding:14px 18px 10px;">
+          <p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">☆ 새 시이클 시작</p>
+        </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,0.04);margin-bottom:14px;">
-          <div style="background:var(--bg2);padding:14px 18px;"><p style="margin:0 0 4px;font-size:11px;color:var(--text3);">1회 매수금</p><p id="mh-cycle-onediv" style="margin:0;font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent);">-</p></div>
-          <div style="background:var(--bg2);padding:14px 18px;"><p style="margin:0 0 4px;font-size:11px;color:var(--text3);">전일 종가</p><p id="mh-cycle-prevclose" style="margin:0;font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent);">-</p></div>
+          <div style="background:var(--bg2);padding:14px 18px;">
+            <p style="margin:0 0 4px;font-size:11px;color:var(--text3);">1회 매수금</p>
+            <p id="mh-cycle-onediv" style="margin:0;font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent);">-</p>
+          </div>
+          <div style="background:var(--bg2);padding:14px 18px;">
+            <p style="margin:0 0 4px;font-size:11px;color:var(--text3);">전일 종가</p>
+            <p id="mh-cycle-prevclose" style="margin:0;font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent);">-</p>
+          </div>
         </div>
         <div style="padding:0 18px 16px;">
           <p id="mh-cycle-bignum-info" style="margin:0 0 8px;font-size:12px;color:var(--accent);font-family:var(--mono);"></p>
@@ -5589,23 +5574,43 @@
       </div>
 
       <!-- 오늘의 주문 -->
-      <div class="card" style="padding:0;overflow:hidden;margin-bottom:90px;">
-        <div style="padding:14px 18px 10px;"><p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">오늘의 주문</p></div>
+      <div class="card" style="padding:0;overflow:hidden;margin-bottom:80px;">
+        <div style="padding:14px 18px 10px;">
+          <p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">오늘의 주문</p>
+        </div>
         <div style="padding:0 4px 4px;">
           <div style="padding:6px 14px;display:flex;align-items:center;gap:6px;">
             <span style="width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block;"></span>
             <span style="font-size:12px;color:var(--text2);font-weight:600;">매수</span>
           </div>
-          <div id="mh-orders-list"></div>
+          <div id="mh-orders-list" style="display:flex;flex-direction:column;">
+            <!-- 동적 주문 목록 -->
+          </div>
         </div>
       </div>
 
-      <!-- 플로팅 버튼 -->
+      <!-- 오늘 기록하기 플로팅 버튼 -->
       <div style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:500;">
-        <button onclick="mhOpenRecordModal()"
+        <button onclick="mhOpenRecordModal()" id="mh-floating-record-btn"
           style="display:flex;align-items:center;gap:8px;padding:13px 28px;border-radius:30px;border:none;background:var(--accent);color:#000;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 20px rgba(0,229,176,0.35);">
           + 오늘 기록하기
         </button>
+      </div>
+    </div>
+
+    <!-- ══ 로그인 모달 ══ -->
+    <div id="mh-login-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9000;align-items:center;justify-content:center;">
+      <div style="background:var(--bg2);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px;width:340px;max-width:90vw;">
+        <h3 style="margin:0 0 6px;font-size:16px;font-weight:600;">데이터 불러오기</h3>
+        <p style="margin:0 0 20px;font-size:12px;color:var(--text3);">설정한 비밀번호를 입력하면 저장된 기록을 불러옵니다</p>
+        <input id="mh-pw-input" type="password" placeholder="비밀번호" onkeydown="if(event.key==='Enter')mhDoLogin()"
+          style="width:100%;box-sizing:border-box;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-size:14px;margin-bottom:8px;">
+        <p id="mh-pw-hint" style="margin:0 0 16px;font-size:11px;color:var(--text3);">처음 사용 시 새 비밀번호를 설정합니다</p>
+        <p id="mh-pw-error" style="display:none;margin:0 0 12px;font-size:12px;color:#f87171;"></p>
+        <div style="display:flex;gap:8px;">
+          <button onclick="mhCloseLoginModal()" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-size:13px;cursor:pointer;font-family:var(--font);">취소</button>
+          <button onclick="mhDoLogin()" style="flex:2;padding:10px;border-radius:8px;border:none;background:var(--accent);color:#000;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);">로그인 / 설정</button>
+        </div>
       </div>
     </div>
 
@@ -5635,7 +5640,7 @@
           </div>
           <div>
             <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:5px;">수량 (주)</label>
-            <input id="mh-rec-qty" type="number" step="1" min="1"
+            <input id="mh-rec-qty" type="number" step="1" min="1" placeholder="체결 수량"
               style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:14px;">
             <p id="mh-rec-qty-hint" style="margin:4px 0 0;font-size:10px;color:var(--text3);"></p>
           </div>
@@ -5644,9 +5649,10 @@
             <input id="mh-rec-memo" type="text" placeholder="LOC 평단매수, 큰수매수..."
               style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-size:13px;">
           </div>
+          <!-- 기록 이력 -->
           <div id="mh-rec-history-block" style="max-height:160px;overflow-y:auto;border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;">
             <p style="margin:0 0 8px;font-size:11px;color:var(--text3);">현재 세션 기록</p>
-            <div id="mh-rec-history-list"></div>
+            <div id="mh-rec-history-list" style="display:flex;flex-direction:column;gap:4px;"></div>
           </div>
         </div>
         <div style="display:flex;gap:8px;margin-top:20px;">
@@ -5657,7 +5663,6 @@
     </div>
 
   </div><!-- /page-muhan -->
-
 
 
 
@@ -12079,267 +12084,69 @@ async function fetchMSAll() {
 
 
 
-
-
 /* ════════════════════════════════════════════════════════════
-   무한매수법 4.0 — Firebase Google 로그인 + Firestore 동기화
-   로컬 키: muhan4_fbcfg (Firebase config), muhan4_local (로컬 fallback)
+   무한매수법 4.0 — 메인 JS
+   저장소: localStorage (muhan4_data, muhan4_pwhash)
+   비밀번호: SHA-256 해시로 검증
 ════════════════════════════════════════════════════════════ */
 (function() {
 
-  var FB_CFG_KEY  = 'muhan4_fbcfg';
-  var LOCAL_KEY   = 'muhan4_local';
-  var COLLECTION  = 'muhan4_users';
+  /* ── 스토어 키 ── */
+  var PW_KEY   = 'muhan4_pwhash';
+  var DATA_KEY = 'muhan4_data';
 
   /* ── 내부 상태 ── */
   var MH = {
-    fbApp: null, fbAuth: null, fbDb: null,
-    user: null,           /* Firebase User */
-    useFirebase: false,   /* Firebase 연결됐는지 */
+    loggedIn: false,
+    username: '',
     settings: { ticker:'TQQQ', splits:40, targetPct:15, bigNumPct:12, startType:'new', seed:20000 },
-    sessions: [],
-    curSession: 0,
-    recentPrices: [], prevClose: null, curPrice: null, usdKrw: 1380
+    sessions: [],   /* [{id, startDate, trades:[]}] */
+    curSession: 0,  /* 인덱스 */
+    recentPrices: [],
+    prevClose: null,
+    curPrice: null,
+    usdKrw: 1380,
+    fgVal: null
   };
 
-  var $ = function(id){ return document.getElementById(id); };
-
-  /* ════ Firebase 로드 ════ */
-  function loadFirebaseSDK(callback) {
-    if (window.firebase) { callback(); return; }
-    var scripts = [
-      'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
-      'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js',
-      'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js'
-    ];
-    var loaded = 0;
-    scripts.forEach(function(src) {
-      var s = document.createElement('script');
-      s.src = src;
-      s.onload = function() {
-        loaded++;
-        if (loaded === scripts.length) callback();
-      };
-      s.onerror = function() { callback(new Error('Firebase SDK 로드 실패')); };
-      document.head.appendChild(s);
-    });
+  /* ── SHA-256 해시 ── */
+  async function sha256(str) {
+    var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
   }
 
-  function initFirebase(config) {
+  /* ── 저장/불러오기 ── */
+  function mhSave() {
     try {
-      if (firebase.apps.length === 0) {
-        MH.fbApp = firebase.initializeApp(config);
-      } else {
-        MH.fbApp = firebase.app();
-      }
-      MH.fbAuth = firebase.auth();
-      MH.fbDb   = firebase.firestore();
-      MH.useFirebase = true;
-
-      /* 인증 상태 변화 감지 */
-      MH.fbAuth.onAuthStateChanged(function(user) {
-        MH.user = user;
-        if (user) {
-          mhUpdateAuthUI(user);
-          mhLoadFromFirestore(function() { mhDecideScreen(); });
-        } else {
-          mhUpdateAuthUI(null);
-          mhDecideScreen();
-        }
-      });
-      return true;
-    } catch(e) {
-      console.error('Firebase init error:', e);
-      return false;
-    }
-  }
-
-  /* ════ Firebase 설정 저장/불러오기 ════ */
-  window.mhSaveFirebaseConfig = function() {
-    var raw = ($('mh-fb-config-input').value || '').trim();
-    /* { } 블록만 추출 */
-    var match = raw.match(/\{[\s\S]*\}/);
-    if (!match) { showFbErr('올바른 JSON 형식이 아닙니다'); return; }
-    try {
-      var cfg = JSON.parse(match[0]);
-      if (!cfg.apiKey || !cfg.projectId) { showFbErr('apiKey, projectId가 필요합니다'); return; }
-      localStorage.setItem(FB_CFG_KEY, JSON.stringify(cfg));
-      $('mh-fb-config-err').style.display = 'none';
-      /* 바로 초기화 */
-      loadFirebaseSDK(function(err) {
-        if (err) { showFbErr('SDK 로드 실패: ' + err.message); return; }
-        var ok = initFirebase(cfg);
-        if (!ok) { showFbErr('Firebase 초기화 실패. 설정을 확인해주세요'); return; }
-        mhShowSetup();
-      });
-    } catch(e) { showFbErr('JSON 파싱 오류: ' + e.message); }
-  };
-
-  function showFbErr(msg) {
-    $('mh-fb-config-err').textContent = msg;
-    $('mh-fb-config-err').style.display = 'block';
-  }
-
-  window.mhSkipFirebase = function() {
-    MH.useFirebase = false;
-    mhShowSetup();
-  };
-
-  window.mhGoFirebaseSetup = function() {
-    mhToggleSettings();
-    mhShowFirebaseSetup();
-  };
-
-  /* ════ Google 로그인 ════ */
-  window.mhGoogleLogin = async function() {
-    if (!MH.useFirebase || !MH.fbAuth) {
-      alert('Firebase가 설정되지 않았습니다'); return;
-    }
-    try {
-      var provider = new firebase.auth.GoogleAuthProvider();
-      await MH.fbAuth.signInWithPopup(provider);
-      /* onAuthStateChanged에서 처리 */
-    } catch(e) {
-      if (e.code !== 'auth/popup-closed-by-user') {
-        alert('로그인 오류: ' + e.message);
-      }
-    }
-  };
-
-  window.mhSignOut = async function() {
-    if (MH.fbAuth) await MH.fbAuth.signOut();
-    MH.user = null;
-    MH.sessions = [];
-    MH.curSession = 0;
-    mhUpdateAuthUI(null);
-    mhShowSetup();
-  };
-
-  function mhUpdateAuthUI(user) {
-    var authArea = $('mh-auth-area');
-    var photoEl  = $('mh-user-photo');
-    var nameEl   = $('mh-user-name');
-    var soBtnEl  = $('mh-signout-btn');
-
-    if (user) {
-      /* 설정 화면 - 로그인 상태 */
-      if (authArea) authArea.innerHTML =
-        '<div style="display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(0,229,176,0.08);border-radius:20px;border:1px solid rgba(0,229,176,0.2);">' +
-        (user.photoURL ? '<img src="' + user.photoURL + '" style="width:20px;height:20px;border-radius:50%;">' : '') +
-        '<span style="font-size:12px;color:var(--accent);">✓ ' + (user.displayName || user.email) + '</span>' +
-        '<button onclick="mhSignOut()" style="padding:2px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--text3);font-size:10px;cursor:pointer;font-family:var(--font);">로그아웃</button>' +
-        '</div>';
-      /* 메인 화면 */
-      if (photoEl) { photoEl.src = user.photoURL || ''; photoEl.style.display = user.photoURL ? '' : 'none'; }
-      if (nameEl)  nameEl.textContent = user.displayName || user.email;
-      if (soBtnEl) soBtnEl.style.display = '';
-    } else {
-      /* 로그인 버튼 */
-      if (authArea) authArea.innerHTML = MH.useFirebase
-        ? '<button onclick="mhGoogleLogin()" style="display:inline-flex;align-items:center;gap:10px;padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:var(--bg3);color:var(--text);font-size:13px;cursor:pointer;font-family:var(--font);">' +
-          '<svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>' +
-          'Google로 로그인</button>'
-        : '<button onclick="mhShowLoginModal()" style="padding:8px 20px;border-radius:8px;border:1px solid rgba(0,229,176,0.4);background:transparent;color:var(--accent);font-size:12px;cursor:pointer;font-family:var(--font);">로컬 저장소 사용 중 (로그인 없음)</button>';
-      if (photoEl) photoEl.style.display = 'none';
-      if (nameEl)  nameEl.textContent = '';
-      if (soBtnEl) soBtnEl.style.display = 'none';
-    }
-  }
-
-  /* ════ Firestore 동기화 ════ */
-  var _mhUnsubscribe = null;
-
-  function mhUserDocRef() {
-    if (!MH.fbDb || !MH.user) return null;
-    return MH.fbDb.collection(COLLECTION).doc(MH.user.uid);
-  }
-
-  function mhLoadFromFirestore(callback) {
-    var ref = mhUserDocRef();
-    if (!ref) { mhLoadLocal(); if (callback) callback(); return; }
-    ref.get().then(function(doc) {
-      if (doc.exists) {
-        var d = doc.data();
-        MH.settings   = Object.assign({}, MH.settings, d.settings || {});
-        MH.sessions   = d.sessions || [];
-        MH.curSession = d.curSession || 0;
-      }
-      if (callback) callback();
-    }).catch(function() { mhLoadLocal(); if (callback) callback(); });
-  }
-
-  function mhSaveToFirestore() {
-    var ref = mhUserDocRef();
-    if (!ref) { mhSaveLocal(); return; }
-    var indicator = $('mh-sync-indicator');
-    if (indicator) indicator.style.display = '';
-    ref.set({
-      settings: MH.settings,
-      sessions: MH.sessions,
-      curSession: MH.curSession,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true }).then(function() {
-      if (indicator) indicator.style.display = 'none';
-    }).catch(function() {
-      mhSaveLocal();
-      if (indicator) indicator.style.display = 'none';
-    });
-  }
-
-  function mhSaveLocal() {
-    try { localStorage.setItem(LOCAL_KEY, JSON.stringify({ settings: MH.settings, sessions: MH.sessions, curSession: MH.curSession })); } catch(e) {}
-  }
-
-  function mhLoadLocal() {
-    try {
-      var raw = localStorage.getItem(LOCAL_KEY);
-      if (!raw) return;
-      var d = JSON.parse(raw);
-      MH.settings   = Object.assign({}, MH.settings, d.settings || {});
-      MH.sessions   = d.sessions || [];
-      MH.curSession = d.curSession || 0;
+      localStorage.setItem(DATA_KEY, JSON.stringify({
+        settings: MH.settings,
+        sessions: MH.sessions,
+        curSession: MH.curSession,
+        username: MH.username
+      }));
     } catch(e) {}
   }
 
-  function mhSave() {
-    if (MH.useFirebase && MH.user) mhSaveToFirestore();
-    else mhSaveLocal();
+  function mhLoad() {
+    try {
+      var raw = localStorage.getItem(DATA_KEY);
+      if (!raw) return false;
+      var d = JSON.parse(raw);
+      MH.settings   = Object.assign({}, MH.settings, d.settings || {});
+      MH.sessions    = d.sessions || [];
+      MH.curSession  = d.curSession || 0;
+      MH.username    = d.username || '';
+      return true;
+    } catch(e) { return false; }
   }
 
-  /* ════ 화면 전환 ════ */
-  function showOnly(screenId) {
-    ['mh-firebase-screen','mh-setup-screen','mh-main-screen'].forEach(function(id) {
-      var el = $(id);
-      if (el) el.style.display = id === screenId ? '' : 'none';
-    });
-  }
+  /* ── DOM 유틸 ── */
+  var $ = function(id) { return document.getElementById(id); };
 
-  function mhShowFirebaseSetup() { showOnly('mh-firebase-screen'); }
-  function mhShowSetup() {
-    showOnly('mh-setup-screen');
-    mhUpdateAuthUI(MH.user);
-    /* 저장된 설정 반영 */
-    if ($('mh-target-pct')) $('mh-target-pct').value = MH.settings.targetPct;
-    if ($('mh-bignum-pct')) $('mh-bignum-pct').value = MH.settings.bigNumPct;
-    if ($('mh-seed')) $('mh-seed').value = MH.settings.seed;
-  }
-  function mhShowMain() {
-    showOnly('mh-main-screen');
-    mhRenderMain();
-    mhFetchPrices();
-    mhFetchFG();
-  }
-
-  function mhDecideScreen() {
-    if (MH.sessions.length > 0) mhShowMain();
-    else mhShowSetup();
-  }
-
-  window.mhBackToSetup = function() { mhShowSetup(); };
-
-  /* ════ 선택 버튼 ════ */
+  /* ── 선택 버튼 ── */
   window.mhSelBtn = function(btn, field) {
-    btn.parentElement.querySelectorAll('.mh-sel-btn').forEach(function(b) {
+    var parent = btn.parentElement;
+    parent.querySelectorAll('.mh-sel-btn').forEach(function(b) {
       b.style.background = 'var(--bg3)';
       b.style.borderColor = 'rgba(255,255,255,0.1)';
       b.style.color = 'var(--text2)';
@@ -12349,13 +12156,95 @@ async function fetchMSAll() {
     btn.style.borderColor = 'rgba(0,229,176,0.5)';
     btn.style.color = 'var(--accent)';
     btn.classList.add('active');
+
     if (field === 'ticker') {
-      $('mh-custom-ticker').style.display = btn.dataset.val === 'CUSTOM' ? 'block' : 'none';
+      var customInput = $('mh-custom-ticker');
+      customInput.style.display = btn.dataset.val === 'CUSTOM' ? 'block' : 'none';
     }
   };
 
-  /* ════ 시작하기 ════ */
+  /* ── 로그인 모달 ── */
+  window.mhShowLoginModal = function() {
+    $('mh-pw-input').value = '';
+    $('mh-pw-error').style.display = 'none';
+    var hasPw = !!localStorage.getItem(PW_KEY);
+    $('mh-pw-hint').textContent = hasPw
+      ? '저장된 데이터를 불러옵니다'
+      : '처음 사용 시 새 비밀번호를 설정합니다 (분실 시 복구 불가)';
+    $('mh-login-modal').style.display = 'flex';
+    setTimeout(function(){ $('mh-pw-input').focus(); }, 100);
+  };
+
+  window.mhCloseLoginModal = function() {
+    $('mh-login-modal').style.display = 'none';
+  };
+
+  window.mhDoLogin = async function() {
+    var pw = $('mh-pw-input').value.trim();
+    if (!pw) { showPwError('비밀번호를 입력해주세요'); return; }
+    if (pw.length < 4) { showPwError('비밀번호는 4자리 이상이어야 합니다'); return; }
+
+    var hash = await sha256(pw);
+    var stored = localStorage.getItem(PW_KEY);
+
+    if (!stored) {
+      /* 최초 설정 */
+      localStorage.setItem(PW_KEY, hash);
+      MH.loggedIn = true;
+      MH.username = '로그인됨';
+      mhCloseLoginModal();
+      mhUpdateLoginUI();
+      alert('비밀번호가 설정되었습니다!');
+      return;
+    }
+
+    if (hash !== stored) {
+      showPwError('비밀번호가 틀렸습니다');
+      return;
+    }
+
+    /* 로그인 성공 */
+    MH.loggedIn = true;
+    mhLoad();
+    mhCloseLoginModal();
+    mhUpdateLoginUI();
+
+    /* 기존 세션이 있으면 메인 화면으로 */
+    if (MH.sessions.length > 0) {
+      mhShowMain();
+    }
+  };
+
+  function showPwError(msg) {
+    $('mh-pw-error').textContent = msg;
+    $('mh-pw-error').style.display = 'block';
+  }
+
+  function mhUpdateLoginUI() {
+    var loginBtn = $('mh-login-btn');
+    var userEl   = $('mh-login-user');
+    var logoutBtn = $('mh-logout-btn');
+    if (MH.loggedIn) {
+      if (loginBtn) loginBtn.textContent = '✓ 로그인됨';
+      if (userEl)   userEl.textContent = '로그인됨';
+      if (logoutBtn) logoutBtn.style.display = '';
+    } else {
+      if (loginBtn) loginBtn.textContent = '로그인하여 데이터 불러오기';
+      if (userEl)   userEl.textContent = '';
+      if (logoutBtn) logoutBtn.style.display = 'none';
+    }
+  }
+
+  window.mhLogout = function() {
+    if (!confirm('로그아웃하면 비밀번호를 재입력해야 합니다. 계속할까요?')) return;
+    MH.loggedIn = false;
+    mhUpdateLoginUI();
+    mhShowSetup();
+  };
+
+  /* ── 시작하기 ── */
   window.mhStart = function() {
+    /* 설정 수집 */
     var tickerBtn = document.querySelector('#mh-ticker-btns .mh-sel-btn.active');
     var splitsBtn = document.querySelector('#mh-splits-btns .mh-sel-btn.active');
     var startBtn  = document.querySelector('#mh-start-btns .mh-sel-btn.active');
@@ -12365,6 +12254,7 @@ async function fetchMSAll() {
       ticker = ($('mh-custom-ticker').value || '').trim().toUpperCase();
       if (!ticker) { alert('종목 코드를 입력해주세요'); return; }
     }
+
     MH.settings.ticker     = ticker;
     MH.settings.splits     = parseInt((splitsBtn && splitsBtn.dataset.val) || '40');
     MH.settings.targetPct  = parseFloat($('mh-target-pct').value) || 15;
@@ -12373,280 +12263,466 @@ async function fetchMSAll() {
     MH.settings.seed       = parseFloat($('mh-seed').value) || 20000;
 
     var now = new Date().toISOString().slice(0,10);
-    MH.sessions.push({ id: 'ses_'+Date.now(), startDate: now, trades: [] });
+    var newSession = { id: 'ses_' + Date.now(), startDate: now, trades: [] };
+    MH.sessions.push(newSession);
     MH.curSession = MH.sessions.length - 1;
-    mhSave();
+
+    if (MH.loggedIn) mhSave();
     mhShowMain();
   };
 
-  /* ════ 계산 ════ */
-  function mhGetSession() { return MH.sessions[MH.curSession] || { trades: [] }; }
+  /* ── 화면 전환 ── */
+  function mhShowSetup() {
+    $('mh-setup-screen').style.display = '';
+    $('mh-main-screen').style.display = 'none';
+    mhUpdateLoginUI();
+  }
+
+  function mhShowMain() {
+    $('mh-setup-screen').style.display = 'none';
+    $('mh-main-screen').style.display = '';
+    mhUpdateLoginUI();
+    mhRenderMain();
+    mhFetchPrices();
+    mhFetchFG();
+  }
+
+  window.mhBackToSetup = function() {
+    mhShowSetup();
+  };
+
+  /* ── 세션 계산 ── */
+  function mhGetSession() {
+    return MH.sessions[MH.curSession] || { trades: [] };
+  }
 
   function mhCalcSession() {
     var ses = mhGetSession();
-    var trades = (ses.trades||[]).filter(function(t){ return t.type.startsWith('buy'); });
-    var totalQty=0, totalAmt=0;
-    trades.forEach(function(t){ var q=parseFloat(t.qty)||0,p=parseFloat(t.price)||0; totalQty+=q; totalAmt+=q*p; });
-    var avg = totalQty>0 ? totalAmt/totalQty : 0;
-    var tradeCount = trades.length;
-    var splits=MH.settings.splits||40, seed=MH.settings.seed||20000;
-    var oneDiv=seed/splits, invested=totalAmt, cash=Math.max(seed-invested,0);
-    var targetPrice = avg>0 ? avg*(1+(MH.settings.targetPct||15)/100) : 0;
-    return {totalQty,totalAmt,avg,tradeCount,splits,seed,oneDiv,invested,cash,targetPrice};
+    var trades = (ses.trades || []).filter(function(t){ return t.type !== 'sell_profit' && t.type !== 'sell_quarter'; });
+    var totalQty = 0, totalAmt = 0;
+    trades.forEach(function(t) {
+      var q = parseFloat(t.qty)||0, p = parseFloat(t.price)||0;
+      totalQty += q;
+      totalAmt += q * p;
+    });
+    var avg = totalQty > 0 ? totalAmt / totalQty : 0;
+    var tradeCount = ses.trades.filter(function(t){ return t.type.startsWith('buy'); }).length;
+    var splits = MH.settings.splits || 40;
+    var seed = MH.settings.seed || 20000;
+    var oneDiv = seed / splits;
+    var invested = totalAmt;
+    var cash = Math.max(seed - invested, 0);
+    var targetPrice = avg > 0 ? avg * (1 + (MH.settings.targetPct||15)/100) : 0;
+    return { totalQty, totalAmt, avg, tradeCount, splits, seed, oneDiv, invested, cash, targetPrice };
   }
 
-  /* ════ 메인 렌더 ════ */
+  /* ── 메인 렌더 ── */
   function mhRenderMain() {
-    var c=mhCalcSession(), t=MH.settings.targetPct||15, ticker=MH.settings.ticker||'TQQQ';
-    if ($('mh-header-sub')) $('mh-header-sub').textContent = ticker+' · '+c.splits+'분할 · $'+(MH.settings.seed||0).toLocaleString('ko-KR');
-    if ($('mh-recent-title')) $('mh-recent-title').textContent = ticker+' 최근 종가';
-    var mid=Math.floor(c.splits/2);
-    if ($('mh-slider-mid')) $('mh-slider-mid').textContent = mid+' (추천반)';
-    if ($('mh-slider-max')) $('mh-slider-max').textContent = c.splits;
-    var pct=c.splits>0?Math.min(c.tradeCount/c.splits*100,100):0;
-    if ($('mh-progress-fill')) $('mh-progress-fill').style.width=pct+'%';
-    if ($('mh-progress-thumb')) $('mh-progress-thumb').style.left=pct+'%';
-    if (MH.curPrice && $('mh-cur-price')) {
-      $('mh-cur-price').textContent = MH.curPrice.toFixed(5);
-      $('mh-price-arrow').textContent = MH.prevClose&&MH.curPrice>MH.prevClose?'↑':'↓';
-      $('mh-price-arrow').style.color = MH.prevClose&&MH.curPrice>MH.prevClose?'#34d399':'#f87171';
-    }
-    if ($('mh-stat-avg'))    $('mh-stat-avg').textContent = c.avg>0?'$'+c.avg.toFixed(2):'-';
-    if ($('mh-stat-qty'))    $('mh-stat-qty').textContent = c.totalQty.toLocaleString('ko-KR')+'주';
-    if ($('mh-stat-cash'))   $('mh-stat-cash').textContent = '$'+c.cash.toFixed(2);
-    if ($('mh-stat-pct'))    $('mh-stat-pct').textContent = '+'+t.toFixed(2)+'%';
-    if ($('mh-stat-target')) $('mh-stat-target').textContent = c.targetPrice>0?'$'+c.targetPrice.toFixed(2):'-';
-    if ($('mh-stat-onediv')) $('mh-stat-onediv').textContent = '$'+c.oneDiv.toFixed(2);
-    if ($('mh-stat-onediv-krw')) $('mh-stat-onediv-krw').textContent = '(₩'+Math.round(c.oneDiv*MH.usdKrw).toLocaleString('ko-KR')+')';
-    if ($('mh-usdkrw-row')) $('mh-usdkrw-row').textContent = 'USD/KRW ₩'+MH.usdKrw.toLocaleString('ko-KR')+' · '+new Date().toISOString().slice(0,10);
-    if ($('mh-cycle-onediv')) $('mh-cycle-onediv').textContent = '$'+c.oneDiv.toFixed(2);
-    var prevC=MH.prevClose||0;
-    if ($('mh-cycle-prevclose')) $('mh-cycle-prevclose').textContent = prevC>0?'$'+prevC.toFixed(2):'조회 중...';
-    if (prevC>0&&$('mh-cycle-bignum-info')) {
-      var bn=prevC*(1+(MH.settings.bigNumPct||12)/100);
-      $('mh-cycle-bignum-info').textContent = '★ 큰수 = 종가 × '+(1+(MH.settings.bigNumPct||12)/100).toFixed(2)+' = $'+bn.toFixed(2)+' (큰수% 설정 '+(MH.settings.bigNumPct||12)+'%)';
-    }
-    if ($('mh-record-btn')) $('mh-record-btn').textContent = c.tradeCount===0?'처음매수':'오늘 기록';
-    mhRenderOrders(c);
+    var c = mhCalcSession();
+    var t = MH.settings.targetPct || 15;
+    var ticker = MH.settings.ticker || 'TQQQ';
 
-    /* 로그인 상태 업데이트 */
-    var nameEl=$('mh-user-name'), soBtnEl=$('mh-signout-btn');
-    if (MH.user) {
-      if ($('mh-user-photo')) { $('mh-user-photo').src=MH.user.photoURL||''; $('mh-user-photo').style.display=MH.user.photoURL?'':'none'; }
-      if (nameEl) nameEl.textContent=MH.user.displayName||MH.user.email;
-      if (soBtnEl) soBtnEl.style.display='';
+    /* 헤더 */
+    $('mh-header-sub').textContent = ticker + ' · ' + c.splits + '분할 · $' + (MH.settings.seed||0).toLocaleString('ko-KR');
+    $('mh-recent-title').textContent = ticker + ' 최근 종가';
+
+    /* 슬라이더 */
+    var mid = Math.floor(c.splits / 2);
+    $('mh-slider-mid').textContent = mid + ' (추천반)';
+    $('mh-slider-max').textContent = c.splits;
+    var pct = c.splits > 0 ? Math.min(c.tradeCount / c.splits * 100, 100) : 0;
+    $('mh-progress-fill').style.width = pct + '%';
+    $('mh-progress-thumb').style.left = pct + '%';
+
+    /* 현재가 */
+    if (MH.curPrice) {
+      $('mh-cur-price').textContent = MH.curPrice.toFixed(5);
+      $('mh-price-arrow').textContent = MH.prevClose && MH.curPrice > MH.prevClose ? '↑' : '↓';
+      $('mh-price-arrow').style.color = MH.prevClose && MH.curPrice > MH.prevClose ? '#34d399' : '#f87171';
     }
+
+    /* 스탯 */
+    $('mh-stat-avg').textContent = c.avg > 0 ? '$' + c.avg.toFixed(2) : '-';
+    $('mh-stat-qty').textContent = c.totalQty.toLocaleString('ko-KR') + '주';
+    $('mh-stat-cash').textContent = '$' + c.cash.toFixed(2);
+    $('mh-stat-pct').textContent = '+' + t.toFixed(2) + '%';
+    $('mh-stat-target').textContent = c.targetPrice > 0 ? '$' + c.targetPrice.toFixed(2) : '-';
+    $('mh-stat-onediv').textContent = '$' + c.oneDiv.toFixed(2);
+    var oneDivKrw = c.oneDiv * MH.usdKrw;
+    $('mh-stat-onediv-krw').textContent = '(₩' + Math.round(oneDivKrw).toLocaleString('ko-KR') + ')';
+
+    /* 환율 */
+    $('mh-usdkrw-row').textContent = 'USD/KRW ₩' + MH.usdKrw.toLocaleString('ko-KR') + ' · ' + new Date().toISOString().slice(0,10);
+
+    /* 새 시이클 */
+    $('mh-cycle-onediv').textContent = '$' + c.oneDiv.toFixed(2);
+    var prevC = MH.prevClose || 0;
+    $('mh-cycle-prevclose').textContent = prevC > 0 ? '$' + prevC.toFixed(2) : '조회 중...';
+
+    if (prevC > 0) {
+      var bigNum = prevC * (1 + (MH.settings.bigNumPct||12)/100);
+      var bigQty = Math.floor(c.oneDiv / bigNum);
+      $('mh-cycle-bignum-info').textContent =
+        '★ 큰수 = 종가 × ' + (1 + (MH.settings.bigNumPct||12)/100).toFixed(2) +
+        ' = $' + bigNum.toFixed(2) +
+        ' (큰수% 설정 ' + (MH.settings.bigNumPct||12) + '%)';
+    }
+
+    /* 기록 버튼 */
+    $('mh-record-btn').textContent = c.tradeCount === 0 ? '처음매수' : '오늘 기록';
+
+    /* 주문 목록 */
+    mhRenderOrders(c);
   }
 
   function mhRenderOrders(c) {
-    var el=$('mh-orders-list'); if (!el) return;
-    var prevC=MH.prevClose, oneDiv=c.oneDiv;
-    if (!prevC||prevC<=0||oneDiv<=0) {
-      el.innerHTML='<div style="padding:12px 18px;font-size:12px;color:var(--text3);">전일 종가를 불러오는 중...</div>'; return;
+    var el = $('mh-orders-list');
+    if (!el) return;
+    var prevC = MH.prevClose;
+    var oneDiv = c.oneDiv;
+
+    if (!prevC || prevC <= 0 || oneDiv <= 0) {
+      el.innerHTML = '<div style="padding:12px 18px;font-size:12px;color:var(--text3);">전일 종가를 불러오는 중...</div>';
+      return;
     }
-    var bigNumPct=MH.settings.bigNumPct||12;
-    var bigNum=prevC*(1+bigNumPct/100), bigQty=Math.floor(oneDiv/bigNum);
-    var html='<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(255,255,255,0.04);">' +
+
+    var html = '';
+    var bigNumPct = MH.settings.bigNumPct || 12;
+    var bigNum = prevC * (1 + bigNumPct/100);
+    var bigQty = Math.floor(oneDiv / bigNum);
+
+    /* 처음매수 LOC */
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(255,255,255,0.04);">' +
       '<div style="display:flex;align-items:center;gap:8px;">' +
       '<span style="font-size:11px;color:var(--accent);font-weight:600;">★ 처음매수</span>' +
       '<span style="font-size:10px;padding:2px 6px;border-radius:3px;background:rgba(0,229,176,0.1);color:var(--accent);">LOC</span>' +
-      '</div><div style="text-align:right;">' +
-      '<span style="font-family:var(--mono);font-size:13px;color:var(--text);">$'+bigNum.toFixed(2)+'</span>' +
-      '<span style="font-family:var(--mono);font-size:12px;color:var(--text3);margin-left:8px;">'+bigQty+'주</span>' +
+      '</div>' +
+      '<div style="text-align:right;">' +
+      '<span style="font-family:var(--mono);font-size:13px;color:var(--text);">$' + bigNum.toFixed(2) + '</span>' +
+      '<span style="font-family:var(--mono);font-size:12px;color:var(--text3);margin-left:8px;">' + bigQty + '주</span>' +
       '</div></div>';
-    var nStart=Math.ceil(oneDiv/prevC), nEnd=Math.min(nStart+19, MH.settings.splits||40);
-    for (var n=nStart; n<=nEnd; n++) {
-      var lp=oneDiv/n; if (lp<=0) continue;
-      html+='<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 18px;border-bottom:1px solid rgba(255,255,255,0.03);">' +
+
+    /* LOC 평단매수 목록: 1회매수금/n for n = ceil(1회매수금/prevClose), ... , splits */
+    var nStart = Math.ceil(oneDiv / prevC);
+    var nEnd   = Math.min(nStart + 20, MH.settings.splits || 40); /* 최대 20개 표시 */
+
+    for (var n = nStart; n <= nEnd; n++) {
+      var locPrice = oneDiv / n;
+      if (locPrice <= 0) continue;
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 18px;border-bottom:1px solid rgba(255,255,255,0.03);">' +
         '<div style="display:flex;align-items:center;gap:6px;">' +
         '<span style="font-size:10px;padding:2px 6px;border-radius:3px;background:var(--bg3);color:var(--text3);">LOC</span>' +
         '<span style="font-size:10px;padding:2px 6px;border-radius:3px;background:var(--bg3);color:var(--text3);">LOC</span>' +
-        '</div><div style="text-align:right;">' +
-        '<span style="font-family:var(--mono);font-size:13px;color:var(--text2);">$'+lp.toFixed(2)+'</span>' +
+        '</div>' +
+        '<div style="text-align:right;">' +
+        '<span style="font-family:var(--mono);font-size:13px;color:var(--text2);">$' + locPrice.toFixed(2) + '</span>' +
         '<span style="font-family:var(--mono);font-size:12px;color:var(--text3);margin-left:8px;">1주</span>' +
         '</div></div>';
     }
-    el.innerHTML=html;
+
+    el.innerHTML = html;
   }
 
-  /* ════ 가격 조회 ════ */
+  /* ── 실시간 가격 조회 ── */
   window.mhFetchPrices = async function() {
-    var ticker=MH.settings.ticker||'TQQQ';
-    var yfUrl='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(ticker)+'?interval=1d&range=15d';
-    var proxies=['https://corsproxy.io/?'+encodeURIComponent(yfUrl),'https://api.allorigins.win/raw?url='+encodeURIComponent(yfUrl)];
-    for (var i=0;i<proxies.length;i++) {
+    var ticker = MH.settings.ticker || 'TQQQ';
+    var encodedTicker = encodeURIComponent(ticker);
+
+    /* Yahoo Finance 최근 10일 */
+    var yfUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodedTicker + '?interval=1d&range=15d';
+    var proxies = [
+      'https://corsproxy.io/?' + encodeURIComponent(yfUrl),
+      'https://api.allorigins.win/raw?url=' + encodeURIComponent(yfUrl)
+    ];
+
+    for (var i = 0; i < proxies.length; i++) {
       try {
-        var ctrl=new AbortController(), tid=setTimeout(function(){ctrl.abort();},10000);
-        var resp; try{resp=await fetch(proxies[i],{cache:'no-cache',signal:ctrl.signal});}finally{clearTimeout(tid);}
-        if (!resp||!resp.ok) continue;
-        var txt=await resp.text(); var json; try{json=JSON.parse(txt);}catch{continue;}
-        if (json.contents){try{json=JSON.parse(json.contents);}catch{continue;}}
-        var r=json&&json.chart&&json.chart.result&&json.chart.result[0]; if (!r) continue;
-        var ts=r.timestamp||[], closes=r.indicators&&r.indicators.quote&&r.indicators.quote[0]&&r.indicators.quote[0].close||[];
-        var pairs=[];
-        for (var k=0;k<ts.length;k++){var cl=closes[k];if(cl&&cl>0){var d=new Date(ts[k]*1000);pairs.push({date:(d.getMonth()+1)+'/'+(d.getDate()),close:cl});}}
-        MH.recentPrices=pairs.slice(-10);
-        if (MH.recentPrices.length>=2) MH.prevClose=MH.recentPrices[MH.recentPrices.length-2].close;
-        MH.curPrice=r.meta.regularMarketPrice||(MH.recentPrices.length>0?MH.recentPrices[MH.recentPrices.length-1].close:null);
-        if (_fxRates&&_fxRates['USD']&&_fxRates['USD']>100) MH.usdKrw=_fxRates['USD'];
-        mhRenderPrices(); mhRenderMain(); return;
+        var ctrl = new AbortController();
+        var tid = setTimeout(function(){ ctrl.abort(); }, 10000);
+        var resp;
+        try { resp = await fetch(proxies[i], { cache:'no-cache', signal: ctrl.signal }); }
+        finally { clearTimeout(tid); }
+        if (!resp || !resp.ok) continue;
+        var txt = await resp.text();
+        var json; try { json = JSON.parse(txt); } catch { continue; }
+        if (json.contents) { try { json = JSON.parse(json.contents); } catch { continue; } }
+
+        var r = json && json.chart && json.chart.result && json.chart.result[0];
+        if (!r) continue;
+
+        var meta = r.meta;
+        var timestamps = r.timestamp || [];
+        var closes = r.indicators && r.indicators.quote && r.indicators.quote[0] && r.indicators.quote[0].close || [];
+
+        /* 유효한 날짜+종가 쌍 수집 */
+        var pairs = [];
+        for (var k = 0; k < timestamps.length; k++) {
+          var cl = closes[k];
+          if (cl && cl > 0) {
+            var d = new Date(timestamps[k] * 1000);
+            var dateStr = (d.getMonth()+1) + '/' + d.getDate();
+            pairs.push({ date: dateStr, close: cl });
+          }
+        }
+
+        /* 최근 10개 */
+        MH.recentPrices = pairs.slice(-10);
+        if (MH.recentPrices.length >= 2) {
+          MH.prevClose = MH.recentPrices[MH.recentPrices.length - 2].close;
+        }
+        MH.curPrice = meta.regularMarketPrice || (MH.recentPrices.length > 0 ? MH.recentPrices[MH.recentPrices.length-1].close : null);
+
+        /* 환율 */
+        if (_fxRates && _fxRates['USD'] && _fxRates['USD'] > 100) MH.usdKrw = _fxRates['USD'];
+
+        mhRenderPrices();
+        mhRenderMain();
+        return;
       } catch(e) { continue; }
     }
-  };
 
-  function mhRenderPrices() {
-    var grid=$('mh-recent-grid'); if (!grid||MH.recentPrices.length===0) return;
-    var html=''; var prices=MH.recentPrices.slice().reverse();
-    prices.forEach(function(p,i){
-      var prev=prices[i+1]; var chg=prev?p.close-prev.close:0;
-      var col=chg>=0?'#34d399':'#f87171';
-      html+='<div style="padding:10px;text-align:center;background:var(--bg2);border:1px solid rgba(255,255,255,0.04);">' +
-        '<p style="margin:0 0 3px;font-size:10px;color:var(--text3);">'+p.date+'</p>' +
-        '<p style="margin:0 0 2px;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--text);">$'+p.close.toFixed(2)+'</p>' +
-        '<p style="margin:0;font-size:10px;color:'+col+';">'+(chg>=0?'+':'')+chg.toFixed(2)+'</p></div>';
-    });
-    grid.innerHTML=html; grid.style.gridTemplateColumns='repeat(5,1fr)';
-    var last5=MH.recentPrices.slice(-5).map(function(p){return p.close;});
-    var avg5=last5.reduce(function(a,b){return a+b;},0)/last5.length;
-    if ($('mh-5day-avg')) $('mh-5day-avg').textContent='5일 평균 $'+avg5.toFixed(2);
-  }
-
-  /* ════ 공포 & 탐욕 ════ */
-  window.mhFetchFG = async function() {
+    /* Anthropic API fallback */
     try {
-      var resp=await fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:50,
+      var aResp = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          model:'claude-sonnet-4-20250514', max_tokens:200,
           tools:[{type:'web_search_20250305',name:'web_search'}],
-          messages:[{role:'user',content:'Current CNN Fear and Greed Index integer value only?'}]})
+          messages:[{role:'user',content:'What is the current price of ' + ticker + ' stock? Reply only with the number.'}]
+        })
       });
-      if (!resp.ok) return;
-      var data=await resp.json();
-      var txt=(data.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
-      var m=txt.match(/\b(\d{1,3})\b/);
-      if (m) {
-        var val=parseInt(m[1]);
-        var label=val<=25?'극도 공포':val<=45?'공포':val<=55?'중립':val<=75?'탐욕':'극도 탐욕';
-        if ($('mh-fg-val')){$('mh-fg-val').textContent=val;$('mh-fg-val').style.color=val<=25?'#ef4444':val<=55?'#f97316':val<=75?'#22c55e':'#16a34a';}
-        if ($('mh-fg-label')) $('mh-fg-label').textContent=label;
-        if ($('mh-fg-cursor')) $('mh-fg-cursor').style.left=val+'%';
+      if (aResp.ok) {
+        var aData = await aResp.json();
+        var aText = (aData.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
+        var aNum = aText.match(/\$?([\d.]+)/);
+        if (aNum) { MH.curPrice = parseFloat(aNum[1]); mhRenderMain(); }
       }
     } catch(e) {}
   };
 
-  /* ════ 설정 패널 ════ */
+  function mhRenderPrices() {
+    var grid = $('mh-recent-grid');
+    if (!grid || MH.recentPrices.length === 0) return;
+
+    var html = '';
+    var prices = MH.recentPrices.slice().reverse(); /* 최신 먼저 */
+    prices.forEach(function(p, i) {
+      var prev = prices[i+1];
+      var chg = prev ? p.close - prev.close : 0;
+      var chgStr = (chg >= 0 ? '+' : '') + chg.toFixed(2);
+      var color = chg >= 0 ? '#34d399' : '#f87171';
+      html += '<div style="padding:10px;text-align:center;background:var(--bg2);border:1px solid rgba(255,255,255,0.04);">' +
+        '<p style="margin:0 0 3px;font-size:10px;color:var(--text3);">' + p.date + '</p>' +
+        '<p style="margin:0 0 2px;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--text);">$' + p.close.toFixed(2) + '</p>' +
+        '<p style="margin:0;font-size:10px;color:' + color + ';">' + chgStr + '</p>' +
+        '</div>';
+    });
+    grid.innerHTML = html;
+    grid.style.gridTemplateColumns = 'repeat(5,1fr)';
+
+    /* 5일 평균 */
+    var last5 = MH.recentPrices.slice(-5).map(function(p){ return p.close; });
+    var avg5 = last5.reduce(function(a,b){return a+b;},0)/last5.length;
+    $('mh-5day-avg').textContent = '5일 평균 $' + avg5.toFixed(2);
+  }
+
+  /* ── 공포 & 탐욕 ── */
+  window.mhFetchFG = async function() {
+    try {
+      var resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          model:'claude-sonnet-4-20250514', max_tokens:50,
+          tools:[{type:'web_search_20250305',name:'web_search'}],
+          messages:[{role:'user',content:'Current CNN Fear and Greed Index value? Reply only with the integer number.'}]
+        })
+      });
+      if (!resp.ok) return;
+      var data = await resp.json();
+      var txt = (data.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
+      var m = txt.match(/\b(\d{1,3})\b/);
+      if (m) {
+        var val = parseInt(m[1]);
+        MH.fgVal = val;
+        var label = val <= 25 ? '극도 공포' : val <= 45 ? '공포' : val <= 55 ? '중립' : val <= 75 ? '탐욕' : '극도 탐욕';
+        $('mh-fg-val').textContent = val;
+        $('mh-fg-label').textContent = label;
+        $('mh-fg-cursor').style.left = val + '%';
+        $('mh-fg-val').style.color = val <= 25 ? '#ef4444' : val <= 55 ? '#f97316' : val <= 75 ? '#22c55e' : '#16a34a';
+      }
+    } catch(e) {}
+  };
+
+  /* ── 설정 패널 ── */
   window.mhToggleSettings = function() {
-    var p=$('mh-settings-panel'); if (!p) return;
-    var vis=p.style.display!=='none';
-    if (!vis) { $('mh-s-target').value=MH.settings.targetPct; $('mh-s-bignum').value=MH.settings.bigNumPct; }
-    p.style.display=vis?'none':'';
+    var panel = $('mh-settings-panel');
+    if (!panel) return;
+    var visible = panel.style.display !== 'none';
+    if (!visible) {
+      $('mh-s-target').value = MH.settings.targetPct;
+      $('mh-s-bignum').value = MH.settings.bigNumPct;
+    }
+    panel.style.display = visible ? 'none' : '';
   };
 
   window.mhApplySettings = function(field) {
-    if (field==='target'){var v=parseFloat($('mh-s-target').value);if(v>0&&v<=100)MH.settings.targetPct=v;}
-    if (field==='bignum'){var v2=parseFloat($('mh-s-bignum').value);if(v2>=0&&v2<=30)MH.settings.bigNumPct=v2;}
-    mhSave(); mhRenderMain();
+    if (field === 'target') {
+      var v = parseFloat($('mh-s-target').value);
+      if (v > 0 && v <= 100) { MH.settings.targetPct = v; }
+    }
+    if (field === 'bignum') {
+      var v2 = parseFloat($('mh-s-bignum').value);
+      if (v2 >= 0 && v2 <= 30) { MH.settings.bigNumPct = v2; }
+    }
+    if (MH.loggedIn) mhSave();
+    mhRenderMain();
   };
 
   window.mhAddSession = function() {
-    MH.sessions.push({id:'ses_'+Date.now(),startDate:new Date().toISOString().slice(0,10),trades:[]});
-    MH.curSession=MH.sessions.length-1; mhSave(); mhToggleSettings(); mhRenderMain();
-    alert('새 세션 추가됨');
+    var now = new Date().toISOString().slice(0,10);
+    MH.sessions.push({ id: 'ses_' + Date.now(), startDate: now, trades: [] });
+    MH.curSession = MH.sessions.length - 1;
+    if (MH.loggedIn) mhSave();
+    mhToggleSettings();
+    mhRenderMain();
+    alert('새 세션이 추가됐습니다! (' + now + ')');
   };
 
   window.mhResetSession = function() {
-    if (!confirm('현재 세션 초기화?')) return;
-    MH.sessions[MH.curSession]={id:'ses_'+Date.now(),startDate:new Date().toISOString().slice(0,10),trades:[]};
-    mhSave(); mhRenderMain();
+    if (!confirm('현재 세션의 모든 기록을 초기화하겠습니까?')) return;
+    MH.sessions[MH.curSession] = { id: 'ses_reset_' + Date.now(), startDate: new Date().toISOString().slice(0,10), trades: [] };
+    if (MH.loggedIn) mhSave();
+    mhRenderMain();
   };
 
-  /* ════ 기록 모달 ════ */
+  /* ── 기록 모달 ── */
   window.mhOpenRecordModal = function() {
-    $('mh-rec-date').value=new Date().toISOString().slice(0,10);
-    $('mh-rec-type').value='buy_first'; $('mh-rec-price').value=''; $('mh-rec-qty').value=''; $('mh-rec-memo').value=''; $('mh-rec-qty-hint').textContent='';
+    $('mh-rec-date').value = new Date().toISOString().slice(0,10);
+    $('mh-rec-type').value = 'buy_first';
+    $('mh-rec-price').value = '';
+    $('mh-rec-qty').value = '';
+    $('mh-rec-memo').value = '';
+    $('mh-rec-qty-hint').textContent = '';
+
+    /* 기록 이력 */
     mhRenderRecHistory();
-    $('mh-record-modal').style.display='flex';
+
+    $('mh-record-modal').style.display = 'flex';
   };
 
-  window.mhCloseRecordModal = function() { $('mh-record-modal').style.display='none'; };
+  window.mhCloseRecordModal = function() {
+    $('mh-record-modal').style.display = 'none';
+  };
 
-  window.mhRecTypeChange = function() { mhCalcRecQty(); };
+  window.mhRecTypeChange = function() {
+    mhCalcRecQty();
+  };
 
   window.mhCalcRecQty = function() {
-    var price=parseFloat($('mh-rec-price').value), type=$('mh-rec-type').value;
-    if (!price||price<=0) return;
-    var c=mhCalcSession(), oneDiv=c.oneDiv;
-    if (type.startsWith('buy')) {
-      var qty=Math.floor(oneDiv/price);
-      if (qty>0){$('mh-rec-qty').value=qty;$('mh-rec-qty-hint').textContent='1회 매수금 $'+oneDiv.toFixed(2)+' ÷ $'+price.toFixed(2)+' = '+qty+'주 (절사)';}
-    } else if (type==='sell_quarter') {
-      var sq=Math.floor(c.totalQty/4);$('mh-rec-qty').value=sq;$('mh-rec-qty-hint').textContent='보유 '+c.totalQty+'주의 1/4 = '+sq+'주';
-    } else if (type==='sell_profit') {
-      $('mh-rec-qty').value=c.totalQty;$('mh-rec-qty-hint').textContent='전체 보유 '+c.totalQty+'주 익절';
+    var price = parseFloat($('mh-rec-price').value);
+    var type  = $('mh-rec-type').value;
+    if (!price || price <= 0) return;
+
+    var c = mhCalcSession();
+    var oneDiv = c.oneDiv;
+
+    if (type === 'buy_first' || type === 'buy_avg' || type === 'buy_manual') {
+      var qty = Math.floor(oneDiv / price);
+      if (qty > 0) {
+        $('mh-rec-qty').value = qty;
+        $('mh-rec-qty-hint').textContent = '1회 매수금 $' + oneDiv.toFixed(2) + ' ÷ $' + price.toFixed(2) + ' = ' + qty + '주 (절사)';
+      }
+    } else if (type === 'sell_quarter') {
+      var sellQty = Math.floor(c.totalQty / 4);
+      $('mh-rec-qty').value = sellQty;
+      $('mh-rec-qty-hint').textContent = '보유 ' + c.totalQty + '주의 1/4 = ' + sellQty + '주';
+    } else if (type === 'sell_profit') {
+      $('mh-rec-qty').value = c.totalQty;
+      $('mh-rec-qty-hint').textContent = '전체 보유 ' + c.totalQty + '주 익절';
     }
   };
 
   window.mhSaveRecord = function() {
-    var date=$('mh-rec-date').value, type=$('mh-rec-type').value;
-    var price=parseFloat($('mh-rec-price').value), qty=parseFloat($('mh-rec-qty').value), memo=$('mh-rec-memo').value.trim();
-    if (!date){alert('날짜를 입력하세요');return;} if (!price||price<=0){alert('체결가를 입력하세요');return;} if (!qty||qty<=0){alert('수량을 입력하세요');return;}
-    MH.sessions[MH.curSession].trades.push({id:'tr_'+Date.now(),date,type,price,qty,memo});
-    mhSave(); mhRenderRecHistory(); $('mh-rec-price').value=''; $('mh-rec-qty').value=''; $('mh-rec-memo').value=''; mhRenderMain();
+    var date  = $('mh-rec-date').value;
+    var type  = $('mh-rec-type').value;
+    var price = parseFloat($('mh-rec-price').value);
+    var qty   = parseFloat($('mh-rec-qty').value);
+    var memo  = $('mh-rec-memo').value.trim();
+
+    if (!date) { alert('날짜를 입력하세요'); return; }
+    if (!price || price <= 0) { alert('체결가를 입력하세요'); return; }
+    if (!qty || qty <= 0) { alert('수량을 입력하세요'); return; }
+
+    var trade = { id: 'tr_' + Date.now(), date, type, price, qty, memo };
+    MH.sessions[MH.curSession].trades.push(trade);
+    if (MH.loggedIn) mhSave();
+
+    mhRenderRecHistory();
+    $('mh-rec-price').value = '';
+    $('mh-rec-qty').value = '';
+    $('mh-rec-memo').value = '';
+    mhRenderMain();
   };
 
   function mhRenderRecHistory() {
-    var el=$('mh-rec-history-list'); if (!el) return;
-    var ses=mhGetSession(), trades=(ses.trades||[]).slice().reverse().slice(0,10);
-    if (trades.length===0){el.innerHTML='<p style="font-size:11px;color:var(--text3);">기록 없음</p>';return;}
-    var tl={buy_first:'처음매수',buy_avg:'평단매수',buy_manual:'직접매수',sell_profit:'익절',sell_quarter:'쿼터손절'};
-    el.innerHTML=trades.map(function(t){
-      var isBuy=t.type.startsWith('buy');
+    var el = $('mh-rec-history-list');
+    if (!el) return;
+    var ses = mhGetSession();
+    var trades = (ses.trades || []).slice().reverse().slice(0,10);
+    if (trades.length === 0) {
+      el.innerHTML = '<p style="font-size:11px;color:var(--text3);">기록 없음</p>';
+      return;
+    }
+    var typeLabel = {buy_first:'처음매수',buy_avg:'평단매수',buy_manual:'직접매수',sell_profit:'익절',sell_quarter:'쿼터손절'};
+    el.innerHTML = trades.map(function(t) {
+      var isBuy = t.type.startsWith('buy');
       return '<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);">' +
         '<div style="display:flex;align-items:center;gap:6px;">' +
-        '<span style="font-size:10px;color:var(--text3);">'+t.date+'</span>' +
-        '<span style="font-size:10px;padding:1px 6px;border-radius:3px;background:'+(isBuy?'rgba(0,229,176,0.1)':'rgba(52,211,153,0.1)')+';color:'+(isBuy?'var(--accent)':'#34d399')+'">'+(tl[t.type]||t.type)+'</span>' +
-        '</div><div style="display:flex;align-items:center;gap:8px;">' +
-        '<span style="font-family:var(--mono);font-size:11px;color:var(--text2);">$'+parseFloat(t.price).toFixed(2)+'</span>' +
-        '<span style="font-family:var(--mono);font-size:11px;color:var(--text3);">'+t.qty+'주</span>' +
-        '<button onclick="mhDeleteTrade(\''+t.id+'\')" style="padding:1px 6px;border-radius:3px;border:1px solid rgba(220,38,38,0.2);background:transparent;color:#f87171;font-size:10px;cursor:pointer;">×</button>' +
+        '<span style="font-size:10px;color:var(--text3);">' + t.date + '</span>' +
+        '<span style="font-size:10px;padding:1px 6px;border-radius:3px;background:' + (isBuy?'rgba(0,229,176,0.1)':'rgba(52,211,153,0.1)') + ';color:' + (isBuy?'var(--accent)':'#34d399') + ';">' + (typeLabel[t.type]||t.type) + '</span>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:8px;">' +
+        '<span style="font-family:var(--mono);font-size:11px;color:var(--text2);">$' + parseFloat(t.price).toFixed(2) + '</span>' +
+        '<span style="font-family:var(--mono);font-size:11px;color:var(--text3);">' + t.qty + '주</span>' +
+        '<button onclick="mhDeleteTrade(\'' + t.id + '\')" style="padding:1px 6px;border-radius:3px;border:1px solid rgba(220,38,38,0.2);background:transparent;color:#f87171;font-size:10px;cursor:pointer;">×</button>' +
         '</div></div>';
     }).join('');
   }
 
-  window.mhDeleteTrade = function(id) {
-    var ses=MH.sessions[MH.curSession];
-    ses.trades=(ses.trades||[]).filter(function(t){return t.id!==id;});
-    mhSave(); mhRenderRecHistory(); mhRenderMain();
+  window.mhDeleteTrade = function(tradeId) {
+    var ses = MH.sessions[MH.curSession];
+    ses.trades = (ses.trades || []).filter(function(t){ return t.id !== tradeId; });
+    if (MH.loggedIn) mhSave();
+    mhRenderRecHistory();
+    mhRenderMain();
   };
 
-  /* ════ 탭 진입 초기화 ════ */
+  /* ── 탭 진입 시 초기화 ── */
   window.muhanInit = function() {
-    if (MH.sessions.length > 0 && ($('mh-main-screen').style.display !== 'none')) return;
+    /* 로그인 상태 체크 */
+    var hasPw = !!localStorage.getItem(PW_KEY);
+    var hasData = !!localStorage.getItem(DATA_KEY);
 
-    var savedCfg = localStorage.getItem(FB_CFG_KEY);
-    if (savedCfg) {
-      /* Firebase config 있음 → SDK 로드 후 초기화 */
-      try {
-        var cfg = JSON.parse(savedCfg);
-        loadFirebaseSDK(function(err) {
-          if (err) { MH.useFirebase=false; mhLoadLocal(); mhDecideScreen(); return; }
-          var ok = initFirebase(cfg);
-          if (!ok) { MH.useFirebase=false; mhLoadLocal(); mhDecideScreen(); }
-          /* onAuthStateChanged에서 화면 결정 */
-        });
-      } catch(e) { mhLoadLocal(); mhDecideScreen(); }
-    } else {
-      /* Firebase config 없음 → Firebase 설정 화면 */
-      mhLoadLocal();
-      if (MH.sessions.length > 0) mhDecideScreen();
-      else mhShowFirebaseSetup();
+    if (MH.loggedIn && MH.sessions.length > 0) {
+      mhShowMain();
+      return;
     }
+
+    /* 세션 없으면 설정화면 */
+    mhShowSetup();
+    mhUpdateLoginUI();
   };
 
-  /* 모달 외부 닫기 */
-  window.addEventListener('click', function(e) {
-    var rm=$('mh-record-modal');
-    if (rm&&e.target===rm) rm.style.display='none';
+  /* 모달 외부 클릭 닫기 */
+  ['mh-login-modal','mh-record-modal'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('click', function(e) {
+      if (e.target === el) {
+        el.style.display = 'none';
+      }
+    });
   });
 
 })();
