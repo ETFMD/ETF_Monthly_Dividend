@@ -6247,58 +6247,46 @@ function setFancyUnit(id, unit, btn) {
   const inputEl = document.getElementById(prefix + 'ni-' + id)
                || document.getElementById('ni-' + id);
 
-  /* ── 단위 변환: 현재 값(원화) → 새 단위 표시 ── */
+  /* ── 현재가 조회 (joo 단위용) ── */
+  const priceMap2 = {
+    'page-simulator':'kodex-price-val','page-sol':'sol-kodex-price-val',
+    'page-tiger':'tiger-kodex-price-val','page-tigerdiv':'tigerdiv-kodex-price-val'
+  };
+  const priceEl2 = document.getElementById(priceMap2[pageId] || 'kodex-price-val');
+  const curPrice = priceEl2 ? (parseFloat(priceEl2.textContent.replace(/[^0-9.]/g,'')) || 0) : 0;
+
+  /* ── 단위 변환: 현재 값(원화) → 새 단위 표시 (joo 단위 포함 한 번에 처리) ── */
   if (inputEl) {
-    /* 현재 표시 단위 (페이지별 저장) */
+    /* 현재 표시 단위 (페이지별 저장) — 변환 전 원래 단위를 먼저 확정 */
     const prevKey  = pageId + '_' + id;
     const prevUnit = fancyUnit[prevKey] || fancyUnit[id] || 'won';
     const rawNum   = parseFloat(inputEl.value.replace(/,/g,'')) || 0;
-    const won      = rawNum * unitToWon(prevUnit);          /* → 원화 */
-    const wan      = won / 10000;
-    fancyUnit[prevKey] = unit;                              /* 페이지별 저장 */
-    fancyUnit[id]      = unit;                              /* KODEX 호환 유지 */
-    const disp = wanToDisplay(wan, unit, pageId);
-    inputEl.value = commaFmt(unit === 'won' ? Math.round(disp) : parseFloat(disp.toFixed(4)));
+    /* prevUnit이 joo이면 가격을 곱해 원화로, 아니면 기존 unitToWon 사용 */
+    const won = prevUnit === 'joo' ? rawNum * (curPrice > 0 ? curPrice : 1)
+                                    : rawNum * unitToWon(prevUnit, pageId);
+
+    /* 단위 저장은 변환 계산 완료 후에 (다음 단계에서 참조되지 않도록) */
+    fancyUnit[prevKey] = unit;
+    fancyUnit[id]      = unit;
+
+    if (unit === 'joo') {
+      /* 새 단위가 joo면 현재가로 나눠 주식수(정수)로 표시 */
+      const shares = curPrice > 0 ? Math.round(won / curPrice) : 0;
+      inputEl.value = commaFmt(shares);
+      inputEl.placeholder = '주 수량 입력';
+      inputEl.style.width = '110px';
+    } else {
+      const wan  = won / 10000;
+      const disp = wanToDisplay(wan, unit, pageId);
+      inputEl.value = commaFmt(unit === 'won' ? Math.round(disp) : parseFloat(disp.toFixed(4)));
+      inputEl.placeholder = '';
+    }
   }
 
   /* ── active 표시: 현재 페이지 내 버튼만 ── */
   const scope = page || document;
   scope.querySelectorAll('.unit-btn[data-field="' + id + '"]')
     .forEach(b => b.classList.toggle('active', b === btn));
-
-  /* ── joo 단위: 입력창 hint 표시 ── */
-  if (inputEl) {
-    if (unit === 'joo') {
-      inputEl.placeholder = '주 수량 입력';
-      inputEl.style.width = '110px';
-      /* 현재가 표시 */
-      var priceMap2 = {
-        'page-simulator':'kodex-price-val','page-sol':'sol-kodex-price-val',
-        'page-tiger':'tiger-kodex-price-val','page-tigerdiv':'tigerdiv-kodex-price-val'
-      };
-      var priceEl2 = document.getElementById(priceMap2[pageId] || 'kodex-price-val');
-      var price2 = priceEl2 ? parseFloat(priceEl2.textContent.replace(/[^0-9.]/g,'')) || 0 : 0;
-      /* 현재 원화 값을 주 수로 변환해서 표시 */
-      if (price2 > 0) {
-        var prevKey2 = pageId + '_' + id;
-        var prevUnit2 = fancyUnit[prevKey2] || fancyUnit[id] || 'won';
-        if (prevUnit2 !== 'joo') {
-          var rawNum2 = parseFloat(inputEl.value.replace(/,/g,'')) || 0;
-          var won2 = rawNum2 * unitToWon(prevUnit2, pageId);
-          fancyUnit[prevKey2] = unit;
-          fancyUnit[id] = unit;
-          var shares = Math.round(won2 / price2);
-          inputEl.value = commaFmt(shares);
-        }
-      } else {
-        fancyUnit[pageId + '_' + id] = unit;
-        fancyUnit[id] = unit;
-        inputEl.value = '';
-      }
-    } else {
-      inputEl.placeholder = '';
-    }
-  }
 
   /* ── 슬라이더 동기화 및 업데이트: 현재 페이지에 맞게 ── */
   if (pageId === 'page-simulator') { syncFancyToSlider(id); update(); }
@@ -8606,6 +8594,20 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
     var el = $id(fieldId);
     if (!el) return;
     var field = fieldId.replace('ni-','');
+    if (field === 'amount') {
+      var mult = _tdUnitMult('amount');
+      var u = (window.fancyUnit && (window.fancyUnit['page-tigerdiv_amount'] || window.fancyUnit['amount'])) || 'won';
+      if (u === 'joo') {
+        var shares = mult > 0 ? Math.round(wonValue / mult) : 0;
+        el.value = shares.toLocaleString('ko-KR');
+        return;
+      }
+      var dispA = wonValue / mult;
+      el.value = mult === 1
+        ? Math.round(dispA).toLocaleString('ko-KR')
+        : parseFloat(dispA.toFixed(6)).toLocaleString('ko-KR');
+      return;
+    }
     var unit = field === 'target'  ? (_tdTargetUnit  || 'won')
              : field === 'monthly' ? (_tdMonthlyUnit || 'won')
              : 'won';
