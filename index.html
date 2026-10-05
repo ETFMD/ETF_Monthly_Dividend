@@ -11,21 +11,23 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #080d17;
-    --bg2: #0e1525;
-    --bg3: #141d30;
-    --card: rgba(var(--fg-rgb),0.04);
-    --card-border: rgba(var(--fg-rgb),0.08);
-    --accent: #00e5b0;
-    --accent2: #0091ff;
-    --accent-dim: rgba(0,229,176,0.12);
-    --text: #f0f4ff;
-    --text2: #8899bb;
-    --text3: #4a5878;
-    --fg-rgb: 255,255,255;   /* 전경 기준색 — 테두리·구분선의 rgba(var(--fg-rgb),a) */
-    color-scheme: dark;
+    /* 토스증권 다크 팔레트 · 강조색은 파랑/빨강/주황 3가지만 사용 */
+    --bg: #101013;
+    --bg2: #17171c;
+    --bg3: #202027;
+    --card: rgba(255,255,255,0.03);
+    --card-border: rgba(255,255,255,0.08);
+    --accent: #3182f6;        /* 파랑 */
+    --accent2: #f04452;       /* 빨강 */
+    --accent3: #fe9800;       /* 주황 */
+    --accent-dim: rgba(49,130,246,0.14);
+    --text: #e4e4e5;
+    --text2: #9e9ea4;
+    --text3: #6d6d76;
     --font: 'Noto Sans KR', sans-serif;
     --mono: 'DM Mono', monospace;
+    --fg-rgb: 255,255,255;   /* 전경 기준색 — 테두리·구분선의 rgba(var(--fg-rgb),a) */
+    color-scheme: dark;
   }
 
   body {
@@ -73,7 +75,7 @@
     letter-spacing: 0.08em;
     color: var(--accent);
     background: var(--accent-dim);
-    border: 1px solid rgba(0,229,176,0.2);
+    border: 1px solid rgba(49,130,246,0.2);
     border-radius: 20px;
     padding: 4px 12px;
     width: fit-content;
@@ -105,7 +107,7 @@
     transition:all 0.2s; color:var(--text2); background:transparent;
     text-align:center; flex:1;
   }
-  .mode-btn.active { background:var(--accent); color:#000; }
+  .mode-btn.active { background:var(--accent); color:#fff; }
 
   /* ── Layout ── */
   .layout { display:grid; grid-template-columns:380px minmax(0, 1fr); gap:24px; align-items:start; }
@@ -157,9 +159,9 @@
     background: transparent;
   }
   .chart-tab.active {
-    background: rgba(0,229,176,0.18);
+    background: rgba(49,130,246,0.18);
     color: var(--accent);
-    border: 1px solid rgba(0,229,176,0.35);
+    border: 1px solid rgba(49,130,246,0.35);
     font-weight: 600;
   }
 
@@ -177,8 +179,8 @@
     font-family: var(--mono);
     font-size: 13px; font-weight: 500;
     color: var(--accent);
-    background: rgba(0,229,176,0.08);
-    border: 1px solid rgba(0,229,176,0.22);
+    background: rgba(49,130,246,0.08);
+    border: 1px solid rgba(49,130,246,0.22);
     border-radius: 8px;
     padding: 5px 28px 5px 10px;
     width: 105px;
@@ -192,14 +194,14 @@
   .num-input::-webkit-inner-spin-button { -webkit-appearance:none; }
   .num-input:focus {
     border-color: var(--accent);
-    background: rgba(0,229,176,0.14);
-    box-shadow: 0 0 0 3px rgba(0,229,176,0.12);
+    background: rgba(49,130,246,0.14);
+    box-shadow: 0 0 0 3px rgba(49,130,246,0.12);
   }
   .num-input.error {
-    border-color: #ff5f5f !important;
-    color: #ff5f5f;
-    background: rgba(255,95,95,0.08);
-    box-shadow: 0 0 0 3px rgba(255,95,95,0.1);
+    border-color: #f04452 !important;
+    color: #f04452;
+    background: rgba(240,68,82,0.08);
+    box-shadow: 0 0 0 3px rgba(240,68,82,0.1);
   }
   .num-unit {
     position: absolute; right: 9px;
@@ -213,10 +215,10 @@
   }
   input[type=range]::-webkit-slider-thumb {
     -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
-    background:var(--accent); box-shadow:0 0 0 3px rgba(0,229,176,0.2);
+    background:var(--accent); box-shadow:0 0 0 3px rgba(49,130,246,0.2);
     cursor:pointer; transition:box-shadow 0.2s;
   }
-  input[type=range]::-webkit-slider-thumb:hover { box-shadow:0 0 0 6px rgba(0,229,176,0.2); }
+  input[type=range]::-webkit-slider-thumb:hover { box-shadow:0 0 0 6px rgba(49,130,246,0.2); }
 
   /* ── Summary bar ── */
   .summary-bar {
@@ -233,7 +235,7 @@
   .sum-cell-val { font-family:var(--mono); font-size:17px; font-weight:500; color:var(--text); }
   .sum-cell-val.green { color:var(--accent); }
   .sum-cell-val.blue  { color:var(--accent2); }
-  .sum-cell-red       { color:#ff7070; }
+  .sum-cell-red       { color:#f04452; }
   .sum-cell-sub { font-size:11px; color:var(--text3); margin-top:3px; }
 
   /* ── Chart ── */
@@ -304,7 +306,7 @@
   }
   .target-box {
     background:var(--bg3); border-radius:10px; padding:14px;
-    border:1px solid rgba(0,229,176,0.15);
+    border:1px solid rgba(49,130,246,0.15);
   }
   .notice {
     font-size:11px; color:var(--text3); line-height:1.8;
@@ -324,9 +326,9 @@
     white-space: nowrap;
   }
   .preset-btn:hover {
-    border-color: rgba(255,112,112,0.4);
-    color: #ff7070;
-    background: rgba(255,95,95,0.06);
+    border-color: rgba(240,68,82,0.4);
+    color: #f04452;
+    background: rgba(240,68,82,0.06);
   }
 
   /* ── 과세 방식 탭 ── */
@@ -354,9 +356,9 @@
     text-align: center;
   }
   .tax-mode-tab.active {
-    background: rgba(255,112,112,0.12);
-    color: #ff9090;
-    border: 1px solid rgba(255,112,112,0.25);
+    background: rgba(240,68,82,0.12);
+    color: #f04452;
+    border: 1px solid rgba(240,68,82,0.25);
   }
 
   /* ── 과세구분 토글 (분리/종합) ── */
@@ -383,9 +385,9 @@
     background: transparent;
   }
   .tax-type-btn.active {
-    background: rgba(255,112,112,0.12);
-    color: #ff9090;
-    border: 1px solid rgba(255,112,112,0.2);
+    background: rgba(240,68,82,0.12);
+    color: #f04452;
+    border: 1px solid rgba(240,68,82,0.2);
   }
 
   /* ── 세율 구간 표 ── */
@@ -412,16 +414,16 @@
     border-bottom: 1px solid rgba(var(--fg-rgb),0.02);
   }
   .bracket-table tr.bracket-active td {
-    color: #ff9090;
-    background: rgba(255,95,95,0.06);
+    color: #f04452;
+    background: rgba(240,68,82,0.06);
     font-weight: 500;
   }
   .bracket-table tr:last-child td { border-bottom: none; }
 
   /* ── KODEX 과세구조 박스 ── */
   .kodex-struct-box {
-    background: linear-gradient(135deg, rgba(0,229,176,0.06), rgba(0,145,255,0.06));
-    border: 1px solid rgba(0,229,176,0.2);
+    background: linear-gradient(135deg, rgba(49,130,246,0.06), rgba(49,130,246,0.06));
+    border: 1px solid rgba(49,130,246,0.2);
     border-radius: 10px;
     padding: 12px 14px;
     margin-top: 10px;
@@ -435,7 +437,7 @@
   .kodex-struct-row:last-child { margin-bottom: 0; }
   .kodex-struct-label { font-size: 11px; color: var(--text3); }
   .kodex-struct-val   { font-family: var(--mono); font-size: 12px; font-weight: 500; }
-  .kodex-struct-val.taxable   { color: #ff9090; }
+  .kodex-struct-val.taxable   { color: #f04452; }
   .kodex-struct-val.nontaxable{ color: var(--accent); }
   .kodex-struct-val.result    { color: var(--text2); }
 
@@ -462,11 +464,11 @@
     min-width: 28px;
     text-align: center;
   }
-  .unit-btn:hover { color: var(--text2); border-color: rgba(0,229,176,0.3); }
+  .unit-btn:hover { color: var(--text2); border-color: rgba(49,130,246,0.3); }
   .unit-btn.active {
-    background: rgba(0,229,176,0.15);
+    background: rgba(49,130,246,0.15);
     color: var(--accent);
-    border-color: rgba(0,229,176,0.35);
+    border-color: rgba(49,130,246,0.35);
   }
   /* 콤마 입력용 — num-pill 내부에서 padding-right 줄임 */
   .num-input.comma-input {
@@ -486,7 +488,7 @@
   }
   .switch.on {
     background: var(--accent-dim);
-    border-color: rgba(0,229,176,0.4);
+    border-color: rgba(49,130,246,0.4);
   }
   .switch-thumb {
     position: absolute;
@@ -513,7 +515,7 @@
     -webkit-overflow-scrolling: touch;
     touch-action: pan-x pinch-zoom;
     scrollbar-width: thin;
-    scrollbar-color: rgba(0,229,176,0.45) transparent;
+    scrollbar-color: rgba(49,130,246,0.45) transparent;
     padding-bottom: 6px;
     margin-bottom: 26px;
     scroll-snap-type: none;
@@ -521,8 +523,8 @@
   }
   .app-nav::-webkit-scrollbar { display: block; height: 3px; }
   .app-nav::-webkit-scrollbar-track { background: transparent; }
-  .app-nav::-webkit-scrollbar-thumb { background: rgba(0,229,176,0.4); border-radius: 3px; }
-  .app-nav::-webkit-scrollbar-thumb:hover { background: rgba(0,229,176,0.65); }
+  .app-nav::-webkit-scrollbar-thumb { background: rgba(49,130,246,0.4); border-radius: 3px; }
+  .app-nav::-webkit-scrollbar-thumb:hover { background: rgba(49,130,246,0.65); }
   /* 탭 버튼들 터치 영역 확보 */
   .app-nav .app-tab,
   .app-nav .tab-group-btn { touch-action: manipulation; }
@@ -581,7 +583,7 @@
     font-size:10px; padding:2px 6px; border-radius:4px; border:1px solid var(--card-border);
     background:transparent; color:var(--text3); cursor:pointer; transition:all 0.15s; white-space:nowrap;
   }
-  .h-unit-btn.active { background:var(--accent-dim); border-color:rgba(0,229,176,0.4); color:var(--accent); }
+  .h-unit-btn.active { background:var(--accent-dim); border-color:rgba(49,130,246,0.4); color:var(--accent); }
 
   .tab-group-btn.open,
   .tab-group-btn.has-active {
@@ -683,7 +685,7 @@
   .cagr-metric-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
   .cagr-metric-val   { font-family: var(--mono); font-size: 18px; font-weight: 500; color: var(--text); }
   .cagr-metric-val.pos { color: var(--accent); }
-  .cagr-metric-val.neg { color: #ff7070; }
+  .cagr-metric-val.neg { color: #f04452; }
 
   .cagr-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 4px; }
   .cagr-table th {
@@ -705,7 +707,7 @@
   .cagr-table tr:last-child td { border-bottom: none; }
   .cagr-table tr.cagr-highlight td { color: var(--accent); font-weight: 500; }
   .cagr-table td.pos { color: var(--accent); }
-  .cagr-table td.neg { color: #ff7070; }
+  .cagr-table td.neg { color: #f04452; }
 
   .cagr-chart-wrap { position: relative; height: 220px; margin-bottom: 20px; }
 
@@ -733,7 +735,7 @@
   .period-btn.active {
     background: var(--accent-dim);
     color: var(--accent);
-    border-color: rgba(0,229,176,0.4);
+    border-color: rgba(49,130,246,0.4);
   }
 
   /* ── KOSPI 반응형 ── */
@@ -905,8 +907,8 @@
     margin-top: 6px;
   }
   .acc-header:hover {
-    background: rgba(0,229,176,0.06);
-    border-color: rgba(0,229,176,0.18);
+    background: rgba(49,130,246,0.06);
+    border-color: rgba(49,130,246,0.18);
   }
   .acc-title {
     font-size: 13px;
@@ -959,7 +961,7 @@
     cursor: pointer;
     user-select: none;
   }
-  .yr-acc-hdr:hover { background: rgba(0,229,176,0.05); }
+  .yr-acc-hdr:hover { background: rgba(49,130,246,0.05); }
   .yr-acc-hdr td {
     padding: 7px 12px !important;
     font-size: 12px;
@@ -987,8 +989,8 @@
 
 /* ═══ [MUHAN] 무한매수법 4.0 — 스타일 (사이트 색상 변수 사용, #page-muhan 범위) ═══ */
 #page-muhan{--m-bg:var(--bg);--m-s1:var(--bg2);--m-s2:var(--bg3);--m-bd:var(--card-border);--m-tx:var(--text);--m-t2:var(--text2);--m-t3:var(--text3);
- --m-ac:var(--accent);--m-ac-s:rgba(0,229,176,.12);--m-ac-b:rgba(0,229,176,.35);--m-ok:#34d399;--m-bad:#f87171;--m-warn:#fbbf24;--m-info:#60a5fa;--m-rev:#c084fc;--m-on-ac:#04211a}
-html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(0,163,125,.35);--m-ok:#059669;--m-bad:#dc2626;--m-warn:#b45309;--m-info:#2563eb;--m-rev:#9333ea;--m-on-ac:#ffffff}
+ --m-ac:var(--accent);--m-ac-s:rgba(49,130,246,.12);--m-ac-b:rgba(49,130,246,.35);--m-ok:#3182f6;--m-bad:#f04452;--m-warn:#fe9800;--m-info:#3182f6;--m-rev:#3182f6;--m-on-ac:#ffffff}
+html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba(49,130,246,.35);--m-ok:#3182f6;--m-bad:#f04452;--m-warn:#fe9800;--m-info:#3182f6;--m-rev:#3182f6;--m-on-ac:#ffffff}
 #mh-root{max-width:440px;margin:0 auto;color:var(--m-tx);font-family:var(--font);padding-bottom:96px}
 .mh-card{background:var(--m-s1);border:1px solid var(--m-bd);border-radius:16px;padding:14px;margin-bottom:10px}
 .mh-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -1000,10 +1002,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
 .mh-btn:hover{border-color:var(--m-ac-b)}.mh-btn:disabled{opacity:.45;cursor:not-allowed}
 .mh-btn-p{background:var(--m-ac);color:var(--m-on-ac);border-color:var(--m-ac);font-weight:700}
 .mh-btn-sel{background:var(--m-ac-s);border-color:var(--m-ac);color:var(--m-ac);font-weight:600}
-.mh-btn-danger{color:var(--m-bad);border-color:rgba(248,113,113,.35);background:rgba(248,113,113,.08)}
+.mh-btn-danger{color:var(--m-bad);border-color:rgba(240,68,82,.35);background:rgba(240,68,82,.08)}
 .mh-chip{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid var(--m-bd);color:var(--m-t2);background:var(--m-s2);white-space:nowrap}
-.mh-chip-ac{color:var(--m-ac);border-color:var(--m-ac-b);background:var(--m-ac-s)}.mh-chip-warn{color:var(--m-warn);border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.10)}
-.mh-chip-bad{color:var(--m-bad);border-color:rgba(248,113,113,.35);background:rgba(248,113,113,.08)}
+.mh-chip-ac{color:var(--m-ac);border-color:var(--m-ac-b);background:var(--m-ac-s)}.mh-chip-warn{color:var(--m-warn);border-color:rgba(254,152,0,.35);background:rgba(254,152,0,.10)}
+.mh-chip-bad{color:var(--m-bad);border-color:rgba(240,68,82,.35);background:rgba(240,68,82,.08)}
 .mh-in{width:100%;box-sizing:border-box;padding:11px 12px;border-radius:10px;border:1px solid var(--m-bd);background:var(--m-s2);color:var(--m-tx);font-family:var(--mono);font-size:14px;outline:none}
 .mh-in:focus{border-color:var(--m-ac)}
 .mh-lbl{display:block;font-size:12px;color:var(--m-t2);margin:0 0 6px}
@@ -1036,31 +1038,31 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
 .mh-mrow{display:flex;align-items:center;gap:6px}.mh-mrow .mh-in{padding:6px 8px;font-size:13px}
 .mh-mbtn{display:block;width:100%;text-align:left;background:transparent;border:0;color:var(--m-tx);padding:9px 2px;font:inherit;font-size:13px;cursor:pointer}
 .mh-overlay{position:fixed;inset:0;z-index:40}
-.mh-sheet-bg{position:fixed;inset:0;z-index:9000;background:rgba(3,7,15,.6);display:flex;align-items:flex-end;justify-content:center}
+.mh-sheet-bg{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center}
 .mh-sheet{width:100%;max-width:460px;max-height:88vh;overflow-y:auto;background:var(--m-s1);color:var(--m-tx);border:1px solid var(--m-bd);border-bottom:0;border-radius:20px 20px 0 0;padding:10px 16px 18px;box-sizing:border-box}
 .mh-sheet .grab{width:40px;height:4px;border-radius:2px;background:var(--m-bd);margin:2px auto 10px}
 .mh-sheet h2,.mh-sheet h3{margin:0;font-size:16px}
 .mh-obox{border-radius:10px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
-.mh-obox.sell{background:rgba(248,113,113,.09);border:1px solid rgba(248,113,113,.18)}.mh-obox.buy{background:rgba(0,229,176,.07);border:1px solid rgba(0,229,176,.15)}
+.mh-obox.sell{background:rgba(240,68,82,.09);border:1px solid rgba(240,68,82,.18)}.mh-obox.buy{background:rgba(49,130,246,.07);border:1px solid rgba(49,130,246,.15)}
 .mh-obox .p{font-family:var(--mono);font-weight:700}.mh-obox.sell .p{color:var(--m-bad)}.mh-obox.buy .p{color:var(--m-ok)}
-.mh-tag{font-size:9.5px;padding:1px 6px;border-radius:5px;background:rgba(96,165,250,.15);color:var(--m-info);font-weight:600}
+.mh-tag{font-size:9.5px;padding:1px 6px;border-radius:5px;background:rgba(49,130,246,.15);color:var(--m-info);font-weight:600}
 .mh-note{border-radius:10px;padding:10px 12px;font-size:11.5px;line-height:1.6;background:var(--m-s2);border:1px solid var(--m-bd);color:var(--m-t2)}
-.mh-note.warn{background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.3)}.mh-note.bad{background:rgba(248,113,113,.08);border-color:rgba(248,113,113,.3)}
-.mh-note.ok{background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.3)}.mh-note.ac{background:var(--m-ac-s);border-color:var(--m-ac-b)}
+.mh-note.warn{background:rgba(254,152,0,.08);border-color:rgba(254,152,0,.3)}.mh-note.bad{background:rgba(240,68,82,.08);border-color:rgba(240,68,82,.3)}
+.mh-note.ok{background:rgba(49,130,246,.08);border-color:rgba(49,130,246,.3)}.mh-note.ac{background:var(--m-ac-s);border-color:var(--m-ac-b)}
 .mh-bar{height:6px;border-radius:3px;background:var(--m-s2);overflow:hidden}.mh-bar>i{display:block;height:100%;background:var(--m-ac);border-radius:3px}
-.mh-fab{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:35;display:flex;align-items:center;gap:8px;padding:13px 26px;border-radius:999px;border:0;background:var(--m-ac);color:var(--m-on-ac);font:inherit;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 6px 22px rgba(0,229,176,.35)}
+.mh-fab{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:35;display:flex;align-items:center;gap:8px;padding:13px 26px;border-radius:999px;border:0;background:var(--m-ac);color:var(--m-on-ac);font:inherit;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 6px 22px rgba(49,130,246,.35)}
 .mh-closes{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .mh-cl{background:var(--m-s2);border-radius:9px;padding:7px 4px;text-align:center;font-family:var(--mono)}
 .mh-cl .d{font-size:9.5px;color:var(--m-t3)}.mh-cl .c{font-size:11.5px;font-weight:600;margin:2px 0}.mh-cl .r{font-size:9.5px}.mh-cl .h{font-size:9px;color:var(--m-t3);margin-top:2px}
 .mh-type{display:flex;align-items:center;justify-content:space-between;width:100%;padding:11px 12px;border-radius:11px;border:1px solid var(--m-bd);background:var(--m-s2);color:var(--m-tx);font:inherit;font-size:13px;cursor:pointer;margin-bottom:6px;text-align:left}
 .mh-type:hover{border-color:var(--m-ac-b)}
-.mh-gauge{position:relative;height:8px;border-radius:4px;background:linear-gradient(90deg,#ef4444 0%,#ef4444 25%,#f97316 25%,#f97316 45%,#eab308 45%,#eab308 55%,#22c55e 55%,#22c55e 75%,#10b981 75%)}
+.mh-gauge{position:relative;height:8px;border-radius:4px;background:linear-gradient(90deg,#f04452 0%,#f04452 25%,#fe9800 25%,#fe9800 45%,#fe9800 45%,#fe9800 55%,#3182f6 55%,#3182f6 75%,#3182f6 75%)}
 .mh-gauge .k{position:absolute;top:-3px;width:4px;height:14px;border-radius:2px;background:var(--m-tx);transform:translateX(-50%);box-shadow:0 0 0 2px var(--m-s1)}
 .mh-chart{position:relative;height:180px}
 .mh-sel{padding:4px 8px;border-radius:8px;border:1px solid var(--m-bd);background:var(--m-s2);color:var(--m-tx);font:inherit;font-size:12px}
 .mh-slider{width:100%;accent-color:var(--m-ac)}
 .mh-hist{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:9px;background:var(--m-s2);margin-bottom:5px;font-size:12px}
-.mh-cel{position:fixed;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;background:rgba(3,7,15,.72)}
+.mh-cel{position:fixed;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.72)}
 .mh-cel-box{position:relative;width:min(92vw,400px);background:var(--m-s1);border:1px solid var(--m-ac-b);border-radius:22px;padding:24px 18px 18px;text-align:center;color:var(--m-tx);overflow:hidden}
 .mh-conf{position:absolute;top:-12px;width:8px;height:12px;border-radius:2px;animation:mhfall var(--d) linear var(--dl) forwards;opacity:0}
 @keyframes mhfall{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),520px) rotate(var(--rot));opacity:0}}
@@ -1069,11 +1071,12 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
 
   /* ═══ [THEME] 라이트 테마 — html[data-theme="light"] 일 때 색 변수만 교체 ═══ */
   html[data-theme="light"] {
-    --bg: #f3f6fb; --bg2: #ffffff; --bg3: #eef2f7;
-    --card: rgba(15,23,42,0.03); --card-border: rgba(15,23,42,0.10);
-    --accent: #00a37d; --accent2: #0070d1; --accent-dim: rgba(0,163,125,0.12);
-    --text: #0f172a; --text2: #475569; --text3: #7b8aa1;
-    --fg-rgb: 15,23,42;
+    /* 토스증권 라이트 팔레트 */
+    --bg: #f2f4f6; --bg2: #ffffff; --bg3: #f2f4f6;
+    --card: rgba(0,27,55,0.02); --card-border: rgba(0,27,55,0.10);
+    --accent: #3182f6; --accent2: #f04452; --accent3: #fe9800; --accent-dim: rgba(49,130,246,0.10);
+    --text: #191f28; --text2: #4e5968; --text3: #8b95a1;
+    --fg-rgb: 25,31,40;
     color-scheme: light;
   }
   html[data-theme="light"] body { background: var(--bg); color: var(--text); }
@@ -1083,11 +1086,11 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
 #page-muhan .mh-info-body{font-size:13px;line-height:1.7;color:var(--m-tx)}#page-muhan .mh-info-body p{margin:10px 0}
 #page-muhan .mh-ibox{background:var(--m-ac-s);border-radius:12px;padding:12px 14px;font-size:12.5px}
 #page-muhan .mh-hr{border:0;border-top:1px solid var(--m-bd);margin:12px 0}
-#page-muhan .mh-tag.lim{background:rgba(192,132,252,.15);color:var(--m-rev)}#page-muhan .mh-tag.moc{background:rgba(248,113,113,.15);color:var(--m-bad)}
+#page-muhan .mh-tag.lim{background:rgba(49,130,246,.15);color:var(--m-rev)}#page-muhan .mh-tag.moc{background:rgba(240,68,82,.15);color:var(--m-bad)}
 #page-muhan .mh-odet{margin:-2px 0 8px;border-radius:10px;padding:10px 12px;font-size:11.5px;line-height:1.6;background:var(--m-ac-s);color:var(--m-t2)}
 #page-muhan .mh-done{width:100%;margin-top:10px;padding:12px;border-radius:12px;border:1px solid var(--m-ac-b);background:var(--m-ac-s);color:var(--m-t2);font:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 #page-muhan .mh-done .ic{width:16px;height:16px;border-radius:50%;border:1.5px solid currentColor;display:inline-flex;align-items:center;justify-content:center;font-size:10px}
-#page-muhan .mh-done.on{background:rgba(52,211,153,.14);border-color:rgba(52,211,153,.45);color:var(--m-ok)}#page-muhan .mh-done.on .ic{background:var(--m-ok);border-color:var(--m-ok);color:var(--m-s1)}
+#page-muhan .mh-done.on{background:rgba(49,130,246,.14);border-color:rgba(49,130,246,.45);color:var(--m-ok)}#page-muhan .mh-done.on .ic{background:var(--m-ok);border-color:var(--m-ok);color:var(--m-s1)}
 </style>
 </head>
 <body>
@@ -1097,18 +1100,18 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
   <!-- ── 상단 오픈카카오 배너 ── -->
   <a href="https://open.kakao.com/o/gi9XfRpi" target="_blank" rel="noopener"
     style="display:flex;align-items:center;justify-content:center;gap:14px;
-      background:linear-gradient(135deg,rgba(254,229,0,0.12),rgba(254,229,0,0.06));
-      border:1px solid rgba(254,229,0,0.3);border-radius:14px;
+      background:linear-gradient(135deg,rgba(254,152,0,0.12),rgba(254,152,0,0.06));
+      border:1px solid rgba(254,152,0,0.3);border-radius:14px;
       padding:18px 24px;margin-bottom:16px;text-decoration:none;
       width:100%;box-sizing:border-box;transition:background 0.2s,border-color 0.2s;"
-    onmouseover="this.style.background='linear-gradient(135deg,rgba(254,229,0,0.2),rgba(254,229,0,0.1))';this.style.borderColor='rgba(254,229,0,0.5)'"
-    onmouseout="this.style.background='linear-gradient(135deg,rgba(254,229,0,0.12),rgba(254,229,0,0.06))';this.style.borderColor='rgba(254,229,0,0.3)'">
+    onmouseover="this.style.background='linear-gradient(135deg,rgba(254,152,0,0.2),rgba(254,152,0,0.1))';this.style.borderColor='rgba(254,152,0,0.5)'"
+    onmouseout="this.style.background='linear-gradient(135deg,rgba(254,152,0,0.12),rgba(254,152,0,0.06))';this.style.borderColor='rgba(254,152,0,0.3)'">
     <span style="font-size:22px;flex-shrink:0;">💬</span>
     <div style="text-align:center;">
-      <p style="font-size:15px;font-weight:600;color:#f5c400;margin-bottom:3px;">카카오 오픈채팅</p>
+      <p style="font-size:15px;font-weight:600;color:#fe9800;margin-bottom:3px;">카카오 오픈채팅</p>
       <p style="font-size:12px;color:var(--text2);">ETF 커버드콜 + 배당투자 + 성장주 함께 장기투자를 위한 오픈톡방 가기</p>
     </div>
-    <span style="font-size:18px;color:#f5c400;flex-shrink:0;">→</span>
+    <span style="font-size:18px;color:#fe9800;flex-shrink:0;">→</span>
   </a>
 
   <nav class="app-nav" id="mainNav">
@@ -1256,7 +1259,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
             </div>
             <div>
               <p style="font-size:10px;color:var(--text3);margin-bottom:3px;">체증률</p>
-              <p style="font-family:var(--mono);font-size:15px;font-weight:500;color:#ffaa55;" id="loan-g-rate">—</p>
+              <p style="font-family:var(--mono);font-size:15px;font-weight:500;color:#fe9800;" id="loan-g-rate">—</p>
               <p style="font-size:10px;color:var(--text3);">연체증금 ÷ 2회차</p>
             </div>
           </div>
@@ -1269,7 +1272,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
           </div>
           <div class="card" style="padding:18px 20px;">
             <p style="font-size:11px;color:var(--text3);margin-bottom:6px;">총 납입이자</p>
-            <p style="font-family:var(--mono);font-size:20px;font-weight:500;color:#ff7070;" id="loan-s-interest">—</p>
+            <p style="font-family:var(--mono);font-size:20px;font-weight:500;color:#f04452;" id="loan-s-interest">—</p>
             <p style="font-size:11px;color:var(--text3);margin-top:4px;" id="loan-s-interest-sub">이자율 —</p>
           </div>
           <div class="card" style="padding:18px 20px;">
@@ -1412,7 +1415,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
                 </div>
               </div>
             </div>
-            <div style="background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(0,229,176,0.12);">
+            <div style="background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(49,130,246,0.12);">
               <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">연간 추가 투자액</p>
               <p style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500;" id="cpd-annual-dep">—</p>
             </div>
@@ -1430,7 +1433,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
               <span style="font-size:12px;color:var(--text3);" id="cpd-tax-off">OFF</span>
               <div class="switch on" id="cpd-tax-sw" onclick="toggleCpdTax()"><div class="switch-thumb"></div></div>
-              <span style="font-size:12px;color:#ff7070;" id="cpd-tax-on">ON</span>
+              <span style="font-size:12px;color:#f04452;" id="cpd-tax-on">ON</span>
             </label>
           </div>
           <div class="slider-block" id="cpd-tax-block">
@@ -1469,7 +1472,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
           </div>
           <div class="card" style="padding:18px 20px;">
             <p style="font-size:11px;color:var(--text3);margin-bottom:6px;">실효 CAGR</p>
-            <p style="font-family:var(--mono);font-size:22px;font-weight:500;color:#ffaa55;" id="cpd-s-cagr">—</p>
+            <p style="font-family:var(--mono);font-size:22px;font-weight:500;color:#fe9800;" id="cpd-s-cagr">—</p>
             <p style="font-size:11px;color:var(--text3);margin-top:4px;" id="cpd-s-cagr-sub">월평균 —</p>
           </div>
         </div>
@@ -1532,7 +1535,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
             <span id="kodex-price-src"  style="font-size:10px;color:var(--text3);white-space:nowrap;">클릭하여 갱신</span>
           </div>
           <button onclick="fetchKodexPrice()" id="kodex-refresh-btn"
-            style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;flex-shrink:0;">
+            style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;flex-shrink:0;">
             <span id="kodex-refresh-icon">↺</span> 갱신
           </button>
           <span id="kodex-loading" style="display:none;font-size:12px;color:var(--text3);">⏳</span>
@@ -1582,12 +1585,12 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
 
 
       <!-- 일부 재투자 비율 (partial 모드에서만 표시) -->
-      <div id="partial-ratio-block" style="display:none;background:var(--bg3);border:1px solid rgba(0,229,176,0.2);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
+      <div id="partial-ratio-block" style="display:none;background:var(--bg3);border:1px solid rgba(49,130,246,0.2);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
         <div class="slider-header" style="margin-bottom:8px;">
           <span class="slider-label">재투자 비율</span>
           <div class="num-pill"><input class="num-input" id="ni-partial" type="number" min="1" max="99" step="1" value="50" style="width:60px;" oninput="syncPartial()"><span class="num-unit">%</span></div>
         </div>
-        <input type="range" id="sl-partial" min="1" max="99" step="1" value="50" style="background:rgba(0,229,176,0.25);" oninput="document.getElementById('ni-partial').value=this.value; syncPartial();">
+        <input type="range" id="sl-partial" min="1" max="99" step="1" value="50" style="background:rgba(49,130,246,0.25);" oninput="document.getElementById('ni-partial').value=this.value; syncPartial();">
         <p style="font-size:11px;color:var(--text3);margin-top:6px;" id="partial-desc">분배금의 50%는 재투자, 50%는 수령</p>
       </div>
       <!-- ① 투자 조건 설정 -->
@@ -1696,7 +1699,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         </div>
         <input type="range" id="sl-monthly" min="0" max="50000000" step="100000" value="1000000"
                oninput="simOnSlider(this)">
-        <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(0,229,176,0.12);">
+        <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(49,130,246,0.12);">
           <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">연간 추가 투자액</p>
           <p style="font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:500;" id="dca-annual-label">—</p>
         </div>
@@ -1761,9 +1764,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
 
           <!-- 분리과세 안내 -->
           <div id="tax-separate-info">
-            <div style="background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(255,112,112,0.15);font-size:11px;color:var(--text3);line-height:1.8;">
-              금융소득(이자+배당) 연 <span style="color:#ff9090;font-weight:500;">2,000만원 이하</span>일 때 선택<br>
-              원천징수세율 <span style="color:#ff9090;font-weight:500;">14% + 지방소득세 1.4% = 15.4%</span> 로 종결<br>
+            <div style="background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(240,68,82,0.15);font-size:11px;color:var(--text3);line-height:1.8;">
+              금융소득(이자+배당) 연 <span style="color:#f04452;font-weight:500;">2,000만원 이하</span>일 때 선택<br>
+              원천징수세율 <span style="color:#f04452;font-weight:500;">14% + 지방소득세 1.4% = 15.4%</span> 로 종결<br>
               <span style="color:var(--text3);">→ 세율 15.4% 자동 적용</span>
             </div>
           </div>
@@ -1807,10 +1810,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
             </table>
 
             <!-- 계산 결과 -->
-            <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(255,112,112,0.2);">
+            <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(240,68,82,0.2);">
               <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
                 <span style="font-size:11px;color:var(--text3);">1년차 기준 유효세율</span>
-                <span style="font-family:var(--mono);font-size:13px;color:#ff9090;font-weight:500;" id="bracket-eff-rate">—</span>
+                <span style="font-family:var(--mono);font-size:13px;color:#f04452;font-weight:500;" id="bracket-eff-rate">—</span>
               </div>
               <div style="display:flex;justify-content:space-between;">
                 <span style="font-size:11px;color:var(--text3);">연도별 세율 자동 적용</span>
@@ -1821,14 +1824,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         </div>
 
         <!-- 세금 요약 (공통) -->
-        <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(255,95,95,0.15);">
+        <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(240,68,82,0.15);">
           <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
             <p style="font-size:11px;color:var(--text3);">1년차 연간 세금</p>
-            <p style="font-family:var(--mono);font-size:12px;color:#ff7070;font-weight:500;" id="tax-first-label">—</p>
+            <p style="font-family:var(--mono);font-size:12px;color:#f04452;font-weight:500;" id="tax-first-label">—</p>
           </div>
           <div style="display:flex;justify-content:space-between;">
             <p style="font-size:11px;color:var(--text3);">누적 납부 세금</p>
-            <p style="font-family:var(--mono);font-size:12px;color:#ff7070;font-weight:500;" id="tax-total-label">—</p>
+            <p style="font-family:var(--mono);font-size:12px;color:#f04452;font-weight:500;" id="tax-total-label">—</p>
           </div>
         </div>
       </div>
@@ -1862,7 +1865,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
 
         <!-- 콜옵션 비율 / 배당 비율 입력 -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
-          <div style="background:var(--bg3);border-radius:8px;padding:10px;border:1px solid rgba(0,229,176,0.15);">
+          <div style="background:var(--bg3);border-radius:8px;padding:10px;border:1px solid rgba(49,130,246,0.15);">
             <p style="font-size:10px;color:var(--text3);margin-bottom:6px;">콜옵션 수익 (비과세)</p>
             <div class="num-pill" style="width:100%;">
               <input class="num-input" id="ni-calloption" type="number" min="0" max="99" step="0.1" value="15"
@@ -1870,11 +1873,11 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
               <span class="num-unit">%</span>
             </div>
           </div>
-          <div style="background:var(--bg3);border-radius:8px;padding:10px;border:1px solid rgba(255,112,112,0.15);">
+          <div style="background:var(--bg3);border-radius:8px;padding:10px;border:1px solid rgba(240,68,82,0.15);">
             <p style="font-size:10px;color:var(--text3);margin-bottom:6px;">배당금 (과세 15.4%)</p>
             <div class="num-pill" style="width:100%;">
               <input class="num-input" id="ni-divportion" type="number" min="0" max="99" step="0.1" value="2"
-                     style="width:100%;color:#ff9090;" oninput="onKodexRatioChange()">
+                     style="width:100%;color:#f04452;" oninput="onKodexRatioChange()">
               <span class="num-unit">%</span>
             </div>
           </div>
@@ -1970,11 +1973,11 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         <div class="acc-body default-open" id="acc-chart">
           <div class="legend" id="chartLegend">
             <div class="legend-item" id="leg-div">
-              <div class="legend-dot" style="background:#00e5b0;"></div>
+              <div class="legend-dot" style="background:#3182f6;"></div>
               <span id="leg-div-label">연간 <span class="txt-div">분배금</span></span>
             </div>
             <div class="legend-item" id="leg-port" style="display:none;">
-              <div class="legend-dot" style="background:#0091ff;"></div>포트폴리오 가치
+              <div class="legend-dot" style="background:#3182f6;"></div>포트폴리오 가치
             </div>
           </div>
           <div class="chart-wrap">
@@ -1999,9 +2002,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
                   <th>시작 자산</th>
                   <th id="mth-deposit" style="color:var(--accent);">연/월 적립금</th>
                   <th id="mth-div">연/월 <span class="txt-div">분배</span> (세후)</th>
-                  <th id="mth-taxbase" style="display:none;color:#ffaa55;">연/월 과세표준</th>
-                  <th id="mth-tax" style="display:none;color:#ff7070;">연/월 세금</th>
-                  <th id="mth-price-change" style="color:#64b5f6;">연/월 주가 변동</th>
+                  <th id="mth-taxbase" style="display:none;color:#fe9800;">연/월 과세표준</th>
+                  <th id="mth-tax" style="display:none;color:#f04452;">연/월 세금</th>
+                  <th id="mth-price-change" style="color:#3182f6;">연/월 주가 변동</th>
                   <th>누적 자산</th>
                   <th>보유 수량</th>
                 </tr>
@@ -2036,7 +2039,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
             <span id="sol-kodex-price-src"  style="font-size:10px;color:var(--text3);white-space:nowrap;">클릭하여 갱신</span>
           </div>
           <button onclick="solFetchPrice()" id="sol-kodex-refresh-btn"
-            style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;flex-shrink:0;">
+            style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;flex-shrink:0;">
             <span id="sol-kodex-refresh-icon">↺</span> 갱신
           </button>
           <span id="sol-kodex-loading" style="display:none;font-size:12px;color:var(--text3);">⏳</span>
@@ -2086,12 +2089,12 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
 
 
       <!-- 일부 재투자 비율 (partial 모드에서만 표시) -->
-      <div id="sol-partial-ratio-block" style="display:none;background:var(--bg3);border:1px solid rgba(0,229,176,0.2);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
+      <div id="sol-partial-ratio-block" style="display:none;background:var(--bg3);border:1px solid rgba(49,130,246,0.2);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
         <div class="slider-header" style="margin-bottom:8px;">
           <span class="slider-label">재투자 비율</span>
           <div class="num-pill"><input class="num-input" id="sol-ni-partial" type="number" min="1" max="99" step="1" value="50" style="width:60px;" oninput="solSyncPartial()"><span class="num-unit">%</span></div>
         </div>
-        <input type="range" id="sol-sl-partial" min="1" max="99" step="1" value="50" style="background:rgba(0,229,176,0.25);" oninput="document.getElementById('sol-ni-partial').value=this.value; syncPartial();">
+        <input type="range" id="sol-sl-partial" min="1" max="99" step="1" value="50" style="background:rgba(49,130,246,0.25);" oninput="document.getElementById('sol-ni-partial').value=this.value; syncPartial();">
         <p style="font-size:11px;color:var(--text3);margin-top:6px;" id="sol-partial-desc">분배금의 50%는 재투자, 50%는 수령</p>
       </div>
       <!-- ① 투자 조건 설정 -->
@@ -2200,7 +2203,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         </div>
         <input type="range" id="sol-sl-monthly" min="0" max="50000000" step="100000" value="1000000"
                oninput="simOnSlider(this)">
-        <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(0,229,176,0.12);">
+        <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(49,130,246,0.12);">
           <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">연간 추가 투자액</p>
           <p style="font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:500;" id="sol-dca-annual-label">—</p>
         </div>
@@ -2265,9 +2268,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
 
           <!-- 분리과세 안내 -->
           <div id="sol-tax-separate-info">
-            <div style="background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(255,112,112,0.15);font-size:11px;color:var(--text3);line-height:1.8;">
-              금융소득(이자+배당) 연 <span style="color:#ff9090;font-weight:500;">2,000만원 이하</span>일 때 선택<br>
-              원천징수세율 <span style="color:#ff9090;font-weight:500;">14% + 지방소득세 1.4% = 15.4%</span> 로 종결<br>
+            <div style="background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(240,68,82,0.15);font-size:11px;color:var(--text3);line-height:1.8;">
+              금융소득(이자+배당) 연 <span style="color:#f04452;font-weight:500;">2,000만원 이하</span>일 때 선택<br>
+              원천징수세율 <span style="color:#f04452;font-weight:500;">14% + 지방소득세 1.4% = 15.4%</span> 로 종결<br>
               <span style="color:var(--text3);">→ 세율 15.4% 자동 적용</span>
             </div>
           </div>
@@ -2311,10 +2314,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
             </table>
 
             <!-- 계산 결과 -->
-            <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(255,112,112,0.2);">
+            <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(240,68,82,0.2);">
               <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
                 <span style="font-size:11px;color:var(--text3);">1년차 기준 유효세율</span>
-                <span style="font-family:var(--mono);font-size:13px;color:#ff9090;font-weight:500;" id="sol-bracket-eff-rate">—</span>
+                <span style="font-family:var(--mono);font-size:13px;color:#f04452;font-weight:500;" id="sol-bracket-eff-rate">—</span>
               </div>
               <div style="display:flex;justify-content:space-between;">
                 <span style="font-size:11px;color:var(--text3);">연도별 세율 자동 적용</span>
@@ -2325,14 +2328,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         </div>
 
         <!-- 세금 요약 (공통) -->
-        <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(255,95,95,0.15);">
+        <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(240,68,82,0.15);">
           <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
             <p style="font-size:11px;color:var(--text3);">1년차 연간 세금</p>
-            <p style="font-family:var(--mono);font-size:12px;color:#ff7070;font-weight:500;" id="sol-tax-first-label">—</p>
+            <p style="font-family:var(--mono);font-size:12px;color:#f04452;font-weight:500;" id="sol-tax-first-label">—</p>
           </div>
           <div style="display:flex;justify-content:space-between;">
             <p style="font-size:11px;color:var(--text3);">누적 납부 세금</p>
-            <p style="font-family:var(--mono);font-size:12px;color:#ff7070;font-weight:500;" id="sol-tax-total-label">—</p>
+            <p style="font-family:var(--mono);font-size:12px;color:#f04452;font-weight:500;" id="sol-tax-total-label">—</p>
           </div>
         </div>
       </div>
@@ -2366,7 +2369,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
 
         <!-- 콜옵션 비율 / 배당 비율 입력 -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
-          <div style="background:var(--bg3);border-radius:8px;padding:10px;border:1px solid rgba(0,229,176,0.15);">
+          <div style="background:var(--bg3);border-radius:8px;padding:10px;border:1px solid rgba(49,130,246,0.15);">
             <p style="font-size:10px;color:var(--text3);margin-bottom:6px;">콜옵션 수익 (비과세)</p>
             <div class="num-pill" style="width:100%;">
               <input class="num-input" id="sol-ni-calloption" type="number" min="0" max="99" step="0.1" value="13"
@@ -2374,11 +2377,11 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
               <span class="num-unit">%</span>
             </div>
           </div>
-          <div style="background:var(--bg3);border-radius:8px;padding:10px;border:1px solid rgba(255,112,112,0.15);">
+          <div style="background:var(--bg3);border-radius:8px;padding:10px;border:1px solid rgba(240,68,82,0.15);">
             <p style="font-size:10px;color:var(--text3);margin-bottom:6px;">배당금 (과세 15.4%)</p>
             <div class="num-pill" style="width:100%;">
               <input class="num-input" id="sol-ni-divportion" type="number" min="0" max="99" step="0.1" value="2"
-                     style="width:100%;color:#ff9090;" oninput="solOnKodexRatioChange()">
+                     style="width:100%;color:#f04452;" oninput="solOnKodexRatioChange()">
               <span class="num-unit">%</span>
             </div>
           </div>
@@ -2473,11 +2476,11 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
           <!-- 범례 -->
           <div class="legend" id="sol-chartLegend">
             <div class="legend-item" id="sol-leg-div">
-              <div class="legend-dot" style="background:#00e5b0;"></div>
+              <div class="legend-dot" style="background:#3182f6;"></div>
               <span id="sol-leg-div-label">연간 <span class="txt-div">분배금</span></span>
             </div>
             <div class="legend-item" id="sol-leg-port" style="display:none;">
-              <div class="legend-dot" style="background:#0091ff;"></div>포트폴리오 가치
+              <div class="legend-dot" style="background:#3182f6;"></div>포트폴리오 가치
             </div>
           </div>
           <div class="chart-wrap">
@@ -2505,9 +2508,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
                   <th>시작 자산</th>
                   <th id="sol-mth-deposit" style="color:var(--accent);">연/월 적립금</th>
                   <th id="sol-mth-div">연/월 <span class="txt-div">분배</span> (세후)</th>
-                  <th id="sol-mth-taxbase" style="display:none;color:#ffaa55;">연/월 과세표준</th>
-                  <th id="sol-mth-tax" style="display:none;color:#ff7070;">연/월 세금</th>
-                  <th id="sol-mth-price-change" style="color:#64b5f6;">연/월 주가 변동</th>
+                  <th id="sol-mth-taxbase" style="display:none;color:#fe9800;">연/월 과세표준</th>
+                  <th id="sol-mth-tax" style="display:none;color:#f04452;">연/월 세금</th>
+                  <th id="sol-mth-price-change" style="color:#3182f6;">연/월 주가 변동</th>
                   <th>누적 자산</th>
                   <th>보유 수량</th>
                 </tr>
@@ -2542,7 +2545,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
             <span id="tiger-kodex-price-src"  style="font-size:10px;color:var(--text3);white-space:nowrap;">클릭하여 갱신</span>
           </div>
           <button onclick="tigerFetchPrice()" id="tiger-kodex-refresh-btn"
-            style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;flex-shrink:0;">
+            style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;flex-shrink:0;">
             <span id="tiger-kodex-refresh-icon">↺</span> 갱신
           </button>
           <span id="tiger-kodex-loading" style="display:none;font-size:12px;color:var(--text3);">⏳</span>
@@ -2592,12 +2595,12 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
 
 
       <!-- 일부 재투자 비율 (partial 모드에서만 표시) -->
-      <div id="tiger-partial-ratio-block" style="display:none;background:var(--bg3);border:1px solid rgba(0,229,176,0.2);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
+      <div id="tiger-partial-ratio-block" style="display:none;background:var(--bg3);border:1px solid rgba(49,130,246,0.2);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
         <div class="slider-header" style="margin-bottom:8px;">
           <span class="slider-label">재투자 비율</span>
           <div class="num-pill"><input class="num-input" id="tiger-ni-partial" type="number" min="1" max="99" step="1" value="50" style="width:60px;" oninput="tigerSyncPartial()"><span class="num-unit">%</span></div>
         </div>
-        <input type="range" id="tiger-sl-partial" min="1" max="99" step="1" value="50" style="background:rgba(0,229,176,0.25);" oninput="document.getElementById('tiger-ni-partial').value=this.value; syncPartial();">
+        <input type="range" id="tiger-sl-partial" min="1" max="99" step="1" value="50" style="background:rgba(49,130,246,0.25);" oninput="document.getElementById('tiger-ni-partial').value=this.value; syncPartial();">
         <p style="font-size:11px;color:var(--text3);margin-top:6px;" id="tiger-partial-desc">분배금의 50%는 재투자, 50%는 수령</p>
       </div>
       <!-- ① 투자 조건 설정 -->
@@ -2706,7 +2709,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         </div>
         <input type="range" id="tiger-sl-monthly" min="0" max="50000000" step="100000" value="1000000"
                oninput="simOnSlider(this)">
-        <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(0,229,176,0.12);">
+        <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(49,130,246,0.12);">
           <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">연간 추가 투자액</p>
           <p style="font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:500;" id="tiger-dca-annual-label">—</p>
         </div>
@@ -2771,9 +2774,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
 
           <!-- 분리과세 안내 -->
           <div id="tiger-tax-separate-info">
-            <div style="background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(255,112,112,0.15);font-size:11px;color:var(--text3);line-height:1.8;">
-              금융소득(이자+배당) 연 <span style="color:#ff9090;font-weight:500;">2,000만원 이하</span>일 때 선택<br>
-              원천징수세율 <span style="color:#ff9090;font-weight:500;">14% + 지방소득세 1.4% = 15.4%</span> 로 종결<br>
+            <div style="background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(240,68,82,0.15);font-size:11px;color:var(--text3);line-height:1.8;">
+              금융소득(이자+배당) 연 <span style="color:#f04452;font-weight:500;">2,000만원 이하</span>일 때 선택<br>
+              원천징수세율 <span style="color:#f04452;font-weight:500;">14% + 지방소득세 1.4% = 15.4%</span> 로 종결<br>
               <span style="color:var(--text3);">→ 세율 15.4% 자동 적용</span>
             </div>
           </div>
@@ -2817,10 +2820,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
             </table>
 
             <!-- 계산 결과 -->
-            <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(255,112,112,0.2);">
+            <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(240,68,82,0.2);">
               <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
                 <span style="font-size:11px;color:var(--text3);">1년차 기준 유효세율</span>
-                <span style="font-family:var(--mono);font-size:13px;color:#ff9090;font-weight:500;" id="tiger-bracket-eff-rate">—</span>
+                <span style="font-family:var(--mono);font-size:13px;color:#f04452;font-weight:500;" id="tiger-bracket-eff-rate">—</span>
               </div>
               <div style="display:flex;justify-content:space-between;">
                 <span style="font-size:11px;color:var(--text3);">연도별 세율 자동 적용</span>
@@ -2831,14 +2834,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         </div>
 
         <!-- 세금 요약 (공통) -->
-        <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(255,95,95,0.15);">
+        <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(240,68,82,0.15);">
           <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
             <p style="font-size:11px;color:var(--text3);">1년차 연간 세금</p>
-            <p style="font-family:var(--mono);font-size:12px;color:#ff7070;font-weight:500;" id="tiger-tax-first-label">—</p>
+            <p style="font-family:var(--mono);font-size:12px;color:#f04452;font-weight:500;" id="tiger-tax-first-label">—</p>
           </div>
           <div style="display:flex;justify-content:space-between;">
             <p style="font-size:11px;color:var(--text3);">누적 납부 세금</p>
-            <p style="font-family:var(--mono);font-size:12px;color:#ff7070;font-weight:500;" id="tiger-tax-total-label">—</p>
+            <p style="font-family:var(--mono);font-size:12px;color:#f04452;font-weight:500;" id="tiger-tax-total-label">—</p>
           </div>
         </div>
       </div>
@@ -2872,7 +2875,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
 
         <!-- 콜옵션 비율 / 배당 비율 입력 -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
-          <div style="background:var(--bg3);border-radius:8px;padding:10px;border:1px solid rgba(0,229,176,0.15);">
+          <div style="background:var(--bg3);border-radius:8px;padding:10px;border:1px solid rgba(49,130,246,0.15);">
             <p style="font-size:10px;color:var(--text3);margin-bottom:6px;">콜옵션 수익 (비과세)</p>
             <div class="num-pill" style="width:100%;">
               <input class="num-input" id="tiger-ni-calloption" type="number" min="0" max="99" step="0.1" value="5"
@@ -2880,11 +2883,11 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
               <span class="num-unit">%</span>
             </div>
           </div>
-          <div style="background:var(--bg3);border-radius:8px;padding:10px;border:1px solid rgba(255,112,112,0.15);">
+          <div style="background:var(--bg3);border-radius:8px;padding:10px;border:1px solid rgba(240,68,82,0.15);">
             <p style="font-size:10px;color:var(--text3);margin-bottom:6px;">배당금 (과세 15.4%)</p>
             <div class="num-pill" style="width:100%;">
               <input class="num-input" id="tiger-ni-divportion" type="number" min="0" max="99" step="0.1" value="2"
-                     style="width:100%;color:#ff9090;" oninput="tigerOnKodexRatioChange()">
+                     style="width:100%;color:#f04452;" oninput="tigerOnKodexRatioChange()">
               <span class="num-unit">%</span>
             </div>
           </div>
@@ -2979,11 +2982,11 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
           <!-- 범례 -->
           <div class="legend" id="tiger-chartLegend">
             <div class="legend-item" id="tiger-leg-div">
-              <div class="legend-dot" style="background:#00e5b0;"></div>
+              <div class="legend-dot" style="background:#3182f6;"></div>
               <span id="tiger-leg-div-label">연간 <span class="txt-div">분배금</span></span>
             </div>
             <div class="legend-item" id="tiger-leg-port" style="display:none;">
-              <div class="legend-dot" style="background:#0091ff;"></div>포트폴리오 가치
+              <div class="legend-dot" style="background:#3182f6;"></div>포트폴리오 가치
             </div>
           </div>
           <div class="chart-wrap">
@@ -3011,9 +3014,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
                   <th>시작 자산</th>
                   <th id="tiger-mth-deposit" style="color:var(--accent);">연/월 적립금</th>
                   <th id="tiger-mth-div">연/월 <span class="txt-div">분배</span> (세후)</th>
-                  <th id="tiger-mth-taxbase" style="display:none;color:#ffaa55;">연/월 과세표준</th>
-                  <th id="tiger-mth-tax" style="display:none;color:#ff7070;">연/월 세금</th>
-                  <th id="tiger-mth-price-change" style="color:#64b5f6;">연/월 주가 변동</th>
+                  <th id="tiger-mth-taxbase" style="display:none;color:#fe9800;">연/월 과세표준</th>
+                  <th id="tiger-mth-tax" style="display:none;color:#f04452;">연/월 세금</th>
+                  <th id="tiger-mth-price-change" style="color:#3182f6;">연/월 주가 변동</th>
                   <th>누적 자산</th>
                   <th>보유 수량</th>
                 </tr>
@@ -3049,7 +3052,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
             <span id="tigerdiv-kodex-price-src"  style="font-size:10px;color:var(--text3);white-space:nowrap;">클릭하여 갱신</span>
           </div>
           <button onclick="tigerdivFetchPrice()" id="tigerdiv-kodex-refresh-btn"
-            style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;flex-shrink:0;">
+            style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;flex-shrink:0;">
             <span id="tigerdiv-kodex-refresh-icon">↺</span> 갱신
           </button>
           <span id="tigerdiv-kodex-loading" style="display:none;font-size:12px;color:var(--text3);">⏳</span>
@@ -3099,12 +3102,12 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
 
 
       <!-- 일부 재투자 비율 (partial 모드에서만 표시) -->
-      <div id="tigerdiv-partial-ratio-block" style="display:none;background:var(--bg3);border:1px solid rgba(0,229,176,0.2);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
+      <div id="tigerdiv-partial-ratio-block" style="display:none;background:var(--bg3);border:1px solid rgba(49,130,246,0.2);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
         <div class="slider-header" style="margin-bottom:8px;">
           <span class="slider-label">재투자 비율</span>
           <div class="num-pill"><input class="num-input" id="tigerdiv-ni-partial" type="number" min="1" max="99" step="1" value="50" style="width:60px;" oninput="tigerdivSyncPartial()"><span class="num-unit">%</span></div>
         </div>
-        <input type="range" id="tigerdiv-sl-partial" min="1" max="99" step="1" value="50" style="background:rgba(0,229,176,0.25);" oninput="document.getElementById('tigerdiv-ni-partial').value=this.value; tigerdivSyncPartial();">
+        <input type="range" id="tigerdiv-sl-partial" min="1" max="99" step="1" value="50" style="background:rgba(49,130,246,0.25);" oninput="document.getElementById('tigerdiv-ni-partial').value=this.value; tigerdivSyncPartial();">
         <p style="font-size:11px;color:var(--text3);margin-top:6px;" id="tigerdiv-partial-desc">분배금의 50%는 재투자, 50%는 수령</p>
       </div>
       <!-- ① 투자 조건 설정 -->
@@ -3213,7 +3216,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         </div>
         <input type="range" id="tigerdiv-sl-monthly" min="0" max="50000000" step="100000" value="1000000"
                oninput="simOnSlider(this)">
-        <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(0,229,176,0.12);">
+        <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(49,130,246,0.12);">
           <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">연간 추가 투자액</p>
           <p style="font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:500;" id="tigerdiv-dca-annual-label">—</p>
         </div>
@@ -3278,9 +3281,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
 
           <!-- 분리과세 안내 -->
           <div id="tigerdiv-tax-separate-info">
-            <div style="background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(255,112,112,0.15);font-size:11px;color:var(--text3);line-height:1.8;">
-              금융소득(이자+배당) 연 <span style="color:#ff9090;font-weight:500;">2,000만원 이하</span>일 때 선택<br>
-              원천징수세율 <span style="color:#ff9090;font-weight:500;">14% + 지방소득세 1.4% = 15.4%</span> 로 종결<br>
+            <div style="background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(240,68,82,0.15);font-size:11px;color:var(--text3);line-height:1.8;">
+              금융소득(이자+배당) 연 <span style="color:#f04452;font-weight:500;">2,000만원 이하</span>일 때 선택<br>
+              원천징수세율 <span style="color:#f04452;font-weight:500;">14% + 지방소득세 1.4% = 15.4%</span> 로 종결<br>
               <span style="color:var(--text3);">→ 세율 15.4% 자동 적용</span>
             </div>
           </div>
@@ -3324,10 +3327,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
             </table>
 
             <!-- 계산 결과 -->
-            <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(255,112,112,0.2);">
+            <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(240,68,82,0.2);">
               <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
                 <span style="font-size:11px;color:var(--text3);">1년차 기준 유효세율</span>
-                <span style="font-family:var(--mono);font-size:13px;color:#ff9090;font-weight:500;" id="tigerdiv-bracket-eff-rate">—</span>
+                <span style="font-family:var(--mono);font-size:13px;color:#f04452;font-weight:500;" id="tigerdiv-bracket-eff-rate">—</span>
               </div>
               <div style="display:flex;justify-content:space-between;">
                 <span style="font-size:11px;color:var(--text3);">연도별 세율 자동 적용</span>
@@ -3338,14 +3341,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         </div>
 
         <!-- 세금 요약 (공통) -->
-        <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(255,95,95,0.15);">
+        <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(240,68,82,0.15);">
           <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
             <p style="font-size:11px;color:var(--text3);">1년차 연간 세금</p>
-            <p style="font-family:var(--mono);font-size:12px;color:#ff7070;font-weight:500;" id="tigerdiv-tax-first-label">—</p>
+            <p style="font-family:var(--mono);font-size:12px;color:#f04452;font-weight:500;" id="tigerdiv-tax-first-label">—</p>
           </div>
           <div style="display:flex;justify-content:space-between;">
             <p style="font-size:11px;color:var(--text3);">누적 납부 세금</p>
-            <p style="font-family:var(--mono);font-size:12px;color:#ff7070;font-weight:500;" id="tigerdiv-tax-total-label">—</p>
+            <p style="font-family:var(--mono);font-size:12px;color:#f04452;font-weight:500;" id="tigerdiv-tax-total-label">—</p>
           </div>
         </div>
       </div>
@@ -3379,7 +3382,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
 
         <!-- 콜옵션 비율 / 배당 비율 입력 -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
-          <div style="background:var(--bg3);border-radius:8px;padding:10px;border:1px solid rgba(0,229,176,0.15);">
+          <div style="background:var(--bg3);border-radius:8px;padding:10px;border:1px solid rgba(49,130,246,0.15);">
             <p style="font-size:10px;color:var(--text3);margin-bottom:6px;">콜옵션 수익 (비과세)</p>
             <div class="num-pill" style="width:100%;">
               <input class="num-input" id="tigerdiv-ni-calloption" type="number" min="0" max="99" step="0.1" value="5"
@@ -3387,11 +3390,11 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
               <span class="num-unit">%</span>
             </div>
           </div>
-          <div style="background:var(--bg3);border-radius:8px;padding:10px;border:1px solid rgba(255,112,112,0.15);">
+          <div style="background:var(--bg3);border-radius:8px;padding:10px;border:1px solid rgba(240,68,82,0.15);">
             <p style="font-size:10px;color:var(--text3);margin-bottom:6px;">배당금 (과세 15.4%)</p>
             <div class="num-pill" style="width:100%;">
               <input class="num-input" id="tigerdiv-ni-divportion" type="number" min="0" max="99" step="0.1" value="2"
-                     style="width:100%;color:#ff9090;" oninput="tigerdivOnKodexRatioChange()">
+                     style="width:100%;color:#f04452;" oninput="tigerdivOnKodexRatioChange()">
               <span class="num-unit">%</span>
             </div>
           </div>
@@ -3486,11 +3489,11 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
           <!-- 범례 -->
           <div class="legend" id="tigerdiv-chartLegend">
             <div class="legend-item" id="tigerdiv-leg-div">
-              <div class="legend-dot" style="background:#00e5b0;"></div>
+              <div class="legend-dot" style="background:#3182f6;"></div>
               <span id="tigerdiv-leg-div-label">연간 <span class="txt-div">분배금</span></span>
             </div>
             <div class="legend-item" id="tigerdiv-leg-port" style="display:none;">
-              <div class="legend-dot" style="background:#0091ff;"></div>포트폴리오 가치
+              <div class="legend-dot" style="background:#3182f6;"></div>포트폴리오 가치
             </div>
           </div>
           <div class="chart-wrap">
@@ -3518,9 +3521,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
                   <th>시작 자산</th>
                   <th id="tigerdiv-mth-deposit" style="color:var(--accent);">연/월 적립금</th>
                   <th id="tigerdiv-mth-div">연/월 <span class="txt-div">분배</span> (세후)</th>
-                  <th id="tigerdiv-mth-taxbase" style="display:none;color:#ffaa55;">연/월 과세표준</th>
-                  <th id="tigerdiv-mth-tax" style="display:none;color:#ff7070;">연/월 세금</th>
-                  <th id="tigerdiv-mth-price-change" style="color:#64b5f6;">연/월 주가 변동</th>
+                  <th id="tigerdiv-mth-taxbase" style="display:none;color:#fe9800;">연/월 과세표준</th>
+                  <th id="tigerdiv-mth-tax" style="display:none;color:#f04452;">연/월 세금</th>
+                  <th id="tigerdiv-mth-price-change" style="color:#3182f6;">연/월 주가 변동</th>
                   <th>누적 자산</th>
                   <th>보유 수량</th>
                 </tr>
@@ -3544,7 +3547,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         <p class="subtitle">실시간 환율 조회 및 주요 통화 변환 계산기</p>
       </div>
       <button onclick="fetchFxRates()" id="fx-refresh-btn"
-        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
+        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
         <span id="fx-refresh-icon">↺</span> 환율 갱신
       </button>
     </div>
@@ -3579,7 +3582,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         <div style="display:flex;align-items:center;justify-content:center;">
           <button onclick="fxSwap()" style="background:var(--bg3);border:1px solid var(--card-border);border-radius:8px;padding:7px 8px;color:var(--accent);cursor:pointer;font-size:16px;line-height:1;transition:all 0.15s;width:36px;height:36px;display:flex;align-items:center;justify-content:center;" title="화폐 교환">⇄</button>
         </div>
-        <div style="width:100%;background:var(--bg3);border:1px solid rgba(0,229,176,0.3);border-radius:8px;padding:9px 12px;font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:500;box-sizing:border-box;min-height:40px;display:flex;align-items:center;" id="fx-result">—</div>
+        <div style="width:100%;background:var(--bg3);border:1px solid rgba(49,130,246,0.3);border-radius:8px;padding:9px 12px;font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:500;box-sizing:border-box;min-height:40px;display:flex;align-items:center;" id="fx-result">—</div>
 
         <!-- 통화 선택 라벨 -->
         <span style="font-size:11px;color:var(--text3);margin-bottom:5px;display:block;margin-top:8px;">출발 통화</span>
@@ -3800,7 +3803,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
           </div>
         </div>
 
-        <div style="margin-top:10px;padding:10px 12px;background:rgba(0,229,176,0.06);border-radius:8px;display:flex;justify-content:space-between;">
+        <div style="margin-top:10px;padding:10px 12px;background:rgba(49,130,246,0.06);border-radius:8px;display:flex;justify-content:space-between;">
           <span style="font-size:12px;color:var(--text2);">과세 소득 합계</span>
           <span style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500;" id="h-income-sum">—</span>
         </div>
@@ -3885,13 +3888,13 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
             <p style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--accent2);" id="h-w-ltc">—</p>
             <p style="font-size:11px;color:var(--text3);margin-top:2px;" id="h-w-ltc-sub">—</p>
           </div>
-          <div style="background:rgba(0,229,176,0.08);border:1px solid rgba(0,229,176,0.25);border-radius:10px;padding:16px;margin-bottom:12px;">
+          <div style="background:rgba(49,130,246,0.08);border:1px solid rgba(49,130,246,0.25);border-radius:10px;padding:16px;margin-bottom:12px;">
             <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">월 본인 부담 합계</p>
-            <p style="font-family:var(--mono);font-size:32px;font-weight:500;color:#ffaa55;" id="h-w-total" style="color:#ffaa55;">—</p>
+            <p style="font-family:var(--mono);font-size:32px;font-weight:500;color:#fe9800;" id="h-w-total" style="color:#fe9800;">—</p>
           </div>
           <div id="h-w-extra-block" style="display:none;background:var(--bg3);border-radius:10px;padding:14px;margin-bottom:12px;">
             <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">소득월액보험료 (추가 소득)</p>
-            <p style="font-family:var(--mono);font-size:18px;font-weight:500;color:#ffaa55;" id="h-w-extra-prem">—</p>
+            <p style="font-family:var(--mono);font-size:18px;font-weight:500;color:#fe9800;" id="h-w-extra-prem">—</p>
             <p style="font-size:11px;color:var(--text3);margin-top:2px;" id="h-w-extra-sub">—</p>
           </div>
           <div style="border-top:1px solid var(--card-border);padding-top:12px;">
@@ -3937,9 +3940,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
             <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">월 장기요양보험료</p>
             <p style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--accent2);" id="h-l-ltc">—</p>
           </div>
-          <div style="background:rgba(0,229,176,0.08);border:1px solid rgba(0,229,176,0.25);border-radius:10px;padding:16px;margin-bottom:10px;">
+          <div style="background:rgba(49,130,246,0.08);border:1px solid rgba(49,130,246,0.25);border-radius:10px;padding:16px;margin-bottom:10px;">
             <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">월 합계</p>
-            <p style="font-family:var(--mono);font-size:32px;font-weight:500;color:#ffaa55;" id="h-l-total" style="color:#ffaa55;">—</p>
+            <p style="font-family:var(--mono);font-size:32px;font-weight:500;color:#fe9800;" id="h-l-total" style="color:#fe9800;">—</p>
           </div>
           <div style="background:var(--bg3);border-radius:8px;padding:12px;">
             <p style="font-size:10px;color:var(--text3);margin-bottom:3px;">연간 합계</p>
@@ -4079,7 +4082,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         <p class="section-label" style="margin-bottom:14px;">역산 모드</p>
 
         <!-- 역산: 목표 금액 찾기 -->
-        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid rgba(0,145,255,0.15);margin-bottom:10px;">
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid rgba(49,130,246,0.15);margin-bottom:10px;">
           <p style="font-size:11px;color:var(--text3);margin-bottom:10px;">목표 CAGR로 필요 최종금액 계산</p>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
             <span style="font-size:12px;color:var(--text2);white-space:nowrap;">목표 CAGR</span>
@@ -4096,7 +4099,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         </div>
 
         <!-- 역산: 필요 기간 -->
-        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid rgba(0,229,176,0.15);">
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid rgba(49,130,246,0.15);">
           <p style="font-size:11px;color:var(--text3);margin-bottom:10px;">목표 CAGR 달성까지 필요 기간</p>
           <div style="display:flex;justify-content:space-between;align-items:baseline;">
             <span style="font-size:11px;color:var(--text3);">필요 기간</span>
@@ -4127,7 +4130,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
             </div>
             <div>
               <p style="font-size:11px;color:var(--text3);margin-bottom:6px;letter-spacing:0.04em;">일평균 성장률</p>
-              <div style="font-family:var(--mono);font-size:28px;font-weight:500;color:#ffaa55;line-height:1;" id="cagr-daily-rate">—</div>
+              <div style="font-family:var(--mono);font-size:28px;font-weight:500;color:#fe9800;line-height:1;" id="cagr-daily-rate">—</div>
             </div>
           </div>
           <p class="cagr-result-label" id="cagr-result-sub">계산 중...</p>
@@ -4199,7 +4202,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         <p class="subtitle">1980년 1월 4일 기준지수 100 출발 — 현재 지수 기반 연평균·월평균·일평균 성장률</p>
       </div>
       <button id="kospi-refresh-btn" onclick="fetchKospi()"
-        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
+        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
         <span id="kospi-refresh-icon">↺</span> 지수 갱신
       </button>
     </div>
@@ -4252,7 +4255,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
       </div>
       <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
         <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">일평균 성장률</p>
-        <p style="font-family:var(--mono);font-size:36px;font-weight:500;" style="color:#ffaa55;" id="kospi-daily">—</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;" style="color:#fe9800;" id="kospi-daily">—</p>
         <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="kospi-daily-sub">CAGR의 일 환산</p>
       </div>
     </div>
@@ -4295,7 +4298,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         <p class="subtitle">1990년 1월 3일 기준지수 100 출발 — 코스피 200 대형우량주 기반 연평균·월평균·일평균 성장률</p>
       </div>
       <button id="k200-refresh-btn" onclick="fetchKospi200()"
-        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
+        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
         <span id="k200-refresh-icon">↺</span> 지수 갱신
       </button>
     </div>
@@ -4348,7 +4351,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
       </div>
       <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
         <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">일평균 성장률</p>
-        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#ffaa55;" id="k200-daily">—</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#fe9800;" id="k200-daily">—</p>
         <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="k200-daily-sub">CAGR의 일 환산</p>
       </div>
     </div>
@@ -4391,7 +4394,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         <p class="subtitle">1996년 7월 1일 기준지수 1000 출발 — 현재 지수 기반 연평균·월평균·일평균 성장률</p>
       </div>
       <button id="kosdaq-refresh-btn" onclick="fetchKosdaq()"
-        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
+        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
         <span id="kosdaq-refresh-icon">↺</span> 지수 갱신
       </button>
     </div>
@@ -4443,7 +4446,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
       </div>
       <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
         <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">일평균 성장률</p>
-        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#ffaa55;" id="kosdaq-daily">—</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#fe9800;" id="kosdaq-daily">—</p>
         <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="kosdaq-daily-sub">CAGR의 일 환산</p>
       </div>
     </div>
@@ -4485,7 +4488,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         <p class="subtitle">1971년 2월 8일 기준지수 100 출발 — 현재 지수 기반 연평균·월평균·일평균 성장률</p>
       </div>
       <button id="nasdaq-refresh-btn" onclick="fetchIndex('nasdaq')"
-        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
+        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
         <span id="nasdaq-refresh-icon">↺</span> 지수 갱신
       </button>
     </div>
@@ -4528,7 +4531,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
       </div>
       <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
         <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">일평균 성장률</p>
-        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#ffaa55;" id="nasdaq-daily">—</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#fe9800;" id="nasdaq-daily">—</p>
         <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="nasdaq-daily-sub">CAGR의 일 환산</p>
       </div>
     </div>
@@ -4553,7 +4556,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         <p class="subtitle">1985년 1월 31일 기준지수 250 출발 — 현재 지수 기반 연평균·월평균·일평균 성장률</p>
       </div>
       <button id="nasdaq100-refresh-btn" onclick="fetchIndex('nasdaq100')"
-        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
+        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
         <span id="nasdaq100-refresh-icon">↺</span> 지수 갱신
       </button>
     </div>
@@ -4596,7 +4599,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
       </div>
       <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
         <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">일평균 성장률</p>
-        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#ffaa55;" id="nasdaq100-daily">—</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#fe9800;" id="nasdaq100-daily">—</p>
         <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="nasdaq100-daily-sub">CAGR의 일 환산</p>
       </div>
     </div>
@@ -4621,7 +4624,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         <p class="subtitle">1896년 5월 26일 산출 시작 — 현재 지수 기반 연평균·월평균·일평균 성장률</p>
       </div>
       <button id="dowjones-refresh-btn" onclick="fetchIndex('dowjones')"
-        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
+        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
         <span id="dowjones-refresh-icon">↺</span> 지수 갱신
       </button>
     </div>
@@ -4664,7 +4667,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
       </div>
       <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
         <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">일평균 성장률</p>
-        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#ffaa55;" id="dowjones-daily">—</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#fe9800;" id="dowjones-daily">—</p>
         <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="dowjones-daily-sub">CAGR의 일 환산</p>
       </div>
     </div>
@@ -4689,7 +4692,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         <p class="subtitle">1928년 1월 3일 기준지수 산출 시작 — 현재 지수 기반 연평균·월평균·일평균 성장률</p>
       </div>
       <button id="sp500-refresh-btn" onclick="fetchIndex('sp500')"
-        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
+        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
         <span id="sp500-refresh-icon">↺</span> 지수 갱신
       </button>
     </div>
@@ -4732,7 +4735,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
       </div>
       <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
         <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">일평균 성장률</p>
-        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#ffaa55;" id="sp500-daily">—</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#fe9800;" id="sp500-daily">—</p>
         <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="sp500-daily-sub">CAGR의 일 환산</p>
       </div>
     </div>
@@ -4757,7 +4760,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         <p class="subtitle">1993년 12월 1일 기준지수 200 출발 — 현재 지수 기반 연평균·월평균·일평균 성장률</p>
       </div>
       <button id="sox-refresh-btn" onclick="fetchIndex('sox')"
-        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
+        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
         <span id="sox-refresh-icon">↺</span> 지수 갱신
       </button>
     </div>
@@ -4800,7 +4803,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
       </div>
       <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
         <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">일평균 성장률</p>
-        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#ffaa55;" id="sox-daily">—</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#fe9800;" id="sox-daily">—</p>
         <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="sox-daily-sub">CAGR의 일 환산</p>
       </div>
     </div>
@@ -4845,7 +4848,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
           <p class="card-title" style="margin:0;">현재 공포 &amp; 탐욕 지수</p>
           <button onclick="fetchFearGreed()" id="fear-refresh-btn"
-            style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;">
+            style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;">
             <span id="fear-refresh-icon">↺</span> 갱신
           </button>
         </div>
@@ -4902,7 +4905,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
             <div style="padding:14px 0;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
               <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">1. VOLATILITY <span style="color:var(--text3);font-weight:400;">(변동성 - VIX)</span></p>
               <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 시카고옵션거래소(CBOE)에서 산출하는 VIX(Volatility Index)를 사용합니다. S&amp;P 500 지수 옵션 가격을 기반으로 향후 30일간의 시장 변동성 기대를 나타냅니다.</p>
-              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; VIX가 상승하면 시장이 불확실성에 공포를 느끼고 있다는 뜻으로 <span style="color:#e53935;">공포(Fear)</span>를 의미합니다. 반대로 VIX가 낮으면 시장이 안정적이라 판단하여 <span style="color:#66bb6a;">탐욕(Greed)</span>으로 분류됩니다.</p>
+              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; VIX가 상승하면 시장이 불확실성에 공포를 느끼고 있다는 뜻으로 <span style="color:#f04452;">공포(Fear)</span>를 의미합니다. 반대로 VIX가 낮으면 시장이 안정적이라 판단하여 <span style="color:#3182f6;">탐욕(Greed)</span>으로 분류됩니다.</p>
               <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">지수 반영</span>&nbsp; VIX의 50일 이동평균을 사용하여 평균보다 높으면 공포, 낮으면 탐욕으로 해석합니다.</p>
             </div>
 
@@ -4910,28 +4913,28 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
             <div style="padding:14px 0;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
               <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">2. MOMENTUM <span style="color:var(--text3);font-weight:400;">(모멘텀 - S&amp;P 500)</span></p>
               <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; S&amp;P 500 지수의 현재 수준을 125일 이동평균선과 비교하여 산출합니다.</p>
-              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 현재 주가가 125일 이동평균선보다 높으면 상승 모멘텀이 강한 것으로 보아 <span style="color:#66bb6a;">탐욕</span>으로 해석합니다. 반대로 이동평균선보다 낮으면 하락세가 강한 것으로 보아 <span style="color:#e53935;">공포</span>로 해석합니다.</p>
+              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 현재 주가가 125일 이동평균선보다 높으면 상승 모멘텀이 강한 것으로 보아 <span style="color:#3182f6;">탐욕</span>으로 해석합니다. 반대로 이동평균선보다 낮으면 하락세가 강한 것으로 보아 <span style="color:#f04452;">공포</span>로 해석합니다.</p>
             </div>
 
             <!-- 3. PUT/CALL -->
             <div style="padding:14px 0;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
               <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">3. PUT/CALL <span style="color:var(--text3);font-weight:400;">(풋/콜 비율)</span></p>
               <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 주식을 팔 권리인 '풋옵션(Put)' 거래량을 살 권리인 '콜옵션(Call)' 거래량으로 나눈 비율의 5일 평균을 측정합니다.</p>
-              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 풋옵션이 많아지면(비율 상승) 투자자들이 하락을 예상하고 헷지를 한다는 뜻이므로 <span style="color:#e53935;">공포</span> 신호입니다. 콜옵션이 많아지면(비율 하락) 상승을 예상하므로 <span style="color:#66bb6a;">탐욕</span>입니다. 풋/콜 비율이 낮을수록 탐욕, 높을수록 공포를 의미합니다.</p>
+              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 풋옵션이 많아지면(비율 상승) 투자자들이 하락을 예상하고 헷지를 한다는 뜻이므로 <span style="color:#f04452;">공포</span> 신호입니다. 콜옵션이 많아지면(비율 하락) 상승을 예상하므로 <span style="color:#3182f6;">탐욕</span>입니다. 풋/콜 비율이 낮을수록 탐욕, 높을수록 공포를 의미합니다.</p>
             </div>
 
             <!-- 4. SAFE HAVEN -->
             <div style="padding:14px 0;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
               <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">4. SAFE HAVEN <span style="color:var(--text3);font-weight:400;">(안전 자산 수요)</span></p>
               <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 주식(위험 자산)과 국채(안전 자산)의 최근 20거래일 수익률 차이를 분석합니다.</p>
-              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 투자자들이 주식보다 국채를 선호하면(안전 자산으로 도피) <span style="color:#e53935;">공포</span> 상황입니다. 20일 동안 국채 수익률이 주식 수익률보다 높거나 주식 수익률이 저조하면 안전 자산 선호도가 높아진 것으로 보아 공포로 해석합니다.</p>
+              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 투자자들이 주식보다 국채를 선호하면(안전 자산으로 도피) <span style="color:#f04452;">공포</span> 상황입니다. 20일 동안 국채 수익률이 주식 수익률보다 높거나 주식 수익률이 저조하면 안전 자산 선호도가 높아진 것으로 보아 공포로 해석합니다.</p>
             </div>
 
             <!-- 5. JUNK BONDS -->
             <div style="padding:14px 0;">
               <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">5. JUNK BONDS <span style="color:var(--text3);font-weight:400;">(정크본드 수요)</span></p>
               <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 신용등급이 낮은 투기등급 채권(정크본드)과 안전한 국채 간의 수익률 차이(Spread)를 분석합니다.</p>
-              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 투자자들이 위험을 감수하고 정크본드를 매수하면(수요 증가) 스프레드가 좁아지며 <span style="color:#66bb6a;">탐욕</span>을 나타냅니다. 경계감이 커져 정크본드를 매도하면(스프레드 확대) <span style="color:#e53935;">공포</span> 상황으로 봅니다.</p>
+              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 투자자들이 위험을 감수하고 정크본드를 매수하면(수요 증가) 스프레드가 좁아지며 <span style="color:#3182f6;">탐욕</span>을 나타냅니다. 경계감이 커져 정크본드를 매도하면(스프레드 확대) <span style="color:#f04452;">공포</span> 상황으로 봅니다.</p>
             </div>
 
           </div>
@@ -4974,14 +4977,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
               <th style="padding:7px 12px;text-align:left;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(var(--fg-rgb),0.1);">자산 / 지표</th>
               <th style="padding:7px 12px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(var(--fg-rgb),0.1);">시작값</th>
               <th style="padding:7px 12px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(var(--fg-rgb),0.1);">종료값</th>
-              <th style="padding:7px 12px;text-align:center;color:#00e5b0;font-weight:600;border-bottom:1px solid rgba(var(--fg-rgb),0.1);">CAGR</th>
+              <th style="padding:7px 12px;text-align:center;color:#3182f6;font-weight:600;border-bottom:1px solid rgba(var(--fg-rgb),0.1);">CAGR</th>
               <th style="padding:7px 12px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(var(--fg-rgb),0.1);">배수</th>
             </tr>
           </thead>
           <tbody>
 
             <!-- 통화량 헤더 -->
-            <tr class="ms-sec-hdr" onclick="msSec('money',this)" style="cursor:pointer;background:rgba(0,229,176,0.05);">
+            <tr class="ms-sec-hdr" onclick="msSec('money',this)" style="cursor:pointer;background:rgba(49,130,246,0.05);">
               <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
@@ -4994,26 +4997,26 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">M0 본원통화</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">31조</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">230조</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+6.9%</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;">+6.9%</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">×7.4</td>
             </tr>
             <tr class="ms-row-money" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">M1 협의통화</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">140조</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">1,360조</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+7.9%</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;">+7.9%</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">×9.7</td>
             </tr>
             <tr class="ms-row-money" style="border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">M2 광의통화</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">380조</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">4,500조</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+8.6%</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;">+8.6%</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">×11.8</td>
             </tr>
 
             <!-- 근로소득 헤더 -->
-            <tr class="ms-sec-hdr" onclick="msSec('income',this)" style="cursor:pointer;background:rgba(0,229,176,0.05);">
+            <tr class="ms-sec-hdr" onclick="msSec('income',this)" style="cursor:pointer;background:rgba(49,130,246,0.05);">
               <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
@@ -5026,19 +5029,19 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">평균 연봉</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">1,350만원</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">4,300만원</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+3.9%</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;">+3.9%</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">×3.2</td>
             </tr>
             <tr class="ms-row-income" style="border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">중위 연봉</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">950만원</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">2,850만원</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+3.7%</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;">+3.7%</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">×3.0</td>
             </tr>
 
             <!-- 부동산 헤더 -->
-            <tr class="ms-sec-hdr" onclick="msSec('realty',this)" style="cursor:pointer;background:rgba(0,229,176,0.05);">
+            <tr class="ms-sec-hdr" onclick="msSec('realty',this)" style="cursor:pointer;background:rgba(49,130,246,0.05);">
               <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
@@ -5051,19 +5054,19 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">서울 아파트</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">1.1억</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">13억</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+8.8%</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;">+8.8%</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">×11.8</td>
             </tr>
             <tr class="ms-row-realty" style="border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">강남 아파트</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">2.0억</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">26억</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+9.2%</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;">+9.2%</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">×13.0</td>
             </tr>
 
             <!-- 물가 헤더 -->
-            <tr class="ms-sec-hdr" onclick="msSec('cpi',this)" style="cursor:pointer;background:rgba(0,229,176,0.05);">
+            <tr class="ms-sec-hdr" onclick="msSec('cpi',this)" style="cursor:pointer;background:rgba(49,130,246,0.05);">
               <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
@@ -5076,19 +5079,19 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">소비자물가(CPI)</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">—</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+2.6%</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;">+2.6%</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">×2.1</td>
             </tr>
             <tr class="ms-row-cpi" style="border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">생활물가지수</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">—</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+3.0%</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;">+3.0%</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">×2.4</td>
             </tr>
 
             <!-- 귀금속 헤더 (실시간) -->
-            <tr class="ms-sec-hdr" onclick="msSec('metal',this)" style="cursor:pointer;background:rgba(0,229,176,0.05);">
+            <tr class="ms-sec-hdr" onclick="msSec('metal',this)" style="cursor:pointer;background:rgba(49,130,246,0.05);">
               <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
@@ -5101,19 +5104,19 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">금 (GC=F)</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-gold-start">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-gold-end">—</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-gold-cagr">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;" id="ms-gold-cagr">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-gold-mult">—</td>
             </tr>
             <tr class="ms-row-metal" style="border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">은 (SI=F)</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-silver-start">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-silver-end">—</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-silver-cagr">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;" id="ms-silver-cagr">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-silver-mult">—</td>
             </tr>
 
             <!-- 주가지수 헤더 (실시간) -->
-            <tr class="ms-sec-hdr" onclick="msSec('index',this)" style="cursor:pointer;background:rgba(0,229,176,0.05);">
+            <tr class="ms-sec-hdr" onclick="msSec('index',this)" style="cursor:pointer;background:rgba(49,130,246,0.05);">
               <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
@@ -5129,14 +5132,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">코스피 (^KS11)</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-kospi-start">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-kospi-end">—</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-kospi-cagr">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;" id="ms-kospi-cagr">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-kospi-mult">—</td>
             </tr>
             <tr class="ms-row-index" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">코스피 200 (^KS200)</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-k200-start">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-k200-end">—</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-k200-cagr">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;" id="ms-k200-cagr">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-k200-mult">—</td>
             </tr>
             <tr class="ms-row-index" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
@@ -5146,28 +5149,28 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">나스닥 종합 (^IXIC)</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-nasdaq-start">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-nasdaq-end">—</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-nasdaq-cagr">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;" id="ms-nasdaq-cagr">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-nasdaq-mult">—</td>
             </tr>
             <tr class="ms-row-index" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">나스닥 100 (^NDX)</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-ndx-start">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-ndx-end">—</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-ndx-cagr">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;" id="ms-ndx-cagr">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-ndx-mult">—</td>
             </tr>
             <tr class="ms-row-index" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">S&amp;P 500 (^GSPC)</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-sp500-start">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-sp500-end">—</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-sp500-cagr">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;" id="ms-sp500-cagr">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-sp500-mult">—</td>
             </tr>
             <tr class="ms-row-index">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">다우존스 (^DJI)</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-dji-start">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-dji-end">—</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-dji-cagr">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;" id="ms-dji-cagr">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-dji-mult">—</td>
             </tr>
 
@@ -5177,7 +5180,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
       <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-top:1px solid rgba(var(--fg-rgb),0.05);">
         <p id="ms-sum-status" style="margin:0;font-size:10px;color:var(--text3);">귀금속·주가지수 데이터 로딩 중...</p>
         <button onclick="fetchMSAll()" id="ms-refresh-btn"
-          style="display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:7px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:11px;cursor:pointer;">
+          style="display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:7px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-family:var(--font);font-size:11px;cursor:pointer;">
           <span id="ms-refresh-icon">↺</span> 갱신
         </button>
       </div>
@@ -5209,17 +5212,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         <div style="display:flex;flex-direction:column;gap:9px;">
           <div style="display:flex;align-items:center;gap:12px;">
             <span style="width:75px;font-size:12px;color:var(--text2);flex-shrink:0;">M0 본원통화</span>
-            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:58%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.4),rgba(0,229,176,0.8));border-radius:4px;"></div></div>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:58%;height:100%;background:linear-gradient(90deg,rgba(49,130,246,0.4),rgba(49,130,246,0.8));border-radius:4px;"></div></div>
             <span style="width:50px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">+6.9%</span>
           </div>
           <div style="display:flex;align-items:center;gap:12px;">
             <span style="width:75px;font-size:12px;color:var(--text2);flex-shrink:0;">M1 협의통화</span>
-            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:66%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.5),rgba(0,229,176,0.9));border-radius:4px;"></div></div>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:66%;height:100%;background:linear-gradient(90deg,rgba(49,130,246,0.5),rgba(49,130,246,0.9));border-radius:4px;"></div></div>
             <span style="width:50px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">+7.9%</span>
           </div>
           <div style="display:flex;align-items:center;gap:12px;">
             <span style="width:75px;font-size:12px;color:var(--text2);flex-shrink:0;">M2 광의통화</span>
-            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:72%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.6),#00e5b0);border-radius:4px;"></div></div>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:72%;height:100%;background:linear-gradient(90deg,rgba(49,130,246,0.6),#3182f6);border-radius:4px;"></div></div>
             <span style="width:50px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">+8.6%</span>
           </div>
         </div>
@@ -5339,22 +5342,22 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         <div style="display:flex;flex-direction:column;gap:8px;">
           <div style="display:flex;align-items:center;gap:12px;">
             <span style="width:80px;font-size:11px;color:var(--text3);flex-shrink:0;">상위 10%</span>
-            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:43%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.3),rgba(0,229,176,0.75));border-radius:4px;"></div></div>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:43%;height:100%;background:linear-gradient(90deg,rgba(49,130,246,0.3),rgba(49,130,246,0.75));border-radius:4px;"></div></div>
             <span style="width:80px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--accent);">43% 보유</span>
           </div>
           <div style="display:flex;align-items:center;gap:12px;">
             <span style="width:80px;font-size:11px;color:var(--text3);flex-shrink:0;">10~40%</span>
-            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:38%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.2),rgba(0,229,176,0.55));border-radius:4px;"></div></div>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:38%;height:100%;background:linear-gradient(90deg,rgba(49,130,246,0.2),rgba(49,130,246,0.55));border-radius:4px;"></div></div>
             <span style="width:80px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--accent2);">38% 보유</span>
           </div>
           <div style="display:flex;align-items:center;gap:12px;">
             <span style="width:80px;font-size:11px;color:var(--text3);flex-shrink:0;">40~70%</span>
-            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:15%;height:100%;background:rgba(0,229,176,0.35);border-radius:4px;"></div></div>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:15%;height:100%;background:rgba(49,130,246,0.35);border-radius:4px;"></div></div>
             <span style="width:80px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--text2);">15% 보유</span>
           </div>
           <div style="display:flex;align-items:center;gap:12px;">
             <span style="width:80px;font-size:11px;color:var(--text3);flex-shrink:0;">하위 30%</span>
-            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:4%;height:100%;background:rgba(0,229,176,0.25);border-radius:4px;"></div></div>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:4%;height:100%;background:rgba(49,130,246,0.25);border-radius:4px;"></div></div>
             <span style="width:80px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--text3);">4% 보유</span>
           </div>
         </div>
@@ -5391,7 +5394,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
           <button onclick="event.stopPropagation();fetchMSMetals()" id="ms-metal-btn"
-            style="padding:4px 10px;border-radius:6px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-size:11px;cursor:pointer;font-family:var(--font);">
+            style="padding:4px 10px;border-radius:6px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-size:11px;cursor:pointer;font-family:var(--font);">
             ↺ 갱신
           </button>
           <span class="acc-arrow open">▼</span>
@@ -5432,7 +5435,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
           <button onclick="event.stopPropagation();fetchMSIndices()" id="ms-index-btn"
-            style="padding:4px 10px;border-radius:6px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-size:11px;cursor:pointer;font-family:var(--font);">
+            style="padding:4px 10px;border-radius:6px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-size:11px;cursor:pointer;font-family:var(--font);">
             ↺ 갱신
           </button>
           <span class="acc-arrow open">▼</span>
@@ -5445,33 +5448,33 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
           <div style="background:var(--bg3);border-radius:6px;padding:5px 12px;"><p style="margin:0;font-size:10px;font-weight:600;color:var(--text3);">국내</p></div>
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="width:110px;font-size:11px;color:var(--text2);flex-shrink:0;">코스피 (^KS11)</span>
-            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div id="ms-bar-kospi" style="width:0%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.4),rgba(0,229,176,0.8));border-radius:4px;transition:width 0.6s;"></div></div>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div id="ms-bar-kospi" style="width:0%;height:100%;background:linear-gradient(90deg,rgba(49,130,246,0.4),rgba(49,130,246,0.8));border-radius:4px;transition:width 0.6s;"></div></div>
             <span id="ms-bar-kospi-val" style="width:55px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">—</span>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="width:110px;font-size:11px;color:var(--text2);flex-shrink:0;">코스피200 (^KS200)</span>
-            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div id="ms-bar-k200" style="width:0%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.4),rgba(0,229,176,0.8));border-radius:4px;transition:width 0.6s;"></div></div>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div id="ms-bar-k200" style="width:0%;height:100%;background:linear-gradient(90deg,rgba(49,130,246,0.4),rgba(49,130,246,0.8));border-radius:4px;transition:width 0.6s;"></div></div>
             <span id="ms-bar-k200-val" style="width:55px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">—</span>
           </div>
           <div style="background:var(--bg3);border-radius:6px;padding:5px 12px;margin-top:4px;"><p style="margin:0;font-size:10px;font-weight:600;color:var(--text3);">미국</p></div>
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="width:110px;font-size:11px;color:var(--text2);flex-shrink:0;">나스닥 (^IXIC)</span>
-            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div id="ms-bar-nasdaq" style="width:0%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.5),#00e5b0);border-radius:4px;transition:width 0.6s;"></div></div>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div id="ms-bar-nasdaq" style="width:0%;height:100%;background:linear-gradient(90deg,rgba(49,130,246,0.5),#3182f6);border-radius:4px;transition:width 0.6s;"></div></div>
             <span id="ms-bar-nasdaq-val" style="width:55px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">—</span>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="width:110px;font-size:11px;color:var(--text2);flex-shrink:0;">나스닥100 (^NDX)</span>
-            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div id="ms-bar-ndx" style="width:0%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.55),#00e5b0);border-radius:4px;transition:width 0.6s;"></div></div>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div id="ms-bar-ndx" style="width:0%;height:100%;background:linear-gradient(90deg,rgba(49,130,246,0.55),#3182f6);border-radius:4px;transition:width 0.6s;"></div></div>
             <span id="ms-bar-ndx-val" style="width:55px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">—</span>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="width:110px;font-size:11px;color:var(--text2);flex-shrink:0;">S&amp;P500 (^GSPC)</span>
-            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div id="ms-bar-sp500" style="width:0%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.4),rgba(0,229,176,0.85));border-radius:4px;transition:width 0.6s;"></div></div>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div id="ms-bar-sp500" style="width:0%;height:100%;background:linear-gradient(90deg,rgba(49,130,246,0.4),rgba(49,130,246,0.85));border-radius:4px;transition:width 0.6s;"></div></div>
             <span id="ms-bar-sp500-val" style="width:55px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">—</span>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="width:110px;font-size:11px;color:var(--text2);flex-shrink:0;">다우존스 (^DJI)</span>
-            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div id="ms-bar-dji" style="width:0%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.35),rgba(0,229,176,0.75));border-radius:4px;transition:width 0.6s;"></div></div>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div id="ms-bar-dji" style="width:0%;height:100%;background:linear-gradient(90deg,rgba(49,130,246,0.35),rgba(49,130,246,0.75));border-radius:4px;transition:width 0.6s;"></div></div>
             <span id="ms-bar-dji-val" style="width:55px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">—</span>
           </div>
         </div>
@@ -5482,7 +5485,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
                 <th style="padding:6px 10px;text-align:left;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(var(--fg-rgb),0.08);">지수</th>
                 <th style="padding:6px 10px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(var(--fg-rgb),0.08);">15년 전</th>
                 <th style="padding:6px 10px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(var(--fg-rgb),0.08);">현재</th>
-                <th style="padding:6px 10px;text-align:center;color:#00e5b0;font-weight:600;border-bottom:1px solid rgba(var(--fg-rgb),0.08);">15년 CAGR</th>
+                <th style="padding:6px 10px;text-align:center;color:#3182f6;font-weight:600;border-bottom:1px solid rgba(var(--fg-rgb),0.08);">15년 CAGR</th>
                 <th style="padding:6px 10px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(var(--fg-rgb),0.08);">배수</th>
               </tr>
             </thead>
@@ -6092,8 +6095,8 @@ function renderMonthlyTable(cache) {
     hdrCells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);">' + fmt(r.portStart) + '</td>';
     hdrCells += '<td class="' + (dcaOn ? '' : 'col-hidden') + '" style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:var(--accent);">' + fmt(r.deposit) + '</td>';
     hdrCells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);">' + fmt(r.div) + '</td>';
-    if (taxOn) hdrCells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:#ffaa55;">' + fmt(r.taxBase) + '</td>';
-    if (taxOn) hdrCells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:#ff7070;">' + fmt(r.tax) + '</td>';
+    if (taxOn) hdrCells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:#fe9800;">' + fmt(r.taxBase) + '</td>';
+    if (taxOn) hdrCells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:#f04452;">' + fmt(r.tax) + '</td>';
     /* 연간 주가 변동 합산 */
     var _yPCK = 0;
     if (r.monthlyPortAfterDeposit && r.monthlyPortEnd && r.monthlyDivs) {
@@ -6107,8 +6110,8 @@ function renderMonthlyTable(cache) {
     _yPCK = Math.round(_yPCK);
     if (Math.abs(_yPCK) <= 5) _yPCK = 0;
     /* 연/월 주가 변동 헤더 색상: 합계가 - 이면 빨간색 */
-    if (mthPriceChange) mthPriceChange.style.color = _yPCK < 0 ? '#ff7070' : '#64b5f6';
-    hdrCells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:' + (_yPCK>=0?'#64b5f6':'#ff7070') + ';">' + (_yPCK>=0?'+':'') + fmt(_yPCK) + '</td>';
+    if (mthPriceChange) mthPriceChange.style.color = _yPCK < 0 ? '#f04452' : '#3182f6';
+    hdrCells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:' + (_yPCK>=0?'#3182f6':'#f04452') + ';">' + (_yPCK>=0?'+':'') + fmt(_yPCK) + '</td>';
     hdrCells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);">' + fmt(r.port) + '</td>';
     var _yShares = calcShares(r.port, _priceNow, _growth, yearNum * 12);
     hdrCells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);">' + fmtShares(_yShares) + '</td>';
@@ -6140,7 +6143,7 @@ function renderMonthlyTable(cache) {
 
       var depCell = '<td class="' + (dcaOn ? '' : 'col-hidden') + '">' + (mDepAmt > 0 ? '<span style="color:var(--accent);">+' + fmt(mDepAmt) + '</span>' : '<span style="color:var(--text3);">—</span>') + '</td>';
       var taxCells = taxOn
-        ? ('<td style="color:#ffaa55;">' + fmt(mTaxBase) + '</td><td style="color:#ff7070;">' + fmt(mTax) + '</td>')
+        ? ('<td style="color:#fe9800;">' + fmt(mTaxBase) + '</td><td style="color:#f04452;">' + fmt(mTax) + '</td>')
         : '';
 
       tr.innerHTML =
@@ -6149,7 +6152,7 @@ function renderMonthlyTable(cache) {
         depCell +
         '<td>' + fmt(mDiv) + '</td>' +
         taxCells +
-        '<td style="color:' + (mPriceChg>=0?'#64b5f6':'#ff7070') + ';">' + (mPriceChg>=0?'+':'') + fmt(mPriceChg) + '</td>' +
+        '<td style="color:' + (mPriceChg>=0?'#3182f6':'#f04452') + ';">' + (mPriceChg>=0?'+':'') + fmt(mPriceChg) + '</td>' +
         '<td>' + fmt(portEnd) + '</td>' +
         '<td>' + fmtShares(calcShares(portEnd, _priceNow, _growth, monthNum)) + '</td>';
       tbody.appendChild(tr);
@@ -6537,8 +6540,8 @@ function update() {
       <td>${fmt(r.port)}</td>
       ${dcaOn ? `<td>${r.deposit > 0 ? fmt(r.deposit) : '<span style="color:var(--text3)">—</span>'}</td>` : ''}
       <td>${fmt(r.div)}</td>
-      <td style="display:${taxOn?'table-cell':'none'};color:#ffaa55;">${taxOn ? fmt(r.taxBase) : '—'}</td>
-      <td style="display:${taxOn?'table-cell':'none'};color:#ff7070;">${taxOn ? fmt(r.tax) : '—'}</td>
+      <td style="display:${taxOn?'table-cell':'none'};color:#fe9800;">${taxOn ? fmt(r.taxBase) : '—'}</td>
+      <td style="display:${taxOn?'table-cell':'none'};color:#f04452;">${taxOn ? fmt(r.tax) : '—'}</td>
       <td>${fmt(r.total)}</td>`;
     if (tbody) tbody.appendChild(tr);
   });
@@ -6586,7 +6589,7 @@ function renderChart(cache) {
     datasets = [{
       label: '연간 분배금',
       data: divData,
-      backgroundColor: 'rgba(0,229,176,0.7)',
+      backgroundColor: 'rgba(49,130,246,0.7)',
       borderRadius: 5,
       borderSkipped: false,
       order: 1,
@@ -6612,8 +6615,8 @@ function renderChart(cache) {
     datasets = [{
       label: '월간 분배금',
       data: monthData,
-      borderColor: '#00e5b0',
-      backgroundColor: 'rgba(0,229,176,0.12)',
+      borderColor: '#3182f6',
+      backgroundColor: 'rgba(49,130,246,0.12)',
       fill: true,
       pointRadius: 0,
       pointHoverRadius: 4,
@@ -6643,11 +6646,11 @@ function buildOpts(isBar, hasDualAxis, isMonthly) {
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: '#0e1525',
+        backgroundColor: '#202027',
         borderColor: fgA(0.1),
         borderWidth: 1,
-        titleColor: '#8899bb',
-        bodyColor: '#f0f4ff',
+        titleColor: '#9e9ea4',
+        bodyColor: '#e4e4e5',
         padding: 12,
         callbacks: {
           title: items => {
@@ -6666,7 +6669,7 @@ function buildOpts(isBar, hasDualAxis, isMonthly) {
     scales: {
       x: {
         ticks: {
-          color: '#4a5878',
+          color: '#6d6d76',
           font: { size: 11 },
           maxRotation: 0,
           autoSkip: false,
@@ -6680,7 +6683,7 @@ function buildOpts(isBar, hasDualAxis, isMonthly) {
       },
       y: {
         position: 'left',
-        ticks: { color: '#4a5878', font: { size: 11 }, callback: v => fmt(v, true) },
+        ticks: { color: '#6d6d76', font: { size: 11 }, callback: v => fmt(v, true) },
         grid: { color: fgA(0.04) },
         border: { display: false },
       },
@@ -6690,7 +6693,7 @@ function buildOpts(isBar, hasDualAxis, isMonthly) {
   if (hasDualAxis) {
     o.scales.y2 = {
       position: 'right',
-      ticks: { color: '#0091ff', font: { size: 11 }, callback: v => fmt(v, true) },
+      ticks: { color: '#3182f6', font: { size: 11 }, callback: v => fmt(v, true) },
       grid: { display: false },
       border: { display: false },
     };
@@ -7125,8 +7128,8 @@ update();
           '<td>'+fmt(r.port)+'</td>' +
           (S.dcaOn ? '<td>'+(r.deposit>0?fmt(r.deposit):'<span style="color:var(--text3)">—</span>')+'</td>' : '') +
           '<td>'+fmt(r.div)+'</td>' +
-          (S.taxOn ? '<td style="color:#ffaa55;">'+fmt(r.taxBase)+'</td>' : '') +
-          (S.taxOn ? '<td style="color:#ff7070;">'+fmt(r.tax)+'</td>' : '') +
+          (S.taxOn ? '<td style="color:#fe9800;">'+fmt(r.taxBase)+'</td>' : '') +
+          (S.taxOn ? '<td style="color:#f04452;">'+fmt(r.tax)+'</td>' : '') +
           '<td>'+fmt(r.total)+'</td>';
         tbody.appendChild(tr);
       });
@@ -7160,7 +7163,7 @@ update();
     if (_solChartTab === 'annual') {
       labels   = rows.map(r => r.y + '년');
       datasets = [{ label:'연간 분배금', data: rows.map(r=>r.div),
-        backgroundColor:'rgba(0,229,176,0.7)', borderRadius:5, borderSkipped:false }];
+        backgroundColor:'rgba(49,130,246,0.7)', borderRadius:5, borderSkipped:false }];
       type = 'bar';
       opts = buildOpts(true, false, false);
     } else {
@@ -7172,7 +7175,7 @@ update();
         }
       }
       datasets = [{ label:'월간 분배금', data: monthData,
-        borderColor:'#00e5b0', backgroundColor:'rgba(0,229,176,0.12)',
+        borderColor:'#3182f6', backgroundColor:'rgba(49,130,246,0.12)',
         fill:true, pointRadius:0, pointHoverRadius:4, borderWidth:2, tension:0.2 }];
       labels = monthLabels;
       type = 'line';
@@ -7309,7 +7312,7 @@ update();
           _yPCS+=(pe-pa-rv);
         });
       }
-      if (mthPriceChange) mthPriceChange.style.color = _yPCS < 0 ? '#ff7070' : '#64b5f6';
+      if (mthPriceChange) mthPriceChange.style.color = _yPCS < 0 ? '#f04452' : '#3182f6';
       insertYearAccordionRow(tbody, yearNum, solCS, {
         portStart:   r.portStart,
         deposit:     r.deposit,
@@ -7351,9 +7354,9 @@ update();
           '<td>'+(r.mPorts?fmt(r.mPorts[m]):'—')+'원</td>' +
           '<td class="'+(showDCA?'':'col-hidden')+'">'+(dep>0?'<span style="color:var(--accent);">+'+fmt(dep)+'</span>':'<span style="color:var(--text3);">—</span>')+'</td>' +
           '<td>'+fmt(dN)+'원</td>' +
-          (showTax ? '<td style="color:#ffaa55;">'+fmt(Math.round(taxBase))+'원</td>' : '') +
-          (showTax ? '<td style="color:#ff7070;">'+fmt(Math.round(tax))+'원</td>' : '') +
-          '<td style="color:'+(_pcSM>=0?'#64b5f6':'#ff7070')+';">' + (_pcSM>=0?'+':'') + fmt(_pcSM) + '원</td>' +
+          (showTax ? '<td style="color:#fe9800;">'+fmt(Math.round(taxBase))+'원</td>' : '') +
+          (showTax ? '<td style="color:#f04452;">'+fmt(Math.round(tax))+'원</td>' : '') +
+          '<td style="color:'+(_pcSM>=0?'#3182f6':'#f04452')+';">' + (_pcSM>=0?'+':'') + fmt(_pcSM) + '원</td>' +
           '<td>'+(r.mPortsEnd?fmt(r.mPortsEnd[m]):'—')+'원</td>'+'<td>'+fmtShares(calcShares(r.mPortsEnd?r.mPortsEnd[m]:0,_priceNow,_growth,ri*12+m+1))+'</td>';
         tbody.appendChild(tr);
       }
@@ -7578,8 +7581,8 @@ update();
           '<td>'+r.y+'년차</td><td>'+fmt(r.port)+'</td>'+
           (S.dcaOn?'<td>'+(r.deposit>0?fmt(r.deposit):'<span style="color:var(--text3)">—</span>')+'</td>':'')+
           '<td>'+fmt(r.div)+'</td>'+
-          (S.taxOn?'<td style="color:#ffaa55;">'+fmt(r.taxBase)+'</td>':'')+
-          (S.taxOn?'<td style="color:#ff7070;">'+fmt(r.tax)+'</td>':'')+
+          (S.taxOn?'<td style="color:#fe9800;">'+fmt(r.taxBase)+'</td>':'')+
+          (S.taxOn?'<td style="color:#f04452;">'+fmt(r.tax)+'</td>':'')+
           '<td>'+fmt(r.total)+'</td>';
         tbody.appendChild(tr);
       });
@@ -7597,11 +7600,11 @@ update();
     const legPort=$id('leg-port'); if(legPort) legPort.style.display='none';
     let labels, datasets, type, opts;
     if (_tigerChartTab === 'annual') {
-      labels=[...rows.map(r=>r.y+'년')]; datasets=[{label:'연간 분배금',data:rows.map(r=>r.div),backgroundColor:'rgba(0,229,176,0.7)',borderRadius:5,borderSkipped:false}]; type='bar'; opts=buildOpts(true,false,false);
+      labels=[...rows.map(r=>r.y+'년')]; datasets=[{label:'연간 분배금',data:rows.map(r=>r.div),backgroundColor:'rgba(49,130,246,0.7)',borderRadius:5,borderSkipped:false}]; type='bar'; opts=buildOpts(true,false,false);
     } else {
       const ml=[],md=[];
       for(let y=0;y<years;y++) for(let m=0;m<12;m++){ml.push(m===0?(y+1)+'년차':'');md.push(rows[y].mDivs[m]);}
-      datasets=[{label:'월간 분배금',data:md,borderColor:'#00e5b0',backgroundColor:'rgba(0,229,176,0.12)',fill:true,pointRadius:0,pointHoverRadius:4,borderWidth:2,tension:0.2}];
+      datasets=[{label:'월간 분배금',data:md,borderColor:'#3182f6',backgroundColor:'rgba(49,130,246,0.12)',fill:true,pointRadius:0,pointHoverRadius:4,borderWidth:2,tension:0.2}];
       labels=ml; type='line'; opts=buildOpts(false,false,true);
     }
     if (_tChart) _tChart.destroy();
@@ -7634,7 +7637,7 @@ update();
           _yPCS+=(pe-pa-rv);
         });
       }
-      if (mthPriceChange) mthPriceChange.style.color = _yPCS < 0 ? '#ff7070' : '#64b5f6';
+      if (mthPriceChange) mthPriceChange.style.color = _yPCS < 0 ? '#f04452' : '#3182f6';
       insertYearAccordionRow(tbody, yearNum, tigerCS, {
         portStart:   r.portStart,
         deposit:     r.deposit,
@@ -7661,7 +7664,7 @@ update();
         tr.dataset.yrRow=yearNum;
         tr.style.display='none';
         if(m===11&&r.y===rows.length) tr.classList.add('highlight');
-        tr.innerHTML='<td style="color:var(--text3);">'+(ri*12+m+1)+'개월</td>'+'<td>'+(r.mPorts?fmt(r.mPorts[m]):'—')+'원</td>'+'<td class="'+(S.dcaOn?'':'col-hidden')+'">'+(dep>0?'<span style="color:var(--accent);">+'+fmt(dep)+'</span>':'<span style="color:var(--text3);">—</span>')+'</td>'+'<td>'+fmt(dN)+'원</td>'+(S.taxOn?'<td style="color:#ffaa55;">'+fmt(Math.round(taxBase))+'원</td>':'')+(S.taxOn?'<td style="color:#ff7070;">'+fmt(Math.round(tax))+'원</td>':'')+'<td style="color:'+(_pcS>=0?'#64b5f6':'#ff7070')+';">'+ (_pcS>=0?'+':'') + fmt(_pcS) + '원</td>'+'<td>'+(r.mPortsEnd?fmt(r.mPortsEnd[m]):'—')+'원</td>'+'<td>'+fmtShares(calcShares(r.mPortsEnd?r.mPortsEnd[m]:0,_priceNow,_growth,ri*12+m+1))+'</td>';
+        tr.innerHTML='<td style="color:var(--text3);">'+(ri*12+m+1)+'개월</td>'+'<td>'+(r.mPorts?fmt(r.mPorts[m]):'—')+'원</td>'+'<td class="'+(S.dcaOn?'':'col-hidden')+'">'+(dep>0?'<span style="color:var(--accent);">+'+fmt(dep)+'</span>':'<span style="color:var(--text3);">—</span>')+'</td>'+'<td>'+fmt(dN)+'원</td>'+(S.taxOn?'<td style="color:#fe9800;">'+fmt(Math.round(taxBase))+'원</td>':'')+(S.taxOn?'<td style="color:#f04452;">'+fmt(Math.round(tax))+'원</td>':'')+'<td style="color:'+(_pcS>=0?'#3182f6':'#f04452')+';">'+ (_pcS>=0?'+':'') + fmt(_pcS) + '원</td>'+'<td>'+(r.mPortsEnd?fmt(r.mPortsEnd[m]):'—')+'원</td>'+'<td>'+fmtShares(calcShares(r.mPortsEnd?r.mPortsEnd[m]:0,_priceNow,_growth,ri*12+m+1))+'</td>';
         tbody.appendChild(tr);
       }
     });
@@ -7938,8 +7941,8 @@ update();
           '<td>'+r.y+'년차</td><td>'+fmt(r.port)+'</td>'+
           (S.dcaOn?'<td>'+(r.deposit>0?fmt(r.deposit):'<span style="color:var(--text3)">—</span>')+'</td>':'')+
           '<td>'+fmt(r.div)+'</td>'+
-          (S.taxOn?'<td style="color:#ffaa55;">'+fmt(r.taxBase)+'</td>':'')+
-          (S.taxOn?'<td style="color:#ff7070;">'+fmt(r.tax)+'</td>':'')+
+          (S.taxOn?'<td style="color:#fe9800;">'+fmt(r.taxBase)+'</td>':'')+
+          (S.taxOn?'<td style="color:#f04452;">'+fmt(r.tax)+'</td>':'')+
           '<td>'+fmt(r.total)+'</td>';
         tbody.appendChild(tr);
       });
@@ -7957,11 +7960,11 @@ update();
     const legPort=$id('leg-port'); if(legPort) legPort.style.display='none';
     let labels, datasets, type, opts;
     if (_tigerdivChartTab === 'annual') {
-      labels=[...rows.map(r=>r.y+'년')]; datasets=[{label:'연간 분배금',data:rows.map(r=>r.div),backgroundColor:'rgba(0,229,176,0.7)',borderRadius:5,borderSkipped:false}]; type='bar'; opts=buildOpts(true,false,false);
+      labels=[...rows.map(r=>r.y+'년')]; datasets=[{label:'연간 분배금',data:rows.map(r=>r.div),backgroundColor:'rgba(49,130,246,0.7)',borderRadius:5,borderSkipped:false}]; type='bar'; opts=buildOpts(true,false,false);
     } else {
       const ml=[],md=[];
       for(let y=0;y<years;y++) for(let m=0;m<12;m++){ml.push(m===0?(y+1)+'년차':'');md.push(rows[y].mDivs[m]);}
-      datasets=[{label:'월간 분배금',data:md,borderColor:'#00e5b0',backgroundColor:'rgba(0,229,176,0.12)',fill:true,pointRadius:0,pointHoverRadius:4,borderWidth:2,tension:0.2}];
+      datasets=[{label:'월간 분배금',data:md,borderColor:'#3182f6',backgroundColor:'rgba(49,130,246,0.12)',fill:true,pointRadius:0,pointHoverRadius:4,borderWidth:2,tension:0.2}];
       labels=ml; type='line'; opts=buildOpts(false,false,true);
     }
     if (_tChart) _tChart.destroy();
@@ -7994,7 +7997,7 @@ update();
           _yPCS+=(pe-pa-rv);
         });
       }
-      if (mthPriceChange) mthPriceChange.style.color = _yPCS < 0 ? '#ff7070' : '#64b5f6';
+      if (mthPriceChange) mthPriceChange.style.color = _yPCS < 0 ? '#f04452' : '#3182f6';
       insertYearAccordionRow(tbody, yearNum, tigerCS, {
         portStart:   r.portStart,
         deposit:     r.deposit,
@@ -8021,7 +8024,7 @@ update();
         tr.dataset.yrRow=yearNum;
         tr.style.display='none';
         if(m===11&&r.y===rows.length) tr.classList.add('highlight');
-        tr.innerHTML='<td style="color:var(--text3);">'+(ri*12+m+1)+'개월</td>'+'<td>'+(r.mPorts?fmt(r.mPorts[m]):'—')+'원</td>'+'<td class="'+(S.dcaOn?'':'col-hidden')+'">'+(dep>0?'<span style="color:var(--accent);">+'+fmt(dep)+'</span>':'<span style="color:var(--text3);">—</span>')+'</td>'+'<td>'+fmt(dN)+'원</td>'+(S.taxOn?'<td style="color:#ffaa55;">'+fmt(Math.round(taxBase))+'원</td>':'')+(S.taxOn?'<td style="color:#ff7070;">'+fmt(Math.round(tax))+'원</td>':'')+'<td style="color:'+(_pcS>=0?'#64b5f6':'#ff7070')+';">'+ (_pcS>=0?'+':'') + fmt(_pcS) + '원</td>'+'<td>'+(r.mPortsEnd?fmt(r.mPortsEnd[m]):'—')+'원</td>'+'<td>'+fmtShares(calcShares(r.mPortsEnd?r.mPortsEnd[m]:0,_priceNow,_growth,ri*12+m+1))+'</td>';
+        tr.innerHTML='<td style="color:var(--text3);">'+(ri*12+m+1)+'개월</td>'+'<td>'+(r.mPorts?fmt(r.mPorts[m]):'—')+'원</td>'+'<td class="'+(S.dcaOn?'':'col-hidden')+'">'+(dep>0?'<span style="color:var(--accent);">+'+fmt(dep)+'</span>':'<span style="color:var(--text3);">—</span>')+'</td>'+'<td>'+fmt(dN)+'원</td>'+(S.taxOn?'<td style="color:#fe9800;">'+fmt(Math.round(taxBase))+'원</td>':'')+(S.taxOn?'<td style="color:#f04452;">'+fmt(Math.round(tax))+'원</td>':'')+'<td style="color:'+(_pcS>=0?'#3182f6':'#f04452')+';">'+ (_pcS>=0?'+':'') + fmt(_pcS) + '원</td>'+'<td>'+(r.mPortsEnd?fmt(r.mPortsEnd[m]):'—')+'원</td>'+'<td>'+fmtShares(calcShares(r.mPortsEnd?r.mPortsEnd[m]:0,_priceNow,_growth,ri*12+m+1))+'</td>';
         tbody.appendChild(tr);
       }
     });
@@ -8279,7 +8282,7 @@ function renderFxCards() {
       document.getElementById('fx-from').value = cur.code;
       fxConvert();
     };
-    div.onmouseover = () => div.style.borderColor = 'rgba(0,229,176,0.3)';
+    div.onmouseover = () => div.style.borderColor = 'rgba(49,130,246,0.3)';
     div.onmouseout  = () => div.style.borderColor = 'var(--card-border)';
     div.innerHTML =
       '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">' +
@@ -8673,12 +8676,12 @@ function insertYearAccordionRow(tbody, yearNum, colSpan, summary) {
   // 연 분배 (세후)
   cells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);">' + (s.div != null ? fmt(s.div) : '—') + '</td>';
   // 연 과세표준
-  if (hasTax) cells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:#ffaa55;">' + (s.taxBase != null ? fmt(s.taxBase) : '—') + '</td>';
+  if (hasTax) cells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:#fe9800;">' + (s.taxBase != null ? fmt(s.taxBase) : '—') + '</td>';
   // 연 세금
-  if (hasTax) cells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:#ff7070;">' + (s.tax != null ? fmt(s.tax) : '—') + '</td>';
+  if (hasTax) cells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:#f04452;">' + (s.tax != null ? fmt(s.tax) : '—') + '</td>';
   // 연 주가 변동
   var pc = s.priceChange;
-  var pcColor = (pc != null && pc >= 0) ? '#64b5f6' : '#ff7070';
+  var pcColor = (pc != null && pc >= 0) ? '#3182f6' : '#f04452';
   var pcText  = (pc != null) ? ((pc >= 0 ? '+' : '') + fmt(pc)) : '—';
   cells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:' + pcColor + ';">' + pcText + '</td>';
   // 누적 자산
@@ -8732,11 +8735,11 @@ let _fearData = null;
 let _fearHistChart = null;
 
 function fearColor(s) {
-  if (s <= 24) return '#e53935';
-  if (s <= 44) return '#ef6c00';
-  if (s <= 55) return '#f9a825';
-  if (s <= 75) return '#66bb6a';
-  return '#2e7d32';
+  if (s <= 24) return '#f04452';
+  if (s <= 44) return '#fe9800';
+  if (s <= 55) return '#fe9800';
+  if (s <= 75) return '#3182f6';
+  return '#3182f6';
 }
 function fearLabel(s) {
   if (s <= 24) return '극도의 공포';
@@ -8755,11 +8758,11 @@ function drawFearGauge(score) {
   /* 반원 중심: 캔버스 맨 아래에 위치 → 반원만 보임 */
   var cx = W/2, cy = H - 10, r = 126;
   var zones = [
-    {from:0,  to:20,  col:'#e53935'},
-    {from:20, to:45,  col:'#ef6c00'},
-    {from:45, to:55,  col:'#f9a825'},
-    {from:55, to:80,  col:'#66bb6a'},
-    {from:80, to:100, col:'#2e7d32'}
+    {from:0,  to:20,  col:'#f04452'},
+    {from:20, to:45,  col:'#fe9800'},
+    {from:45, to:55,  col:'#fe9800'},
+    {from:55, to:80,  col:'#3182f6'},
+    {from:80, to:100, col:'#3182f6'}
   ];
   /* 배경 아크 (흐리게) */
   zones.forEach(function(z) {
@@ -8837,11 +8840,11 @@ function renderFearHistory(history) {
       labels: labels,
       datasets: [{
         data: scores,
-        borderColor: 'rgba(0,229,176,0.8)',
+        borderColor: 'rgba(49,130,246,0.8)',
         borderWidth: 1.5,
         pointRadius: 0,
         fill: true,
-        backgroundColor: 'rgba(0,229,176,0.08)',
+        backgroundColor: 'rgba(49,130,246,0.08)',
         tension: 0.3
       }]
     },
@@ -8854,13 +8857,13 @@ function renderFearHistory(history) {
       },
       scales: {
         x: {
-          ticks: {color:'#4a5878',font:{size:10},maxTicksLimit:8,
+          ticks: {color:'#6d6d76',font:{size:10},maxTicksLimit:8,
             callback: function(val,idx){return labels[idx]?labels[idx].slice(5):'';}},
           grid:{display:false}, border:{display:false}
         },
         y: {
           min:0, max:100,
-          ticks:{color:'#4a5878',font:{size:11},stepSize:25},
+          ticks:{color:'#6d6d76',font:{size:11},stepSize:25},
           grid:{color:fgA(0.04)}, border:{display:false}
         }
       }
@@ -9001,7 +9004,7 @@ function calcKosdaqRates(currentVal, asOfDate, periodYears, startVal, histDateSt
 
   if (annEl) { annEl.textContent = (cagr*100).toFixed(4)+'%';   annEl.style.color='var(--accent)'; }
   if (monEl) { monEl.textContent = (monthly*100).toFixed(4)+'%'; monEl.style.color='var(--accent2)'; }
-  if (dayEl) { dayEl.textContent = (daily*100).toFixed(6)+'%';   dayEl.style.color='#ffaa55'; }
+  if (dayEl) { dayEl.textContent = (daily*100).toFixed(6)+'%';   dayEl.style.color='#fe9800'; }
   if (asSub) asSub.textContent = periodLabel + ' | ' + svFmt + ' → ' + curFmt;
   if (msSub) msSub.textContent = '연 ' + (cagr*100).toFixed(2) + '% → 월 환산';
   if (dsSub) dsSub.textContent = '연 ' + (cagr*100).toFixed(2) + '% → 일 환산';
@@ -9300,7 +9303,7 @@ function calcIndexRatesByPeriod(indexId, currentVal, asOfDate, periodYears, star
   const dayEl = document.getElementById(p+'-daily');
   if (annEl) { annEl.textContent = (cagr*100).toFixed(4)+'%'; annEl.style.color='var(--accent)'; }
   if (monEl) { monEl.textContent = (monthly*100).toFixed(4)+'%'; monEl.style.color='var(--accent2)'; }
-  if (dayEl) { dayEl.textContent = (daily*100).toFixed(6)+'%'; dayEl.style.color='#ffaa55'; }
+  if (dayEl) { dayEl.textContent = (daily*100).toFixed(6)+'%'; dayEl.style.color='#fe9800'; }
 
   const cp       = (cagr*100).toFixed(2);
   const startFmt = sv.toLocaleString('ko-KR', {maximumFractionDigits:2});
@@ -9717,7 +9720,7 @@ function toggleCpdTax() {
   const blk = document.getElementById('cpd-tax-block');
   sw.classList.toggle('on', cpdTaxOn);
   document.getElementById('cpd-tax-off').style.color = cpdTaxOn ? 'var(--text3)' : 'var(--text2)';
-  document.getElementById('cpd-tax-on').style.color  = cpdTaxOn ? '#ff7070' : 'var(--text3)';
+  document.getElementById('cpd-tax-on').style.color  = cpdTaxOn ? '#f04452' : 'var(--text3)';
   blk.style.opacity = cpdTaxOn ? '1' : '0.3';
   blk.style.pointerEvents = cpdTaxOn ? 'auto' : 'none';
   calcCompound();
@@ -9825,7 +9828,7 @@ function calcCompound() {
     datasets = [{
       label: '총 자산',
       data: valData,
-      backgroundColor: valData.map((v,i) => i === valData.length-1 ? 'rgba(0,229,176,0.9)' : 'rgba(0,229,176,0.55)'),
+      backgroundColor: valData.map((v,i) => i === valData.length-1 ? 'rgba(49,130,246,0.9)' : 'rgba(49,130,246,0.55)'),
       borderRadius: 5,
       borderSkipped: false,
     }];
@@ -9834,7 +9837,7 @@ function calcCompound() {
     datasets = [{
       label: '수익률',
       data: retData,
-      backgroundColor: retData.map((v,i) => i === retData.length-1 ? 'rgba(0,145,255,0.9)' : 'rgba(0,145,255,0.5)'),
+      backgroundColor: retData.map((v,i) => i === retData.length-1 ? 'rgba(49,130,246,0.9)' : 'rgba(49,130,246,0.5)'),
       borderRadius: 5,
       borderSkipped: false,
     }];
@@ -9849,14 +9852,14 @@ function calcCompound() {
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: '#0e1525', borderColor: fgA(0.1), borderWidth: 1,
-          titleColor: '#8899bb', bodyColor: '#f0f4ff', padding: 12,
+          backgroundColor: '#202027', borderColor: fgA(0.1), borderWidth: 1,
+          titleColor: '#9e9ea4', bodyColor: '#e4e4e5', padding: 12,
           callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + (cpdChartTab === 'val' ? fmt(ctx.parsed.y) : ctx.parsed.y.toFixed(2) + '%') }
         }
       },
       scales: {
-        x: { ticks: { color: '#4a5878', font: { size: 11 } }, grid: { display: false }, border: { display: false } },
-        y: { ticks: { color: '#4a5878', font: { size: 11 }, callback: yLabel }, grid: { color: fgA(0.04) }, border: { display: false } }
+        x: { ticks: { color: '#6d6d76', font: { size: 11 } }, grid: { display: false }, border: { display: false } },
+        y: { ticks: { color: '#6d6d76', font: { size: 11 }, callback: yLabel }, grid: { color: fgA(0.04) }, border: { display: false } }
       }
     }
   });
@@ -10106,7 +10109,7 @@ function calcLoan() {
     const isGraceOnly=sl.every(r=>r.grace);
     const tr=document.createElement('tr'); if(y===totalYears)tr.classList.add('cagr-highlight');
     const labelSuffix=isGraceOnly?' <span style="font-size:9px;color:var(--text3);">(거치)</span>':'';
-    tr.innerHTML=`<td>${y}년차${labelSuffix}</td><td>${fmt(Math.round(yP))}</td><td>${fmt(Math.round(yPr))}</td><td style="color:#ff9090;">${fmt(Math.round(yI))}</td><td>${fmt(Math.round(yB))}</td>`;
+    tr.innerHTML=`<td>${y}년차${labelSuffix}</td><td>${fmt(Math.round(yP))}</td><td>${fmt(Math.round(yPr))}</td><td style="color:#f04452;">${fmt(Math.round(yI))}</td><td>${fmt(Math.round(yB))}</td>`;
     tbody.appendChild(tr);
   }
   /* ── 월간 테이블 (현재 뷰가 월간이면 즉시 렌더) ── */
@@ -10157,12 +10160,12 @@ function renderLoanMonthly() {
       tr.dataset.yrRow = y;
       tr.style.display = 'none'; /* 기본 접힘 */
       if(y === totalYears && i === sl.length-1) tr.classList.add('cagr-highlight');
-      const ppColor = r.principal < 0 ? 'color:#ff7070;' : '';
+      const ppColor = r.principal < 0 ? 'color:#f04452;' : '';
       tr.innerHTML = `
         <td style="color:var(--text3);">${i+1}월</td>
         <td>${fmt(r.payment)}</td>
         <td style="${ppColor}">${fmt(r.principal)}</td>
-        <td style="color:#ff9090;">${fmt(r.interest)}</td>
+        <td style="color:#f04452;">${fmt(r.interest)}</td>
         <td>${fmt(r.balance)}</td>`;
       tbody.appendChild(tr);
     });
@@ -10241,7 +10244,7 @@ function calcIndexRates(id, price, asOf, periodYears, startVal, histDateStr) {
   const dayEl = document.getElementById(id+'-daily');
   if (annEl) { annEl.textContent = (cagr*100).toFixed(4)+'%'; annEl.style.color='var(--accent)'; }
   if (monEl) { monEl.textContent = (monthly*100).toFixed(4)+'%'; monEl.style.color='var(--accent2)'; }
-  if (dayEl) { dayEl.textContent = (daily*100).toFixed(6)+'%'; dayEl.style.color='#ffaa55'; }
+  if (dayEl) { dayEl.textContent = (daily*100).toFixed(6)+'%'; dayEl.style.color='#fe9800'; }
 
   const as = document.getElementById(id+'-annual-sub');
   const ms = document.getElementById(id+'-monthly-sub');
@@ -10584,7 +10587,7 @@ function calcCAGR() {
   const cagrPct = (cagr * 100).toFixed(2);
   const cagrEl  = document.getElementById('cagr-result');
   cagrEl.textContent = (cagr >= 0 ? '+' : '') + cagrPct + '%';
-  cagrEl.style.color = cagr >= 0 ? 'var(--accent)' : '#ff7070';
+  cagrEl.style.color = cagr >= 0 ? 'var(--accent)' : '#f04452';
 
   document.getElementById('cagr-result-sub').textContent =
     years.toFixed(2) + '년 동안 ' + fmtC(start) + ' → ' + fmtC(end);
@@ -10606,8 +10609,8 @@ function calcCAGR() {
   const daily_r   = Math.pow(1 + cagr, 1/365.25) - 1;
   const mEl = document.getElementById('cagr-monthly-rate');
   const dEl = document.getElementById('cagr-daily-rate');
-  if (mEl) { mEl.textContent = (monthly_r >= 0 ? '+' : '') + (monthly_r*100).toFixed(4) + '%'; mEl.style.color = monthly_r >= 0 ? 'var(--accent2)' : '#ff7070'; }
-  if (dEl) { dEl.textContent = (daily_r   >= 0 ? '+' : '') + (daily_r  *100).toFixed(6) + '%'; dEl.style.color = daily_r   >= 0 ? '#ffaa55'        : '#ff7070'; }
+  if (mEl) { mEl.textContent = (monthly_r >= 0 ? '+' : '') + (monthly_r*100).toFixed(4) + '%'; mEl.style.color = monthly_r >= 0 ? 'var(--accent2)' : '#f04452'; }
+  if (dEl) { dEl.textContent = (daily_r   >= 0 ? '+' : '') + (daily_r  *100).toFixed(6) + '%'; dEl.style.color = daily_r   >= 0 ? '#fe9800'        : '#f04452'; }
 
   /* 연도별 테이블 */
   const tbody = document.getElementById('cagrTableBody');
@@ -10658,15 +10661,15 @@ function renderCagrChart(cache) {
   const retData  = [0,       ...rows.map(r => parseFloat((r.cumRet).toFixed(2)))];
 
   const isDark      = true;
-  const accentColor = '#00e5b0';
-  const blueColor   = '#0091ff';
+  const accentColor = '#3182f6';
+  const blueColor   = '#3182f6';
 
   let datasets, yLabel;
   if (cagrChartTab2 === 'value') {
     datasets = [{
       label: '자산 규모',
       data: valData,
-      backgroundColor: valData.map((v,i) => i === valData.length-1 ? 'rgba(0,229,176,0.9)' : 'rgba(0,229,176,0.5)'),
+      backgroundColor: valData.map((v,i) => i === valData.length-1 ? 'rgba(49,130,246,0.9)' : 'rgba(49,130,246,0.5)'),
       borderRadius: 5,
       borderSkipped: false,
     }];
@@ -10675,7 +10678,7 @@ function renderCagrChart(cache) {
     datasets = [{
       label: '누적 수익률',
       data: retData,
-      backgroundColor: retData.map((v,i) => i === retData.length-1 ? 'rgba(0,145,255,0.9)' : 'rgba(0,145,255,0.5)'),
+      backgroundColor: retData.map((v,i) => i === retData.length-1 ? 'rgba(49,130,246,0.9)' : 'rgba(49,130,246,0.5)'),
       borderRadius: 5,
       borderSkipped: false,
     }];
@@ -10689,11 +10692,11 @@ function renderCagrChart(cache) {
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: '#0e1525',
+        backgroundColor: '#202027',
         borderColor: fgA(0.1),
         borderWidth: 1,
-        titleColor: '#8899bb',
-        bodyColor: '#f0f4ff',
+        titleColor: '#9e9ea4',
+        bodyColor: '#e4e4e5',
         padding: 12,
         callbacks: {
           label: ctx => {
@@ -10707,12 +10710,12 @@ function renderCagrChart(cache) {
     },
     scales: {
       x: {
-        ticks: { color: '#4a5878', font: { size: 11 }, maxRotation: 0 },
+        ticks: { color: '#6d6d76', font: { size: 11 }, maxRotation: 0 },
         grid: { display: false },
         border: { display: false },
       },
       y: {
-        ticks: { color: '#4a5878', font: { size: 11 }, callback: yLabel },
+        ticks: { color: '#6d6d76', font: { size: 11 }, callback: yLabel },
         grid: { color: fgA(0.04) },
         border: { display: false },
       },
@@ -10814,7 +10817,7 @@ function msRenderIndexTable() {
       + '<td style="padding:6px 10px;color:var(--text2);">' + cfg.name + '</td>'
       + '<td style="padding:6px 10px;text-align:center;color:var(--text3);">' + msFmt(d.hist15) + 'pt</td>'
       + '<td style="padding:6px 10px;text-align:center;color:var(--text3);">' + msFmt(d.cur) + 'pt</td>'
-      + '<td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">'
+      + '<td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;">'
         + (cagr !== null ? (cagr >= 0 ? '+' : '') + cp + '%' : '—') + '</td>'
       + '<td style="padding:6px 10px;text-align:center;color:var(--text3);">' + mpStr + '</td>'
       + '</tr>';
@@ -11327,9 +11330,10 @@ if (typeof module !== 'undefined') module.exports = MHE;
   function fmt(v, cur, dec) { dec = dec == null ? 2 : dec; return cur === 'KRW' ? '₩' + Math.round(v).toLocaleString() : '$' + Number(v).toFixed(dec); }
   function fmtL(v, cur) { return cur === 'KRW' ? '₩' + Math.round(v).toLocaleString() : '$' + Number(v).toLocaleString(undefined, { maximumFractionDigits: 2 }); }
   var sign = function (v) { return v >= 0 ? '+' : ''; };
-  var COLORS = [['violet', '보라', '#8b5cf6'], ['blue', '파랑', '#3b82f6'], ['cyan', '하늘', '#0ea5e9'], ['teal', '청록', '#14b8a6'],
-                ['green', '초록', '#22c55e'], ['amber', '주황', '#f59e0b'], ['rose', '빨강', '#f43f5e'], ['pink', '분홍', '#ec4899']];
-  function colorHex(k) { var c = COLORS.filter(function (x) { return x[0] === k; })[0]; return c ? c[2] : null; }
+  /* 세션 색상: 사이트 팔레트(파랑·빨강·주황) 3가지 · 이전에 고른 색은 가까운 색으로 표시 */
+  var COLORS = [['blue', '파랑', '#3182f6'], ['rose', '빨강', '#f04452'], ['amber', '주황', '#fe9800']];
+  var COLOR_ALIAS = { violet: 'blue', cyan: 'blue', teal: 'blue', green: 'blue', pink: 'rose' };
+  function colorHex(k) { k = COLOR_ALIAS[k] || k; var c = COLORS.filter(function (x) { return x[0] === k; })[0]; return c ? c[2] : null; }
   function rgba(hex, a) { var h = hex.replace('#', ''); return 'rgba(' + parseInt(h.slice(0, 2), 16) + ',' + parseInt(h.slice(2, 4), 16) + ',' + parseInt(h.slice(4, 6), 16) + ',' + a + ')'; }
   var TYPE_LABEL = { full_buy: '1회매수', half_buy: '절반매수', quarter_sell: '쿼터매도', limit_sell: '지정가매도', limit_sell_buy_full: '지정가+매수',
     limit_sell_buy_half: '지정가+반매수', buy_full_limit_sell: '매수+지정가(AF)', buy_half_limit_sell: '반매수+지정가(AF)', reverse_sell: 'R매도',
@@ -11729,7 +11733,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
     if (D.hn.length > 0) h += safe(viewCloseChart, D);
     if (MH.vixOn && !D.isCustom && D.vix.length > 0) h += safe(viewVix, D);
     if (!D.isCustom && MH.fear) h += safe(viewFear, D);
-    if (st.phase === '소진모드' && !D.isRev) h += '<div class="mh-card" style="border-color:rgba(192,132,252,.4)"><div class="mh-h3 mh-rev">소진모드 감지</div><p class="mh-small mh-muted" style="line-height:1.6">T값이 ' + (s.splits - 1) + '을 넘어 1회분 미만이 남았습니다(소진). 리버스모드로 전환하여 보유 수량을 점진적으로 매도하고 쿼터매수로 리스크를 관리할 수 있습니다.</p><button class="mh-btn" style="width:100%;border-color:rgba(192,132,252,.5);color:var(--m-rev)" data-act="rev-on">리버스모드 진입</button></div>';
+    if (st.phase === '소진모드' && !D.isRev) h += '<div class="mh-card" style="border-color:rgba(49,130,246,.4)"><div class="mh-h3 mh-rev">소진모드 감지</div><p class="mh-small mh-muted" style="line-height:1.6">T값이 ' + (s.splits - 1) + '을 넘어 1회분 미만이 남았습니다(소진). 리버스모드로 전환하여 보유 수량을 점진적으로 매도하고 쿼터매수로 리스크를 관리할 수 있습니다.</p><button class="mh-btn" style="width:100%;border-color:rgba(49,130,246,.5);color:var(--m-rev)" data-act="rev-on">리버스모드 진입</button></div>';
     if (!D.isRev && D.revAfter && st.phase !== '소진모드' && st.totalQuantity > 0) h += '<div class="mh-card"><div class="mh-h3 mh-rev">↩ 리버스모드 재진입</div><p class="mh-small mh-muted" style="line-height:1.6">이 사이클은 리버스모드 진행 중에 일반모드로 복귀한 상태예요. <b>실수로 복귀했다면</b> 아래 버튼으로 리버스모드를 이어갈 수 있어요 (T값·기록 유지, 진행하던 날부터 계속). 정상 복귀라면 일반모드 거래를 기록하면 이 안내는 사라집니다.</p><button class="mh-btn" style="width:100%;color:var(--m-rev)" data-act="rev-reenter">↩ 리버스모드 재진입</button></div>';
     if (!D.isRev && st.phase === '처음매수') {
       var pc = D.ot.length > 0 ? D.ot[D.ot.length - 1].close : null, bp = E.bigNumOf(s.bigNumPercent), bn = pc ? Math.round(pc * (1 + bp / 100) * 100) / 100 : null;
@@ -11740,7 +11744,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
     }
     if (D.isCustom && D.hn.length === 0) h += safe(viewManualCloses, D);
     if ((D.isRev && D.orders.length > 0) || (!D.isRev && st.phase !== '종료' && D.orders.length > 0)) { if (D.close != null) h += safe(viewLocCap, D); h += safe(viewOrders, D); }
-    if (D.isRev && D.revFirstDay) h += '<div class="mh-card" style="border-color:rgba(192,132,252,.4)"><div class="mh-h3 mh-rev">리버스모드 첫날</div><div class="mh-small mh-muted" style="line-height:1.8;margin-top:6px"><p style="margin:0"><b class="mh-rev">MOC(시장가)</b>로 무조건 매도합니다.</p><p style="margin:0">매수는 하지 않습니다. (쿼터매수는 둘째날부터)</p><p style="margin:0">매도 수량: <b class="mh-mono">' + Math.max(1, Math.floor(st.totalQuantity / (s.splits / 2))) + '주</b> (보유수량 ÷ ' + (s.splits / 2) + ')</p></div></div>';
+    if (D.isRev && D.revFirstDay) h += '<div class="mh-card" style="border-color:rgba(49,130,246,.4)"><div class="mh-h3 mh-rev">리버스모드 첫날</div><div class="mh-small mh-muted" style="line-height:1.8;margin-top:6px"><p style="margin:0"><b class="mh-rev">MOC(시장가)</b>로 무조건 매도합니다.</p><p style="margin:0">매수는 하지 않습니다. (쿼터매수는 둘째날부터)</p><p style="margin:0">매도 수량: <b class="mh-mono">' + Math.max(1, Math.floor(st.totalQuantity / (s.splits / 2))) + '주</b> (보유수량 ÷ ' + (s.splits / 2) + ')</p></div></div>';
     if (st.phase === '종료' && D.txs.length > 0) h += safe(viewCycleEnd, D);
     if (D.hist.length >= 2) h += safe(viewAvgChart, D);
     if (D.txs.length > 0) h += safe(viewHistory, D);
@@ -11769,21 +11773,21 @@ if (typeof module !== 'undefined') module.exports = MHE;
     ['pre', 'regular', 'post'].forEach(function (k) { var cw = w * wt[k] / tot; cols[k] = { x: x + gap / 2, w: cw - gap }; x += cw; });
     var step = (function () { var r = (hi - lo) / 3, o = Math.pow(10, Math.floor(Math.log10(r))), u = r / o; return (u <= 1 ? 1 : u <= 2 ? 2 : u <= 5 ? 5 : 10) * o; })();
     var dec = step >= 1 ? 0 : step >= 0.1 ? 1 : 2, ticks = []; for (var v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) ticks.push(Math.round(v * 1e3) / 1e3);
-    var up = e.open != null && e.close >= e.open, bodyC = up ? '#10b981' : '#ef4444', edt = isEDT();
+    var up = e.open != null && e.close >= e.open, bodyC = up ? '#3182f6' : '#f04452', edt = isEDT();
     var times = edt ? { pre: '17:00–22:30', regular: '22:30–05:00', post: '05:00–07:00' } : { pre: '18:00–23:30', regular: '23:30–06:00', post: '06:00–08:00' };
     var names = { pre: '프리', regular: '정규', post: '애프터' }, sess = { pre: [e.preHigh, e.preLow], regular: [e.regularHigh, e.regularLow], post: [e.postHigh, e.postLow] };
     var svg = ticks.map(function (t) { return '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(t) + '" y2="' + y(t) + '" stroke="currentColor" stroke-opacity=".08"/><text x="' + (L - 6) + '" y="' + (y(t) + 3) + '" text-anchor="end" font-size="9" fill="currentColor" fill-opacity=".45">' + t.toFixed(dec) + '</text>'; }).join('');
     ['pre', 'regular', 'post'].forEach(function (k) {
       var c = cols[k], hv = sess[k][0], lv = sess[k][1], reg = k === 'regular';
       if (hv != null && lv != null) {
-        svg += '<rect x="' + c.x + '" y="' + y(hv) + '" width="' + c.w + '" height="' + Math.max(1, y(lv) - y(hv)) + '" fill="' + (reg ? rgba(bodyC, .14) : 'rgba(148,163,184,.16)') + '" stroke="' + (reg ? rgba(bodyC, .5) : 'rgba(148,163,184,.4)') + '" rx="2"/>' +
+        svg += '<rect x="' + c.x + '" y="' + y(hv) + '" width="' + c.w + '" height="' + Math.max(1, y(lv) - y(hv)) + '" fill="' + (reg ? rgba(bodyC, .14) : 'rgba(139,149,161,.16)') + '" stroke="' + (reg ? rgba(bodyC, .5) : 'rgba(139,149,161,.4)') + '" rx="2"/>' +
           '<text x="' + (c.x + c.w / 2) + '" y="' + (y(hv) - 4) + '" text-anchor="middle" font-size="9.5" fill="currentColor" font-family="var(--mono)">' + hv.toFixed(2) + '</text>' +
           '<text x="' + (c.x + c.w / 2) + '" y="' + (y(lv) + 11) + '" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity=".75" font-family="var(--mono)">' + lv.toFixed(2) + '</text>';
       }
       if (reg && e.open != null) { var top = Math.max(e.open, e.close), bot = Math.min(e.open, e.close); svg += '<rect x="' + (c.x + c.w * 0.3) + '" y="' + y(top) + '" width="' + (c.w * 0.4) + '" height="' + Math.max(2, y(bot) - y(top)) + '" fill="' + bodyC + '" rx="1.5"/>'; }
       svg += '<text x="' + (c.x + c.w / 2) + '" y="' + (H - 20) + '" text-anchor="middle" font-size="10" fill="currentColor">' + names[k] + '</text><text x="' + (c.x + c.w / 2) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="8.5" fill="currentColor" fill-opacity=".5" font-family="var(--mono)">' + times[k] + '</text>';
     });
-    var marks = [['avg', D.st.avgPrice > 0 ? D.st.avgPrice : 0, '#60a5fa'], ['buy', D.st.phase !== '종료' ? D.st.buyPoint : 0, '#34d399'], ['sell', D.st.totalQuantity > 0 ? D.st.sellPoint : 0, '#fbbf24'], ['lim', D.st.totalQuantity > 0 ? D.st.limitSellPrice : 0, '#f87171']];
+    var marks = [['avg', D.st.avgPrice > 0 ? D.st.avgPrice : 0, '#3182f6'], ['buy', D.st.phase !== '종료' ? D.st.buyPoint : 0, '#3182f6'], ['sell', D.st.totalQuantity > 0 ? D.st.sellPoint : 0, '#fe9800'], ['lim', D.st.totalQuantity > 0 ? D.st.limitSellPrice : 0, '#f04452']];
     marks.forEach(function (m) { if (m[1] > lo && m[1] < hi) svg += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(m[1]) + '" y2="' + y(m[1]) + '" stroke="' + m[2] + '" stroke-dasharray="3 3" stroke-opacity=".7"/>'; });
     var d = new Date(e.date + 'T12:00:00'), chg = e.open != null && e.open > 0 ? (e.close - e.open) / e.open * 100 : null;
     return '<div class="mh-card"><div class="mh-row"><div><div class="mh-h3">' + (d.getMonth() + 1) + '/' + d.getDate() + ' 거래일</div><p class="mh-tiny mh-faint" style="margin:2px 0 0">세션별 변동폭</p></div>' +
@@ -11795,7 +11799,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
     var v = D.rsiVal, z = v >= 70 ? ['과매수', 'mh-bad'] : v <= 30 ? ['과매도', 'mh-info'] : ['중립', 'mh-muted'], last = D.rsiPrices[D.rsiPrices.length - 1].date, d = new Date(last + 'T12:00:00');
     return '<div class="mh-card"><div class="mh-row"><div style="display:flex;align-items:center;gap:2px"><span class="mh-h3" style="font-weight:500">' + esc(D.s.ticker) + ' RSI (14일)</span>' + info('i-rsi', 'RSI 설명 보기') + '</div><span class="mh-tiny mh-faint mh-mono">' + (d.getMonth() + 1) + '/' + d.getDate() + ' 종가 기준</span></div>' +
       '<div style="margin:6px 0 8px"><span class="mh-mono ' + z[1] + '" style="font-size:24px;font-weight:800">' + v.toFixed(2) + '</span> <span class="mh-chip ' + (z[1] === 'mh-bad' ? 'mh-chip-bad' : '') + '">' + z[0] + '</span></div>' +
-      '<div style="position:relative;height:6px;border-radius:3px;background:linear-gradient(90deg,rgba(96,165,250,.45) 0 30%,rgba(148,163,184,.25) 30% 70%,rgba(248,113,113,.45) 70%)"><span style="position:absolute;top:-3px;left:' + Math.min(100, Math.max(0, v)) + '%;width:10px;height:10px;border-radius:50%;background:var(--m-tx);transform:translateX(-50%)"></span></div>' +
+      '<div style="position:relative;height:6px;border-radius:3px;background:linear-gradient(90deg,rgba(49,130,246,.45) 0 30%,rgba(139,149,161,.25) 30% 70%,rgba(240,68,82,.45) 70%)"><span style="position:absolute;top:-3px;left:' + Math.min(100, Math.max(0, v)) + '%;width:10px;height:10px;border-radius:50%;background:var(--m-tx);transform:translateX(-50%)"></span></div>' +
       '<div class="mh-row mh-tiny mh-faint mh-mono" style="margin-top:4px"><span>0</span><span>30 과매도</span><span>70 과매수</span><span>100</span></div>' +
       '<p class="mh-help">' + (MH.rsiMethod === 'wilder' ? '와일더(원전)' : '증권사식(SMA)') + ' · 참고 지표입니다 — 무한매수법 T값·별지점·주문가 계산에는 쓰이지 않습니다. 일봉 확정 종가 ' + D.rsiPrices.length + '개 기준.</p></div>';
   }
@@ -11816,14 +11820,14 @@ if (typeof module !== 'undefined') module.exports = MHE;
     return '<div class="mh-card"><div class="mh-row"><div style="display:flex;align-items:center;gap:2px"><span class="mh-h3" style="font-weight:500">VIX 변동성 지수</span>' + info('i-vix', 'VIX 설명 보기') + '</div><span class="mh-tiny mh-faint mh-mono">' + (d.getMonth() + 1) + '/' + d.getDate() + ' 종가 기준</span></div>' +
       '<div style="margin:6px 0 8px;display:flex;align-items:center;gap:8px"><span class="mh-mono ' + z[1] + '" style="font-size:24px;font-weight:800">' + v.toFixed(2) + '</span><span class="mh-chip">' + z[0] + '</span>' +
       (ch != null ? '<span class="mh-tiny mh-mono ' + (ch >= 0 ? 'mh-bad' : 'mh-info') + '">' + (ch >= 0 ? '▲ ' : '▼ ') + Math.abs(ch).toFixed(2) + ' (' + sign(ch) + (ch / p * 100).toFixed(2) + '%)</span>' : '') + '</div>' +
-      '<div style="position:relative;height:6px;border-radius:3px;background:linear-gradient(90deg,rgba(96,165,250,.45) 0 40%,rgba(251,191,36,.4) 40% 60%,rgba(249,115,22,.4) 60% 80%,rgba(248,113,113,.5) 80%)"><span style="position:absolute;top:-3px;left:' + Math.min(100, v / 50 * 100) + '%;width:10px;height:10px;border-radius:50%;background:var(--m-tx);transform:translateX(-50%)"></span></div>' +
+      '<div style="position:relative;height:6px;border-radius:3px;background:linear-gradient(90deg,rgba(49,130,246,.45) 0 40%,rgba(254,152,0,.4) 40% 60%,rgba(254,152,0,.4) 60% 80%,rgba(240,68,82,.5) 80%)"><span style="position:absolute;top:-3px;left:' + Math.min(100, v / 50 * 100) + '%;width:10px;height:10px;border-radius:50%;background:var(--m-tx);transform:translateX(-50%)"></span></div>' +
       '<div class="mh-row mh-tiny mh-faint mh-mono" style="margin-top:4px"><span>0</span><span>20 주의</span><span>30 불안</span><span>40 공포</span></div>' +
       '<p class="mh-help">참고 지표입니다 — 무한매수법 T값·별지점·주문가 계산에는 쓰이지 않습니다.</p></div>';
   }
   var FEAR_KO = { 'extreme fear': '극단적 공포', fear: '공포', neutral: '중립', greed: '탐욕', 'extreme greed': '극단적 탐욕' };
-  var FEAR_COL = { 'extreme fear': '#ef4444', fear: '#f97316', neutral: '#eab308', greed: '#22c55e', 'extreme greed': '#10b981' };
+  var FEAR_COL = { 'extreme fear': '#f04452', fear: '#fe9800', neutral: '#fe9800', greed: '#3182f6', 'extreme greed': '#3182f6' };
   function viewFear() {
-    var f = MH.fear, u = f.current, col = FEAR_COL[u.rating] || '#eab308', lbl = FEAR_KO[u.rating] || u.rating;
+    var f = MH.fear, u = f.current, col = FEAR_COL[u.rating] || '#fe9800', lbl = FEAR_KO[u.rating] || u.rating;
     return '<div class="mh-card"><div class="mh-row"><div style="display:flex;align-items:center;gap:2px"><span class="mh-h3" style="font-weight:500">공포 &amp; 탐욕 지수</span>' + info('i-fear', '공포 탐욕 지수 설명 보기') + '</div>' +
       '<a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank" rel="noopener noreferrer" class="mh-tiny mh-faint">CNN</a></div>' +
       '<div style="margin:6px 0 12px"><span class="mh-mono" style="font-size:26px;font-weight:800;color:' + col + '">' + Math.round(u.score) + '</span> <span class="mh-small" style="color:' + col + '">' + lbl + '</span></div>' +
@@ -12024,15 +12028,15 @@ if (typeof module !== 'undefined') module.exports = MHE;
       '<div class="mh-ibox" style="line-height:1.9"><div><b>숫자 읽는 법</b> <span class="mh-muted">— 연율(1년 기준) 표기입니다.</span></div><div class="mh-muted">VIX <b class="mh-ac">16</b> = 앞으로 1년간 약 <b style="color:var(--m-tx)">±16%</b> 움직일 것으로 시장이 보고 있다는 뜻</div>' +
       '<div class="mh-mono mh-muted">한 달 기준 환산 → 16 ÷ √12 ≈ <b style="color:var(--m-tx)">±4.6%</b></div></div>' +
       '<div style="margin:12px 0;line-height:1.9"><div><b class="mh-info">20 미만 · 안정</b> <span class="mh-muted">— 평온한 장세</span></div><div><b class="mh-warn">20~30 · 주의</b> <span class="mh-muted">— 변동성 확대</span></div>' +
-      '<div><b style="color:#f97316">30~40 · 불안</b> <span class="mh-muted">— 큰 조정 국면</span></div><div><b class="mh-bad">40 이상 · 공포</b> <span class="mh-muted">— 급락·패닉 (2020년 코로나 초기엔 80을 넘겼습니다)</span></div></div>' +
+      '<div><b style="color:#fe9800">30~40 · 불안</b> <span class="mh-muted">— 큰 조정 국면</span></div><div><b class="mh-bad">40 이상 · 공포</b> <span class="mh-muted">— 급락·패닉 (2020년 코로나 초기엔 80을 넘겼습니다)</span></div></div>' +
       '<p><b>무한매수법과의 관계</b> <span class="mh-muted">— VIX가 높으면 하루 등락이 커져 LOC 주문이 더 자주 체결되고 평단가도 빠르게 움직입니다. 다만</span> <b>T값·별지점·주문가 계산에는 전혀 쓰이지 않는</b> <span class="mh-muted">참고용입니다.</span></p>' +
       '<p class="mh-muted" style="margin-bottom:0">미국 정규장 <b style="color:var(--m-tx)">확정 종가</b> 기준이며, 전일 대비도 종가끼리 비교합니다. ⋮ 메뉴에서 숨길 수 있어요.</p>'],
     'i-fear': ['공포 &amp; 탐욕 지수란?', '<p style="margin-top:0">CNN이 시장 참여자들의 <b class="mh-ac">심리</b>를 0~100으로 나타낸 지표입니다. 아래 <b>7가지</b>를 종합해서 계산합니다.</p>' +
       '<div class="mh-ibox" style="line-height:1.95">' + [['주가 모멘텀', 'S&amp;P500이 125일 평균에서 얼마나 떨어져 있나'], ['주가 강도', '52주 신고가 종목이 신저가보다 많은가'], ['주가 폭', '오르는 종목의 거래량 vs 내리는 종목의 거래량'],
         ['풋/콜 비율', '하락 베팅(풋)이 상승 베팅(콜)보다 많은가'], ['시장 변동성', 'VIX'], ['안전자산 수요', '주식 대신 국채로 돈이 몰리나'], ['정크본드 수요', '고위험 채권을 사려는 사람이 있나']]
         .map(function (x, i) { return '<div><b>' + (i + 1) + '. ' + x[0] + '</b> <span class="mh-muted">— ' + x[1] + '</span></div>'; }).join('') + '</div>' +
-      '<div style="margin:12px 0;line-height:1.9;font-weight:700"><div><span style="color:#ef4444">0~25 극단적 공포</span> <span class="mh-faint">·</span> <span style="color:#f97316">25~45 공포</span></div><div style="color:#eab308">45~55 중립</div>' +
-      '<div><span style="color:#22c55e">55~75 탐욕</span> <span class="mh-faint">·</span> <span style="color:#10b981">75~100 극단적 탐욕</span></div></div>' +
+      '<div style="margin:12px 0;line-height:1.9;font-weight:700"><div><span style="color:#f04452">0~25 극단적 공포</span> <span class="mh-faint">·</span> <span style="color:#fe9800">25~45 공포</span></div><div style="color:#fe9800">45~55 중립</div>' +
+      '<div><span style="color:#3182f6">55~75 탐욕</span> <span class="mh-faint">·</span> <span style="color:#3182f6">75~100 극단적 탐욕</span></div></div>' +
       '<p><b>VIX와 뭐가 다른가요?</b> <span class="mh-muted">VIX는 옵션 가격 하나로 계산한</span> <b>변동성 숫자</b><span class="mh-muted">이고, 공포·탐욕 지수는 그 VIX를</span> <b>포함한 7개 지표</b><span class="mh-muted">를 묶은</span> <b>심리 종합 점수</b><span class="mh-muted">입니다.</span></p>' +
       '<p style="margin-bottom:0">⚠️ <span class="mh-muted">흔히 역발상 참고로 쓰이지만</span> <b>매매 신호가 아닙니다.</b> <span class="mh-muted">공포 구간이 몇 달씩 이어지기도 합니다. 무한매수법 계산에는 전혀 쓰이지 않는 참고용 지표입니다.</span></p>'],
     'i-realized': ['실현 손익 계산법', '<p>매도할 때마다 <b>(매도가 − 매도 시점 평단가) × 매도수량</b>을 누적합니다 (평균법).</p><div class="mh-note mh-mono" style="line-height:1.8">예) 평단가 $110 · 쿼터매도 5주 @ $130 → <span class="mh-ok">+$100 수익</span><br>예) 평단가 $110 · 매도 5주 @ $100 → <span class="mh-bad">−$50 손실</span></div>' +
@@ -12042,7 +12046,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
     var S = MH.sheet, k = S.kind;
     if (INFO[k]) return sheet(INFO[k][0], '', '<div class="mh-info-body">' + INFO[k][1] + '</div>' + okBtn());
     if (k === 'i-fear-range') { var sc = MH.fear.current.score, lbl = FEAR_KO[MH.fear.current.rating] || '';
-      return sheet('공포 &amp; 탐욕 구간', '현재 <b>' + Math.round(sc) + ' · ' + lbl + '</b>', [['극단적 공포', 0, 25, '#ef4444'], ['공포', 25, 45, '#f97316'], ['중립', 45, 55, '#eab308'], ['탐욕', 55, 75, '#22c55e'], ['극단적 탐욕', 75, 100, '#10b981']].map(function (z) {
+      return sheet('공포 &amp; 탐욕 구간', '현재 <b>' + Math.round(sc) + ' · ' + lbl + '</b>', [['극단적 공포', 0, 25, '#f04452'], ['공포', 25, 45, '#fe9800'], ['중립', 45, 55, '#fe9800'], ['탐욕', 55, 75, '#3182f6'], ['극단적 탐욕', 75, 100, '#3182f6']].map(function (z) {
         var on = sc >= z[1] && (z[2] === 100 ? sc <= 100 : sc < z[2]); return '<div class="mh-row" style="padding:8px 4px;border-bottom:1px solid var(--m-bd)"><span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:' + z[3] + ';margin-right:6px"></span><span class="' + (on ? '' : 'mh-muted') + '" style="' + (on ? 'font-weight:700' : '') + '">' + z[0] + '</span></span><span class="mh-mono mh-small">' + z[1] + ' ~ ' + z[2] + (on ? ' <span class="mh-chip mh-chip-ac">현재</span>' : '') + '</span></div>'; }).join('') +
         '<p class="mh-help">CNN 공포·탐욕 지수 기준 · 0=극단적 공포, 100=극단적 탐욕</p>' + okBtn()); }
     if (k === 'record') return viewRecord();
@@ -12270,7 +12274,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
       '<label class="mh-lbl" style="margin-top:12px">닉네임 <span class="mh-faint">— 탭 이름 아래 작게 표시 (선택)</span></label><input class="mh-in" style="font-family:var(--font)" type="text" maxlength="20" placeholder="예: 키움 1234 / ISA / 남편계좌" value="' + esc(S.nick) + '" data-in="rn:nick" data-enter="rn-save">' +
       '<label class="mh-lbl" style="margin-top:12px">색상 <span class="mh-faint">— 탭·상단 띠·배경으로 구분됩니다</span></label><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
       '<button class="mh-btn' + (!S.color ? ' mh-btn-sel' : '') + '" style="padding:5px 10px;font-size:12px" data-act="rn-color" data-v="">기본</button>' + COLORS.map(function (c) {
-        return '<button title="' + c[1] + '" data-act="rn-color" data-v="' + c[0] + '" style="width:26px;height:26px;border-radius:50%;border:2px solid ' + (S.color === c[0] ? 'var(--m-tx)' : 'transparent') + ';background:' + c[2] + ';cursor:pointer"></button>'; }).join('') + '</div>' +
+        return '<button title="' + c[1] + '" data-act="rn-color" data-v="' + c[0] + '" style="width:26px;height:26px;border-radius:50%;border:2px solid ' + ((COLOR_ALIAS[S.color] || S.color) === c[0] ? 'var(--m-tx)' : 'transparent') + ';background:' + c[2] + ';cursor:pointer"></button>'; }).join('') + '</div>' +
       '<div class="mh-note" style="margin-top:12px"><div class="mh-tiny mh-faint">미리보기</div><span class="mh-stab-b on" style="display:inline-flex;margin-top:6px' + (col ? ';background:' + rgba(col, .15) + ';color:' + col + ';border-color:' + rgba(col, .35) : '') + '"><span>' + esc(S.name.trim() || '세션 이름') + '<span class="t">T1.0</span></span>' + (S.nick.trim() ? '<span class="nick">' + esc(S.nick.trim()) + '</span>' : '') + '</span> <span class="mh-tiny mh-faint">← 탭 모양</span></div>' +
       '<div class="mh-grid2" style="margin-top:14px"><button class="mh-btn" data-act="sheet-close">취소</button><button class="mh-btn mh-btn-p" data-act="rn-save">저장</button></div>');
   }
@@ -12309,7 +12313,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
   /* ── 사이클 완료 축하 ── */
   function viewCelebrate() {
     var D = derive(), cur = D.cur, conf = '';
-    var cols = ['#00e5b0', '#34d399', '#fbbf24', '#60a5fa', '#f472b6', '#c084fc'];
+    var cols = ['#3182f6', '#3182f6', '#fe9800', '#3182f6', '#3182f6', '#3182f6'];
     for (var i = 0; i < 46; i++) conf += '<span class="mh-conf" style="left:' + (Math.random() * 100) + '%;background:' + cols[i % cols.length] + ';--dx:' + Math.round(Math.random() * 160 - 80) + 'px;--rot:' + Math.round(Math.random() * 720) + 'deg;--d:' + (1800 + Math.random() * 1600) + 'ms;--dl:' + Math.round(Math.random() * 600) + 'ms"></span>';
     var lastDay = D.txs[D.txs.length - 1].date.slice(0, 10), j = D.txs.length - 1; while (j > 0 && D.txs[j - 1].date.slice(0, 10) === lastDay) j--;
     var finalT = j === 0 ? (D.mid ? D.mid.tValue : D.st.tValue) : D.hist[j - 1].tValue, ret = r2(D.s.totalCapital + D.pnl), cmp = ret;
@@ -12341,14 +12345,14 @@ if (typeof module !== 'undefined') module.exports = MHE;
       var k = cv.getAttribute('data-chart'), D, cur;
       if (k === 'close') { D = derive(); var pd = periodData(D), o = pd.list, yrs = o[0].date.slice(0, 4) !== o[o.length - 1].date.slice(0, 4), up = o[o.length - 1].close >= o[0].close;
         var lab = o.map(function (p) { var d = new Date(p.date + 'T12:00:00'), y2 = String(d.getFullYear()).slice(2); return pd.p[2] >= 365 ? y2 + '/' + (d.getMonth() + 1) : yrs ? y2 + '/' + (d.getMonth() + 1) + '/' + d.getDate() : (d.getMonth() + 1) + '/' + d.getDate(); });
-        var ds = [{ data: o.map(function (p) { return p.close; }), borderColor: up ? ok : bad, backgroundColor: (up ? 'rgba(52,211,153,.12)' : 'rgba(248,113,113,.12)'), fill: true, pointRadius: 0, borderWidth: 1.6, tension: .2 }];
+        var ds = [{ data: o.map(function (p) { return p.close; }), borderColor: up ? ok : bad, backgroundColor: (up ? 'rgba(49,130,246,.12)' : 'rgba(240,68,82,.12)'), fill: true, pointRadius: 0, borderWidth: 1.6, tension: .2 }];
         if (D.st.avgPrice > 0) ds.push({ label: '평단가', data: o.map(function () { return D.st.avgPrice; }), borderColor: info, borderDash: [4, 4], pointRadius: 0, borderWidth: 1 });
         mkChart(cv, { type: 'line', data: { labels: lab, datasets: ds }, options: baseOpts(function (v) { return '$' + Number(v).toFixed(2); }) }); }
       if (k === 'fear') { var h = MH.fear.historical, yr = new Date().getFullYear();
         var lb = h.map(function (p) { var d = new Date(p.date + 'T12:00:00'); return d.getFullYear() !== yr ? d.getFullYear() + '.' + (d.getMonth() + 1) + '/' + d.getDate() : (d.getMonth() + 1) + '/' + d.getDate(); });
-        var col = function (v) { return v >= 75 ? '#10b981' : v >= 55 ? '#22c55e' : v >= 45 ? '#eab308' : v >= 25 ? '#f97316' : '#ef4444'; };
+        var col = function (v) { return v >= 75 ? '#3182f6' : v >= 55 ? '#3182f6' : v >= 45 ? '#fe9800' : v >= 25 ? '#fe9800' : '#f04452'; };
         var o2 = baseOpts(function (v) { return Number(v).toFixed(0); }); o2.scales.y.min = 0; o2.scales.y.max = 100;
-        mkChart(cv, { type: 'line', data: { labels: lb, datasets: [{ data: h.map(function (p) { return p.score; }), pointRadius: 0, borderWidth: 1.6, tension: .25, segment: { borderColor: function (c) { return col(c.p1.parsed.y); } }, borderColor: '#eab308' }] }, options: o2 }); }
+        mkChart(cv, { type: 'line', data: { labels: lb, datasets: [{ data: h.map(function (p) { return p.score; }), pointRadius: 0, borderWidth: 1.6, tension: .25, segment: { borderColor: function (c) { return col(c.p1.parsed.y); } }, borderColor: '#fe9800' }] }, options: o2 }); }
       if (k === 'avg') { D = derive(); var hs = D.hist, tab = MH.avgTab || 'avg', lbl = hs.map(function (p) { var d = new Date(p.date); return (d.getMonth() + 1) + '/' + d.getDate(); });
         var data = tab === 'avg' ? { labels: lbl, datasets: [{ label: '평단가', data: hs.map(function (p) { return p.avgPrice; }), borderColor: ac, pointRadius: 2, borderWidth: 1.6 }] } :
           tab === 'tq' ? { labels: lbl, datasets: [{ label: 'T값', data: hs.map(function (p) { return p.tValue; }), borderColor: ac, pointRadius: 2, borderWidth: 1.6, yAxisID: 'y' }, { label: '보유수량', data: hs.map(function (p) { return p.totalQuantity; }), borderColor: info, pointRadius: 2, borderWidth: 1.4, yAxisID: 'y1' }] } :
@@ -12356,10 +12360,10 @@ if (typeof module !== 'undefined') module.exports = MHE;
         var o3 = baseOpts(); if (tab === 'tq') o3.scales.y1 = { position: 'right', ticks: { color: cssVar('--m-t3'), font: { size: 10 } }, grid: { display: false } }; o3.plugins.legend = { display: tab === 'tq', labels: { color: cssVar('--m-t2'), boxWidth: 10, font: { size: 10 } } };
         mkChart(cv, { type: 'line', data: data, options: o3 }); }
       if (k === 'monthly') { var g = MH._an.cards[Number(cv.getAttribute('data-i'))], ms = g.series, c2 = g.currency, f = function (v) { return c2 === 'KRW' ? '₩' + Math.round(v).toLocaleString() : '$' + Math.round(v).toLocaleString(); };
-        mkChart(cv, { type: 'bar', data: { labels: ms.map(function (x) { return x.label; }), datasets: [{ type: 'bar', label: '월 손익', data: ms.map(function (x) { return x.pnl; }), backgroundColor: ms.map(function (x) { return x.pnl >= 0 ? 'rgba(52,211,153,.7)' : 'rgba(248,113,113,.7)'; }), maxBarThickness: 40, borderRadius: 3 },
+        mkChart(cv, { type: 'bar', data: { labels: ms.map(function (x) { return x.label; }), datasets: [{ type: 'bar', label: '월 손익', data: ms.map(function (x) { return x.pnl; }), backgroundColor: ms.map(function (x) { return x.pnl >= 0 ? 'rgba(49,130,246,.7)' : 'rgba(240,68,82,.7)'; }), maxBarThickness: 40, borderRadius: 3 },
           { type: 'line', label: '누적', data: ms.map(function (x) { return x.cumulative; }), borderColor: ac, pointRadius: 2, borderWidth: 1.6 }] }, options: baseOpts(f) }); }
       if (k === 'realized') { var det = MH._realizedChart || [];
-        mkChart(cv, { type: 'bar', data: { labels: det.map(function (r) { var d = new Date(r.date); return (d.getMonth() + 1) + '/' + d.getDate(); }), datasets: [{ type: 'bar', label: '건별 손익', data: det.map(function (r) { return r2(r.realized); }), backgroundColor: det.map(function (r) { return r.realized >= 0 ? 'rgba(52,211,153,.7)' : 'rgba(248,113,113,.7)'; }), borderRadius: 3, maxBarThickness: 28 },
+        mkChart(cv, { type: 'bar', data: { labels: det.map(function (r) { var d = new Date(r.date); return (d.getMonth() + 1) + '/' + d.getDate(); }), datasets: [{ type: 'bar', label: '건별 손익', data: det.map(function (r) { return r2(r.realized); }), backgroundColor: det.map(function (r) { return r.realized >= 0 ? 'rgba(49,130,246,.7)' : 'rgba(240,68,82,.7)'; }), borderRadius: 3, maxBarThickness: 28 },
           { type: 'line', label: '누적', data: det.map(function (r) { return r2(r.cumulative); }), borderColor: ac, pointRadius: 2, borderWidth: 1.6 }] }, options: baseOpts() }); }
       if (k === 'cycle') { var hh = (MH._cycleHist || {})[cv.getAttribute('data-v')] || [];
         mkChart(cv, { type: 'line', data: { labels: hh.map(function (p) { var d = new Date(p.date); return (d.getMonth() + 1) + '/' + d.getDate(); }), datasets: [{ label: '평단가', data: hh.map(function (p) { return p.avgPrice; }), borderColor: ac, pointRadius: 2, borderWidth: 1.6 }] }, options: baseOpts() }); }
@@ -12547,12 +12551,12 @@ if (typeof module !== 'undefined') module.exports = MHE;
   <div style="max-width:1280px;margin:0 auto;padding:0 32px 40px;">
     <a href="https://open.kakao.com/o/smk2aSpi" target="_blank" rel="noopener"
       style="display:flex;align-items:center;justify-content:center;gap:14px;
-        background:linear-gradient(135deg,rgba(0,229,176,0.1),rgba(0,145,255,0.08));
-        border:1px solid rgba(0,229,176,0.25);border-radius:14px;
+        background:linear-gradient(135deg,rgba(49,130,246,0.1),rgba(49,130,246,0.08));
+        border:1px solid rgba(49,130,246,0.25);border-radius:14px;
         padding:18px 24px;text-decoration:none;width:100%;box-sizing:border-box;
         transition:background 0.2s,border-color 0.2s;"
-      onmouseover="this.style.background='linear-gradient(135deg,rgba(0,229,176,0.18),rgba(0,145,255,0.14))';this.style.borderColor='rgba(0,229,176,0.5)'"
-      onmouseout="this.style.background='linear-gradient(135deg,rgba(0,229,176,0.1),rgba(0,145,255,0.08))';this.style.borderColor='rgba(0,229,176,0.25)'">
+      onmouseover="this.style.background='linear-gradient(135deg,rgba(49,130,246,0.18),rgba(49,130,246,0.14))';this.style.borderColor='rgba(49,130,246,0.5)'"
+      onmouseout="this.style.background='linear-gradient(135deg,rgba(49,130,246,0.1),rgba(49,130,246,0.08))';this.style.borderColor='rgba(49,130,246,0.25)'">
       <span style="font-size:22px;">☕</span>
       <div style="text-align:center;">
         <p style="font-size:15px;font-weight:600;color:var(--accent);margin-bottom:3px;">후원 및 문의</p>
