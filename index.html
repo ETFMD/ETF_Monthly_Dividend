@@ -1075,7 +1075,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
     color-scheme: light;
   }
   html[data-theme="light"] body { background: var(--bg); color: var(--text); }
+  #grp-theme { margin-left: auto; }   /* 테마 버튼만 탭 줄 오른쪽 끝 */
   .theme-item.theme-on { background: var(--accent-dim); color: var(--accent); font-weight: 600; }
+
+#page-muhan .mh-info-body{font-size:13px;line-height:1.7;color:var(--m-tx)}#page-muhan .mh-info-body p{margin:10px 0}
+#page-muhan .mh-ibox{background:var(--m-ac-s);border-radius:12px;padding:12px 14px;font-size:12.5px}
+#page-muhan .mh-hr{border:0;border-top:1px solid var(--m-bd);margin:12px 0}
+#page-muhan .mh-tag.lim{background:rgba(192,132,252,.15);color:var(--m-rev)}#page-muhan .mh-tag.moc{background:rgba(248,113,113,.15);color:var(--m-bad)}
+#page-muhan .mh-odet{margin:-2px 0 8px;border-radius:10px;padding:10px 12px;font-size:11.5px;line-height:1.6;background:var(--m-ac-s);color:var(--m-t2)}
+#page-muhan .mh-done{width:100%;margin-top:10px;padding:12px;border-radius:12px;border:1px solid var(--m-ac-b);background:var(--m-ac-s);color:var(--m-t2);font:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+#page-muhan .mh-done .ic{width:16px;height:16px;border-radius:50%;border:1.5px solid currentColor;display:inline-flex;align-items:center;justify-content:center;font-size:10px}
+#page-muhan .mh-done.on{background:rgba(52,211,153,.14);border-color:rgba(52,211,153,.45);color:var(--m-ok)}#page-muhan .mh-done.on .ic{background:var(--m-ok);border-color:var(--m-ok);color:var(--m-s1)}
 </style>
 </head>
 <body>
@@ -11590,6 +11600,8 @@ if (typeof module !== 'undefined') module.exports = MHE;
       (MH.view === 'an' ? '<button class="mh-btn" style="margin-left:auto;padding:5px 10px;font-size:12px" data-act="export">⤓ 내보내기</button>' : '') + '</div>';
   }
   /* ── 현재 탭 ── */
+  function safe(fn, D) { try { return fn(D); } catch (e) { if (window.console) console.error('[MUHAN] ' + (fn.name || 'card'), e);
+    return '<div class="mh-note bad" style="margin-bottom:10px">⚠️ 카드를 표시하지 못했어요 (' + esc(fn.name || '') + ': ' + esc(e && e.message) + '). 새로고침 후에도 반복되면 알려주세요.</div>'; } }
   function stat(k, v, cls, sub) { return '<div class="mh-stat"><div class="k">' + k + '</div><div class="v ' + (cls || '') + '">' + v + '</div>' + (sub ? '<div class="s">' + sub + '</div>' : '') + '</div>'; }
   function info(act, label) { return '<button class="mh-ico" style="font-size:12px;padding:2px 4px" data-act="' + act + '" aria-label="' + label + '">ⓘ</button>'; }
   function viewNow(D) {
@@ -11633,12 +11645,12 @@ if (typeof module !== 'undefined') module.exports = MHE;
     }
     if (cur === 'USD' && D.fx) h += '<div class="mh-tiny mh-faint mh-mono" style="text-align:right;margin:0 0 10px">USD/KRW <b style="color:var(--m-tx)">₩' + Number(D.fx.rate).toLocaleString(undefined, { maximumFractionDigits: 2 }) + '</b>' + (D.fx.date ? ' (' + D.fx.date + ')' : '') + '</div>';
     if (D.failed) h += '<div class="mh-note warn" style="margin-bottom:10px"><b class="mh-warn">⚠️ 종가를 불러오지 못했어요</b><br>시세 서버가 일시적으로 응답하지 않아 <b>최근 종가 · 기록 추천 · 차트</b>를 계산할 수 없습니다. 주문표는 평단가 기준이라 그대로 사용할 수 있어요.<br>잠시 후 <b>새로고침</b>하면 다시 불러옵니다.</div>';
-    if (D.ot.length > 0) h += viewCloses(D);
-    if (D.hn.length > 0 && D.ot[D.ot.length - 1].regularHigh != null) h += viewBands(D);
-    if (MH.rsiOn && D.rsiVal != null && D.rsiPrices.length > 0) h += viewRsi(D);
-    if (D.hn.length > 0) h += viewCloseChart(D);
-    if (MH.vixOn && !D.isCustom && D.vix.length > 0) h += viewVix(D);
-    if (!D.isCustom && MH.fear) h += viewFear();
+    if (D.ot.length > 0) h += safe(viewCloses, D);
+    if (D.hn.length > 0 && D.ot[D.ot.length - 1].regularHigh != null) h += safe(viewBands, D);
+    if (MH.rsiOn && D.rsiVal != null && D.rsiPrices.length > 0) h += safe(viewRsi, D);
+    if (D.hn.length > 0) h += safe(viewCloseChart, D);
+    if (MH.vixOn && !D.isCustom && D.vix.length > 0) h += safe(viewVix, D);
+    if (!D.isCustom && MH.fear) h += safe(viewFear, D);
     if (st.phase === '소진모드' && !D.isRev) h += '<div class="mh-card" style="border-color:rgba(192,132,252,.4)"><div class="mh-h3 mh-rev">소진모드 감지</div><p class="mh-small mh-muted" style="line-height:1.6">T값이 ' + (s.splits - 1) + '을 넘어 1회분 미만이 남았습니다(소진). 리버스모드로 전환하여 보유 수량을 점진적으로 매도하고 쿼터매수로 리스크를 관리할 수 있습니다.</p><button class="mh-btn" style="width:100%;border-color:rgba(192,132,252,.5);color:var(--m-rev)" data-act="rev-on">리버스모드 진입</button></div>';
     if (!D.isRev && D.revAfter && st.phase !== '소진모드' && st.totalQuantity > 0) h += '<div class="mh-card"><div class="mh-h3 mh-rev">↩ 리버스모드 재진입</div><p class="mh-small mh-muted" style="line-height:1.6">이 사이클은 리버스모드 진행 중에 일반모드로 복귀한 상태예요. <b>실수로 복귀했다면</b> 아래 버튼으로 리버스모드를 이어갈 수 있어요 (T값·기록 유지, 진행하던 날부터 계속). 정상 복귀라면 일반모드 거래를 기록하면 이 안내는 사라집니다.</p><button class="mh-btn" style="width:100%;color:var(--m-rev)" data-act="rev-reenter">↩ 리버스모드 재진입</button></div>';
     if (!D.isRev && st.phase === '처음매수') {
@@ -11648,12 +11660,12 @@ if (typeof module !== 'undefined') module.exports = MHE;
         (bn !== null ? '<p class="mh-small" style="margin:0 0 6px">★ 큰수 = 종가 × ' + (1 + bp / 100).toFixed(2) + ' = <b class="mh-warn mh-mono">' + fmt(bn, cur, 2) + '</b> <span class="mh-faint">(큰수% 설정: ' + bp + '%)</span></p>' : '') +
         '<p class="mh-small mh-muted" style="margin:0">아래 주문표대로 LOC 매수를 걸고, 체결되면 <span class="mh-ac">오늘 기록하기</span> 버튼으로 기록해주세요.</p></div>';
     }
-    if (D.isCustom && D.hn.length === 0) h += viewManualCloses(D);
-    if ((D.isRev && D.orders.length > 0) || (!D.isRev && st.phase !== '종료' && D.orders.length > 0)) { if (D.close != null) h += viewLocCap(D); h += viewOrders(D); }
+    if (D.isCustom && D.hn.length === 0) h += safe(viewManualCloses, D);
+    if ((D.isRev && D.orders.length > 0) || (!D.isRev && st.phase !== '종료' && D.orders.length > 0)) { if (D.close != null) h += safe(viewLocCap, D); h += safe(viewOrders, D); }
     if (D.isRev && D.revFirstDay) h += '<div class="mh-card" style="border-color:rgba(192,132,252,.4)"><div class="mh-h3 mh-rev">리버스모드 첫날</div><div class="mh-small mh-muted" style="line-height:1.8;margin-top:6px"><p style="margin:0"><b class="mh-rev">MOC(시장가)</b>로 무조건 매도합니다.</p><p style="margin:0">매수는 하지 않습니다. (쿼터매수는 둘째날부터)</p><p style="margin:0">매도 수량: <b class="mh-mono">' + Math.max(1, Math.floor(st.totalQuantity / (s.splits / 2))) + '주</b> (보유수량 ÷ ' + (s.splits / 2) + ')</p></div></div>';
-    if (st.phase === '종료' && D.txs.length > 0) h += viewCycleEnd(D);
-    if (D.hist.length >= 2) h += viewAvgChart(D);
-    if (D.txs.length > 0) h += viewHistory(D);
+    if (st.phase === '종료' && D.txs.length > 0) h += safe(viewCycleEnd, D);
+    if (D.hist.length >= 2) h += safe(viewAvgChart, D);
+    if (D.txs.length > 0) h += safe(viewHistory, D);
     return h;
   }
   function viewCloses(D) {
@@ -11763,7 +11775,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
   function orderRow(o, cur, withInfo) {
     var star = o.label.charAt(0) === '★';
     return '<div class="mh-obox ' + o.type + '"><div style="display:flex;align-items:center;gap:5px;min-width:0">' + (withInfo && star ? info('i-star', '별지점 설명') : '') +
-      '<span class="mh-small">' + esc(o.label || 'LOC') + '</span><span class="mh-tag">' + o.method + '</span></div>' +
+      '<span class="mh-small">' + esc(o.label || 'LOC') + '</span><span class="mh-tag' + (o.method === '지정가' ? ' lim' : o.method === 'MOC' ? ' moc' : '') + '">' + o.method + '</span></div>' +
       '<div style="display:flex;align-items:center;gap:8px"><span class="p">' + (o.method === 'MOC' ? '시장가' : fmt(o.price, cur, 2)) + '</span><span class="mh-small mh-muted mh-mono">' + o.quantity + '주</span></div></div>';
   }
   function viewOrders(D) {
@@ -11776,7 +11788,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
     if (buys.length) h += '<div class="mh-small mh-ok" style="font-weight:600;margin:10px 0 6px">● 매수</div>' + buys.map(function (o) {
       var r = orderRow(o, cur, true);
       if (['★ 큰수', '★ 별지점', '★ 큰수 쿼터매수', '★ 쿼터매수'].indexOf(o.label) >= 0) {
-        r += '<div class="mh-note" style="margin:-2px 0 8px">' +
+        r += '<div class="mh-odet">' +
           (o.altPrice != null && o.price < o.altPrice ? '<div><b class="mh-warn">📈 급등 대비</b> — 종가가 큰수 위로 마감하면 이 매수가 안 잡혀요. 별지점 <b class="mh-mono mh-warn">' + fmt(o.altPrice, cur, 2) + '</b>에 LOC 매수를 걸거나 아래 슬라이더로 큰수%를 올려보세요. <span class="mh-faint">무한매수는 매일 체결이 원칙입니다.</span></div>' : '') +
           (o.altPrice != null ? '<div style="' + (o.price < o.altPrice ? 'margin-top:8px;padding-top:8px;border-top:1px solid var(--m-bd)' : '') + '"><div class="mh-row mh-tiny"><span>큰수% 실시간 조정</span><span class="mh-mono"><b class="mh-warn" id="mh-big-lbl">' + bp + '%</b> · 큰수 ' + fmt(o.price, cur, 2) + '</span></div>' +
             '<input class="mh-slider" type="range" min="0" max="' + mx + '" step="0.01" value="' + Math.min(bp, mx) + '" data-in="big-live" data-ch="big-set" data-max="' + mx + '">' +
@@ -11787,7 +11799,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
       return r;
     }).join('');
     if (notice) h += '<div class="mh-note" style="margin-top:6px"><span class="mh-info">ⓘ</span> ' + notice + '</div>';
-    if (MH.todo) h += '<button class="mh-btn' + (D.orderDone ? ' mh-btn-sel' : '') + '" style="width:100%;margin-top:8px;padding:11px" data-act="order-done">' + (D.orderDone ? '✓ 오늘 주문 완료 · 내일 자동 초기화' : '○ 오늘 주문 다 넣었어요') + '</button>';
+    if (MH.todo) h += '<button class="mh-done' + (D.orderDone ? ' on' : '') + '" data-act="order-done">' + (D.orderDone ? '<span class="ic">✓</span> 오늘 주문 완료 · 내일 자동 초기화' : '<span class="ic"></span> 오늘 주문 다 넣었어요') + '</button>';
     return h + '</div>';
   }
   function viewCycleEnd(D) {
@@ -11913,7 +11925,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
     return '<div class="mh-sheet-bg" data-act="sheet-bg"><div class="mh-sheet" data-noswipe' + (wide ? ' style="max-width:520px"' : '') + '><div class="grab"></div>' +
       '<div class="mh-row" style="margin-bottom:12px"><div><h3>' + title + '</h3>' + (sub ? '<p class="mh-small mh-muted" style="margin:3px 0 0">' + sub + '</p>' : '') + '</div><button class="mh-ico" style="font-size:18px" data-act="sheet-close" aria-label="닫기">✕</button></div>' + body + '</div></div>';
   }
-  function okBtn() { return '<button class="mh-btn mh-btn-p" style="width:100%;margin-top:14px" data-act="sheet-close">확인</button>'; }
+  function okBtn() { return '<button class="mh-btn mh-btn-sel" style="width:100%;margin-top:16px;padding:12px" data-act="sheet-close">확인</button>'; }
   var INFO = {
     'i-star': ['★ 별지점 / 큰수 매수가', '<p>무한매수법은 <b class="mh-warn">별지점</b> 가격으로 LOC 매수를 거는 것이 원칙입니다.</p><p>다만 별지점이 종가 대비 너무 높으면 증권사가 LOC 주문을 거부할 수 있어, 안전 가격으로 <b>★ 큰수 = 종가 × (1 + 큰수%)</b>를 도입했습니다. 별지점이 큰수보다 높으면 큰수로 LOC를 겁니다.</p>' +
       '<div class="mh-note"><b>시장 상황에 따른 한계</b><ul style="margin:6px 0;padding-left:18px"><li><b>📉 폭락 시</b> — 종가가 큰수보다 훨씬 낮아지면 LOC 지정가(큰수)와 실제 체결가 차이가 벌어져 매수 효율이 떨어질 수 있습니다.</li><li><b>📈 폭등 시</b> — 종가가 큰수 위로 마감하면 LOC가 체결되지 않아 매수를 못 잡을 수 있습니다.</li></ul>시장 상황에 따라 <b>⋮ 메뉴에서 큰수%를 조정</b>하거나, 증권사 앱에서 <b>적절한 LOC 가격을 직접 정해</b> 거는 것이 좋습니다.</div>' +
@@ -11921,20 +11933,36 @@ if (typeof module !== 'undefined') module.exports = MHE;
     'i-broker': ['증권사별 LOC 매수 거부 한도', '<p>LOC 매수 지정가가 기준가 대비 일정 비율을 넘으면 증권사에서 주문이 거부될 수 있는데, 이 <b>한도가 증권사마다 다릅니다</b>.</p><div class="mh-note"><div class="mh-row"><span>메리츠증권</span><b class="mh-warn">약 120%</b></div><div class="mh-row"><span>키움증권</span><b class="mh-ok">약 150%</b></div></div>' +
       '<p>한도가 넉넉한 증권사(예: 키움 150%)는 별지점이 대부분 한도 안에 들어와, <b>큰수 미사용(별지점만)을 켜도 거부 없이 걸리는 경우가 많습니다</b> — 큰수~별지점 미체결 구간 걱정 없이 운용할 수 있어요.</p><p>한도가 낮은 증권사(예: 메리츠 120%)는 별지점이 한도를 넘기 쉬워 <b>큰수 사용을 권장</b>합니다.</p>' +
       '<div class="mh-note warn">위 수치는 사용자 제보 기반 참고용입니다. 정확한 한도는 이용 중인 증권사 공지·고객센터에서 꼭 확인하세요. 위의 \'LOC 매수 상한\' 카드는 보수적인 ×1.2(120%) 기준입니다.</div>'],
-    'i-rsi': ['RSI란?', '<p>최근 <b>14거래일</b> 동안 <b>오른 날의 힘</b>과 <b>내린 날의 힘</b> 중 어느 쪽이 셌는지를 0~100으로 나타낸 숫자입니다.</p><div class="mh-note mh-mono">RSI = 상승폭 합 ÷ (상승폭 합 + 하락폭 합) × 100</div>' +
-      '<p><b>70 이상 · 과매수</b> — 최근 상승이 강했다<br><b>30 이하 · 과매도</b> — 최근 하락이 강했다</p><p><b>매매 신호가 아닙니다.</b> 과매수라고 반드시 떨어지지 않고, 과매도라고 반드시 오르지 않습니다. 추세가 강할 땐 70 위나 30 아래에 몇 주씩 머무르기도 합니다.</p>' +
-      '<p><b>계산 방식이 두 가지</b>라 증권사마다 값이 몇 포인트 다릅니다. ⋮ 메뉴에서 바꿀 수 있어요.<br>· <b>증권사식(SMA)</b> — 최근 14일치만 단순 평균. 메리츠 등 국내 HTS와 같은 값<br>· <b>와일더(원전)</b> — 과거 값의 영향을 계속 남기는 방식. TradingView·investing.com 기준</p><div class="mh-note">라오어 무한매수법에는 RSI가 없습니다. <b>T값·별지점·주문가 계산에 전혀 쓰이지 않는</b> 참고용 지표입니다.</div>'],
-    'i-vix': ['VIX란?', '<p>미국 S&amp;P500 <b>옵션 가격</b>에서 뽑아낸 <b>앞으로 30일간 예상 변동성</b>입니다. 시카고옵션거래소(CBOE)가 산출합니다.</p><p><b>왜 \'공포지수\'라고 부르나요?</b><br>시장이 불안해지면 하락에 대비한 보험(풋옵션)을 사려는 사람이 늘어 옵션 값이 비싸집니다. VIX는 그 옵션 값으로 계산되니, <b>불안할수록 올라갑니다.</b></p>' +
-      '<p><b>숫자 읽는 법</b> — 연율(1년 기준) 표기입니다. 16 = 앞으로 1년간 약 ±16% 움직일 것으로 시장이 보고 있다는 뜻 (한 달 기준 환산 → 16 ÷ √12 ≈ ±4.6%)</p><p><b>20 미만 · 안정</b> — 평온한 장세<br><b>20~30 · 주의</b> — 변동성 확대<br><b>30~40 · 불안</b> — 큰 조정 국면<br><b>40 이상 · 공포</b> — 급락·패닉 (2020년 코로나 초기엔 80을 넘겼습니다)</p>' +
-      '<div class="mh-note"><b>무한매수법과의 관계</b> — VIX가 높으면 하루 등락이 커져 LOC 주문이 더 자주 체결되고 평단가도 빠르게 움직입니다. 다만 <b>T값·별지점·주문가 계산에는 전혀 쓰이지 않는</b> 참고용입니다. 미국 정규장 <b>확정 종가</b> 기준이며, 전일 대비도 종가끼리 비교합니다. ⋮ 메뉴에서 숨길 수 있어요.</div>'],
-    'i-fear': ['공포 &amp; 탐욕 지수란?', '<p>CNN이 시장 참여자들의 <b>심리</b>를 0~100으로 나타낸 지표입니다. 아래 <b>7가지</b>를 종합해서 계산합니다.</p><div class="mh-note" style="line-height:1.8"><b>1. 주가 모멘텀</b> — S&amp;P500이 125일 평균에서 얼마나 떨어져 있나<br><b>2. 주가 강도</b> — 52주 신고가 종목이 신저가보다 많은가<br><b>3. 주가 폭</b> — 오르는 종목의 거래량 vs 내리는 종목의 거래량<br><b>4. 풋/콜 비율</b> — 하락 베팅(풋)이 상승 베팅(콜)보다 많은가<br><b>5. 시장 변동성</b> — VIX<br><b>6. 안전자산 수요</b> — 주식 대신 국채로 돈이 몰리나<br><b>7. 정크본드 수요</b> — 고위험 채권을 사려는 사람이 있나</div>' +
-      '<p><b>0~25 극단적 공포</b> · <b>25~45 공포</b> · <b>45~55 중립</b> · <b>55~75 탐욕</b> · <b>75~100 극단적 탐욕</b></p><p><b>VIX와 뭐가 다른가요?</b> VIX는 옵션 가격 하나로 계산한 <b>변동성 숫자</b>이고, 공포·탐욕 지수는 VIX를 포함한 7가지를 합친 <b>종합 심리 점수</b>입니다. 무한매수법 계산에는 쓰이지 않는 참고 지표입니다.</p>'],
+    'i-rsi': ['RSI란?', '<p style="margin-top:0">최근 <b>14거래일</b> 동안 <b class="mh-ok">오른 날의 힘</b>과 <b class="mh-bad">내린 날의 힘</b> 중 어느 쪽이 셌는지를 0~100으로 나타낸 숫자입니다.</p>' +
+      '<div class="mh-ibox"><div class="mh-mono">RSI = 상승폭 합 ÷ (상승폭 합 + 하락폭 합) × 100</div><div class="mh-muted" style="margin-top:6px">예) 14일 동안 오른 날 상승폭 합 <b class="mh-ok">$14</b>, 내린 날 하락폭 합 <b class="mh-bad">$6</b></div>' +
+      '<div class="mh-mono mh-ac" style="margin-top:6px">→ 14 ÷ (14 + 6) × 100 = 70</div></div>' +
+      '<div style="margin:12px 0;line-height:1.9"><div><b>50</b> <span class="mh-muted">— 오른 힘과 내린 힘이 팽팽</span></div><div><b class="mh-bad">70 이상 · 과매수</b> <span class="mh-muted">— 최근 상승이 강했다</span></div><div><b class="mh-info">30 이하 · 과매도</b> <span class="mh-muted">— 최근 하락이 강했다</span></div></div>' +
+      '<p>⚠️ <b>매매 신호가 아닙니다.</b> <span class="mh-muted">과매수라고 반드시 떨어지지 않고, 과매도라고 반드시 오르지 않습니다. 추세가 강할 땐 70 위나 30 아래에 몇 주씩 머무르기도 합니다.</span></p>' +
+      '<hr class="mh-hr"><p><b>계산 방식이 두 가지</b><span class="mh-muted">라 증권사마다 값이 몇 포인트 다릅니다. ⋮ 메뉴에서 바꿀 수 있어요.</span></p>' +
+      '<div class="mh-ibox" style="line-height:1.8"><div><b class="mh-ac">증권사식(SMA)</b> <span class="mh-muted">— 최근 14일치만 단순 평균. 메리츠 등 국내 HTS와 같은 값</span></div><div><b class="mh-ac">와일더(원전)</b> <span class="mh-muted">— 과거 값의 영향을 계속 남기는 방식. TradingView·investing.com 기준</span></div></div>' +
+      '<p class="mh-muted" style="margin-bottom:0">라오어 무한매수법에는 RSI가 없습니다. <b style="color:var(--m-tx)">T값·별지점·주문가 계산에 전혀 쓰이지 않는</b> 참고용 지표입니다.</p>'],
+    'i-vix': ['VIX란?', '<p style="margin-top:0">미국 S&amp;P500 <b>옵션 가격</b>에서 뽑아낸 <b class="mh-ac">앞으로 30일간 예상 변동성</b>입니다. 시카고옵션거래소(CBOE)가 산출합니다.</p>' +
+      '<p><b>왜 \'공포지수\'라고 부르나요?</b> <span class="mh-muted">시장이 불안해지면 하락에 대비한 보험(풋옵션)을 사려는 사람이 늘어 옵션 값이 비싸집니다. VIX는 그 옵션 값으로 계산되니,</span> <b>불안할수록 올라갑니다.</b></p>' +
+      '<div class="mh-ibox" style="line-height:1.9"><div><b>숫자 읽는 법</b> <span class="mh-muted">— 연율(1년 기준) 표기입니다.</span></div><div class="mh-muted">VIX <b class="mh-ac">16</b> = 앞으로 1년간 약 <b style="color:var(--m-tx)">±16%</b> 움직일 것으로 시장이 보고 있다는 뜻</div>' +
+      '<div class="mh-mono mh-muted">한 달 기준 환산 → 16 ÷ √12 ≈ <b style="color:var(--m-tx)">±4.6%</b></div></div>' +
+      '<div style="margin:12px 0;line-height:1.9"><div><b class="mh-info">20 미만 · 안정</b> <span class="mh-muted">— 평온한 장세</span></div><div><b class="mh-warn">20~30 · 주의</b> <span class="mh-muted">— 변동성 확대</span></div>' +
+      '<div><b style="color:#f97316">30~40 · 불안</b> <span class="mh-muted">— 큰 조정 국면</span></div><div><b class="mh-bad">40 이상 · 공포</b> <span class="mh-muted">— 급락·패닉 (2020년 코로나 초기엔 80을 넘겼습니다)</span></div></div>' +
+      '<p><b>무한매수법과의 관계</b> <span class="mh-muted">— VIX가 높으면 하루 등락이 커져 LOC 주문이 더 자주 체결되고 평단가도 빠르게 움직입니다. 다만</span> <b>T값·별지점·주문가 계산에는 전혀 쓰이지 않는</b> <span class="mh-muted">참고용입니다.</span></p>' +
+      '<p class="mh-muted" style="margin-bottom:0">미국 정규장 <b style="color:var(--m-tx)">확정 종가</b> 기준이며, 전일 대비도 종가끼리 비교합니다. ⋮ 메뉴에서 숨길 수 있어요.</p>'],
+    'i-fear': ['공포 &amp; 탐욕 지수란?', '<p style="margin-top:0">CNN이 시장 참여자들의 <b class="mh-ac">심리</b>를 0~100으로 나타낸 지표입니다. 아래 <b>7가지</b>를 종합해서 계산합니다.</p>' +
+      '<div class="mh-ibox" style="line-height:1.95">' + [['주가 모멘텀', 'S&amp;P500이 125일 평균에서 얼마나 떨어져 있나'], ['주가 강도', '52주 신고가 종목이 신저가보다 많은가'], ['주가 폭', '오르는 종목의 거래량 vs 내리는 종목의 거래량'],
+        ['풋/콜 비율', '하락 베팅(풋)이 상승 베팅(콜)보다 많은가'], ['시장 변동성', 'VIX'], ['안전자산 수요', '주식 대신 국채로 돈이 몰리나'], ['정크본드 수요', '고위험 채권을 사려는 사람이 있나']]
+        .map(function (x, i) { return '<div><b>' + (i + 1) + '. ' + x[0] + '</b> <span class="mh-muted">— ' + x[1] + '</span></div>'; }).join('') + '</div>' +
+      '<div style="margin:12px 0;line-height:1.9;font-weight:700"><div><span style="color:#ef4444">0~25 극단적 공포</span> <span class="mh-faint">·</span> <span style="color:#f97316">25~45 공포</span></div><div style="color:#eab308">45~55 중립</div>' +
+      '<div><span style="color:#22c55e">55~75 탐욕</span> <span class="mh-faint">·</span> <span style="color:#10b981">75~100 극단적 탐욕</span></div></div>' +
+      '<p><b>VIX와 뭐가 다른가요?</b> <span class="mh-muted">VIX는 옵션 가격 하나로 계산한</span> <b>변동성 숫자</b><span class="mh-muted">이고, 공포·탐욕 지수는 그 VIX를</span> <b>포함한 7개 지표</b><span class="mh-muted">를 묶은</span> <b>심리 종합 점수</b><span class="mh-muted">입니다.</span></p>' +
+      '<p style="margin-bottom:0">⚠️ <span class="mh-muted">흔히 역발상 참고로 쓰이지만</span> <b>매매 신호가 아닙니다.</b> <span class="mh-muted">공포 구간이 몇 달씩 이어지기도 합니다. 무한매수법 계산에는 전혀 쓰이지 않는 참고용 지표입니다.</span></p>'],
     'i-realized': ['실현 손익 계산법', '<p>매도할 때마다 <b>(매도가 − 매도 시점 평단가) × 매도수량</b>을 누적합니다 (평균법).</p><div class="mh-note mh-mono" style="line-height:1.8">예) 평단가 $110 · 쿼터매도 5주 @ $130 → <span class="mh-ok">+$100 수익</span><br>예) 평단가 $110 · 매도 5주 @ $100 → <span class="mh-bad">−$50 손실</span></div>' +
       '<p>매도가가 평단가보다 낮으면 자동으로 손실(음수)로 잡힙니다. 후반전 별지점이 평단가 아래일 때의 손실도 정확히 반영됩니다.</p><p>보유 중인 주식의 평가손익(미실현)은 포함하지 않습니다 — 그건 <b>보유수익률</b> 카드에서 확인하세요. 사이클이 전량 매도로 종료되면 이 실현 손익이 최종 손익과 같아집니다.</p>']
   };
   function viewSheet() {
     var S = MH.sheet, k = S.kind;
-    if (INFO[k]) return sheet(INFO[k][0], '', '<div class="mh-small" style="line-height:1.7">' + INFO[k][1] + '</div>' + okBtn());
+    if (INFO[k]) return sheet(INFO[k][0], '', '<div class="mh-info-body">' + INFO[k][1] + '</div>' + okBtn());
     if (k === 'i-fear-range') { var sc = MH.fear.current.score, lbl = FEAR_KO[MH.fear.current.rating] || '';
       return sheet('공포 &amp; 탐욕 구간', '현재 <b>' + Math.round(sc) + ' · ' + lbl + '</b>', [['극단적 공포', 0, 25, '#ef4444'], ['공포', 25, 45, '#f97316'], ['중립', 45, 55, '#eab308'], ['탐욕', 55, 75, '#22c55e'], ['극단적 탐욕', 75, 100, '#10b981']].map(function (z) {
         var on = sc >= z[1] && (z[2] === 100 ? sc <= 100 : sc < z[2]); return '<div class="mh-row" style="padding:8px 4px;border-bottom:1px solid var(--m-bd)"><span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:' + z[3] + ';margin-right:6px"></span><span class="' + (on ? '' : 'mh-muted') + '" style="' + (on ? 'font-weight:700' : '') + '">' + z[0] + '</span></span><span class="mh-mono mh-small">' + z[1] + ' ~ ' + z[2] + (on ? ' <span class="mh-chip mh-chip-ac">현재</span>' : '') + '</span></div>'; }).join('') +
