@@ -11755,8 +11755,9 @@ const INDEX_CONFIG = {
   dowjones: { name:'다우존스',    ticker:'%5EDJI',  baseDate:'1896-05-26', baseVal:40.94, defaultVal:42000, minP:100,   maxP:500000 },
   sp500:    { name:'S&P 500',    ticker:'%5EGSPC', baseDate:'1928-01-03', baseVal:17.66, defaultVal:5800,  minP:100,   maxP:50000  },
   sox:      { name:'필라델피아 반도체', ticker:'%5ESOX', baseDate:'1993-12-01', baseVal:200, defaultVal:null, minP:50, maxP:200000 },
-  /* 기준일·기준값 미확인 → baseVal:null — '전체 기간'은 data/history.json(^DJUSSC)의 첫 데이터부터 계산 */
-  djsemi:   { name:'다우존스 미국 반도체', ticker:'%5EDJUSSC', baseDate:null, baseVal:null, defaultVal:null, minP:50, maxP:2000000 },
+  /* 기준일·기준값 미확인 → baseVal:null — '전체 기간'은 data/history.json(^DJUSSC)의 첫 데이터부터 계산
+     과거값은 Actions가 CNBC 주봉(2000.02~)으로 수집 (야후는 현재가만 제공) */
+  djsemi:   { name:'다우존스 미국 반도체', ticker:'%5EDJUSSC', baseDate:null, baseVal:null, defaultVal:null, minP:50, maxP:2000000, histSrc:'CNBC' },
 };
 
 /* 해외 지수 연간 fallback 테이블 (연초 기준) */
@@ -11801,7 +11802,7 @@ function calcIndexRates(id, price, asOf, periodYears, startVal, histDateStr) {
     startDate = new Date(sy, now.getMonth(), now.getDate());
     const cachedDate = histDateStr || (_indexHistCache[ck] && _indexHistCache[ck].date);
     if (cachedDate) {
-      periodLabel = '최근 ' + periodYears + '년 (' + cachedDate + ' ~ 현재) (Yahoo)';
+      periodLabel = '최근 ' + periodYears + '년 (' + cachedDate + ' ~ 현재) (' + (cfg.histSrc || 'Yahoo') + ')';
     } else {
       periodLabel = '최근 ' + periodYears + '년 (' + sy + '년 추정 ~ 현재) (내장)';
     }
@@ -11886,6 +11887,19 @@ async function setIndexPeriod(id, years, btn) {
   const sy  = now.getFullYear() - years;
 
   let cached = _indexHistCache[ck];
+  /* 기준값 없는 지수: 보유 데이터보다 긴 기간이면 숫자를 지어내지 않고 안내 */
+  if (!cached && INDEX_CONFIG[id].baseVal == null) {
+    const fp = await indexFirstPoint(id);
+    const target = new Date(sy, now.getMonth(), now.getDate());
+    if (fp && new Date(fp.date) - target > 31 * 86400000) {
+      [id+'-annual', id+'-monthly', id+'-daily', id+'-sim-10', id+'-sim-20', id+'-sim-30', id+'-sim-40'].forEach(k => { const el = document.getElementById(k); if (el) el.textContent = '—'; });
+      const as = document.getElementById(id+'-annual-sub');
+      if (as) as.textContent = '데이터가 ' + fp.date.replace(/-/g,'.') + '부터 있어 최근 ' + years + '년은 계산할 수 없습니다 — [전체 기간]을 이용하세요';
+      const ms = document.getElementById(id+'-monthly-sub'), ds = document.getElementById(id+'-daily-sub');
+      if (ms) ms.textContent = 'CAGR의 월 환산'; if (ds) ds.textContent = 'CAGR의 일 환산';
+      return;
+    }
+  }
   if (!cached) {
     const origText = btn ? btn.textContent : '';
     if (btn) btn.textContent = '⏳';

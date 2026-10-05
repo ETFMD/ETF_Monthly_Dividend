@@ -11,7 +11,6 @@
   · 내용이 바뀌었을 때만 파일을 다시 씀 → 장 마감 후에는 커밋이 생기지 않음
 """
 import json, os, re, sys, time, datetime, urllib.request, urllib.parse
-import base64, random, socket, ssl, string, struct
 from zoneinfo import ZoneInfo
 NY = ZoneInfo('America/New_York')
 
@@ -34,8 +33,9 @@ HIST_YEARS, HIST_MAX_AGE_H = 31, 20
 HIST_VERSION = 4   # 형식·출처가 바뀌면 올려서 즉시 다시 수집
 # Yahoo는 국내 지수(특히 코스피200)의 과거 데이터가 짧거나 비어 있음 → 네이버 금융 주봉으로 앞부분을 채움
 NAVER_INDEX = {'^KS11': 'KOSPI', '^KS200': 'KPI200', '^KQ11': 'KOSDAQ'}
-# 야후가 비거나 오래된 값을 줄 때 쓰는 보조 시세 (현재가만) — 트레이딩뷰 → 구글 파이낸스 순
-ALT_QUOTE = {'^DJUSSC': {'tv': 'DJ:DJUSSC', 'google': 'DJUSSC:INDEXDJX', 'stooq': '^djussc', 'wsj': 'DJUSSC'}}
+# 야후가 비거나 오래된 값을 줄 때 쓰는 보조 시세 — 현재가: CNBC → 트레이딩뷰 → 구글 / 과거: CNBC 주봉
+# (^DJUSSC: 야후는 현재가 1개만 주고 과거가 없음 · 트레이딩뷰 과거는 유료 권한 · WSJ·stooq 는 봇 차단 — Actions 에서 확인)
+ALT_QUOTE = {'^DJUSSC': {'cnbc': '.DJUSSC', 'tv': 'DJ:DJUSSC', 'google': 'DJUSSC:INDEXDJX'}}
 
 # 분배 시뮬레이터 '지수 비교' 차트 (data/compare.json): ETF 상장 이후 일봉 + 분배금, 비교 지수 일봉
 COMPARE = os.path.join(ROOT, 'compare.json')
@@ -47,7 +47,6 @@ COMPARE_PAIRS = {                                     # 분배 시뮬레이터 E
     '0177R0.KS': {'naver': '0177R0', 'bench': '^KS11'},   # TIGER 반도체TOP10커버드콜액티브
 }
 KST = 9 * 3600
-KST_US = 6 * 3600    # 트레이딩뷰 봉 시각(UTC 00:00·뉴욕 00:00·장 시작 13:30~14:30 UTC) → 모두 같은 날짜로 묶는 보정
 
 
 def utc_now():
@@ -213,176 +212,35 @@ def google_quote(symbol):
     return {'price': round(price, 4), 'prev': None, 'time': ts, 'currency': 'USD', 'daily': [[ts, round(price, 4)]]}
 
 
-def _ws_connect(host, path, origin, timeout=25, use_ssl=True, port=None):
-    """표준 라이브러리만으로 웹소켓(RFC 6455) 연결 — 트레이딩뷰 차트 데이터용"""
-    port = port or (443 if use_ssl else 80)
-    raw = socket.create_connection((host, port), timeout=timeout)
-    sock = ssl.create_default_context().wrap_socket(raw, server_hostname=host) if use_ssl else raw
-    key = base64.b64encode(os.urandom(16)).decode()
-    req = (f'GET {path} HTTP/1.1\r\nHost: {host}\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n'
-           f'Sec-WebSocket-Key: {key}\r\nSec-WebSocket-Version: 13\r\nOrigin: {origin}\r\nUser-Agent: {UA}\r\n\r\n')
-    sock.sendall(req.encode())
-    head = b''
-    while b'\r\n\r\n' not in head:
-        chunk = sock.recv(4096)
-        if not chunk:
-            raise ConnectionError('웹소켓 핸드셰이크 응답 없음')
-        head += chunk
-    status = head.split(b'\r\n', 1)[0]
-    if b' 101' not in status:
-        raise ConnectionError('웹소켓 거부: ' + status.decode(errors='ignore'))
-    return sock, head.split(b'\r\n\r\n', 1)[1]
-
-
-def _ws_send(sock, text, opcode=1):
-    data = text.encode() if isinstance(text, str) else text
-    hdr = bytes([0x80 | opcode])
-    n = len(data)
-    if n < 126:
-        hdr += bytes([0x80 | n])
-    elif n < 65536:
-        hdr += bytes([0x80 | 126]) + struct.pack('>H', n)
-    else:
-        hdr += bytes([0x80 | 127]) + struct.pack('>Q', n)
-    mask = os.urandom(4)
-    sock.sendall(hdr + mask + bytes(b ^ mask[i % 4] for i, b in enumerate(data)))
-
-
-class _WsReader:
-    def __init__(self, sock, buf=b''):
-        self.sock, self.buf = sock, buf
-
-    def _need(self, n):
-        while len(self.buf) < n:
-            chunk = self.sock.recv(65536)
-            if not chunk:
-                raise ConnectionError('웹소켓 연결 종료')
-            self.buf += chunk
-        out, self.buf = self.buf[:n], self.buf[n:]
-        return out
-
-    def frame(self):
-        """(opcode, payload) — 조각난 메시지는 이어 붙여 반환"""
-        msg, op0 = b'', None
-        while True:
-            b1, b2 = self._need(2)
-            fin, op, n = b1 & 0x80, b1 & 0x0F, b2 & 0x7F
-            if n == 126:
-                n = struct.unpack('>H', self._need(2))[0]
-            elif n == 127:
-                n = struct.unpack('>Q', self._need(8))[0]
-            mask = self._need(4) if b2 & 0x80 else None
-            data = self._need(n)
-            if mask:
-                data = bytes(b ^ mask[i % 4] for i, b in enumerate(data))
-            if op >= 8:                      # 제어 프레임
-                return op, data
-            op0 = op0 if op == 0 else op
-            msg += data
-            if fin:
-                return op0, msg
-
-
-def _tv_pack(obj):
-    s = obj if isinstance(obj, str) else json.dumps(obj, separators=(',', ':'))
-    return f'~m~{len(s)}~m~{s}'
-
-
-def _tv_unpack(text):
-    out, i = [], 0
-    while text.startswith('~m~', i):
-        j = text.index('~m~', i + 3)
-        n = int(text[i + 3:j])
-        out.append(text[j + 3:j + 3 + n])
-        i = j + 3 + n
-    return out
-
-
-def tv_history(symbol, resolution='1W', bars=2000, timeout=30, _conn=None):
-    """트레이딩뷰 차트 데이터(비로그인) → [[일수, 종가], ...]  예: tv_history('DJ:DJUSSC')"""
-    sock, rest = _conn() if _conn else _ws_connect('data.tradingview.com', '/socket.io/websocket?from=chart%2F&type=chart',
-                                                    'https://www.tradingview.com', timeout)
-    rd = _WsReader(sock, rest)
-    cs = 'cs_' + ''.join(random.choice(string.ascii_lowercase) for _ in range(12))
-    for m in ({'m': 'set_auth_token', 'p': ['unauthorized_user_token']},
-              {'m': 'chart_create_session', 'p': [cs, '']},
-              {'m': 'resolve_symbol', 'p': [cs, 'sds_sym_1', '=' + json.dumps({'symbol': symbol, 'adjustment': 'splits'})]},
-              {'m': 'create_series', 'p': [cs, 'sds_1', 's1', 'sds_sym_1', resolution, bars, '']}):
-        _ws_send(sock, _tv_pack(m))
-    pts, deadline, done = {}, time.time() + timeout, False
-    try:
-        while not done and time.time() < deadline:
-            op, data = rd.frame()
-            if op == 8:
-                break
-            if op == 9:
-                _ws_send(sock, data, opcode=10)
-                continue
-            for part in _tv_unpack(data.decode('utf-8', errors='ignore')):
-                if part.startswith('~h~'):                      # 하트비트는 그대로 돌려보냄
-                    _ws_send(sock, _tv_pack(part))
-                    continue
-                try:
-                    msg = json.loads(part)
-                except ValueError:
-                    continue
-                kind = msg.get('m')
-                if kind in ('symbol_error', 'series_error', 'critical_error', 'protocol_error'):
-                    raise RuntimeError(f'트레이딩뷰 {kind}: {msg.get("p")}')
-                if kind in ('timescale_update', 'du'):
-                    ser = ((msg.get('p') or [None, {}])[1] or {}).get('sds_1') or {}
-                    for bar in ser.get('s') or []:
-                        v = bar.get('v') or []
-                        if len(v) >= 5 and v[4] and v[4] > 0:
-                            pts[int(v[0] + KST_US) // 86400] = round(float(v[4]), 2)
-                if kind == 'series_completed':
-                    done = True
-    finally:
-        try:
-            sock.close()
-        except Exception:
-            pass
-    if not done and not pts:
-        raise TimeoutError('트레이딩뷰 응답 시간 초과')
-    return [[d, pts[d]] for d in sorted(pts)]
-
-
-def wsj_history(symbol, years):
-    """WSJ 지수 과거 가격 CSV (Dow Jones 지수) → [[일수, 종가], ...]"""
-    end = utc_now()
-    start = end - datetime.timedelta(days=int(years * 365.25))
-    days = (end - start).days
-    url = (f'https://www.wsj.com/market-data/quotes/index/{symbol}/historical-prices/download?MOD_VIEW=page'
-           f'&num_rows={days}&range_days={days}&startDate={start:%m/%d/%Y}&endDate={end:%m/%d/%Y}')
+def cnbc_history(symbol, resolution='1W'):
+    """CNBC 차트 API → [[일수, 종가], ...]  예: cnbc_history('.DJUSSC') (주봉, 2000년 2월~)"""
+    end = utc_now() + datetime.timedelta(days=1)
+    d = get_json(f'https://ts-api.cnbc.com/harmony/app/bars/{urllib.parse.quote(symbol)}/{resolution}/19900101000000/{end:%Y%m%d}000000/adjusted/EST5EDT.json')
     out = {}
-    for line in get_text(url).splitlines()[1:]:
-        p = [x.strip() for x in line.split(',')]
-        if len(p) >= 5:
-            try:
-                d = datetime.datetime.strptime(p[0], '%m/%d/%y').replace(tzinfo=datetime.timezone.utc)
-                c = float(p[4])
-                if c > 0:
-                    out[int(d.timestamp()) // 86400] = round(c, 2)
-            except ValueError:
-                pass
-    return [[d, out[d]] for d in sorted(out)]
+    for b in ((d.get('barData') or {}).get('priceBars') or []):
+        try:
+            day = datetime.datetime.strptime(str(b['tradeTime'])[:8], '%Y%m%d').replace(tzinfo=datetime.timezone.utc)
+            c = float(b['close'])
+            if c > 0:
+                out[int(day.timestamp()) // 86400] = round(c, 2)
+        except (KeyError, ValueError, TypeError):
+            pass
+    return [[k, out[k]] for k in sorted(out)]
 
 
-def stooq_history(symbol):
-    """stooq 주봉 CSV → [[일수, 종가], ...] (야후 과거 데이터가 없을 때 보조)"""
-    txt = get_text(f'https://stooq.com/q/d/l/?s={urllib.parse.quote(symbol)}&i=w')
-    out = []
-    for line in txt.splitlines()[1:]:
-        p = line.split(',')
-        if len(p) >= 5:
-            try:
-                d = datetime.datetime.strptime(p[0], '%Y-%m-%d').replace(tzinfo=datetime.timezone.utc)
-                c = float(p[4])
-                if c > 0:
-                    out.append([int(d.timestamp()) // 86400, round(c, 2)])
-            except ValueError:
-                pass
-    return out
+def cnbc_quote(symbol):
+    """CNBC 시세 API → build_quote 와 같은 형식"""
+    d = get_json('https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=' + urllib.parse.quote(symbol)
+                 + '&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1&output=json&events=1')
+    q = ((d.get('FormattedQuoteResult') or {}).get('FormattedQuote') or [{}])[0]
+    price = float(str(q.get('last', '')).replace(',', '') or 0)
+    if price <= 0:
+        raise ValueError('CNBC 값 없음')
+    prev = q.get('previous_day_closing') or q.get('previous_close')
+    prev = float(str(prev).replace(',', '')) if prev else None
+    t = q.get('last_time')
+    ts = int(datetime.datetime.strptime(t, '%Y-%m-%dT%H:%M:%S.%f%z').timestamp()) if t else int(time.time())
+    return {'price': round(price, 4), 'prev': prev, 'time': ts, 'currency': 'USD', 'daily': [[ts, round(price, 4)]]}
 
 
 def fear_greed():
@@ -636,7 +494,8 @@ def main():
     for sym in QUOTES:
         sources = ([('네이버', lambda: naver_quote(NAVER_INDEX[sym]))] if sym in NAVER_INDEX else []) + \
                   [('야후', lambda: build_quote(yahoo_chart(sym, 'range=1mo&interval=1d')))] + \
-                  ([('트레이딩뷰', lambda: tv_quote(ALT_QUOTE[sym]['tv'])),
+                  ([('CNBC', lambda: cnbc_quote(ALT_QUOTE[sym]['cnbc'])),
+                    ('트레이딩뷰', lambda: tv_quote(ALT_QUOTE[sym]['tv'])),
                     ('구글', lambda: google_quote(ALT_QUOTE[sym]['google']))] if sym in ALT_QUOTE else [])
         errs, ok = [], False
         for name, fn in sources:
@@ -689,9 +548,7 @@ def main():
                     print(f'  {sym} 네이버 히스토리 실패: {e}')
             if len(ypts) <= 50 and sym in ALT_QUOTE:      # 야후 과거 데이터가 없거나 너무 짧을 때 (예: ^DJUSSC)
                 alt = ALT_QUOTE[sym]
-                for name, fn in (('트레이딩뷰', lambda: tv_history(alt['tv'], '1W', 2000)),
-                                 ('WSJ', lambda: wsj_history(alt['wsj'], HIST_YEARS)),
-                                 ('stooq', lambda: stooq_history(alt['stooq']))):
+                for name, fn in (('CNBC', lambda: cnbc_history(alt['cnbc'], '1W')),):
                     try:
                         got = fn()
                         print(f'  {sym} 야후 히스토리 {len(ypts)}개 → {name} {len(got)}개')
