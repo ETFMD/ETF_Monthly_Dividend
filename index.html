@@ -264,11 +264,11 @@
     padding:0 !important; border-left:none !important; border-right:none !important;
     overflow:hidden !important; white-space:nowrap; font-size:0 !important; }
   /* 상세 내역 테이블 컨테이너 크기 고정 */
-  #detail-monthly, #sol-detail-monthly, #tiger-detail-monthly, #tigerdiv-detail-monthly {
+  #detail-monthly, #sol-detail-monthly, #tiger-detail-monthly, #tigerdiv-detail-monthly, #tigersemi-detail-monthly {
     width: 100%; box-sizing: border-box;
   }
   #detail-monthly .table-scroll, #sol-detail-monthly .table-scroll,
-  #tiger-detail-monthly .table-scroll, #tigerdiv-detail-monthly .table-scroll {
+  #tiger-detail-monthly .table-scroll, #tigerdiv-detail-monthly .table-scroll, #tigersemi-detail-monthly .table-scroll {
     width: 100%; box-sizing: border-box; overflow-x: auto; overflow-y: visible;
   }
   table { width:100%; border-collapse:collapse; font-size:12px; }
@@ -972,7 +972,7 @@
 
 
   /* 차트 acc-body 열렸을 때 좌우 여백 */
-  #sol-acc-chart, #tiger-acc-chart, #tigerdiv-acc-chart {
+  #sol-acc-chart, #tiger-acc-chart, #tigerdiv-acc-chart, #tigersemi-acc-chart {
     padding-left: 20px;
     padding-right: 20px;
   }
@@ -3539,6 +3539,513 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   </div>
 </div><!-- /page-tiger -->
 
+  <!-- ── TIGER 반도체TOP10커버드콜액티브 페이지 ── -->
+  <div class="app-page" id="page-tigersemi">
+
+  <div class="header">
+    <div class="header-left">
+      <span class="badge">WEEKLY COVERED CALL ETF</span>
+      <h1>TIGER <span>반도체TOP10커버드콜액티브</span> <span class="etf-ticker etf-ticker-h1">0177R0</span></h1>
+      <p class="subtitle">분배 시뮬레이터 - 투자 금액과 기간을 설정하여 예상 분배금을 확인하세요.<br>운용수수료 : 연 0.45% &nbsp;|&nbsp; 과거 지급 내역 기준 : 콜옵션(비과세, 연 16%) + 배당금(과세, 연 2%) = 연 18%</p>
+      <!-- 현재가 패널 -->
+      <div style="display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:baseline;gap:8px;flex-shrink:0;">
+          <span style="font-size:11px;color:var(--text3);">현재가</span>
+          <span id="tigersemi-kodex-price-val" style="font-family:var(--mono);font-size:22px;font-weight:500;color:var(--accent);">—</span>
+          <span style="font-size:11px;color:var(--text3);">원</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:nowrap;flex:1;min-width:0;">
+          <div style="display:flex;flex-direction:column;gap:2px;min-width:0;">
+            <span id="tigersemi-kodex-price-date" style="font-size:11px;color:var(--text3);white-space:nowrap;">—</span>
+            <span id="tigersemi-kodex-price-src"  style="font-size:10px;color:var(--text3);white-space:nowrap;">클릭하여 갱신</span>
+          </div>
+          <button onclick="tigersemiFetchPrice()" id="tigersemi-kodex-refresh-btn"
+            style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;flex-shrink:0;">
+            <span id="tigersemi-kodex-refresh-icon">↺</span> 갱신
+          </button>
+          <span id="tigersemi-kodex-loading" style="display:none;font-size:12px;color:var(--text3);">⏳</span>
+        </div>
+      </div>
+    </div>
+    <div class="mode-toggle" style="flex-wrap:wrap;">
+      <button class="mode-btn" id="tigersemi-mode-receive" onclick="tigersemiSetMode('receive',this)" style="white-space:normal;line-height:1.3;">분배금<br>수령</button>
+      <button class="mode-btn active" id="tigersemi-mode-reinvest" onclick="tigersemiSetMode('reinvest',this)" style="white-space:normal;line-height:1.3;">분배금<br>재투자</button>
+      <button class="mode-btn" id="tigersemi-mode-partial" onclick="tigersemiSetMode('partial',this)" style="white-space:normal;line-height:1.3;">분배금 일부<br>재투자</button>
+    </div>
+  </div>
+
+  <!-- 요약 바 -->
+  <div class="summary-bar">
+    <div class="sum-cell">
+      <div class="sum-cell-label">1년차 연간 <span class="txt-div">분배금</span></div>
+      <div class="sum-cell-val" id="tigersemi-s-annual">—</div>
+      <div class="sum-cell-sub"  id="tigersemi-s-weekly">월간 —</div>
+    </div>
+    <div class="sum-cell">
+      <div class="sum-cell-label" id="tigersemi-s-label2">N년차 연간 분배금</div>
+      <div class="sum-cell-val red"   id="tigersemi-s-final">—</div>
+      <div class="sum-cell-sub"   id="tigersemi-s-final-sub">월간 —</div>
+    </div>
+    <div class="sum-cell">
+      <div class="sum-cell-label">누적 수령 <span class="txt-div">분배금</span></div>
+      <div class="sum-cell-val" id="tigersemi-s-total">—</div>
+      <div class="sum-cell-sub"      id="tigersemi-s-total-sub">수익률 —</div>
+    </div>
+    <div class="sum-cell">
+      <div class="sum-cell-label" id="tigersemi-s-port-label">N년차 종료 자산</div>
+      <div class="sum-cell-val red"   id="tigersemi-s-port">—</div>
+      <div class="sum-cell-sub"   id="tigersemi-s-port-sub">원금 대비 —배</div>
+    </div>
+    <div class="sum-cell">
+      <div class="sum-cell-label">연평균 자산 상승률</div>
+      <div class="sum-cell-val" id="tigersemi-s-cagr">—</div>
+      <div class="sum-cell-sub"       id="tigersemi-s-cagr-sub">월 평균 —</div>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <!-- ── 왼쪽: 설정 ── -->
+    <div class="card" style="padding-top:8px;padding-bottom:12px;">
+
+
+      <!-- 일부 재투자 비율 (partial 모드에서만 표시) -->
+      <div id="tigersemi-partial-ratio-block" style="display:none;background:var(--bg3);border:1px solid rgba(49,130,246,0.2);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
+        <div class="slider-header" style="margin-bottom:8px;">
+          <span class="slider-label">재투자 비율</span>
+          <div class="num-pill"><input class="num-input" id="tigersemi-ni-partial" type="number" min="1" max="99" step="1" value="50" style="width:60px;" oninput="tigersemiSyncPartial()"><span class="num-unit">%</span></div>
+        </div>
+        <input type="range" id="tigersemi-sl-partial" min="1" max="99" step="1" value="50" style="background:rgba(49,130,246,0.25);" oninput="document.getElementById('tigersemi-ni-partial').value=this.value; tigersemiSyncPartial();">
+        <p style="font-size:11px;color:var(--text3);margin-top:6px;" id="tigersemi-partial-desc">분배금의 50%는 재투자, 50%는 수령</p>
+      </div>
+      <!-- ① 투자 조건 설정 -->
+      <div class="acc-header" onclick="toggleAcc('tigersemi-acc-invest', this)">
+        <span class="acc-title">투자 조건 설정</span>
+        <span class="acc-arrow open">▼</span>
+      </div>
+      <div class="acc-body default-open" id="tigersemi-acc-invest">
+      <div class="slider-block">
+        <div class="slider-header">
+          <span class="slider-label">투자 금액</span>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <div class="num-pill" style="flex-shrink:0;">
+              <input class="num-input comma-input" id="tigersemi-ni-amount" type="text" inputmode="numeric" value="100,000,000"
+                     style="padding-right:8px;width:110px;"
+                     oninput="simOnInput(this)" onblur="simOnBlur(this)">
+            </div>
+            <div class="unit-tabs">
+              <button class="unit-btn" data-field="amount" data-unit="eok" onclick="setFancyUnit('amount','eok',this)" data-unit="eok">억원</button>
+              <button class="unit-btn" data-field="amount" data-unit="man" onclick="setFancyUnit('amount','man',this)" data-unit="man">만원</button>
+              <button class="unit-btn active" data-field="amount" data-unit="won" onclick="setFancyUnit('amount','won',this)">원</button>
+              <button class="unit-btn" data-field="amount" data-unit="joo" onclick="setFancyUnit('amount','joo',this)">주</button>
+            </div>
+          </div>
+        </div>
+        <input type="range" id="tigersemi-sl-amount" min="1000000" max="500000000" step="1000000" value="100000000"
+               oninput="simOnSlider(this)">
+      </div>
+
+      <div class="slider-block">
+        <div class="slider-header">
+          <span class="slider-label">투자 기간</span>
+          <div class="num-pill">
+            <input class="num-input" id="tigersemi-ni-years" type="number" min="1" max="30" step="1" value="5"
+                   oninput="tigersemiSyncToSlider('years')"" onblur="tigersemiValidateNum('years')">
+            <span class="num-unit">년</span>
+          </div>
+        </div>
+        <input type="range" id="tigersemi-sl-years" min="1" max="30" step="1" value="5"
+               oninput="tigersemiSyncToNum('years', 1, 0)">
+      </div>
+
+      <div class="slider-block">
+        <div class="slider-header">
+          <span class="slider-label">예상 연간 <span class="txt-div">분배</span>율</span>
+          <div class="num-pill">
+            <input class="num-input" id="tigersemi-ni-rate" type="number" min="0.1" max="50" step="0.5" value="18.0"
+                   oninput="tigersemiSyncToSlider('rate')" onblur="tigersemiValidateNum('rate')">
+            <span class="num-unit">%</span>
+          </div>
+        </div>
+        <input type="range" id="tigersemi-sl-rate" min="1" max="30" step="0.5" value="18"
+               oninput="tigersemiSyncToNum('rate', 1, 1)">
+      </div>
+
+      <div class="slider-block">
+        <div class="slider-header">
+          <span class="slider-label">연간 주가 변동률</span>
+          <div class="num-pill">
+            <input class="num-input" id="tigersemi-ni-growth" type="number" min="-20" max="30" step="0.5" value="5.0"
+                   oninput="tigersemiSyncToSlider('growth')"" onblur="tigersemiValidateNum('growth')">
+            <span class="num-unit">%</span>
+          </div>
+        </div>
+        <input type="range" id="tigersemi-sl-growth" min="-5" max="10" step="0.5" value="5"
+               oninput="tigersemiSyncToNum('growth', 1, 1)">
+      </div>
+
+      </div><!-- /acc-invest -->
+
+      <!-- ② 매월 적립식 투자 -->
+      <div class="acc-header" onclick="toggleAcc('tigersemi-acc-dca', this)">
+        <span class="acc-title">매월 적립식 투자 설정</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body" id="tigersemi-acc-dca">
+
+      <!-- 적립식 ON/OFF 토글 -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <span class="slider-label">매월 추가 투자</span>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <span style="font-size:12px;color:var(--text3);" id="tigersemi-dca-off-label">OFF</span>
+          <div class="switch" id="tigersemi-dca-switch" onclick="tigersemiToggleDCA()">
+            <div class="switch-thumb" id="tigersemi-switch-thumb"></div>
+          </div>
+          <span style="font-size:12px;color:var(--text3);" id="tigersemi-dca-on-label">ON</span>
+        </label>
+      </div>
+
+      <!-- 적립 금액 슬라이더 (DCA ON일 때만 활성) -->
+      <div class="slider-block" id="tigersemi-dca-block" style="opacity:0.3;pointer-events:none;transition:opacity 0.2s;">
+        <div class="slider-header">
+          <span class="slider-label">월 적립 금액</span>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <div class="num-pill" style="flex-shrink:0;">
+              <input class="num-input comma-input" id="tigersemi-ni-monthly" type="text" inputmode="numeric" value="1,000,000"
+                     style="padding-right:8px;width:100px;"
+                     oninput="simOnInput(this)" onblur="simOnBlur(this)">
+            </div>
+            <div class="unit-tabs">
+              <button class="unit-btn" data-field="monthly" data-unit="eok" onclick="setFancyUnit('monthly','eok',this)">억원</button>
+              <button class="unit-btn" data-field="monthly" data-unit="man" onclick="setFancyUnit('monthly','man',this)">만원</button>
+              <button class="unit-btn active" data-field="monthly" data-unit="won" onclick="setFancyUnit('monthly','won',this)">원</button>
+            </div>
+          </div>
+        </div>
+        <input type="range" id="tigersemi-sl-monthly" min="0" max="50000000" step="100000" value="1000000"
+               oninput="simOnSlider(this)">
+        <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(49,130,246,0.12);">
+          <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">연간 추가 투자액</p>
+          <p style="font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:500;" id="tigersemi-dca-annual-label">—</p>
+        </div>
+      </div>
+
+
+      </div><!-- /acc-dca -->
+
+      <!-- ③ 분배소득세 공제 -->
+      <div class="acc-header" onclick="toggleAcc('tigersemi-acc-tax', this)">
+        <span class="acc-title">배당소득세 설정</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body" id="tigersemi-acc-tax">
+
+      <!-- 세금 ON/OFF 토글 -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <span class="slider-label">세금 공제 적용</span>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <span style="font-size:12px;color:var(--text2);" id="tigersemi-tax-off-label">OFF</span>
+          <div class="switch on" id="tigersemi-tax-switch" onclick="tigersemiToggleTax()">
+            <div class="switch-thumb"></div>
+          </div>
+          <span style="font-size:12px;color:var(--accent);" id="tigersemi-tax-on-label">ON</span>
+        </label>
+      </div>
+
+      <!-- 세율 슬라이더 -->
+      <div class="slider-block" id="tigersemi-tax-block" style="opacity:1;pointer-events:auto;transition:opacity 0.2s;">
+        <div class="slider-header">
+          <span class="slider-label">배당소득세율</span>
+          <div class="num-pill">
+            <input class="num-input" id="tigersemi-ni-tax" type="number" min="0" max="49.5" step="0.0001" value="15.4"
+                   oninput="tigersemiSyncToSlider('tax')" onblur="tigersemiValidateNum('tax')">
+            <span class="num-unit">%</span>
+          </div>
+        </div>
+        <input type="range" id="tigersemi-sl-tax" min="0" max="49.5" step="0.1" value="15.4"
+               oninput="tigersemiSyncToNum('tax', 1, 4); if(taxMode==='manual') _manualTaxValue=document.getElementById('tigersemi-ni-tax').value;">
+        <!-- 과세 방식 탭 -->
+        <div class="tax-mode-tabs">
+          <button class="tax-mode-tab active" id="tigersemi-ttab-manual"   onclick="tigersemiSetTaxMode('manual',this)">직접 입력</button>
+          <button class="tax-mode-tab"        id="tigersemi-ttab-bracket"  onclick="tigersemiSetTaxMode('bracket',this)">과세표준 계산</button>
+        </div>
+
+        <!-- ── 직접 입력 패널 ── -->
+        <div id="tigersemi-tax-panel-manual" style="margin-top:10px;">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="preset-btn" onclick="setTaxPreset(15.4, this)">일반 15.4%</button>
+            <button class="preset-btn" onclick="setTaxPreset(9.9, this)">소득세 9.9%</button>
+            <button class="preset-btn" onclick="setTaxPreset(49.5, this)">금융종합 49.5%</button>
+          </div>
+        </div>
+
+        <!-- ── 과세표준 계산 패널 ── -->
+        <div id="tigersemi-tax-panel-bracket" style="display:none;margin-top:10px;">
+          <!-- 분리과세 / 종합과세 선택 -->
+          <div class="tax-type-toggle">
+            <button class="tax-type-btn active" id="tigersemi-ttype-separate"      onclick="tigersemiSetTaxType('separate',this)">분리과세</button>
+            <button class="tax-type-btn"        id="tigersemi-ttype-comprehensive" onclick="tigersemiSetTaxType('comprehensive',this)">금융소득 종합과세</button>
+          </div>
+
+          <!-- 분리과세 안내 -->
+          <div id="tigersemi-tax-separate-info">
+            <div style="background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(240,68,82,0.15);font-size:11px;color:var(--text3);line-height:1.8;">
+              금융소득(이자+배당) 연 <span style="color:#f04452;font-weight:500;">2,000만원 이하</span>일 때 선택<br>
+              원천징수세율 <span style="color:#f04452;font-weight:500;">14% + 지방소득세 1.4% = 15.4%</span> 로 종결<br>
+              <span style="color:var(--text3);">→ 세율 15.4% 자동 적용</span>
+            </div>
+          </div>
+
+          <!-- 종합과세 패널 -->
+          <div id="tigersemi-tax-comprehensive-info" style="display:none;">
+            <!-- 다른 소득 과세표준 입력 -->
+            <div style="margin-bottom:10px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <span style="font-size:12px;color:var(--text2);">다른 종합소득 과세표준</span>
+                <div style="display:flex;align-items:center;gap:4px;">
+                  <div class="num-pill" style="flex-shrink:0;">
+                    <input class="num-input comma-input" id="tigersemi-ni-otherincome" type="text" inputmode="numeric" value="50,000,000"
+                           style="padding-right:8px;width:90px;"
+                           oninput="simOnInput(this)" onblur="simOnBlur(this)">
+                  </div>
+                  <div class="unit-tabs">
+                    <button class="unit-btn" data-field="otherincome" data-unit="eok" onclick="setFancyUnit('otherincome','eok',this)" data-unit="eok">억원</button>
+                    <button class="unit-btn" data-field="otherincome" data-unit="man" onclick="setFancyUnit('otherincome','man',this)" data-unit="man">만원</button>
+                    <button class="unit-btn active" data-field="otherincome" data-unit="won" onclick="setFancyUnit('otherincome','won',this)">원</button>
+                  </div>
+                </div>
+              </div>
+              <p style="font-size:10px;color:var(--text3);line-height:1.6;">근로·사업소득 등 배당 외 다른 소득의 종합소득 과세표준을 입력하세요. (공제액 차감 후 금액)</p>
+            </div>
+
+            <!-- 세율 구간 테이블 -->
+            <p style="font-size:10px;color:var(--text3);margin-bottom:4px;letter-spacing:0.05em;">종합소득세 과세구간 (지방소득세 포함)</p>
+            <table class="bracket-table" id="tigersemi-bracket-table">
+              <thead><tr><th>과세표준 구간</th><th style="text-align:right;">세율</th><th style="text-align:right;">실효세율</th></tr></thead>
+              <tbody>
+                <tr data-max="14000000">  <td>1,400만원 이하</td>     <td style="text-align:right;">6.6%</td>  <td style="text-align:right;font-family:var(--mono);" class="eff-rate"></td></tr>
+                <tr data-max="50000000">  <td>5,000만원 이하</td>     <td style="text-align:right;">16.5%</td> <td style="text-align:right;font-family:var(--mono);" class="eff-rate"></td></tr>
+                <tr data-max="88000000">  <td>8,800만원 이하</td>     <td style="text-align:right;">26.4%</td> <td style="text-align:right;font-family:var(--mono);" class="eff-rate"></td></tr>
+                <tr data-max="150000000"> <td>1.5억원 이하</td>       <td style="text-align:right;">38.5%</td> <td style="text-align:right;font-family:var(--mono);" class="eff-rate"></td></tr>
+                <tr data-max="300000000"> <td>3억원 이하</td>         <td style="text-align:right;">41.8%</td> <td style="text-align:right;font-family:var(--mono);" class="eff-rate"></td></tr>
+                <tr data-max="500000000"> <td>5억원 이하</td>         <td style="text-align:right;">44%</td>   <td style="text-align:right;font-family:var(--mono);" class="eff-rate"></td></tr>
+                <tr data-max="1000000000"><td>10억원 이하</td>        <td style="text-align:right;">46.2%</td> <td style="text-align:right;font-family:var(--mono);" class="eff-rate"></td></tr>
+                <tr data-max="Infinity">  <td>10억원 초과</td>        <td style="text-align:right;">49.5%</td> <td style="text-align:right;font-family:var(--mono);" class="eff-rate"></td></tr>
+              </tbody>
+            </table>
+
+            <!-- 계산 결과 -->
+            <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(240,68,82,0.2);">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span style="font-size:11px;color:var(--text3);">1년차 기준 유효세율</span>
+                <span style="font-family:var(--mono);font-size:13px;color:#f04452;font-weight:500;" id="tigersemi-bracket-eff-rate">—</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;">
+                <span style="font-size:11px;color:var(--text3);">연도별 세율 자동 적용</span>
+                <span style="font-size:11px;color:var(--accent);">✓ 동적 계산</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 세금 요약 (공통) -->
+        <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(240,68,82,0.15);">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <p style="font-size:11px;color:var(--text3);">1년차 연간 세금</p>
+            <p style="font-family:var(--mono);font-size:12px;color:#f04452;font-weight:500;" id="tigersemi-tax-first-label">—</p>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <p style="font-size:11px;color:var(--text3);">누적 납부 세금</p>
+            <p style="font-family:var(--mono);font-size:12px;color:#f04452;font-weight:500;" id="tigersemi-tax-total-label">—</p>
+          </div>
+        </div>
+      </div>
+
+      </div><!-- /acc-tax -->
+
+      <!-- ④ KODEX 위클리 과세구조 -->
+      <div class="acc-header" onclick="toggleAcc('tigersemi-acc-kodex', this)">
+        <span class="acc-title">TIGER 반도체TOP10커버드콜액티브 과세구조 설정</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body" id="tigersemi-acc-kodex">
+
+      <!-- KODEX 과세구조 ON/OFF 토글 -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div>
+          <span class="slider-label">콜옵션 비과세 구조 적용</span>
+          <p style="font-size:10px;color:var(--text3);margin-top:2px;">분배금 중 콜옵션 수익은 비과세 처리</p>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <span style="font-size:12px;color:var(--text2);" id="tigersemi-kodex-off-label">OFF</span>
+          <div class="switch on" id="tigersemi-kodex-switch" onclick="tigersemiToggleKodex()">
+            <div class="switch-thumb"></div>
+          </div>
+          <span style="font-size:12px;color:var(--accent);" id="tigersemi-kodex-on-label">ON</span>
+        </label>
+      </div>
+
+      <!-- KODEX 구조 상세 패널 -->
+      <div id="tigersemi-kodex-block" style="opacity:1;pointer-events:auto;transition:opacity 0.2s;">
+
+        <!-- 콜옵션 비율 / 배당 비율 입력 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div style="background:var(--bg3);border-radius:8px;padding:10px;border:1px solid rgba(49,130,246,0.15);">
+            <p style="font-size:10px;color:var(--text3);margin-bottom:6px;">콜옵션 수익 (비과세)</p>
+            <div class="num-pill" style="width:100%;">
+              <input class="num-input" id="tigersemi-ni-calloption" type="number" min="0" max="99" step="0.1" value="16"
+                     style="width:100%;color:var(--accent);" oninput="tigersemiOnKodexRatioChange()">
+              <span class="num-unit">%</span>
+            </div>
+          </div>
+          <div style="background:var(--bg3);border-radius:8px;padding:10px;border:1px solid rgba(240,68,82,0.15);">
+            <p style="font-size:10px;color:var(--text3);margin-bottom:6px;">배당금 (과세 15.4%)</p>
+            <div class="num-pill" style="width:100%;">
+              <input class="num-input" id="tigersemi-ni-divportion" type="number" min="0" max="99" step="0.1" value="2"
+                     style="width:100%;color:#f04452;" oninput="tigersemiOnKodexRatioChange()">
+              <span class="num-unit">%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 유효세율 계산 결과 -->
+        <div class="kodex-struct-box">
+          <div class="kodex-struct-row">
+            <span class="kodex-struct-label">총 분배율</span>
+            <span class="kodex-struct-val result" id="tigersemi-kodex-total-rate">17.0%</span>
+          </div>
+          <div class="kodex-struct-row">
+            <span class="kodex-struct-label">콜옵션 (비과세)</span>
+            <span class="kodex-struct-val nontaxable" id="tigersemi-kodex-call-display">15.0% → 세금 없음</span>
+          </div>
+          <div class="kodex-struct-row">
+            <span class="kodex-struct-label">배당금 (과세 15.4%)</span>
+            <span class="kodex-struct-val taxable" id="tigersemi-kodex-div-display">2.0% → 15.4% 적용</span>
+          </div>
+          <div style="border-top:1px solid rgba(var(--fg-rgb),0.06);margin:8px 0;"></div>
+          <div class="kodex-struct-row">
+            <span class="kodex-struct-label" style="font-weight:500;color:var(--text2);">실효세율 (전체 대비)</span>
+            <span class="kodex-struct-val result" style="font-size:14px;color:var(--text);" id="tigersemi-kodex-eff-rate">—</span>
+          </div>
+          <div class="kodex-struct-row">
+            <span class="kodex-struct-label">과세표준 배당금액</span>
+            <span class="kodex-struct-val taxable" id="tigersemi-kodex-taxbase-label">—</span>
+          </div>
+        </div>
+      </div>
+
+      </div><!-- /acc-kodex -->
+
+      <!-- ⑤ 월 분배금 목표 역산 -->
+      <div class="acc-header" onclick="toggleAcc('tigersemi-acc-target', this)">
+        <span class="acc-title" id="tigersemi-acc-target-title">월 분배금 목표 역산</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body" id="tigersemi-acc-target">
+
+      <div class="slider-block">
+        <div class="slider-header">
+          <span class="slider-label">목표 월 분배금</span>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <div class="num-pill" style="flex-shrink:0;">
+              <input class="num-input comma-input" id="tigersemi-ni-target" type="text" inputmode="numeric" value="5,000,000"
+                     style="padding-right:8px;width:100px;"
+                     oninput="simOnInput(this)" onblur="simOnBlur(this)">
+            </div>
+            <div class="unit-tabs">
+              <button class="unit-btn" data-field="target" data-unit="eok" onclick="setFancyUnit('target','eok',this)">억원</button>
+              <button class="unit-btn" data-field="target" data-unit="man" onclick="setFancyUnit('target','man',this)">만원</button>
+              <button class="unit-btn active" data-field="target" data-unit="won" onclick="setFancyUnit('target','won',this)">원</button>
+            </div>
+          </div>
+        </div>
+        <input type="range" id="tigersemi-sl-target" min="100000" max="10000000" step="100000" value="5000000"
+               oninput="simOnSlider(this)">
+      </div>
+
+      <div class="target-box">
+        <p style="font-size:11px;color:var(--text3);margin-bottom:6px;">필요 투자 원금</p>
+        <p style="font-family:var(--mono);font-size:18px;color:var(--accent);font-weight:500;" id="tigersemi-target-result">—</p>
+        <p style="font-size:11px;color:var(--text3);margin-top:3px;" id="tigersemi-target-sub">현재 분배율 기준</p>
+      </div>
+
+      <div class="notice">
+        ※ TIGER 반도체TOP10커버드콜액티브 과거 지급 기준 분배율입니다.<br>
+        ※ 세전 수치이며 분배소득세 15.4%가 별도 적용됩니다.<br>
+        ※ 과거 수익률이 미래 수익률을 보장하지 않습니다.
+      </div>
+      </div><!-- /acc-target -->
+    </div>
+
+    <!-- ── 오른쪽: 차트·표 ── -->
+    <div style="display:flex;flex-direction:column;gap:20px;">
+
+      <!-- 차트 카드 -->
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div class="acc-header" onclick="toggleAcc('tigersemi-acc-chart', this)"
+             style="border:none;background:transparent;margin:0;border-radius:0;padding:16px 20px;">
+          <span class="acc-title"><span class="txt-div">분배금</span> 추이</span>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="chart-tabs" onclick="event.stopPropagation()">
+              <button class="chart-tab active" id="tigersemi-tab-annual" onclick="tigersemiSetChartTab('annual',this)">연간</button>
+              <button class="chart-tab"        id="tigersemi-tab-monthly" onclick="tigersemiSetChartTab('monthly',this)">월간</button>
+            </div>
+            <span class="acc-arrow open">▼</span>
+          </div>
+        </div>
+        <div class="acc-body default-open" id="tigersemi-acc-chart">
+          <!-- 범례 -->
+          <div class="legend" id="tigersemi-chartLegend">
+            <div class="legend-item" id="tigersemi-leg-div">
+              <div class="legend-dot" style="background:#3182f6;"></div>
+              <span id="tigersemi-leg-div-label">연간 <span class="txt-div">분배금</span></span>
+            </div>
+            <div class="legend-item" id="tigersemi-leg-port" style="display:none;">
+              <div class="legend-dot" style="background:#3182f6;"></div>포트폴리오 가치
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="tigersemi-mainChart" role="img" aria-label="분배금 추이 차트"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- 테이블 카드 -->
+      <div class="card">
+        <p class="card-title" id="tigersemi-detail-title">연/월간 상세 내역</p>
+
+        <!-- 연도별 테이블 -->
+
+        <div id="tigersemi-detail-monthly">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
+            <button id="btn-expand-tigersemi" onclick="toggleAllYears('tigersemi-monthlyTableBody',this)"
+              style="font-size:11px;color:var(--text3);background:var(--bg3);border:1px solid var(--card-border);border-radius:6px;padding:3px 10px;cursor:pointer;">▶ 전체 펼치기</button>
+          </div>
+          <div class="table-scroll" style="max-height:360px;overflow-y:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>기간</th>
+                  <th>시작 자산</th>
+                  <th id="tigersemi-mth-deposit" style="color:var(--accent);">연/월 적립금</th>
+                  <th id="tigersemi-mth-div">연/월 <span class="txt-div">분배</span> (세후)</th>
+                  <th id="tigersemi-mth-taxbase" style="display:none;color:#fe9800;">연/월 과세표준</th>
+                  <th id="tigersemi-mth-tax" style="display:none;color:#f04452;">연/월 세금</th>
+                  <th id="tigersemi-mth-price-change" style="color:#3182f6;">연/월 주가 변동</th>
+                  <th>누적 자산</th>
+                  <th>보유 수량</th>
+                </tr>
+              </thead>
+              <tbody id="tigersemi-monthlyTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div><!-- /page-tigersemi -->
+
   <!-- ── 환율 계산기 페이지 ── -->
   <div class="app-page" id="page-fx">
     <div class="header">
@@ -5543,7 +6050,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
    목차 — 수정할 때는 아래 [태그]로 검색해서 해당 블록만 보면 됩니다
    [SIM-UNIT]  분배 시뮬레이터 공용 단위·입력·슬라이더 (4개 시뮬레이터 공통)
    [KODEX]     KODEX 200 타겟위클리 = 전역 update()/renderMonthlyTable()
-   [SOL] [TIGER] [TIGERDIV]  각 시뮬레이터 IIFE (getVWon/setDispFromWon은 [SIM-UNIT] 위임)
+   [SOL] [TIGER] [TIGERDIV] [TIGERSEMI]  각 시뮬레이터 IIFE (getVWon/setDispFromWon은 [SIM-UNIT] 위임)
    [NAV]       탭 그룹 드롭다운·switchSubTab (탭 진입 시 자동 조회 훅 포함)
    [COMPOUND] [LOAN] [CAGR] [FX] [HEALTH] [RATE]  금융 계산기
    [KOSPI] [KOSPI200] [KOSDAQ] [US-INDEX](나스닥·나스닥100·다우·S&P500·필라델피아 반도체) [PERIOD] [KOSPI-FETCH]  지수 성장률
@@ -5857,7 +6364,7 @@ function setTaxPreset(v, btn) {
   /* 어느 페이지 버튼인지 파악 */
   var page = btn ? btn.closest('.app-page') : null;
   var pageId = page ? page.id : 'page-simulator';
-  var prefixMap = {'page-simulator':'', 'page-sol':'sol-', 'page-tiger':'tiger-', 'page-tigerdiv':'tigerdiv-'};
+  var prefixMap = {'page-simulator':'', 'page-sol':'sol-', 'page-tiger':'tiger-', 'page-tigerdiv':'tigerdiv-', 'page-tigersemi':'tigersemi-'};
   var prefix = prefixMap[pageId] !== undefined ? prefixMap[pageId] : '';
 
   var ni = document.getElementById(prefix + 'ni-tax');
@@ -5874,6 +6381,7 @@ function setTaxPreset(v, btn) {
   } else if (pageId === 'page-sol'      && window.solUpdate)      { window.solUpdate(); }
   else if (pageId === 'page-tiger'    && window.tigerUpdate)    { window.tigerUpdate(); }
   else if (pageId === 'page-tigerdiv' && window.tigerdivUpdate) { window.tigerdivUpdate(); }
+  else if (pageId === 'page-tigersemi' && window.tigersemiUpdate) { window.tigersemiUpdate(); }
 }
 
 function setTaxMode(mode, btn) {
@@ -6195,8 +6703,8 @@ function setChartTab(tab, btn) {
    · 슬라이더: oninput="simOnSlider(this)"   (슬라이더 값은 항상 원 단위)
    · 단위버튼: onclick="setFancyUnit(field, unit, this)"  (unit: eok|man|won|joo)
 ════════════════════════════════════════════════════════════ */
-var SIM_PREFIX = { 'page-simulator': '', 'page-sol': 'sol-', 'page-tiger': 'tiger-', 'page-tigerdiv': 'tigerdiv-' };
-var SIM_UPDATE = { 'page-simulator': 'update', 'page-sol': 'solUpdate', 'page-tiger': 'tigerUpdate', 'page-tigerdiv': 'tigerdivUpdate' };
+var SIM_PREFIX = { 'page-simulator': '', 'page-sol': 'sol-', 'page-tiger': 'tiger-', 'page-tigerdiv': 'tigerdiv-', 'page-tigersemi': 'tigersemi-' };
+var SIM_UPDATE = { 'page-simulator': 'update', 'page-sol': 'solUpdate', 'page-tiger': 'tigerUpdate', 'page-tigerdiv': 'tigerdivUpdate', 'page-tigersemi': 'tigersemiUpdate' };
 var fancyUnit = {};
 let cpdMode = 'simple'; let cpdTaxOn = false;   /* 세금 설정 기본값: OFF */ let cpdChart = null; let cpdChartTab = 'val';
 const cpdUnit = { principal: 'won', monthly: 'won' };
@@ -8153,6 +8661,386 @@ update();
 /* ── TIGER END ── */
 
 /* ════════════════════════════════════════
+   [TIGERSEMI] TIGER 반도체TOP10커버드콜액티브 (0177R0.KS)
+════════════════════════════════════════ */
+(function() {
+  const S = window._tigersemiState = {
+    investMode: 'reinvest',
+    dcaOn:    false,
+    taxOn:    true,
+    kodexOn:  true,
+    taxMode:     'manual',
+    bracketType: 'separate',
+  };
+
+  function $id(id)  { return document.getElementById('tigersemi-' + id); }
+  function getV(id) { const el=$id(id); return el ? parseFloat(el.value.replace(/,/g,''))||0 : 0; }
+
+  /* ── 단위 인식 값 읽기/쓰기 헬퍼 ── */
+  
+  function getVWon(fieldId) { return simReadWon('page-tigersemi', fieldId.replace('ni-', '')); }  /* → [SIM-UNIT] */
+  function setDispFromWon(fieldId, won) { simWriteWon('page-tigersemi', fieldId.replace('ni-', ''), won); }
+  function fmt(n)   { return Math.round(n).toLocaleString('ko-KR'); }
+
+  // ── 현재가 조회 ──────────────────────────
+  let _fetching = false;
+  window.tigersemiFetchPrice = async function() {
+    if (_fetching) return;
+    _fetching = true;
+    const btn  = $id('kodex-refresh-btn');
+    const icon = $id('kodex-refresh-icon');
+    const de   = $id('kodex-price-date');
+    if (btn)  btn.disabled = true;
+    if (icon) icon.textContent = '⏳';
+    if (de)   de.textContent = '조회 중...';
+    try {
+      
+      const yf = 'https://query1.finance.yahoo.com/v8/finance/chart/0177R0.KS?interval=1d&range=5d';
+      for (const pu of ['https://corsproxy.io/?'+encodeURIComponent(yf),'https://api.allorigins.win/get?url='+encodeURIComponent(yf)]) {
+        try {
+          const r = await fetch(pu, {cache:'no-cache'});
+          if (!r.ok) continue;
+          let txt = await r.text();
+          try { const w=JSON.parse(txt); if(w.contents) txt=w.contents; } catch {}
+          const j = JSON.parse(txt);
+          const m = j?.chart?.result?.[0]?.meta;
+          const p = m?.regularMarketPrice || m?.previousClose;
+          if (p) { applyPrice(p, 'Yahoo Finance'); return; }
+        } catch {}
+      }
+      if (de) de.textContent = '조회 실패 — ↺ 재시도';
+    } finally {
+      _fetching = false;
+      if (btn)  btn.disabled = false;
+      if (icon) icon.textContent = '↺';
+    }
+  };
+
+  function applyPrice(price, src) {
+    price = parseFloat(price);
+    if (!price || price < 1000 || price > 200000) return;
+    const el = $id('kodex-price-val');
+    if (el) el.textContent = price.toLocaleString('ko-KR');
+    const now = new Date();
+    const ns  = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'
+               +String(now.getDate()).padStart(2,'0')+' '+now.toTimeString().slice(0,8);
+    const de  = $id('kodex-price-date');
+    const se  = $id('kodex-price-src');
+    if (de) de.textContent = ns + ' 기준';
+    if (se) se.textContent = '출처: ' + src + ' (0177R0.KS)';
+    tigersemiUpdate();
+  }
+
+  // ── 계산 ──────────────────────────────────
+  let _tigersemiChartTab = 'annual';
+  let _tigersemiCache = null;
+
+  window.tigersemiOnKodexRatioChange = function() {
+    tigersemiUpdate();
+  };
+  window.tigersemiUpdate = function() {
+    const FEE  = 0.0045;
+    const rate0  = ((!isNaN(getV('ni-rate')) && getV('ni-rate') !== null) ? getV('ni-rate') : 18) / 100;
+    const rate   = Math.max(0, rate0 - FEE);
+        const amount = getVWon('ni-amount');
+    const _monthlyCheck = S.dcaOn ? getVWon('ni-monthly') : 0;
+    if (amount === 0 && _monthlyCheck === 0) {
+      [$id('s-annual'),$id('s-weekly'),$id('s-final'),$id('s-total'),$id('s-port')]
+        .forEach(e => { if(e) e.textContent='0원'; });
+      [$id('s-final-sub'),$id('s-total-sub'),$id('s-port-sub'),$id('target-sub')]
+        .forEach(e => { if(e) e.textContent=''; });
+      /* 상세 내역 tbody 초기화 */
+      var _tb = $id('monthlyTableBody') || document.getElementById('tigersemi-monthlyTableBody');
+      if (_tb) _tb.innerHTML = '';
+      _tigersemiCache = null;
+      return;
+    }
+    const years  = Math.round(getV('ni-years')) || 10;
+    const growth = (getV('ni-growth') || 0) / 100;
+    const monthly= S.dcaOn ? getVWon('ni-monthly') : 0;
+    const taxRate= S.taxOn ? (getV('ni-tax') || 15.4) / 100 : 0;
+
+    let cpPct = 0, dpPct = 0;
+    let effTax = taxRate;
+    if (S.kodexOn) {
+      cpPct  = getV('ni-calloption') || 5;
+      dpPct  = getV('ni-divportion') || 2;
+      effTax = (cpPct+dpPct) > 0 ? taxRate * dpPct/(cpPct+dpPct) : 0;
+    }
+    const keepRate = 1 - effTax;
+    const mRate    = rate / 12;
+    const mGrow    = Math.pow(1 + growth, 1/12) - 1;
+
+    let port = amount, totDiv = 0, totTax = 0, totInvest = amount, rows = [];
+    for (let y = 1; y <= years; y++) {
+      let yDiv=0, yDivG=0, yTax=0, yDeposit=0, portStart=port;
+      let mDivs=[], mPorts=[], mDeposits=[], mPortsAfter=[], mPortsEnd=[];
+      for (let m = 0; m < 12; m++) {
+        mPorts.push(Math.round(port));
+        const dep = monthly > 0 ? monthly : 0;
+        if (dep > 0) { port += dep; yDeposit += dep; totInvest += dep; }
+        mDeposits.push(dep);
+        mPortsAfter.push(Math.round(port));
+        const dG = port * mRate;
+        const dT = dG * effTax;
+        const dN = dG - dT;
+        mDivs.push(Math.round(dN));
+        yDiv += dN; yDivG += dG; yTax += dT; totDiv += dN; totTax += dT;
+        if (S.investMode === 'reinvest')       port = (port + dN) * (1 + mGrow);
+        else if (S.investMode === 'partial') {
+          const pr = (parseFloat(($id('ni-partial')||{}).value)||50)/100;
+          port = (port + dN*pr) * (1 + mGrow);
+        } else                                port = port * (1 + mGrow);
+        mPortsEnd.push(Math.round(port));
+      }
+      const m1st    = Math.round(portStart * mRate * keepRate);
+      let taxBase = yDivG;
+      if (S.kodexOn) { const tp=cpPct+dpPct; taxBase = tp>0 ? yDivG*(dpPct/tp) : 0; }
+      rows.push({ y, port:Math.round(port), portStart:Math.round(portStart),
+        div:Math.round(yDiv), divG:Math.round(yDivG), tax:Math.round(yTax),
+        taxBase:Math.round(taxBase), deposit:Math.round(yDeposit),
+        m1st, mDivs, mPorts, mDeposits, mPortsAfter, mPortsEnd, total:Math.round(totDiv) });
+    }
+
+    const r1=rows[0]||{}, rN=rows[rows.length-1]||{};
+    const cagr = rN.port>0 ? (Math.pow(rN.port/amount,1/years)-1)*100 : 0;
+    const cagrMon = Math.pow(1+cagr/100, 1/12) - 1;
+    function setT(id,v){ const el=$id(id); if(el) el.textContent=v; }
+
+    setT('s-annual',     fmt(r1.div));
+    setT('s-weekly',     '월간 ' + fmt(r1.mDivs ? r1.mDivs[11] : r1.m1st));
+    setT('s-label2',     years + '년차 연간 분배금' + (S.taxOn?' (세후)':''));
+    setT('s-final',      fmt(rN.div));
+    setT('s-final-sub',  '월간 ' + fmt(rN.mDivs ? rN.mDivs[11] : rN.m1st));
+    setT('s-total',      fmt(totDiv));
+    setT('s-total-sub',  '수익률 ' + ((totDiv/totInvest)*100).toFixed(1) + '%');
+    setT('s-port-label', years + '년차 종료 자산');
+    setT('s-port',       fmt(rN.port));
+    setT('s-port-sub',   '총 투입 ' + fmt(totInvest) + ' 대비');
+    const cagrEl = $id('s-cagr');
+    if (cagrEl) { cagrEl.textContent=(cagr>=0?'+':'')+cagr.toFixed(2)+'%'; cagrEl.className = 'sum-cell-val'; }
+    setT('s-cagr-sub',   '월 평균 '+(cagrMon>=0?'+':'')+(cagrMon*100).toFixed(3)+'%');
+    const targetV=getVWon('ni-target');
+    if (targetV > 0) { setT('target-result', fmt((targetV*12)/rate)); setT('target-sub','분배율 '+(rate0*100).toFixed(1)+'% 기준'); }
+    setT('dca-annual-label', fmt(getVWon('ni-monthly')*12) + ' / 년');
+    if (S.taxOn) { setT('tax-first-label', fmt(rows[0].tax)); setT('tax-total-label', fmt(Math.round(totTax))); }
+    if (S.kodexOn) { const tp=cpPct+dpPct; setT('kodex-eff-rate',(tp>0?(effTax*100).toFixed(2):'0.00')+'%'); setT('kodex-total-rate',tp.toFixed(1)+'%'); setT('kodex-taxbase-label',fmt(Math.round(rows[0].taxBase))); }
+
+    const thTaxbase=$id('th-taxbase'), thTax=$id('th-tax'), thDeposit=$id('th-deposit');
+    if (thTaxbase) thTaxbase.style.display = S.taxOn?'':'none';
+    if (thTax)     thTax.style.display     = S.taxOn?'':'none';
+    if (thDeposit) thDeposit.style.display = S.dcaOn?'':'none';
+    const thDiv=$id('th-div');
+    if (thDiv) thDiv.textContent = S.taxOn?'연간 분배금 (세후)':'연간 분배금';
+
+    const tbody = $id('tableBody');
+    if (tbody) {
+      tbody.innerHTML = '';
+      rows.forEach((r,i) => {
+        const tr = document.createElement('tr');
+        if (i===rows.length-1) tr.classList.add('highlight');
+        tr.innerHTML =
+          '<td>'+r.y+'년차</td><td>'+fmt(r.port)+'</td>'+
+          (S.dcaOn?'<td>'+(r.deposit>0?fmt(r.deposit):'<span style="color:var(--text3)">—</span>')+'</td>':'')+
+          '<td>'+fmt(r.div)+'</td>'+
+          (S.taxOn?'<td style="color:#fe9800;">'+fmt(r.taxBase)+'</td>':'')+
+          (S.taxOn?'<td style="color:#f04452;">'+fmt(r.tax)+'</td>':'')+
+          '<td>'+fmt(r.total)+'</td>';
+        tbody.appendChild(tr);
+      });
+    }
+    _tigersemiCache = { rows, years, rate, keepRate };
+    renderTigersemiChart(rows, years, rate, keepRate);
+    const dmEl = $id('detail-monthly');
+    if (dmEl && dmEl.style.display !== 'none') renderTigersemiMonthlyTable(_tigersemiCache);
+  };
+
+  let _tChart = null;
+  function renderTigersemiChart(rows, years, rate, keepRate) {
+    const canvas = $id('mainChart'); if (!canvas) return;
+    const legLabel=$id('leg-div-label'); if(legLabel) legLabel.textContent=_tigersemiChartTab==='annual'?'연간 분배금':'월간 분배금';
+    const legPort=$id('leg-port'); if(legPort) legPort.style.display='none';
+    let labels, datasets, type, opts;
+    if (_tigersemiChartTab === 'annual') {
+      labels=[...rows.map(r=>r.y+'년')]; datasets=[{label:'연간 분배금',data:rows.map(r=>r.div),backgroundColor:'rgba(49,130,246,0.7)',borderRadius:5,borderSkipped:false}]; type='bar'; opts=buildOpts(true,false,false);
+    } else {
+      const ml=[],md=[];
+      for(let y=0;y<years;y++) for(let m=0;m<12;m++){ml.push(m===0?(y+1)+'년차':'');md.push(rows[y].mDivs[m]);}
+      datasets=[{label:'월간 분배금',data:md,borderColor:'#3182f6',backgroundColor:'rgba(49,130,246,0.12)',fill:true,pointRadius:0,pointHoverRadius:4,borderWidth:2,tension:0.2}];
+      labels=ml; type='line'; opts=buildOpts(false,false,true);
+    }
+    if (_tChart) _tChart.destroy();
+    _tChart = new Chart(canvas, {type, data:{labels,datasets}, options:opts});
+  }
+
+  function renderTigersemiMonthlyTable(cache) {
+    const {rows,years} = cache;
+    const _priceNow = parseFloat(((document.getElementById('tigersemi-kodex-price-val')||{textContent:'0'}).textContent).replace(/[^0-9.]/g,'')) || 0;
+    const _growth = (parseFloat(($id('ni-growth')||{value:'0'}).value) || 0) / 100;
+    const tbody=$id('monthlyTableBody'); if(!tbody) return;
+    saveOpenYears(tbody);
+    tbody.innerHTML='';
+    const mthTax=$id('mth-tax'), mthTaxbase=$id('mth-taxbase'), mthDeposit=$id('mth-deposit'), mthDiv=$id('mth-div');
+    if(mthTax) mthTax.style.display=S.taxOn?'':'none';
+    if(mthTaxbase) mthTaxbase.style.display=S.taxOn?'':'none';
+    if(mthDeposit) mthDeposit.classList.toggle('col-hidden', !S.dcaOn);
+    if(mthDiv) mthDiv.textContent=S.taxOn?'연/월 분배 (세후)':'연/월 분배금';
+    const mthPriceChange = document.getElementById('tigersemi-mth-price-change');
+    const tigerCS=6+(S.dcaOn?1:0)+(S.taxOn?2:0);
+    rows.forEach((r,ri)=>{
+      const yearNum=r.y||(ri+1);
+      /* 연간 주가 변동 합산 */
+      var _yPCS = 0;
+      if (r.mPortsAfter && r.mPortsEnd && r.mDivs) {
+        var _prSY=(($id('ni-partial')||{value:'50'}).value||50)/100;
+        r.mDivs.forEach(function(md,mmi){
+          var pa=r.mPortsAfter[mmi]||0, pe=r.mPortsEnd[mmi]||0;
+          var rv=S.investMode==='reinvest'?md:(S.investMode==='partial'?Math.round(md*_prSY):0);
+          _yPCS+=(pe-pa-rv);
+        });
+      }
+      if (mthPriceChange) mthPriceChange.style.color = _yPCS < 0 ? '#f04452' : '#3182f6';
+      insertYearAccordionRow(tbody, yearNum, tigerCS, {
+        portStart:   r.portStart,
+        deposit:     r.deposit,
+        div:         r.div,
+        taxBase:     r.taxBase,
+        tax:         r.tax,
+        priceChange: Math.abs(_yPCS) <= 5 ? 0 : Math.round(_yPCS),
+        port:        r.port,
+        shares:      calcShares(r.port, _priceNow, _growth, yearNum * 12),
+        taxOn:       S.taxOn,
+        dcaOn:       S.dcaOn,
+      });
+      for(let m=0;m<12;m++){
+        const dN=r.mDivs[m]||0;        const dep=r.mDeposits?r.mDeposits[m]:0;
+        let taxBase=0, tax=0;
+        if(S.taxOn){const portM=r.mPortsAfter?r.mPortsAfter[m]:0;const mRate=cache.rate/12;const dG=portM*mRate;const cp=S.kodexOn?(parseFloat(($id('ni-calloption')||{value:'5'}).value)||5):0;const dp=S.kodexOn?(parseFloat(($id('ni-divportion')||{value:'2'}).value)||2):0;const tp=cp+dp;taxBase=S.kodexOn&&tp>0?dG*(dp/tp):dG;tax=dG-dN;}
+        var portEnd = r.mPortsEnd ? r.mPortsEnd[m] : 0;
+        var _mpa = r.mPortsAfter ? r.mPortsAfter[m] : 0;
+        var _prS = (($id('ni-partial')||{value:'50'}).value||50)/100;
+        var _rvS = S.investMode==='reinvest' ? dN : (S.investMode==='partial' ? Math.round(dN*_prS) : 0);
+        var _pcS = portEnd - _mpa - _rvS;
+        if (Math.abs(_pcS) <= 2) _pcS = 0;
+        const tr=document.createElement('tr');
+        tr.dataset.yrRow=yearNum;
+        tr.style.display='none';
+        if(m===11&&r.y===rows.length) tr.classList.add('highlight');
+        tr.innerHTML='<td style="color:var(--text3);">'+(ri*12+m+1)+'개월</td>'+'<td>'+(r.mPorts?fmt(r.mPorts[m]):'—')+'원</td>'+'<td class="'+(S.dcaOn?'':'col-hidden')+'">'+(dep>0?'<span style="color:var(--accent);">+'+fmt(dep)+'</span>':'<span style="color:var(--text3);">—</span>')+'</td>'+'<td>'+fmt(dN)+'원</td>'+(S.taxOn?'<td style="color:#fe9800;">'+fmt(Math.round(taxBase))+'원</td>':'')+(S.taxOn?'<td style="color:#f04452;">'+fmt(Math.round(tax))+'원</td>':'')+'<td style="color:'+(_pcS>=0?'#3182f6':'#f04452')+';">'+ (_pcS>=0?'+':'') + fmt(_pcS) + '원</td>'+'<td>'+(r.mPortsEnd?fmt(r.mPortsEnd[m]):'—')+'원</td>'+'<td>'+fmtShares(calcShares(r.mPortsEnd?r.mPortsEnd[m]:0,_priceNow,_growth,ri*12+m+1))+'</td>';
+        tbody.appendChild(tr);
+      }
+    });
+    restoreOpenYears(tbody);
+    try {
+      var _sc = tbody.parentElement && tbody.parentElement.parentElement;
+      if (_sc) { _sc.style.height = ''; void _sc.offsetHeight; }
+    } catch(e) {}
+  }
+
+  window.tigersemiSetMode = function(m, btn) {
+    S.investMode = m;
+    /* 분배금 모드 버튼 active 직접 제어 */
+    ['receive','reinvest','partial'].forEach(function(mode) {
+      var b = document.getElementById('tigersemi-mode-' + mode);
+      if (b) b.classList.toggle('active', mode === m);
+    });
+    const pb = $id('partial-ratio-block');
+    if (pb) pb.style.display = m === 'partial' ? 'block' : 'none';
+    tigersemiUpdate();
+  };
+  window.tigersemiSyncPartial = function() {
+    const ni=$id('ni-partial'),sl=$id('sl-partial');
+    if(sl&&ni) sl.value=ni.value;
+    const d=$id('partial-desc'); if(d) d.textContent='분배금의 '+ni.value+'%는 재투자, '+(100-ni.value)+'%는 수령';
+    tigersemiUpdate();
+  };
+  window.tigersemiToggleDCA = function() {
+    S.dcaOn=!S.dcaOn;
+    const sw=$id('dca-switch'),bl=$id('dca-block');
+    if(sw) sw.classList.toggle('on',S.dcaOn);
+    if(bl){bl.style.opacity=S.dcaOn?'1':'0.3';bl.style.pointerEvents=S.dcaOn?'auto':'none';}
+    const off=$id('dca-off-label'),on=$id('dca-on-label');
+    if(off) off.style.color=S.dcaOn?'var(--text3)':'var(--text2)';
+    if(on)  on.style.color =S.dcaOn?'var(--accent)':'var(--text3)';
+    tigersemiUpdate();
+  };
+  window.tigersemiToggleTax = function() {
+    S.taxOn=!S.taxOn;
+    const sw=$id('tax-switch'),bl=$id('tax-block');
+    if(sw) sw.classList.toggle('on',S.taxOn);
+    if(bl){bl.style.opacity=S.taxOn?'1':'0.3';bl.style.pointerEvents=S.taxOn?'auto':'none';}
+    const off=$id('tax-off-label'),on=$id('tax-on-label');
+    if(off) off.style.color=S.taxOn?'var(--text3)':'var(--text2)';
+    if(on)  on.style.color =S.taxOn?'var(--accent)':'var(--text3)';
+    tigersemiUpdate();
+  };
+  window.tigersemiToggleKodex = function() {
+    S.kodexOn=!S.kodexOn;
+    const sw=$id('kodex-switch'),bl=$id('kodex-block');
+    if(sw) sw.classList.toggle('on',S.kodexOn);
+    if(bl){bl.style.opacity=S.kodexOn?'1':'0.3';bl.style.pointerEvents=S.kodexOn?'auto':'none';}
+    const off=$id('kodex-off-label'),on=$id('kodex-on-label');
+    if(off) off.style.color=S.kodexOn?'var(--text3)':'var(--text2)';
+    if(on)  on.style.color =S.kodexOn?'var(--accent)':'var(--text3)';
+    tigersemiUpdate();
+  };
+  window.tigersemiSetTaxMode = function(mode,btn) {
+    S.taxMode = mode;
+    const ni=$id('ni-tax'),sl=$id('sl-tax'); if(!ni||!sl) return;
+    if(mode==='manual'){ni.value=ni.dataset.manual||'15.4';sl.value=Math.min(parseFloat(ni.value)||15.4,49.5);}
+    else{ni.dataset.manual=ni.value;}
+    const pg=document.getElementById('page-tigersemi');
+    if(pg) pg.querySelectorAll('.tax-mode-tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const mp=$id('tax-panel-manual'),bp=$id('tax-panel-bracket');
+    if(mp) mp.style.display=mode==='manual'?'':'none';
+    if(bp) bp.style.display=mode==='bracket'?'':'none';
+    tigersemiUpdate();
+  };
+  window.tigersemiSetTaxType = function(type,btn) {
+    S.bracketType = type;
+    const pg=document.getElementById('page-tigersemi');
+    if(pg) pg.querySelectorAll('.tax-type-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const si=$id('tax-separate-info'),ci=$id('tax-comprehensive-info');
+    if(si) si.style.display=type==='separate'?'':'none';
+    if(ci) ci.style.display=type==='comprehensive'?'':'none';
+    tigersemiUpdate();
+  };
+  function syncNI(key){const ni=$id('ni-'+key),sl=$id('sl-'+key);if(!ni||!sl)return;const v=parseFloat(ni.value);if(isNaN(v))return;const scale={amount:10000,years:1,rate:1,growth:1,target:10000,monthly:10000,tax:1}[key]||1;sl.value=Math.min(Math.max(v*scale,parseFloat(sl.min)),parseFloat(sl.max));tigersemiUpdate();}
+  function syncSL(key,scale,dec){const ni=$id('ni-'+key),sl=$id('sl-'+key);if(!ni||!sl)return;ni.value=(parseFloat(sl.value)/scale).toFixed(dec);tigersemiUpdate();}
+  window.tigersemiSyncToSlider=key=>syncNI(key);
+  window.tigersemiSyncToNum=(k,s,d)=>syncSL(k,s,d);
+
+  window.tigersemiSetChartTab=function(tab,btn){
+    _tigersemiChartTab=tab;
+    /* 차트 탭 버튼 active 직접 제어 */
+    ['annual','monthly'].forEach(function(t) {
+      var b = document.getElementById('tigersemi-tab-' + t);
+      if (b) b.classList.toggle('active', t === tab);
+    });if(_tigersemiCache)renderTigersemiChart(_tigersemiCache.rows,_tigersemiCache.years,_tigersemiCache.rate,_tigersemiCache.keepRate);};
+
+  /* 배당 프리셋 (일반/특별배당) */
+
+  /* ── tigersemi 전용 단위 함수 (전역 fancyUnit 오염 방지) ── */
+
+  window.tigersemiValidateNum = function(key) {
+    const el = $id('ni-' + key);
+    if (!el) return;
+    const v = parseFloat(el.value);
+    if (isNaN(v)) return;
+    const sl = $id('sl-' + key);
+    if (sl) {
+      const clamped = Math.min(Math.max(v, parseFloat(sl.min)), parseFloat(sl.max));
+      sl.value = clamped;
+    }
+    tigersemiUpdate();
+  };
+
+})();
+/* ── TIGERSEMI END ── */
+
+/* ════════════════════════════════════════
    [FX] 환율 계산기
    데이터: [MARKET-DATA] 시세 계층 (data/*.json)
    2순위: exchangerate-api 공개 엔드포인트
@@ -9556,6 +10444,44 @@ function switchSubTab(tab, grpId, btn) {
         }
       }
     tigerdivUpdate(); tigerdivFetchPrice();
+  }
+  if (tab === 'tigersemi') {
+    if (window._tigersemiState) {
+      /* 분배금 모드 버튼 active 직접 복원 */
+      const curMode = window._tigersemiState.investMode;
+      ['receive','reinvest','partial'].forEach(function(mode) {
+        const b = document.getElementById('tigersemi-mode-' + mode);
+        if (b) b.classList.toggle('active', mode === curMode);
+      });
+      const pb = document.getElementById('tigersemi-partial-ratio-block');
+      if (pb) pb.style.display = curMode === 'partial' ? 'block' : 'none';
+    }
+      /* ── tax-mode-tab (직접입력/과세표준) 복원 ── */
+      if (window._tigersemiState) {
+        var _taxMode     = window._tigersemiState.taxMode     || 'manual';
+        var _bracketType = window._tigersemiState.bracketType || 'separate';
+        var _solPg2 = document.getElementById('page-tigersemi');
+        if (_solPg2) {
+          _solPg2.querySelectorAll('.tax-mode-tab').forEach(function(b) {
+            b.classList.toggle('active', b.id === 'tigersemi-ttab-' + _taxMode);
+          });
+          _solPg2.querySelectorAll('.tax-type-btn').forEach(function(b) {
+            b.classList.toggle('active',
+              b.id === 'tigersemi-ttype-' + _bracketType);
+          });
+          /* 패널 표시 */
+          var _mp = document.getElementById('tigersemi-tax-panel-manual');
+          var _bp = document.getElementById('tigersemi-tax-panel-bracket');
+          if (_mp) _mp.style.display = _taxMode === 'manual'  ? '' : 'none';
+          if (_bp) _bp.style.display = _taxMode === 'bracket' ? '' : 'none';
+          /* 종합/분리 정보 패널 */
+          var _si = document.getElementById('tigersemi-tax-separate-info');
+          var _ci = document.getElementById('tigersemi-tax-comprehensive-info');
+          if (_si) _si.style.display = _bracketType === 'separate'      ? '' : 'none';
+          if (_ci) _ci.style.display = _bracketType === 'comprehensive' ? '' : 'none';
+        }
+      }
+    tigersemiUpdate(); tigersemiFetchPrice();
   }
   if (tab === 'tiger')     {
     const tigerPg = document.getElementById('page-tiger');
@@ -12614,6 +13540,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
     <button class="drop-item" id="drop-sol" onclick="switchSubTab('sol','simulator',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M9 6v6M7 7.5h2.5a1.5 1.5 0 0 1 0 3H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M14.5 4.5 L16.5 2.5 M14.5 2.5 h2 v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>SOL 200타겟위클리커버드콜</button>
     <button class="drop-item" id="drop-tiger" onclick="switchSubTab('tiger','simulator',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M9 6v6M7 7.5h2.5a1.5 1.5 0 0 1 0 3H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M14.5 4.5 L16.5 2.5 M14.5 2.5 h2 v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>TIGER 200타겟위클리커버드콜</button>
     <button class="drop-item" id="drop-tigerdiv" onclick="switchSubTab('tigerdiv','simulator',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M9 6v6M7 7.5h2.5a1.5 1.5 0 0 1 0 3H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M14.5 4.5 L16.5 2.5 M14.5 2.5 h2 v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>TIGER 배당커버드콜액티브</button>
+    <button class="drop-item" id="drop-tigersemi" onclick="switchSubTab('tigersemi','simulator',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M9 6v6M7 7.5h2.5a1.5 1.5 0 0 1 0 3H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M14.5 4.5 L16.5 2.5 M14.5 2.5 h2 v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>TIGER 반도체TOP10커버드콜액티브</button>
   </div>
   <div class="tab-dropdown" id="grp-finance-drop">
     <button class="drop-item" id="drop-loan"     onclick="switchSubTab('loan','finance',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="3" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M2 7h14" stroke="currentColor" stroke-width="1.3"/><path d="M5 11h2M9 11h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>대출 이자 계산기</button>
