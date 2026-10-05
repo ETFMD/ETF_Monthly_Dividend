@@ -860,7 +860,8 @@
     #nasdaq-rate-grid,
     #nasdaq100-rate-grid,
     #dowjones-rate-grid,
-    #sp500-rate-grid { grid-template-columns: 1fr !important; }
+    #sp500-rate-grid,
+    #sox-rate-grid { grid-template-columns: 1fr !important; }
 
     #kospi-sim-grid,
     #k200-sim-grid,
@@ -868,7 +869,8 @@
     #nasdaq-sim-grid,
     #nasdaq100-sim-grid,
     #dowjones-sim-grid,
-    #sp500-sim-grid  { grid-template-columns: 1fr 1fr !important; }
+    #sp500-sim-grid,
+    #sox-sim-grid  { grid-template-columns: 1fr 1fr !important; }
 
     /* 현재 지수 배너 넘침 방지 */
     #kospi-status, #k200-status,
@@ -880,9 +882,9 @@
     }
 
     /* 성장률 숫자 크기 모바일 축소 */
-    #nasdaq-annual, #nasdaq100-annual, #dowjones-annual, #sp500-annual,
-    #nasdaq-monthly, #nasdaq100-monthly, #dowjones-monthly, #sp500-monthly,
-    #nasdaq-daily, #nasdaq100-daily, #dowjones-daily, #sp500-daily {
+    #nasdaq-annual, #nasdaq100-annual, #dowjones-annual, #sp500-annual, #sox-annual,
+    #nasdaq-monthly, #nasdaq100-monthly, #dowjones-monthly, #sp500-monthly, #sox-monthly,
+    #nasdaq-daily, #nasdaq100-daily, #dowjones-daily, #sp500-daily, #sox-daily {
       font-size: 26px !important;
     }
   }
@@ -4746,6 +4748,74 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
     </div>
   </div><!-- /page-sp500 -->
 
+  <!-- ── 필라델피아 반도체지수 페이지 ── -->
+  <div class="app-page" id="page-sox">
+    <div class="header">
+      <div class="header-left">
+        <span class="badge">PHLX SOX</span>
+        <h1>필라델피아 반도체지수 <span>성장률 분석</span></h1>
+        <p class="subtitle">1993년 12월 1일 기준지수 200 출발 — 현재 지수 기반 연평균·월평균·일평균 성장률</p>
+      </div>
+      <button id="sox-refresh-btn" onclick="fetchIndex('sox')"
+        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
+        <span id="sox-refresh-icon">↺</span> 지수 갱신
+      </button>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:20px 24px;margin-bottom:20px;">
+      <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px;">필라델피아 반도체지수(SOX)란?</p>
+      <p style="font-size:13px;color:var(--text2);line-height:1.9;"><strong style="color:var(--accent);">필라델피아 반도체지수</strong>(PHLX Semiconductor Index, 티커 SOX)는 나스닥이 산출하는 미국 상장 반도체 기업 30개(설계·제조·장비·소재)로 구성된 지수입니다. 1993년 12월 1일 기준지수 200으로 시작했으며, 반도체 업황을 대표하는 지표로 가장 널리 쓰입니다. 업황에 따라 등락 폭이 큰 편이라 같은 기간이라도 시작 시점에 따라 성장률 차이가 큽니다.</p>
+    </div>
+    <div id="sox-status" style="background:var(--bg3);border:1px solid var(--card-border);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">현재 필라델피아 반도체지수</p>
+        <p style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--text);" id="sox-current-val">—</p>
+      </div>
+      <div style="flex:1;min-width:160px;">
+        <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">기준일</p>
+        <p style="font-size:13px;color:var(--text2);" id="sox-date-label">데이터 없음</p>
+        <p style="font-size:11px;color:var(--text3);margin-top:2px;" id="sox-source-label"></p>
+      </div>
+      <div id="sox-loading" style="display:none;font-size:12px;color:var(--text3);">⏳ 조회 중...</div>
+    </div>
+    <!-- 기간 선택 -->
+    <div class="period-tabs" id="sox-period-tabs">
+      <button class="period-btn" onclick="setIndexPeriod('sox',5,this)">최근 5년</button>
+      <button class="period-btn" onclick="setIndexPeriod('sox',10,this)">최근 10년</button>
+      <button class="period-btn active" onclick="setIndexPeriod('sox',15,this)">최근 15년</button>
+      <button class="period-btn" onclick="setIndexPeriod('sox',20,this)">최근 20년</button>
+      <button class="period-btn" onclick="setIndexPeriod('sox',30,this)">최근 30년</button>
+      <button class="period-btn" id="sox-period-all" onclick="setIndexPeriod('sox',0,this)">전체 기간</button>
+    </div>
+
+    <div id="sox-rate-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">연평균 성장률 (CAGR)</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:var(--accent);" id="sox-annual">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="sox-annual-sub">기준 1993.12.01 → 현재</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">월평균 성장률</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:var(--accent2);" id="sox-monthly">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="sox-monthly-sub">CAGR의 월 환산</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">일평균 성장률</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#ffaa55;" id="sox-daily">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="sox-daily-sub">CAGR의 일 환산</p>
+      </div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+      <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:16px;">필라델피아 반도체지수 CAGR 기준 1억 투자 시뮬레이션</p>
+      <div id="sox-sim-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">10년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="sox-sim-10">—</p></div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">20년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="sox-sim-20">—</p></div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">30년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="sox-sim-30">—</p></div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">40년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="sox-sim-40">—</p></div>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.7;">※ 과거 성장률이 미래를 보장하지 않습니다.</p>
+    </div>
+  </div><!-- /page-sox -->
+
   <!-- ── 공포 & 탐욕 지수 페이지 ── -->
   <div class="app-page" id="page-fear">
     <div class="header">
@@ -5459,7 +5529,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(
    [SOL] [TIGER] [TIGERDIV]  각 시뮬레이터 IIFE (getVWon/setDispFromWon은 [SIM-UNIT] 위임)
    [NAV]       탭 그룹 드롭다운·switchSubTab (탭 진입 시 자동 조회 훅 포함)
    [COMPOUND] [LOAN] [CAGR] [FX] [HEALTH] [RATE]  금융 계산기
-   [KOSPI] [KOSPI200] [KOSDAQ] [US-INDEX] [PERIOD] [KOSPI-FETCH]  지수 성장률
+   [KOSPI] [KOSPI200] [KOSDAQ] [US-INDEX](나스닥·나스닥100·다우·S&P500·필라델피아 반도체) [PERIOD] [KOSPI-FETCH]  지수 성장률
    [FEAR] 공포&탐욕   [MONEYSPEED] 가치 속도   [MUHAN] 무한매수법 화면   [MUHAN-ENGINE] 무한매수법 계산
    [YEAR-ACC]  연/월 상세 테이블 아코디언 헬퍼
    [THEME]     사이트 테마 (다크/라이트/오토) · fgA()
@@ -9572,7 +9642,7 @@ function switchSubTab(tab, grpId, btn) {
       }
     });
   }
-  const usIdx = ['nasdaq','nasdaq100','dowjones','sp500'];
+  const usIdx = ['nasdaq','nasdaq100','dowjones','sp500','sox'];
   if (usIdx.includes(tab)) {
     fetchIndex(tab).then(() => {
       const py = _indexPeriod[tab] || 0;
@@ -10108,6 +10178,7 @@ const INDEX_CONFIG = {
   nasdaq100:{ name:'나스닥 100',  ticker:'%5ENDX',  baseDate:'1985-01-31', baseVal:250,   defaultVal:22000, minP:1000,  maxP:200000 },
   dowjones: { name:'다우존스',    ticker:'%5EDJI',  baseDate:'1896-05-26', baseVal:40.94, defaultVal:42000, minP:100,   maxP:500000 },
   sp500:    { name:'S&P 500',    ticker:'%5EGSPC', baseDate:'1928-01-03', baseVal:17.66, defaultVal:5800,  minP:100,   maxP:50000  },
+  sox:      { name:'필라델피아 반도체', ticker:'%5ESOX', baseDate:'1993-12-01', baseVal:200, defaultVal:null, minP:50, maxP:200000 },
 };
 
 /* 해외 지수 연간 fallback 테이블 (연초 기준) */
@@ -10116,12 +10187,13 @@ const OVERSEAS_HIST = {
   nasdaq100:{1990:455,1995:1052,2000:4069,2005:1660,2010:1860,2015:4236,2020:8733,2021:12667,2022:16320,2023:11630,2024:16543,2025:20940},
   dowjones: {1990:2810,1995:3838,2000:11497,2005:10783,2010:10428,2015:17832,2020:28538,2021:30606,2022:36338,2023:33136,2024:37690,2025:42732},
   sp500:    {1990:353,1995:459,2000:1469,2005:1248,2010:1115,2015:2059,2020:3231,2021:3756,2022:4797,2023:3853,2024:4770,2025:5882},
+  sox:      {},   /* 내장값 없음 — 과거값은 data/history.json(^SOX)에서만 사용 */
 };
 
 const _indexCache    = {};
 const _indexFetching = {};
 /* 해외 지수 기간 상태 */
-const _indexPeriod   = { nasdaq:15, nasdaq100:15, dowjones:15, sp500:15 };
+const _indexPeriod   = { nasdaq:15, nasdaq100:15, dowjones:15, sp500:15, sox:15 };
 const _indexHistCache = {}; /* {id_years: {price, date}} */
 
 function calcIndexRates(id, price, asOf, periodYears, startVal, histDateStr) {
@@ -10192,6 +10264,7 @@ async function setIndexPeriod(id, years, btn) {
   if (btn) btn.classList.add('active');
 
   const curVal = _indexCache[id] || INDEX_CONFIG[id].defaultVal;
+  if (!curVal) return;   /* 현재 지수 미조회 + 기본값 없음 */
   if (years === 0) {
     calcIndexRates(id, curVal, new Date(), 0, null, null);
     return;
@@ -10290,6 +10363,11 @@ async function fetchIndex(id) {
     // 실패 — 이전값 유지
     const prev = _indexCache[id] || INDEX_CONFIG[id].defaultVal;
     const now  = new Date();
+    if (!prev) {   /* 기본값 없는 지수: 숫자를 지어내지 않음 */
+      document.getElementById(id+'-date-label').textContent   = '데이터 없음';
+      document.getElementById(id+'-source-label').textContent = '⚠ 조회 실패 — 잠시 후 [지수 갱신]을 눌러주세요';
+      return;
+    }
     const ns   = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-'
       + String(now.getDate()).padStart(2,'0') + ' ' + now.toTimeString().slice(0,8);
     document.getElementById(id+'-date-label').textContent    = ns + ' 기준 (이전값 유지)';
@@ -12515,6 +12593,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
     <button class="drop-item" id="drop-nasdaq100" onclick="switchSubTab('nasdaq100','overseas',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.5" y="6" width="4" height="10.5" rx="0.8" fill="currentColor" opacity="0.35"/><rect x="7" y="3" width="4" height="13.5" rx="0.8" fill="currentColor" opacity="0.65"/><rect x="12.5" y="1.5" width="4" height="15" rx="0.8" fill="currentColor"/><path d="M1.5 5 Q4 2 6.5 5 Q9 8 11 4 Q13 1 16.5 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>나스닥 100 성장률</button>
     <button class="drop-item" id="drop-dowjones" onclick="switchSubTab('dowjones','overseas',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="9" width="5" height="7.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="6" width="5.5" height="10.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="3.5" y="6" width="1.5" height="3" fill="currentColor" opacity="0.5"/><path d="M2 8 L6 5 L10 6.5 L15.5 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 1.5 h3 v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>다우존스 성장률</button>
     <button class="drop-item" id="drop-sp500" onclick="switchSubTab('sp500','overseas',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M9 2 Q13 9 9 16 M9 2 Q5 9 9 16" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M2.5 7 Q9 5.5 15.5 7 M2 11 Q9 12.5 16 11" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M5 12 L9 8 L12 10 L15 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>S&P 500 성장률</button>
+    <button class="drop-item" id="drop-sox" onclick="switchSubTab('sox','overseas',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="7" y="7" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.6"/><path d="M7 2v2.5M11 2v2.5M7 13.5V16M11 13.5V16M2 7h2.5M2 11h2.5M13.5 7H16M13.5 11H16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>필라델피아 반도체 성장률</button>
   </div>
   <div class="tab-dropdown" id="grp-theme-drop">
     <button class="drop-item theme-item" data-theme-opt="dark" onclick="setSiteTheme('dark')">☾ 다크</button>
