@@ -36,7 +36,13 @@ NAVER_INDEX = {'^KS11': 'KOSPI', '^KS200': 'KPI200', '^KQ11': 'KOSDAQ'}
 
 # 분배 시뮬레이터 '지수 비교' 차트 (data/compare.json): ETF 상장 이후 일봉 + 분배금, 비교 지수 일봉
 COMPARE = os.path.join(ROOT, 'compare.json')
-COMPARE_PAIRS = {'498400.KS': {'naver': '498400', 'bench': '^KS11'}}   # KODEX 200타겟위클리커버드콜 ↔ 코스피
+COMPARE_PAIRS = {                                     # 분배 시뮬레이터 ETF ↔ 코스피
+    '498400.KS': {'naver': '498400', 'bench': '^KS11'},   # KODEX 200타겟위클리커버드콜
+    '0167B0.KS': {'naver': '0167B0', 'bench': '^KS11'},   # SOL 200타겟위클리커버드콜
+    '0104N0.KS': {'naver': '0104N0', 'bench': '^KS11'},   # TIGER 200타겟위클리커버드콜
+    '472150.KS': {'naver': '472150', 'bench': '^KS11'},   # TIGER 배당커버드콜액티브
+    '0177R0.KS': {'naver': '0177R0', 'bench': '^KS11'},   # TIGER 반도체TOP10커버드콜액티브
+}
 KST = 9 * 3600
 
 
@@ -368,9 +374,11 @@ def dedup(pts):
 
 
 def build_compare():
-    """ETF 가격(네이버 우선·야후 보조)·분배금(야후)·비교 지수(네이버 우선) 일봉을 compare.json 으로 저장"""
+    """ETF 가격(네이버 우선·야후 보조)·분배금(야후)·비교 지수(네이버 우선) 일봉을 compare.json 으로 저장
+    비교 지수는 여러 ETF가 함께 쓰므로, 모든 ETF 중 가장 이른 상장일부터 한 번만 받음"""
     old = load(COMPARE)
     series, divs = dict(old.get('series') or {}), dict(old.get('divs') or {})
+    starts = {}                                   # 비교 지수 → 필요한 시작일(가장 이른 상장일)
     for sym, cfg in COMPARE_PAIRS.items():
         ypts, ydiv = [], []
         try:
@@ -384,30 +392,37 @@ def build_compare():
             print(f'  {sym} 네이버 일봉 실패: {e}')
         etf = dedup(merge_older(npts, ypts) if npts else ypts)
         if len(etf) < 5:
-            print(f'  {sym} 일봉 부족(직전값 유지)'); continue
-        series[sym] = etf
-        price = dict(map(tuple, etf))
-        # 분배금은 그 시점 가격의 10% 미만인 값만 인정 (잘못된 값 방지)
-        okdiv = [[d, a] for d, a in ydiv if a > 0 and d >= etf[0][0] and a < 0.1 * (price.get(d) or etf[-1][1])]
-        if okdiv or sym not in divs:
-            divs[sym] = okdiv
-        bench, start = cfg['bench'], etf[0][0]
+            print(f'  {sym} 일봉 부족(직전값 유지)')
+            etf = series.get(sym) or []
+        else:
+            series[sym] = etf
+            price = dict(map(tuple, etf))
+            # 분배금은 그 시점 가격의 10% 미만인 값만 인정 (잘못된 값 방지)
+            okdiv = [[d, a] for d, a in ydiv if a > 0 and d >= etf[0][0] and a < 0.1 * (price.get(d) or etf[-1][1])]
+            if okdiv or sym not in divs:
+                divs[sym] = okdiv
+            print(f'  비교 {sym} {len(etf)}일 (상장 {datetime.date.fromordinal(719163 + etf[0][0])}) · 분배 {len(divs.get(sym) or [])}회')
+        if etf:
+            b = cfg['bench']
+            starts[b] = min(starts.get(b, etf[0][0]), etf[0][0])
+    for bench, start in starts.items():
         bpts = []
         if bench in NAVER_INDEX:
             try:
-                bpts = naver_daily(NAVER_INDEX[bench], int((etf[-1][0] - start) * 0.75) + 60)
+                bpts = naver_daily(NAVER_INDEX[bench], int((utc_now().date().toordinal() - 719163 - start) * 0.75) + 60)
             except Exception as e:
                 print(f'  {bench} 네이버 일봉 실패: {e}')
         try:
-            res = yahoo_chart(bench, f'period1={(start - 10) * 86400}&period2={int(time.time())}&interval=1d')
-            bpts = merge_older(bpts, [[(t + KST) // 86400, c] for t, c in points(res, 2)]) if bpts else \
-                   [[(t + KST) // 86400, c] for t, c in points(res, 2)]
+            ypts = [[(t + KST) // 86400, c] for t, c in points(yahoo_chart(bench, f'period1={(start - 10) * 86400}&period2={int(time.time())}&interval=1d'), 2)]
+            bpts = merge_older(bpts, ypts) if bpts else ypts
         except Exception as e:
             print(f'  {bench} 야후 일봉 실패: {e}')
-        bpts = [p for p in dedup(bpts) if p[0] >= start - 7]
-        if len(bpts) >= 5:
-            series[bench] = bpts
-        print(f'  비교 {sym} {len(etf)}일 (상장 {datetime.date.fromordinal(719163 + start)}) · 분배 {len(divs.get(sym) or [])}회 · {bench} {len(series.get(bench) or [])}일')
+        if bpts:
+            bpts = merge_older(dedup(bpts), series.get(bench) or [])   # 새 자료에 없는 앞부분은 직전 저장값으로
+            bpts = [p for p in bpts if p[0] >= start - 7]
+            if len(bpts) >= 5:
+                series[bench] = bpts
+        print(f'  비교 지수 {bench} {len(series.get(bench) or [])}일 (시작 {datetime.date.fromordinal(719163 + start)} 필요)')
     save_if_changed(COMPARE, {'unit': 'day', 'pairs': {s: c['bench'] for s, c in COMPARE_PAIRS.items()},
                               'series': series, 'divs': divs}, old)
 
