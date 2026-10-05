@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ETF월배당 시뮬레이터 및 금융계산기</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>(function(){try{var m=localStorage.getItem("site-theme")||"dark";var l=m==="light"||(m==="auto"&&window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches);document.documentElement.setAttribute("data-theme",l?"light":"dark");}catch(e){}})();</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -13,14 +14,16 @@
     --bg: #080d17;
     --bg2: #0e1525;
     --bg3: #141d30;
-    --card: rgba(255,255,255,0.04);
-    --card-border: rgba(255,255,255,0.08);
+    --card: rgba(var(--fg-rgb),0.04);
+    --card-border: rgba(var(--fg-rgb),0.08);
     --accent: #00e5b0;
     --accent2: #0091ff;
     --accent-dim: rgba(0,229,176,0.12);
     --text: #f0f4ff;
     --text2: #8899bb;
     --text3: #4a5878;
+    --fg-rgb: 255,255,255;   /* 전경 기준색 — 테두리·구분선의 rgba(var(--fg-rgb),a) */
+    color-scheme: dark;
     --font: 'Noto Sans KR', sans-serif;
     --mono: 'DM Mono', monospace;
   }
@@ -136,7 +139,7 @@
   .chart-tabs {
     display: flex;
     background: var(--bg2);
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(var(--fg-rgb),0.1);
     border-radius: 8px;
     padding: 3px;
     gap: 2px;
@@ -244,15 +247,15 @@
   /* ── 전역 스크롤바 스타일 (얇고 투명) ── */
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,0.15) transparent;
+    scrollbar-color: rgba(var(--fg-rgb),0.15) transparent;
   }
   *::-webkit-scrollbar { width: 4px; height: 4px; }
   *::-webkit-scrollbar-track { background: transparent; }
   *::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.15);
+    background: rgba(var(--fg-rgb),0.15);
     border-radius: 4px;
   }
-  *::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.28); }
+  *::-webkit-scrollbar-thumb:hover { background: rgba(var(--fg-rgb),0.28); }
   *::-webkit-scrollbar-corner { background: transparent; }
 
   /* ── Table ── */
@@ -282,12 +285,12 @@
   thead th:first-child { text-align:left; }
   tbody td {
     text-align:right; padding:9px 10px;
-    border-bottom:1px solid rgba(255,255,255,0.03);
+    border-bottom:1px solid rgba(var(--fg-rgb),0.03);
     font-family:var(--mono); color:var(--text2); white-space:nowrap;
     min-width:90px;
   }
   tbody td:first-child { text-align:left; font-family:var(--font); color:var(--text3); min-width:60px; }
-  tbody tr:hover td { background:rgba(255,255,255,0.02); }
+  tbody tr:hover td { background:rgba(var(--fg-rgb),0.02); }
   tbody tr.highlight td { color:var(--accent); font-weight:500; }
   tbody tr.highlight td:first-child { color:var(--accent); }
   tbody tr:last-child td { border-bottom:none; }
@@ -406,7 +409,7 @@
     color: var(--text2);
     font-family: var(--mono);
     font-size: 11px;
-    border-bottom: 1px solid rgba(255,255,255,0.02);
+    border-bottom: 1px solid rgba(var(--fg-rgb),0.02);
   }
   .bracket-table tr.bracket-active td {
     color: #ff9090;
@@ -601,7 +604,7 @@
     gap: 3px;
     padding: 6px;
     background: var(--bg2);
-    border: 1px solid rgba(255,255,255,0.12);
+    border: 1px solid rgba(var(--fg-rgb),0.12);
     border-radius: 12px;
     box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
     z-index: 9999;
@@ -631,7 +634,7 @@
     text-align: left;
   }
   .drop-item:hover {
-    background: rgba(255,255,255,0.07);
+    background: rgba(var(--fg-rgb),0.07);
     color: var(--text);
   }
   .drop-item.active {
@@ -695,7 +698,7 @@
   .cagr-table th:first-child { text-align: left; }
   .cagr-table td {
     text-align: right; padding: 8px 10px;
-    border-bottom: 1px solid rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(var(--fg-rgb),0.03);
     font-family: var(--mono); color: var(--text2);
   }
   .cagr-table td:first-child { text-align: left; font-family: var(--font); color: var(--text3); }
@@ -726,7 +729,7 @@
     transition: all 0.15s;
     white-space: nowrap;
   }
-  .period-btn:hover { color: var(--text2); border-color: rgba(255,255,255,0.2); }
+  .period-btn:hover { color: var(--text2); border-color: rgba(var(--fg-rgb),0.2); }
   .period-btn.active {
     background: var(--accent-dim);
     color: var(--accent);
@@ -895,8 +898,8 @@
     border-radius: 8px;
     margin-bottom: 0;
     transition: background 0.15s;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(var(--fg-rgb),0.03);
+    border: 1px solid rgba(var(--fg-rgb),0.06);
     margin-top: 6px;
   }
   .acc-header:hover {
@@ -929,7 +932,7 @@
     color: var(--text3);
     font-size: 11px;
     transition: transform 0.22s ease;
-    background: rgba(255,255,255,0.05);
+    background: rgba(var(--fg-rgb),0.05);
     border-radius: 50%;
   }
   .acc-arrow.open { transform: rotate(180deg); }
@@ -983,10 +986,8 @@
 /* ═══ [MUHAN] 무한매수법 4.0 — 스타일 (사이트 색상 변수 사용, #page-muhan 범위) ═══ */
 #page-muhan{--m-bg:var(--bg);--m-s1:var(--bg2);--m-s2:var(--bg3);--m-bd:var(--card-border);--m-tx:var(--text);--m-t2:var(--text2);--m-t3:var(--text3);
  --m-ac:var(--accent);--m-ac-s:rgba(0,229,176,.12);--m-ac-b:rgba(0,229,176,.35);--m-ok:#34d399;--m-bad:#f87171;--m-warn:#fbbf24;--m-info:#60a5fa;--m-rev:#c084fc;--m-on-ac:#04211a}
-#page-muhan[data-mh-theme=light]{--m-bg:#f4f7fa;--m-s1:#ffffff;--m-s2:#eef2f6;--m-bd:rgba(15,23,42,.10);--m-tx:#0f172a;--m-t2:#475569;--m-t3:#8a97ab;
- --m-ac:#00a37d;--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(0,163,125,.35);--m-ok:#059669;--m-bad:#dc2626;--m-warn:#d97706;--m-info:#2563eb;--m-rev:#9333ea;--m-on-ac:#ffffff}
+html[data-theme="light"] #page-muhan{--m-ac-s:rgba(0,163,125,.10);--m-ac-b:rgba(0,163,125,.35);--m-ok:#059669;--m-bad:#dc2626;--m-warn:#b45309;--m-info:#2563eb;--m-rev:#9333ea;--m-on-ac:#ffffff}
 #mh-root{max-width:440px;margin:0 auto;color:var(--m-tx);font-family:var(--font);padding-bottom:96px}
-#page-muhan[data-mh-theme=light] #mh-root{background:var(--m-bg);border-radius:16px;padding:0 10px 96px}
 .mh-card{background:var(--m-s1);border:1px solid var(--m-bd);border-radius:16px;padding:14px;margin-bottom:10px}
 .mh-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .mh-h3{margin:0;font-size:13px;font-weight:600;color:var(--m-tx)}
@@ -1063,6 +1064,18 @@
 @keyframes mhfall{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),520px) rotate(var(--rot));opacity:0}}
 @media (prefers-reduced-motion:reduce){.mh-conf{display:none}}
 
+
+  /* ═══ [THEME] 라이트 테마 — html[data-theme="light"] 일 때 색 변수만 교체 ═══ */
+  html[data-theme="light"] {
+    --bg: #f3f6fb; --bg2: #ffffff; --bg3: #eef2f7;
+    --card: rgba(15,23,42,0.03); --card-border: rgba(15,23,42,0.10);
+    --accent: #00a37d; --accent2: #0070d1; --accent-dim: rgba(0,163,125,0.12);
+    --text: #0f172a; --text2: #475569; --text3: #7b8aa1;
+    --fg-rgb: 15,23,42;
+    color-scheme: light;
+  }
+  html[data-theme="light"] body { background: var(--bg); color: var(--text); }
+  .theme-item.theme-on { background: var(--accent-dim); color: var(--accent); font-weight: 600; }
 </style>
 </head>
 <body>
@@ -1119,6 +1132,11 @@
       <button class="tab-group-btn" id="grp-overseas-btn" onclick="toggleTabGroup('overseas')">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M9 2.5 Q12.5 9 9 15.5 M9 2.5 Q5.5 9 9 15.5" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M2.5 6.5 Q9 5 15.5 6.5 M2.5 11.5 Q9 13 15.5 11.5" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M9 6.5 v1.5 M9 10 v1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M7.5 8 h2 a1 1 0 1 1 0 2 h-2 a1 1 0 1 0 0 2 h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>해외 지수 성장률<span class="tab-group-arrow">▼</span>
       </button>
+    </div>
+
+    <!-- 테마 (다크 / 라이트 / 오토) -->
+    <div class="tab-group" id="grp-theme">
+      <button class="tab-group-btn" id="grp-theme-btn" onclick="toggleTabGroup('theme')"><span id="theme-btn-label">☾ 다크</span><span class="tab-group-arrow">▼</span></button>
     </div>
   </nav>
 
@@ -1864,7 +1882,7 @@
             <span class="kodex-struct-label">배당금 (과세 15.4%)</span>
             <span class="kodex-struct-val taxable" id="kodex-div-display">2.0% → 15.4% 적용</span>
           </div>
-          <div style="border-top:1px solid rgba(255,255,255,0.06);margin:8px 0;"></div>
+          <div style="border-top:1px solid rgba(var(--fg-rgb),0.06);margin:8px 0;"></div>
           <div class="kodex-struct-row">
             <span class="kodex-struct-label" style="font-weight:500;color:var(--text2);">실효세율 (전체 대비)</span>
             <span class="kodex-struct-val result" style="font-size:14px;color:var(--text);" id="kodex-eff-rate">—</span>
@@ -2368,7 +2386,7 @@
             <span class="kodex-struct-label">배당금 (과세 15.4%)</span>
             <span class="kodex-struct-val taxable" id="sol-kodex-div-display">2.0% → 15.4% 적용</span>
           </div>
-          <div style="border-top:1px solid rgba(255,255,255,0.06);margin:8px 0;"></div>
+          <div style="border-top:1px solid rgba(var(--fg-rgb),0.06);margin:8px 0;"></div>
           <div class="kodex-struct-row">
             <span class="kodex-struct-label" style="font-weight:500;color:var(--text2);">실효세율 (전체 대비)</span>
             <span class="kodex-struct-val result" style="font-size:14px;color:var(--text);" id="sol-kodex-eff-rate">—</span>
@@ -2874,7 +2892,7 @@
             <span class="kodex-struct-label">배당금 (과세 15.4%)</span>
             <span class="kodex-struct-val taxable" id="tiger-kodex-div-display">2.0% → 15.4% 적용</span>
           </div>
-          <div style="border-top:1px solid rgba(255,255,255,0.06);margin:8px 0;"></div>
+          <div style="border-top:1px solid rgba(var(--fg-rgb),0.06);margin:8px 0;"></div>
           <div class="kodex-struct-row">
             <span class="kodex-struct-label" style="font-weight:500;color:var(--text2);">실효세율 (전체 대비)</span>
             <span class="kodex-struct-val result" style="font-size:14px;color:var(--text);" id="tiger-kodex-eff-rate">—</span>
@@ -3381,7 +3399,7 @@
             <span class="kodex-struct-label">배당금 (과세 15.4%)</span>
             <span class="kodex-struct-val taxable" id="tigerdiv-kodex-div-display">2.0% → 15.4% 적용</span>
           </div>
-          <div style="border-top:1px solid rgba(255,255,255,0.06);margin:8px 0;"></div>
+          <div style="border-top:1px solid rgba(var(--fg-rgb),0.06);margin:8px 0;"></div>
           <div class="kodex-struct-row">
             <span class="kodex-struct-label" style="font-weight:500;color:var(--text2);">실효세율 (전체 대비)</span>
             <span class="kodex-struct-val result" style="font-size:14px;color:var(--text);" id="tigerdiv-kodex-eff-rate">—</span>
@@ -4801,7 +4819,7 @@
           <div style="display:flex;flex-direction:column;gap:0;">
 
             <!-- 1. VOLATILITY -->
-            <div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+            <div style="padding:14px 0;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
               <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">1. VOLATILITY <span style="color:var(--text3);font-weight:400;">(변동성 - VIX)</span></p>
               <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 시카고옵션거래소(CBOE)에서 산출하는 VIX(Volatility Index)를 사용합니다. S&amp;P 500 지수 옵션 가격을 기반으로 향후 30일간의 시장 변동성 기대를 나타냅니다.</p>
               <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; VIX가 상승하면 시장이 불확실성에 공포를 느끼고 있다는 뜻으로 <span style="color:#e53935;">공포(Fear)</span>를 의미합니다. 반대로 VIX가 낮으면 시장이 안정적이라 판단하여 <span style="color:#66bb6a;">탐욕(Greed)</span>으로 분류됩니다.</p>
@@ -4809,21 +4827,21 @@
             </div>
 
             <!-- 2. MOMENTUM -->
-            <div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+            <div style="padding:14px 0;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
               <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">2. MOMENTUM <span style="color:var(--text3);font-weight:400;">(모멘텀 - S&amp;P 500)</span></p>
               <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; S&amp;P 500 지수의 현재 수준을 125일 이동평균선과 비교하여 산출합니다.</p>
               <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 현재 주가가 125일 이동평균선보다 높으면 상승 모멘텀이 강한 것으로 보아 <span style="color:#66bb6a;">탐욕</span>으로 해석합니다. 반대로 이동평균선보다 낮으면 하락세가 강한 것으로 보아 <span style="color:#e53935;">공포</span>로 해석합니다.</p>
             </div>
 
             <!-- 3. PUT/CALL -->
-            <div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+            <div style="padding:14px 0;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
               <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">3. PUT/CALL <span style="color:var(--text3);font-weight:400;">(풋/콜 비율)</span></p>
               <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 주식을 팔 권리인 '풋옵션(Put)' 거래량을 살 권리인 '콜옵션(Call)' 거래량으로 나눈 비율의 5일 평균을 측정합니다.</p>
               <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 풋옵션이 많아지면(비율 상승) 투자자들이 하락을 예상하고 헷지를 한다는 뜻이므로 <span style="color:#e53935;">공포</span> 신호입니다. 콜옵션이 많아지면(비율 하락) 상승을 예상하므로 <span style="color:#66bb6a;">탐욕</span>입니다. 풋/콜 비율이 낮을수록 탐욕, 높을수록 공포를 의미합니다.</p>
             </div>
 
             <!-- 4. SAFE HAVEN -->
-            <div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+            <div style="padding:14px 0;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
               <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">4. SAFE HAVEN <span style="color:var(--text3);font-weight:400;">(안전 자산 수요)</span></p>
               <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 주식(위험 자산)과 국채(안전 자산)의 최근 20거래일 수익률 차이를 분석합니다.</p>
               <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 투자자들이 주식보다 국채를 선호하면(안전 자산으로 도피) <span style="color:#e53935;">공포</span> 상황입니다. 20일 동안 국채 수익률이 주식 수익률보다 높거나 주식 수익률이 저조하면 안전 자산 선호도가 높아진 것으로 보아 공포로 해석합니다.</p>
@@ -4873,18 +4891,18 @@
         <table style="width:100%;border-collapse:collapse;font-size:12px;">
           <thead>
             <tr style="background:var(--bg3);">
-              <th style="padding:7px 12px;text-align:left;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.1);">자산 / 지표</th>
-              <th style="padding:7px 12px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.1);">시작값</th>
-              <th style="padding:7px 12px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.1);">종료값</th>
-              <th style="padding:7px 12px;text-align:center;color:#00e5b0;font-weight:600;border-bottom:1px solid rgba(255,255,255,0.1);">CAGR</th>
-              <th style="padding:7px 12px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.1);">배수</th>
+              <th style="padding:7px 12px;text-align:left;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(var(--fg-rgb),0.1);">자산 / 지표</th>
+              <th style="padding:7px 12px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(var(--fg-rgb),0.1);">시작값</th>
+              <th style="padding:7px 12px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(var(--fg-rgb),0.1);">종료값</th>
+              <th style="padding:7px 12px;text-align:center;color:#00e5b0;font-weight:600;border-bottom:1px solid rgba(var(--fg-rgb),0.1);">CAGR</th>
+              <th style="padding:7px 12px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(var(--fg-rgb),0.1);">배수</th>
             </tr>
           </thead>
           <tbody>
 
             <!-- 통화량 헤더 -->
             <tr class="ms-sec-hdr" onclick="msSec('money',this)" style="cursor:pointer;background:rgba(0,229,176,0.05);">
-              <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
                   <b style="color:var(--text);font-size:12px;">통화량</b>
@@ -4892,21 +4910,21 @@
                 </div>
               </td>
             </tr>
-            <tr class="ms-row-money" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+            <tr class="ms-row-money" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">M0 본원통화</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">31조</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">230조</td>
               <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+6.9%</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">×7.4</td>
             </tr>
-            <tr class="ms-row-money" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+            <tr class="ms-row-money" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">M1 협의통화</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">140조</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">1,360조</td>
               <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+7.9%</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">×9.7</td>
             </tr>
-            <tr class="ms-row-money" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+            <tr class="ms-row-money" style="border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">M2 광의통화</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">380조</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">4,500조</td>
@@ -4916,7 +4934,7 @@
 
             <!-- 근로소득 헤더 -->
             <tr class="ms-sec-hdr" onclick="msSec('income',this)" style="cursor:pointer;background:rgba(0,229,176,0.05);">
-              <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
                   <b style="color:var(--text);font-size:12px;">근로소득</b>
@@ -4924,14 +4942,14 @@
                 </div>
               </td>
             </tr>
-            <tr class="ms-row-income" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+            <tr class="ms-row-income" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">평균 연봉</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">1,350만원</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">4,300만원</td>
               <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+3.9%</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">×3.2</td>
             </tr>
-            <tr class="ms-row-income" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+            <tr class="ms-row-income" style="border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">중위 연봉</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">950만원</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">2,850만원</td>
@@ -4941,7 +4959,7 @@
 
             <!-- 부동산 헤더 -->
             <tr class="ms-sec-hdr" onclick="msSec('realty',this)" style="cursor:pointer;background:rgba(0,229,176,0.05);">
-              <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
                   <b style="color:var(--text);font-size:12px;">부동산</b>
@@ -4949,14 +4967,14 @@
                 </div>
               </td>
             </tr>
-            <tr class="ms-row-realty" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+            <tr class="ms-row-realty" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">서울 아파트</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">1.1억</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">13억</td>
               <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+8.8%</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">×11.8</td>
             </tr>
-            <tr class="ms-row-realty" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+            <tr class="ms-row-realty" style="border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">강남 아파트</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">2.0억</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">26억</td>
@@ -4966,7 +4984,7 @@
 
             <!-- 물가 헤더 -->
             <tr class="ms-sec-hdr" onclick="msSec('cpi',this)" style="cursor:pointer;background:rgba(0,229,176,0.05);">
-              <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
                   <b style="color:var(--text);font-size:12px;">물가</b>
@@ -4974,14 +4992,14 @@
                 </div>
               </td>
             </tr>
-            <tr class="ms-row-cpi" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+            <tr class="ms-row-cpi" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">소비자물가(CPI)</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">—</td>
               <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+2.6%</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">×2.1</td>
             </tr>
-            <tr class="ms-row-cpi" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+            <tr class="ms-row-cpi" style="border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">생활물가지수</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);">—</td>
@@ -4991,7 +5009,7 @@
 
             <!-- 귀금속 헤더 (실시간) -->
             <tr class="ms-sec-hdr" onclick="msSec('metal',this)" style="cursor:pointer;background:rgba(0,229,176,0.05);">
-              <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
                   <b style="color:var(--text);font-size:12px;">귀금속 (원화)</b>
@@ -4999,14 +5017,14 @@
                 </div>
               </td>
             </tr>
-            <tr class="ms-row-metal" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+            <tr class="ms-row-metal" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">금 (GC=F)</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-gold-start">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-gold-end">—</td>
               <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-gold-cagr">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-gold-mult">—</td>
             </tr>
-            <tr class="ms-row-metal" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+            <tr class="ms-row-metal" style="border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">은 (SI=F)</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-silver-start">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-silver-end">—</td>
@@ -5016,7 +5034,7 @@
 
             <!-- 주가지수 헤더 (실시간) -->
             <tr class="ms-sec-hdr" onclick="msSec('index',this)" style="cursor:pointer;background:rgba(0,229,176,0.05);">
-              <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
                   <b style="color:var(--text);font-size:12px;">주가지수</b>
@@ -5024,41 +5042,41 @@
                 </div>
               </td>
             </tr>
-            <tr class="ms-row-index" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+            <tr class="ms-row-index" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
               <td style="padding:7px 12px 7px 28px;color:var(--text3);font-size:10px;font-weight:600;" colspan="5">국내</td>
             </tr>
-            <tr class="ms-row-index" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+            <tr class="ms-row-index" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">코스피 (^KS11)</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-kospi-start">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-kospi-end">—</td>
               <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-kospi-cagr">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-kospi-mult">—</td>
             </tr>
-            <tr class="ms-row-index" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+            <tr class="ms-row-index" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">코스피 200 (^KS200)</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-k200-start">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-k200-end">—</td>
               <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-k200-cagr">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-k200-mult">—</td>
             </tr>
-            <tr class="ms-row-index" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+            <tr class="ms-row-index" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
               <td style="padding:7px 12px 7px 28px;color:var(--text3);font-size:10px;font-weight:600;" colspan="5">미국</td>
             </tr>
-            <tr class="ms-row-index" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+            <tr class="ms-row-index" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">나스닥 종합 (^IXIC)</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-nasdaq-start">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-nasdaq-end">—</td>
               <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-nasdaq-cagr">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-nasdaq-mult">—</td>
             </tr>
-            <tr class="ms-row-index" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+            <tr class="ms-row-index" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">나스닥 100 (^NDX)</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-ndx-start">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-ndx-end">—</td>
               <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-ndx-cagr">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-ndx-mult">—</td>
             </tr>
-            <tr class="ms-row-index" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+            <tr class="ms-row-index" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
               <td style="padding:7px 12px 7px 28px;color:var(--text2);">S&amp;P 500 (^GSPC)</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-sp500-start">—</td>
               <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-sp500-end">—</td>
@@ -5076,7 +5094,7 @@
           </tbody>
         </table>
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-top:1px solid rgba(255,255,255,0.05);">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-top:1px solid rgba(var(--fg-rgb),0.05);">
         <p id="ms-sum-status" style="margin:0;font-size:10px;color:var(--text3);">귀금속·주가지수 데이터 로딩 중...</p>
         <button onclick="fetchMSAll()" id="ms-refresh-btn"
           style="display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:7px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:11px;cursor:pointer;">
@@ -5381,11 +5399,11 @@
           <table style="width:100%;border-collapse:collapse;font-size:11px;">
             <thead>
               <tr style="background:var(--bg3);">
-                <th style="padding:6px 10px;text-align:left;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.08);">지수</th>
-                <th style="padding:6px 10px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.08);">15년 전</th>
-                <th style="padding:6px 10px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.08);">현재</th>
-                <th style="padding:6px 10px;text-align:center;color:#00e5b0;font-weight:600;border-bottom:1px solid rgba(255,255,255,0.08);">15년 CAGR</th>
-                <th style="padding:6px 10px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.08);">배수</th>
+                <th style="padding:6px 10px;text-align:left;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(var(--fg-rgb),0.08);">지수</th>
+                <th style="padding:6px 10px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(var(--fg-rgb),0.08);">15년 전</th>
+                <th style="padding:6px 10px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(var(--fg-rgb),0.08);">현재</th>
+                <th style="padding:6px 10px;text-align:center;color:#00e5b0;font-weight:600;border-bottom:1px solid rgba(var(--fg-rgb),0.08);">15년 CAGR</th>
+                <th style="padding:6px 10px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(var(--fg-rgb),0.08);">배수</th>
               </tr>
             </thead>
             <tbody id="ms-index-table">
@@ -5434,6 +5452,7 @@
    [KOSPI] [KOSPI200] [KOSDAQ] [US-INDEX] [PERIOD] [KOSPI-FETCH]  지수 성장률
    [FEAR] 공포&탐욕   [MONEYSPEED] 가치 속도   [MUHAN] 무한매수법 화면   [MUHAN-ENGINE] 무한매수법 계산
    [YEAR-ACC]  연/월 상세 테이블 아코디언 헬퍼
+   [THEME]     사이트 테마 (다크/라이트/오토) · fgA()
    [MARKET-DATA] 시세 데이터 계층 (모든 Yahoo·공포탐욕 요청 → data/*.json)
 ════════════════════════════════════════════════════════════ */
 /* ════════════════════════════════════════════════════════════
@@ -5564,6 +5583,42 @@
     return fromLocal(y).then(function (r) { return r || fromProxies(y); });
   };
 })();
+
+/* ════════════════════════════════════════════════════════════
+   [THEME] 사이트 테마 — 다크 / 라이트 / 오토(기기 설정)
+   · 저장: localStorage 'site-theme' · 적용: <html data-theme="dark|light">
+   · 색은 CSS 변수(--bg, --text, --fg-rgb …)만 바뀌고, 캔버스 차트는 fgA()로 다시 칠함
+════════════════════════════════════════════════════════════ */
+function fgA(a) {
+  var v = getComputedStyle(document.documentElement).getPropertyValue('--fg-rgb').trim() || '255,255,255';
+  return 'rgba(' + v + ',' + a + ')';
+}
+function siteThemeMode() { var m = localStorage.getItem('site-theme'); return m === 'light' || m === 'auto' ? m : 'dark'; }
+function applySiteTheme() {
+  var m = siteThemeMode(), light = m === 'light' || (m === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches);
+  document.documentElement.setAttribute('data-theme', light ? 'light' : 'dark');
+  var lbl = document.getElementById('theme-btn-label');
+  if (lbl) lbl.textContent = m === 'light' ? '☀ 라이트' : m === 'auto' ? '⌬ 오토' : '☾ 다크';
+  document.querySelectorAll('.theme-item').forEach(function (b) { b.classList.toggle('theme-on', b.getAttribute('data-theme-opt') === m); });
+  /* 이미 그려진 차트의 격자선·게이지를 새 테마 색으로 */
+  if (window.Chart && Chart.instances) Object.keys(Chart.instances).forEach(function (k) {
+    var ch = Chart.instances[k], sc = (ch.options && ch.options.scales) || {};
+    Object.keys(sc).forEach(function (a) { var g = sc[a].grid; if (g && typeof g.color === 'string') { var mm = g.color.match(/^rgba\([^)]*,\s*([\d.]+)\)$/); if (mm) g.color = fgA(mm[1]); } });
+    try { ch.update('none'); } catch (e) {}
+  });
+  if (typeof _fearData !== 'undefined' && _fearData && typeof drawFearGauge === 'function') { try { drawFearGauge(Math.round(_fearData.score.score)); } catch (e) {} }
+  var mp = document.getElementById('page-muhan');
+  if (mp && mp.classList.contains('active') && window.MHdebug) window.MHdebug.render();
+}
+function setSiteTheme(m) {
+  localStorage.setItem('site-theme', m);
+  document.querySelectorAll('.tab-dropdown').forEach(function (d) { d.classList.remove('open'); });
+  document.querySelectorAll('.tab-group-btn').forEach(function (b) { b.classList.remove('open'); });
+  applySiteTheme();
+}
+if (window.matchMedia) { var _mqTheme = matchMedia('(prefers-color-scheme: light)'); var _onMq = function () { if (siteThemeMode() === 'auto') applySiteTheme(); };
+  if (_mqTheme.addEventListener) _mqTheme.addEventListener('change', _onMq); else if (_mqTheme.addListener) _mqTheme.addListener(_onMq); }
+document.addEventListener('DOMContentLoaded', applySiteTheme);
 
 /* [KODEX] KODEX 200 타겟위클리커버드콜 — 전역 상태/계산 시작 */
 
@@ -5950,15 +6005,15 @@ function renderMonthlyTable(cache) {
     hdrTr.className = 'yr-acc-hdr';
     hdrTr.dataset.yr = yearNum;
 
-    var hdrCells = '<td style="border-top:1px solid rgba(255,255,255,0.06);">' +
+    var hdrCells = '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);">' +
       '<span style="display:flex;align-items:center;gap:8px;">' +
       '<span class="yr-acc-arrow" style="font-size:11px;color:var(--text3);transition:transform 0.15s;">▶</span>' +
       '<span>' + yearNum + '년차</span></span></td>';
-    hdrCells += '<td style="border-top:1px solid rgba(255,255,255,0.06);">' + fmt(r.portStart) + '</td>';
-    hdrCells += '<td class="' + (dcaOn ? '' : 'col-hidden') + '" style="border-top:1px solid rgba(255,255,255,0.06);color:var(--accent);">' + fmt(r.deposit) + '</td>';
-    hdrCells += '<td style="border-top:1px solid rgba(255,255,255,0.06);">' + fmt(r.div) + '</td>';
-    if (taxOn) hdrCells += '<td style="border-top:1px solid rgba(255,255,255,0.06);color:#ffaa55;">' + fmt(r.taxBase) + '</td>';
-    if (taxOn) hdrCells += '<td style="border-top:1px solid rgba(255,255,255,0.06);color:#ff7070;">' + fmt(r.tax) + '</td>';
+    hdrCells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);">' + fmt(r.portStart) + '</td>';
+    hdrCells += '<td class="' + (dcaOn ? '' : 'col-hidden') + '" style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:var(--accent);">' + fmt(r.deposit) + '</td>';
+    hdrCells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);">' + fmt(r.div) + '</td>';
+    if (taxOn) hdrCells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:#ffaa55;">' + fmt(r.taxBase) + '</td>';
+    if (taxOn) hdrCells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:#ff7070;">' + fmt(r.tax) + '</td>';
     /* 연간 주가 변동 합산 */
     var _yPCK = 0;
     if (r.monthlyPortAfterDeposit && r.monthlyPortEnd && r.monthlyDivs) {
@@ -5973,10 +6028,10 @@ function renderMonthlyTable(cache) {
     if (Math.abs(_yPCK) <= 5) _yPCK = 0;
     /* 연/월 주가 변동 헤더 색상: 합계가 - 이면 빨간색 */
     if (mthPriceChange) mthPriceChange.style.color = _yPCK < 0 ? '#ff7070' : '#64b5f6';
-    hdrCells += '<td style="border-top:1px solid rgba(255,255,255,0.06);color:' + (_yPCK>=0?'#64b5f6':'#ff7070') + ';">' + (_yPCK>=0?'+':'') + fmt(_yPCK) + '</td>';
-    hdrCells += '<td style="border-top:1px solid rgba(255,255,255,0.06);">' + fmt(r.port) + '</td>';
+    hdrCells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:' + (_yPCK>=0?'#64b5f6':'#ff7070') + ';">' + (_yPCK>=0?'+':'') + fmt(_yPCK) + '</td>';
+    hdrCells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);">' + fmt(r.port) + '</td>';
     var _yShares = calcShares(r.port, _priceNow, _growth, yearNum * 12);
-    hdrCells += '<td style="border-top:1px solid rgba(255,255,255,0.06);">' + fmtShares(_yShares) + '</td>';
+    hdrCells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);">' + fmtShares(_yShares) + '</td>';
 
     hdrTr.innerHTML = hdrCells;
     hdrTr.onclick = function() { toggleYearGroup(this); };
@@ -6509,7 +6564,7 @@ function buildOpts(isBar, hasDualAxis, isMonthly) {
       legend: { display: false },
       tooltip: {
         backgroundColor: '#0e1525',
-        borderColor: 'rgba(255,255,255,0.1)',
+        borderColor: fgA(0.1),
         borderWidth: 1,
         titleColor: '#8899bb',
         bodyColor: '#f0f4ff',
@@ -6546,7 +6601,7 @@ function buildOpts(isBar, hasDualAxis, isMonthly) {
       y: {
         position: 'left',
         ticks: { color: '#4a5878', font: { size: 11 }, callback: v => fmt(v, true) },
-        grid: { color: 'rgba(255,255,255,0.04)' },
+        grid: { color: fgA(0.04) },
         border: { display: false },
       },
     },
@@ -8527,31 +8582,31 @@ function insertYearAccordionRow(tbody, yearNum, colSpan, summary) {
   const hasDCA  = s.dcaOn;
   let cells = '';
   // 기간
-  cells += '<td style="border-top:1px solid rgba(255,255,255,0.06);">' +
+  cells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);">' +
     '<span style="display:flex;align-items:center;gap:8px;">' +
     '<span class="yr-acc-arrow" style="font-size:11px;color:var(--text3);transition:transform 0.15s;">▶</span>' +
     '<span>' + yearNum + '년차</span></span></td>';
   // 시작 자산
-  cells += '<td style="border-top:1px solid rgba(255,255,255,0.06);">' + (s.portStart != null ? fmt(s.portStart) : '—') + '</td>';
+  cells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);">' + (s.portStart != null ? fmt(s.portStart) : '—') + '</td>';
   // 연 적립금
-  cells += '<td class="' + (hasDCA ? '' : 'col-hidden') + '" style="border-top:1px solid rgba(255,255,255,0.06);color:var(--accent);">' + (s.deposit != null ? fmt(s.deposit) : '—') + '</td>';
+  cells += '<td class="' + (hasDCA ? '' : 'col-hidden') + '" style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:var(--accent);">' + (s.deposit != null ? fmt(s.deposit) : '—') + '</td>';
   // 연 분배 (세후)
-  cells += '<td style="border-top:1px solid rgba(255,255,255,0.06);">' + (s.div != null ? fmt(s.div) : '—') + '</td>';
+  cells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);">' + (s.div != null ? fmt(s.div) : '—') + '</td>';
   // 연 과세표준
-  if (hasTax) cells += '<td style="border-top:1px solid rgba(255,255,255,0.06);color:#ffaa55;">' + (s.taxBase != null ? fmt(s.taxBase) : '—') + '</td>';
+  if (hasTax) cells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:#ffaa55;">' + (s.taxBase != null ? fmt(s.taxBase) : '—') + '</td>';
   // 연 세금
-  if (hasTax) cells += '<td style="border-top:1px solid rgba(255,255,255,0.06);color:#ff7070;">' + (s.tax != null ? fmt(s.tax) : '—') + '</td>';
+  if (hasTax) cells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:#ff7070;">' + (s.tax != null ? fmt(s.tax) : '—') + '</td>';
   // 연 주가 변동
   var pc = s.priceChange;
   var pcColor = (pc != null && pc >= 0) ? '#64b5f6' : '#ff7070';
   var pcText  = (pc != null) ? ((pc >= 0 ? '+' : '') + fmt(pc)) : '—';
-  cells += '<td style="border-top:1px solid rgba(255,255,255,0.06);color:' + pcColor + ';">' + pcText + '</td>';
+  cells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);color:' + pcColor + ';">' + pcText + '</td>';
   // 누적 자산
-  cells += '<td style="border-top:1px solid rgba(255,255,255,0.06);">' + (s.port != null ? fmt(s.port) : '—') + '</td>';
+  cells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);">' + (s.port != null ? fmt(s.port) : '—') + '</td>';
   // 보유 수량
-  cells += '<td style="border-top:1px solid rgba(255,255,255,0.06);">' + fmtShares(s.shares != null ? s.shares : null) + '</td>';
+  cells += '<td style="border-top:1px solid rgba(var(--fg-rgb),0.06);">' + fmtShares(s.shares != null ? s.shares : null) + '</td>';
 
-  tr.innerHTML = summary ? cells : ('<td colspan="' + colSpan + '" style="border-top:1px solid rgba(255,255,255,0.06);">' +
+  tr.innerHTML = summary ? cells : ('<td colspan="' + colSpan + '" style="border-top:1px solid rgba(var(--fg-rgb),0.06);">' +
     '<span style="display:flex;align-items:center;gap:8px;">' +
     '<span class="yr-acc-arrow" style="font-size:11px;color:var(--text3);transition:transform 0.15s;">▶</span>' +
     '<span>' + yearNum + '년차</span></span></td>');
@@ -8650,18 +8705,18 @@ function drawFearGauge(score) {
   ctx.beginPath();
   ctx.moveTo(cx, cy);
   ctx.lineTo(cx + needleLen*Math.cos(na), cy + needleLen*Math.sin(na));
-  ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+  ctx.strokeStyle = fgA(0.9);
   ctx.lineWidth = 2.5;
   ctx.lineCap = 'round';
   ctx.stroke();
   /* 중심 점 */
   ctx.beginPath();
   ctx.arc(cx, cy, 6, 0, Math.PI*2);
-  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.fillStyle = fgA(0.9);
   ctx.fill();
   /* 눈금 숫자 0/25/50/75/100 (반원 바깥쪽) */
   ctx.font = '10px monospace';
-  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.fillStyle = fgA(0.4);
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   [0,25,50,75,100].forEach(function(v) {
@@ -8677,7 +8732,7 @@ function drawFearGauge(score) {
     {v:88,  txt:'극탐욕'}
   ];
   ctx.font = '9px sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.fillStyle = fgA(0.3);
   zoneLabels.forEach(function(z) {
     var a = Math.PI+(z.v/100)*Math.PI;
     ctx.fillText(z.txt, cx+(r-36)*Math.cos(a), cy+(r-36)*Math.sin(a));
@@ -8726,7 +8781,7 @@ function renderFearHistory(history) {
         y: {
           min:0, max:100,
           ticks:{color:'#4a5878',font:{size:11},stepSize:25},
-          grid:{color:'rgba(255,255,255,0.04)'}, border:{display:false}
+          grid:{color:fgA(0.04)}, border:{display:false}
         }
       }
     }
@@ -8742,7 +8797,7 @@ function renderFearComponents(components) {
     var lbl = fearLabel(pct);
     var isLast = idx === arr.length - 1;
     return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;' +
-      (isLast ? '' : 'border-bottom:1px solid rgba(255,255,255,0.05);') + '">' +
+      (isLast ? '' : 'border-bottom:1px solid rgba(var(--fg-rgb),0.05);') + '">' +
       '<div style="width:160px;font-size:11px;color:var(--text3);flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (comp.name||'') + '</div>' +
       '<div style="flex:1;background:var(--bg3);border-radius:4px;height:8px;overflow:hidden;">' +
         '<div style="width:'+pct+'%;height:100%;background:'+col+';border-radius:4px;"></div>' +
@@ -9714,14 +9769,14 @@ function calcCompound() {
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: '#0e1525', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
+          backgroundColor: '#0e1525', borderColor: fgA(0.1), borderWidth: 1,
           titleColor: '#8899bb', bodyColor: '#f0f4ff', padding: 12,
           callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + (cpdChartTab === 'val' ? fmt(ctx.parsed.y) : ctx.parsed.y.toFixed(2) + '%') }
         }
       },
       scales: {
         x: { ticks: { color: '#4a5878', font: { size: 11 } }, grid: { display: false }, border: { display: false } },
-        y: { ticks: { color: '#4a5878', font: { size: 11 }, callback: yLabel }, grid: { color: 'rgba(255,255,255,0.04)' }, border: { display: false } }
+        y: { ticks: { color: '#4a5878', font: { size: 11 }, callback: yLabel }, grid: { color: fgA(0.04) }, border: { display: false } }
       }
     }
   });
@@ -10547,7 +10602,7 @@ function renderCagrChart(cache) {
       legend: { display: false },
       tooltip: {
         backgroundColor: '#0e1525',
-        borderColor: 'rgba(255,255,255,0.1)',
+        borderColor: fgA(0.1),
         borderWidth: 1,
         titleColor: '#8899bb',
         bodyColor: '#f0f4ff',
@@ -10570,7 +10625,7 @@ function renderCagrChart(cache) {
       },
       y: {
         ticks: { color: '#4a5878', font: { size: 11 }, callback: yLabel },
-        grid: { color: 'rgba(255,255,255,0.04)' },
+        grid: { color: fgA(0.04) },
         border: { display: false },
       },
     },
@@ -10655,7 +10710,7 @@ function msRenderIndexTable() {
   configs.forEach(function(cfg) {
     var d = _msIndexData[cfg.id];
     if (!d || !d.cur || !d.hist15) {
-      rows += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">'
+      rows += '<tr style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">'
         + '<td style="padding:6px 10px;color:var(--text2);">' + cfg.name + '</td>'
         + '<td colspan="4" style="padding:6px 10px;text-align:center;color:var(--text3);">조회 중...</td>'
         + '</tr>';
@@ -10667,7 +10722,7 @@ function msRenderIndexTable() {
     var mult  = d.hist15 > 0 ? (d.cur / d.hist15) : null;
     var cp    = cagr !== null ? (cagr * 100).toFixed(1) : '—';
     var mpStr = mult !== null ? '×' + mult.toFixed(1) : '—';
-    rows += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">'
+    rows += '<tr style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">'
       + '<td style="padding:6px 10px;color:var(--text2);">' + cfg.name + '</td>'
       + '<td style="padding:6px 10px;text-align:center;color:var(--text3);">' + msFmt(d.hist15) + 'pt</td>'
       + '<td style="padding:6px 10px;text-align:center;color:var(--text3);">' + msFmt(d.cur) + 'pt</td>'
@@ -11252,7 +11307,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
   var LS = function (k, d) { var v = localStorage.getItem(k); return v == null ? d : v; };
   var MH = window.MH = {
     view: 'now', menu: false, sheet: null, pop: null, tabDir: null,
-    setup: null, fontScale: Number(LS('muhan4-fontScale', '1')) || 1, theme: LS('muhan4-theme', 'dark'),
+    setup: null, fontScale: Number(LS('muhan4-fontScale', '1')) || 1,
     todo: LS('muhan4-order-todo', 'true') !== 'false', rsiOn: LS('muhan4-rsi', 'true') !== 'false',
     rsiMethod: LS('muhan4-rsi-method', 'sma') === 'wilder' ? 'wilder' : 'sma', vixOn: LS('muhan4-vix', 'true') !== 'false',
     chartPeriod: '1y', anScope: null, anOpen: null, restartOpen: false, restartCap: '', restartSplits: 20, manualDate: today(), manualClose: '',
@@ -11389,7 +11444,6 @@ if (typeof module !== 'undefined') module.exports = MHE;
   var _charts = [];
   function render() {
     var root = $('mh-root'); if (!root) return;
-    var pg = $('page-muhan'); if (pg) { pg.setAttribute('data-mh-theme', themeNow()); }
     root.style.zoom = MH.fontScale;
     _charts.forEach(function (c) { try { c.destroy(); } catch (e) {} }); _charts = [];
     var ses = active(), html = '';
@@ -11406,7 +11460,6 @@ if (typeof module !== 'undefined') module.exports = MHE;
     root.innerHTML = html + '<div id="mh-sheet-host">' + (MH.sheet ? viewSheet() : '') + '</div>' + (MH.pop ? viewPop() : '');
     initCharts();
   }
-  function themeNow() { return MH.theme === 'system' ? (window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark') : MH.theme; }
 
   /* ── 세션 탭 ── */
   function viewSessionTabs() {
@@ -11497,11 +11550,8 @@ if (typeof module !== 'undefined') module.exports = MHE;
   }
   function viewMenu(D) {
     var s = D.s, cur = D.cur, nArch = store.sessions.length - live().length;
-    var th = function (k, ic, t) { return '<button class="mh-btn' + (MH.theme === k ? ' mh-btn-sel' : '') + '" style="flex:1;padding:6px" data-act="theme" data-v="' + k + '"' + (t ? ' title="' + t + '"' : '') + '>' + ic + '</button>'; };
     var sb = function (n) { return '<button class="mh-btn' + (s.splits === n ? ' mh-btn-sel' : '') + '" style="padding:6px 4px;font-size:12px" data-act="m-splits" data-v="' + n + '">' + n + '</button>'; };
     return '<div class="mh-overlay" data-act="menu-close"></div><div class="mh-menu" data-noswipe>' +
-      '<div class="mh-msec"><div class="mh-row"><span style="font-size:13px">테마</span><span class="mh-tiny mh-faint">' + (MH.theme === 'light' ? '☀ Light' : MH.theme === 'system' ? '⌬ Auto' : '☾ Dark') + '</span></div>' +
-      '<div style="display:flex;gap:6px;margin-top:6px">' + th('dark', '☾') + th('light', '☀') + th('system', '⌬', '시스템 설정 따라가기') + '</div></div>' +
       '<div class="mh-msec"><div class="mh-row"><span style="font-size:13px">글자 크기</span><span class="mh-small mh-ac mh-mono">' + Math.round(MH.fontScale * 100) + '%</span></div>' +
       '<input class="mh-slider" type="range" min="1" max="1.3" step="0.05" value="' + MH.fontScale + '" data-in="font"><div class="mh-row mh-tiny mh-faint"><span>보통</span><span>최대</span></div></div>' +
       toggleRow('주문 체크리스트', MH.todo, 'tg-todo', '주문표에서 넣은 주문 체크 · 다음날 자동 초기화') +
@@ -12248,7 +12298,6 @@ if (typeof module !== 'undefined') module.exports = MHE;
       case 'menu': MH.menu = !MH.menu; render(); break;
       case 'menu-close': MH.menu = false; render(); break;
       case 'view': MH.view = v; MH.menu = false; render(); break;
-      case 'theme': MH.theme = v; localStorage.setItem('muhan4-theme', v); render(); break;
       case 'tg-todo': MH.todo = !MH.todo; localStorage.setItem('muhan4-order-todo', String(MH.todo)); render(); break;
       case 'tg-rsi': MH.rsiOn = !MH.rsiOn; localStorage.setItem('muhan4-rsi', String(MH.rsiOn)); render(); break;
       case 'rsi-m': MH.rsiMethod = v; localStorage.setItem('muhan4-rsi-method', v); render(); break;
@@ -12438,6 +12487,11 @@ if (typeof module !== 'undefined') module.exports = MHE;
     <button class="drop-item" id="drop-nasdaq100" onclick="switchSubTab('nasdaq100','overseas',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.5" y="6" width="4" height="10.5" rx="0.8" fill="currentColor" opacity="0.35"/><rect x="7" y="3" width="4" height="13.5" rx="0.8" fill="currentColor" opacity="0.65"/><rect x="12.5" y="1.5" width="4" height="15" rx="0.8" fill="currentColor"/><path d="M1.5 5 Q4 2 6.5 5 Q9 8 11 4 Q13 1 16.5 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>나스닥 100 성장률</button>
     <button class="drop-item" id="drop-dowjones" onclick="switchSubTab('dowjones','overseas',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="9" width="5" height="7.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="6" width="5.5" height="10.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="3.5" y="6" width="1.5" height="3" fill="currentColor" opacity="0.5"/><path d="M2 8 L6 5 L10 6.5 L15.5 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 1.5 h3 v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>다우존스 성장률</button>
     <button class="drop-item" id="drop-sp500" onclick="switchSubTab('sp500','overseas',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M9 2 Q13 9 9 16 M9 2 Q5 9 9 16" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M2.5 7 Q9 5.5 15.5 7 M2 11 Q9 12.5 16 11" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M5 12 L9 8 L12 10 L15 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>S&P 500 성장률</button>
+  </div>
+  <div class="tab-dropdown" id="grp-theme-drop">
+    <button class="drop-item theme-item" data-theme-opt="dark" onclick="setSiteTheme('dark')">☾ 다크</button>
+    <button class="drop-item theme-item" data-theme-opt="light" onclick="setSiteTheme('light')">☀ 라이트</button>
+    <button class="drop-item theme-item" data-theme-opt="auto" onclick="setSiteTheme('auto')">⌬ 오토 <span style="font-size:11px;opacity:.7">(기기 설정 따라감)</span></button>
   </div>
 </body>
 </html>
