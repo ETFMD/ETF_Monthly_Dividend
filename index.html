@@ -933,25 +933,19 @@
     border-radius: 50%;
   }
   .acc-arrow.open { transform: rotate(180deg); }
-  .acc-body {
+  .acc-body {            /* 닫힘: 완전히 제거 (높이 제한·틈 노출 없음) */
+    display: none;
     overflow: hidden;
-    max-height: 0;
     padding: 0;
   }
   .acc-body.open {
-    max-height: 4000px;
-    padding-top: 16px;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-bottom: 10px;
+    display: block;
+    padding: 16px 10px 10px;
   }
   /* 첫 번째 아코디언: 기본으로 열려 있음 */
   .acc-body.default-open {
-    max-height: 4000px;
-    padding-top: 16px;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-bottom: 10px;
+    display: block;
+    padding: 16px 10px 10px;
   }
 
   /* 월간 테이블 연차 아코디언 헤더 */
@@ -1495,7 +1489,7 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="ni-amount" type="text" inputmode="numeric" value="100,000,000"
                      style="padding-right:8px;width:110px;"
-                     oninput="onFancyInput('amount')" onblur="onFancyBlur('amount')">
+                     oninput="simOnInput(this)" onblur="simOnBlur(this)">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="amount" data-unit="eok" onclick="setFancyUnit('amount','eok',this)" data-unit="eok">억원</button>
@@ -1506,7 +1500,7 @@
           </div>
         </div>
         <input type="range" id="sl-amount" min="1000000" max="500000000" step="1000000" value="100000000"
-               oninput="syncAmountFromSlider()">
+               oninput="simOnSlider(this)">
       </div>
 
       <div class="slider-block">
@@ -1577,7 +1571,7 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="ni-monthly" type="text" inputmode="numeric" value="1,000,000"
                      style="padding-right:8px;width:100px;"
-                     oninput="onFancyInput('monthly')" onblur="onFancyBlur('monthly')">
+                     oninput="simOnInput(this)" onblur="simOnBlur(this)">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="monthly" data-unit="eok" onclick="setFancyUnit('monthly','eok',this)" data-unit="eok">억원</button>
@@ -1587,7 +1581,7 @@
           </div>
         </div>
         <input type="range" id="sl-monthly" min="0" max="50000000" step="100000" value="1000000"
-               oninput="syncMonthlyFromSlider()">
+               oninput="simOnSlider(this)">
         <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(0,229,176,0.12);">
           <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">연간 추가 투자액</p>
           <p style="font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:500;" id="dca-annual-label">—</p>
@@ -1670,7 +1664,7 @@
                   <div class="num-pill" style="flex-shrink:0;">
                     <input class="num-input comma-input" id="ni-otherincome" type="text" inputmode="numeric" value="50,000,000"
                            style="padding-right:8px;width:90px;"
-                           oninput="onFancyInput('otherincome')" onblur="onFancyBlur('otherincome')">
+                           oninput="simOnInput(this)" onblur="simOnBlur(this)">
                   </div>
                   <div class="unit-tabs">
                     <button class="unit-btn" data-field="otherincome" data-unit="eok" onclick="setFancyUnit('otherincome','eok',this)" data-unit="eok">억원</button>
@@ -1814,7 +1808,7 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="ni-target" type="text" inputmode="numeric" value="5,000,000"
                      style="padding-right:8px;width:100px;"
-                     oninput="onFancyInput('target')" onblur="onFancyBlur('target')">
+                     oninput="simOnInput(this)" onblur="simOnBlur(this)">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="target" data-unit="eok" onclick="setFancyUnit('target','eok',this)" data-unit="eok">억원</button>
@@ -1824,7 +1818,7 @@
           </div>
         </div>
         <input type="range" id="sl-target" min="100000" max="10000000" step="100000" value="5000000"
-               oninput="syncTargetFromSlider()">
+               oninput="simOnSlider(this)">
       </div>
 
       <div class="target-box">
@@ -1999,7 +1993,7 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="sol-ni-amount" type="text" inputmode="numeric" value="100,000,000"
                      style="padding-right:8px;width:110px;"
-                     oninput="solOnAmtInput()" onblur="solOnAmtBlur()">
+                     oninput="simOnInput(this)" onblur="simOnBlur(this)">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="amount" data-unit="eok" onclick="setFancyUnit('amount','eok',this)" data-unit="eok">억원</button>
@@ -2010,7 +2004,7 @@
           </div>
         </div>
         <input type="range" id="sol-sl-amount" min="1000000" max="500000000" step="1000000" value="100000000"
-               oninput="solSyncAmount()">
+               oninput="simOnSlider(this)">
       </div>
 
       <div class="slider-block">
@@ -2081,7 +2075,7 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="sol-ni-monthly" type="text" inputmode="numeric" value="1,000,000"
                      style="padding-right:8px;width:100px;"
-                     oninput="solOnMonthlyInput()" onblur="solOnMonthlyBlur()">
+                     oninput="simOnInput(this)" onblur="simOnBlur(this)">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="monthly" data-unit="eok" onclick="setFancyUnit('monthly','eok',this)" data-unit="eok">억원</button>
@@ -2091,7 +2085,7 @@
           </div>
         </div>
         <input type="range" id="sol-sl-monthly" min="0" max="50000000" step="100000" value="1000000"
-               oninput="solSyncMonthly()">
+               oninput="simOnSlider(this)">
         <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(0,229,176,0.12);">
           <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">연간 추가 투자액</p>
           <p style="font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:500;" id="sol-dca-annual-label">—</p>
@@ -2174,7 +2168,7 @@
                   <div class="num-pill" style="flex-shrink:0;">
                     <input class="num-input comma-input" id="sol-ni-otherincome" type="text" inputmode="numeric" value="50,000,000"
                            style="padding-right:8px;width:90px;"
-                           oninput="solOnOtherIncomeInput()" onblur="solOnOtherIncomeBlur()">
+                           oninput="simOnInput(this)" onblur="simOnBlur(this)">
                   </div>
                   <div class="unit-tabs">
                     <button class="unit-btn" data-field="otherincome" data-unit="eok" onclick="setFancyUnit('otherincome','eok',this)" data-unit="eok">억원</button>
@@ -2318,7 +2312,7 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="sol-ni-target" type="text" inputmode="numeric" value="5,000,000"
                      style="padding-right:8px;width:100px;"
-                     oninput="solOnTargetInput()" onblur="solOnTargetBlur()">
+                     oninput="simOnInput(this)" onblur="simOnBlur(this)">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="target" data-unit="eok" onclick="setFancyUnit('target','eok',this)" data-unit="eok">억원</button>
@@ -2328,7 +2322,7 @@
           </div>
         </div>
         <input type="range" id="sol-sl-target" min="100000" max="10000000" step="100000" value="5000000"
-               oninput="solSyncTarget()">
+               oninput="simOnSlider(this)">
       </div>
 
       <div class="target-box">
@@ -2505,7 +2499,7 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="tiger-ni-amount" type="text" inputmode="numeric" value="100,000,000"
                      style="padding-right:8px;width:110px;"
-                     oninput="tigerOnAmtInput()" onblur="tigerOnAmtBlur()">
+                     oninput="simOnInput(this)" onblur="simOnBlur(this)">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="amount" data-unit="eok" onclick="setFancyUnit('amount','eok',this)" data-unit="eok">억원</button>
@@ -2516,7 +2510,7 @@
           </div>
         </div>
         <input type="range" id="tiger-sl-amount" min="1000000" max="500000000" step="1000000" value="100000000"
-               oninput="tigerSyncAmount()">
+               oninput="simOnSlider(this)">
       </div>
 
       <div class="slider-block">
@@ -2587,7 +2581,7 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="tiger-ni-monthly" type="text" inputmode="numeric" value="1,000,000"
                      style="padding-right:8px;width:100px;"
-                     oninput="tigerOnMonthlyInput()" onblur="tigerOnMonthlyBlur()">
+                     oninput="simOnInput(this)" onblur="simOnBlur(this)">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="monthly" data-unit="eok" onclick="setFancyUnit('monthly','eok',this)" data-unit="eok">억원</button>
@@ -2597,7 +2591,7 @@
           </div>
         </div>
         <input type="range" id="tiger-sl-monthly" min="0" max="50000000" step="100000" value="1000000"
-               oninput="tigerSyncMonthly()">
+               oninput="simOnSlider(this)">
         <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(0,229,176,0.12);">
           <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">연간 추가 투자액</p>
           <p style="font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:500;" id="tiger-dca-annual-label">—</p>
@@ -2680,7 +2674,7 @@
                   <div class="num-pill" style="flex-shrink:0;">
                     <input class="num-input comma-input" id="tiger-ni-otherincome" type="text" inputmode="numeric" value="50,000,000"
                            style="padding-right:8px;width:90px;"
-                           oninput="tigerOnOtherIncomeInput()" onblur="tigerOnOtherIncomeBlur()">
+                           oninput="simOnInput(this)" onblur="simOnBlur(this)">
                   </div>
                   <div class="unit-tabs">
                     <button class="unit-btn" data-field="otherincome" data-unit="eok" onclick="setFancyUnit('otherincome','eok',this)" data-unit="eok">억원</button>
@@ -2824,7 +2818,7 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="tiger-ni-target" type="text" inputmode="numeric" value="5,000,000"
                      style="padding-right:8px;width:100px;"
-                     oninput="tigerOnTargetInput()" onblur="tigerOnTargetBlur()">
+                     oninput="simOnInput(this)" onblur="simOnBlur(this)">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="target" data-unit="eok" onclick="setFancyUnit('target','eok',this)" data-unit="eok">억원</button>
@@ -2834,7 +2828,7 @@
           </div>
         </div>
         <input type="range" id="tiger-sl-target" min="100000" max="10000000" step="100000" value="5000000"
-               oninput="tigerSyncTarget()">
+               oninput="simOnSlider(this)">
       </div>
 
       <div class="target-box">
@@ -3012,7 +3006,7 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="tigerdiv-ni-amount" type="text" inputmode="numeric" value="100,000,000"
                      style="padding-right:8px;width:110px;"
-                     oninput="tigerdivOnAmtInput()" onblur="tigerdivOnAmtBlur()">
+                     oninput="simOnInput(this)" onblur="simOnBlur(this)">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="amount" data-unit="eok" onclick="setFancyUnit('amount','eok',this)" data-unit="eok">억원</button>
@@ -3023,7 +3017,7 @@
           </div>
         </div>
         <input type="range" id="tigerdiv-sl-amount" min="1000000" max="500000000" step="1000000" value="100000000"
-               oninput="tigerdivSyncAmount()">
+               oninput="simOnSlider(this)">
       </div>
 
       <div class="slider-block">
@@ -3094,17 +3088,17 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="tigerdiv-ni-monthly" type="text" inputmode="numeric" value="1,000,000"
                      style="padding-right:8px;width:100px;"
-                     oninput="tigerdivOnMonthlyInput()" onblur="tigerdivOnMonthlyBlur()">
+                     oninput="simOnInput(this)" onblur="simOnBlur(this)">
             </div>
             <div class="unit-tabs">
-              <button class="unit-btn" data-field="monthly" data-unit="eok" data-tdunit="monthly" onclick="tigerdivSetMonthlyUnit('eok',this)">억원</button>
-              <button class="unit-btn" data-field="monthly" data-unit="man" data-tdunit="monthly" onclick="tigerdivSetMonthlyUnit('man',this)">만원</button>
-              <button class="unit-btn active" data-field="monthly" data-unit="won" data-tdunit="monthly" onclick="tigerdivSetMonthlyUnit('won',this)">원</button>
+              <button class="unit-btn" data-field="monthly" data-unit="eok" onclick="setFancyUnit('monthly','eok',this)">억원</button>
+              <button class="unit-btn" data-field="monthly" data-unit="man" onclick="setFancyUnit('monthly','man',this)">만원</button>
+              <button class="unit-btn active" data-field="monthly" data-unit="won" onclick="setFancyUnit('monthly','won',this)">원</button>
             </div>
           </div>
         </div>
         <input type="range" id="tigerdiv-sl-monthly" min="0" max="50000000" step="100000" value="1000000"
-               oninput="tigerdivSyncMonthly()">
+               oninput="simOnSlider(this)">
         <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(0,229,176,0.12);">
           <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">연간 추가 투자액</p>
           <p style="font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:500;" id="tigerdiv-dca-annual-label">—</p>
@@ -3187,7 +3181,7 @@
                   <div class="num-pill" style="flex-shrink:0;">
                     <input class="num-input comma-input" id="tigerdiv-ni-otherincome" type="text" inputmode="numeric" value="50,000,000"
                            style="padding-right:8px;width:90px;"
-                           oninput="tigerdivOnOtherIncomeInput()" onblur="tigerdivOnOtherIncomeBlur()">
+                           oninput="simOnInput(this)" onblur="simOnBlur(this)">
                   </div>
                   <div class="unit-tabs">
                     <button class="unit-btn" data-field="otherincome" data-unit="eok" onclick="setFancyUnit('otherincome','eok',this)" data-unit="eok">억원</button>
@@ -3331,17 +3325,17 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="tigerdiv-ni-target" type="text" inputmode="numeric" value="5,000,000"
                      style="padding-right:8px;width:100px;"
-                     oninput="tigerdivOnTargetInput()" onblur="tigerdivOnTargetBlur()">
+                     oninput="simOnInput(this)" onblur="simOnBlur(this)">
             </div>
             <div class="unit-tabs">
-              <button class="unit-btn" data-field="target" data-unit="eok" data-tdunit="target" onclick="tigerdivSetTargetUnit('eok',this)">억원</button>
-              <button class="unit-btn" data-field="target" data-unit="man" data-tdunit="target" onclick="tigerdivSetTargetUnit('man',this)">만원</button>
-              <button class="unit-btn active" data-field="target" data-unit="won" data-tdunit="target" onclick="tigerdivSetTargetUnit('won',this)">원</button>
+              <button class="unit-btn" data-field="target" data-unit="eok" onclick="setFancyUnit('target','eok',this)">억원</button>
+              <button class="unit-btn" data-field="target" data-unit="man" onclick="setFancyUnit('target','man',this)">만원</button>
+              <button class="unit-btn active" data-field="target" data-unit="won" onclick="setFancyUnit('target','won',this)">원</button>
             </div>
           </div>
         </div>
         <input type="range" id="tigerdiv-sl-target" min="100000" max="10000000" step="100000" value="5000000"
-               oninput="tigerdivSyncTarget()">
+               oninput="simOnSlider(this)">
       </div>
 
       <div class="target-box">
@@ -3399,7 +3393,7 @@
 
         <div id="tigerdiv-detail-monthly">
           <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
-            <button id="btn-expand-tiger" onclick="toggleAllYears('tigerdiv-monthlyTableBody',this)"
+            <button id="btn-expand-tigerdiv" onclick="toggleAllYears('tigerdiv-monthlyTableBody',this)"
               style="font-size:11px;color:var(--text3);background:var(--bg3);border:1px solid var(--card-border);border-radius:6px;padding:3px 10px;cursor:pointer;">▶ 전체 펼치기</button>
           </div>
           <div class="table-scroll" style="max-height:360px;overflow-y:auto;">
@@ -5415,12 +5409,12 @@
             </div>
             <input id="mh-target-pct" type="number" value="15" min="1" max="100" step="0.5"
               style="width:100%;box-sizing:border-box;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:15px;">
-            <p style="margin:6px 0 0;font-size:11px;color:var(--text3);">별도 지정가매도 가격, 리버스 복귀 조건에 적용됩니다</p>
+            <p style="margin:6px 0 0;font-size:11px;color:var(--text3);">별%, 지정가매도 가격, 리버스 복귀 조건에 적용됩니다</p>
           </div>
           <!-- 큰수 % -->
           <div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-              <p style="margin:0;font-size:12px;color:var(--text3);">큰수 % (증가 × 배수)</p>
+              <p style="margin:0;font-size:12px;color:var(--text3);">큰수 % (종가 × 배수)</p>
               <span style="font-size:11px;color:var(--text3);">기본 12%, 범위 0~30%</span>
             </div>
             <input id="mh-bignum-pct" type="number" value="12" min="0" max="30" step="0.5"
@@ -5496,7 +5490,7 @@
       <div class="card" style="padding:18px 20px;margin-bottom:14px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
           <div style="display:flex;align-items:center;gap:12px;">
-            <span id="mh-price-arrow" style="font-size:14px;color:var(--text3);">↑</span>
+            <span id="mh-price-arrow" style="font-size:14px;color:var(--text3);">T</span>
             <span id="mh-cur-price" style="font-family:var(--mono);font-size:26px;font-weight:700;color:var(--accent);">0.00000</span>
           </div>
           <button onclick="mhOpenRecordModal()" id="mh-record-btn" style="padding:7px 16px;border-radius:8px;border:none;background:var(--accent);color:#000;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);">처음매수</button>
@@ -5506,7 +5500,7 @@
           <div id="mh-progress-thumb" style="position:absolute;top:50%;width:12px;height:12px;background:var(--accent);border-radius:50%;transform:translate(-50%,-50%);left:0%;"></div>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);font-family:var(--mono);">
-          <span>0</span><span id="mh-slider-mid" style="color:var(--accent);">20 (추천반)</span><span id="mh-slider-max">40</span>
+          <span>0</span><span id="mh-slider-mid" style="color:var(--accent);">20 (후반전)</span><span id="mh-slider-max">40</span>
         </div>
       </div>
 
@@ -5517,8 +5511,8 @@
         <div class="card" style="padding:12px 14px;"><p style="margin:0 0 4px;font-size:10px;color:var(--text3);">잔금</p><p id="mh-stat-cash" style="margin:0;font-family:var(--mono);font-size:15px;font-weight:600;color:var(--accent);">-</p></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
-        <div class="card" style="padding:12px 14px;"><p style="margin:0 0 4px;font-size:10px;color:var(--text3);">할%</p><p id="mh-stat-pct" style="margin:0;font-family:var(--mono);font-size:15px;font-weight:600;color:var(--accent);">+15.00%</p></div>
-        <div class="card" style="padding:12px 14px;"><p style="margin:0 0 4px;font-size:10px;color:var(--text3);">별지정</p><p id="mh-stat-target" style="margin:0;font-family:var(--mono);font-size:15px;font-weight:600;color:#34d399;">-</p></div>
+        <div class="card" style="padding:12px 14px;"><p style="margin:0 0 4px;font-size:10px;color:var(--text3);">별%</p><p id="mh-stat-pct" style="margin:0;font-family:var(--mono);font-size:15px;font-weight:600;color:var(--accent);">+15.00%</p></div>
+        <div class="card" style="padding:12px 14px;"><p style="margin:0 0 4px;font-size:10px;color:var(--text3);">별지점</p><p id="mh-stat-target" style="margin:0;font-family:var(--mono);font-size:15px;font-weight:600;color:#34d399;">-</p></div>
         <div class="card" style="padding:12px 14px;"><p style="margin:0 0 4px;font-size:10px;color:var(--text3);">1회 매수금</p><p id="mh-stat-onediv" style="margin:0;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--accent);">-</p><p id="mh-stat-onediv-krw" style="margin:2px 0 0;font-size:10px;color:var(--text3);font-family:var(--mono);"></p></div>
       </div>
       <p id="mh-usdkrw-row" style="text-align:right;font-size:11px;color:var(--text3);margin:0 0 14px;font-family:var(--mono);"></p>
@@ -5559,7 +5553,7 @@
 
       <!-- 새 시이클 -->
       <div class="card" style="padding:0;overflow:hidden;margin-bottom:14px;">
-        <div style="padding:14px 18px 10px;"><p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">☆ 새 시이클 시작</p></div>
+        <div style="padding:14px 18px 10px;"><p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">☆ 새 사이클 시작</p></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,0.04);margin-bottom:14px;">
           <div style="background:var(--bg2);padding:14px 18px;"><p style="margin:0 0 4px;font-size:11px;color:var(--text3);">1회 매수금</p><p id="mh-cycle-onediv" style="margin:0;font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent);">-</p></div>
           <div style="background:var(--bg2);padding:14px 18px;"><p style="margin:0 0 4px;font-size:11px;color:var(--text3);">전일 종가</p><p id="mh-cycle-prevclose" style="margin:0;font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent);">-</p></div>
@@ -5659,6 +5653,19 @@
 </div>
 
 <script>
+/* ════════════════════════════════════════════════════════════
+   목차 — 수정할 때는 아래 [태그]로 검색해서 해당 블록만 보면 됩니다
+   [SIM-UNIT]  분배 시뮬레이터 공용 단위·입력·슬라이더 (4개 시뮬레이터 공통)
+   [KODEX]     KODEX 200 타겟위클리 = 전역 update()/renderMonthlyTable()
+   [SOL] [TIGER] [TIGERDIV]  각 시뮬레이터 IIFE (getVWon/setDispFromWon은 [SIM-UNIT] 위임)
+   [NAV]       탭 그룹 드롭다운·switchSubTab (탭 진입 시 자동 조회 훅 포함)
+   [COMPOUND] [LOAN] [CAGR] [FX] [HEALTH] [RATE]  금융 계산기
+   [KOSPI] [KOSPI200] [KOSDAQ] [US-INDEX] [PERIOD] [KOSPI-FETCH]  지수 성장률
+   [FEAR] 공포&탐욕   [MONEYSPEED] 가치 속도   [MUHAN] 무한매수법 기록
+   [YEAR-ACC]  연/월 상세 테이블 아코디언 헬퍼
+════════════════════════════════════════════════════════════ */
+/* [KODEX] KODEX 200 타겟위클리커버드콜 — 전역 상태/계산 시작 */
+
 /* ── 상태 ── */
 let investMode = 'reinvest';  // 분배수령 / 재투자
 let chartTab   = 'annual';    // 연간 / 월간
@@ -5853,11 +5860,6 @@ function setTaxType(type, btn) {
   btn.classList.add('active');
   document.getElementById('tax-separate-info').style.display       = type === 'separate'      ? '' : 'none';
   document.getElementById('tax-comprehensive-info').style.display  = type === 'comprehensive' ? '' : 'none';
-  updateBracketUI();
-  update();
-}
-
-function onOtherIncomeInput() {
   updateBracketUI();
   update();
 }
@@ -6132,58 +6134,81 @@ function setChartTab(tab, btn) {
   if (_cache) renderChart(_cache);
 }
 
-/* ════════════════════════════════════════
-   콤마 입력 + 단위 탭 시스템
-════════════════════════════════════════ */
-var fancyUnit = { amount: 'won', otherincome: 'won', target: 'won', monthly: 'won' };
+/* ════════════════════════════════════════════════════════════
+   [SIM-UNIT] 분배 시뮬레이터 공용 단위 시스템
+   · KODEX/SOL/TIGER/TIGERDIV 4개 시뮬레이터가 모두 이 블록 하나만 사용
+   · 단위는 fancyUnit[pageId+'_'+field] 에만 저장 → 페이지 간 오염 없음
+   · 입력란  : oninput="simOnInput(this)"  onblur="simOnBlur(this)"
+   · 슬라이더: oninput="simOnSlider(this)"   (슬라이더 값은 항상 원 단위)
+   · 단위버튼: onclick="setFancyUnit(field, unit, this)"  (unit: eok|man|won|joo)
+════════════════════════════════════════════════════════════ */
+var SIM_PREFIX = { 'page-simulator': '', 'page-sol': 'sol-', 'page-tiger': 'tiger-', 'page-tigerdiv': 'tigerdiv-' };
+var SIM_UPDATE = { 'page-simulator': 'update', 'page-sol': 'solUpdate', 'page-tiger': 'tigerUpdate', 'page-tigerdiv': 'tigerdivUpdate' };
+var fancyUnit = {};
 let cpdMode = 'simple'; let cpdTaxOn = true; let cpdChart = null; let cpdChartTab = 'val';
 const cpdUnit = { principal: 'won', monthly: 'won' };
 
-/* 단위 → 원 변환 배율 */
+function simEl(pageId, kind, field) { return document.getElementById((SIM_PREFIX[pageId] || '') + kind + '-' + field); }
+function simUnit(pageId, field)     { return fancyUnit[pageId + '_' + field] || 'won'; }
+function simPrice(pageId) {
+  var el = document.getElementById((SIM_PREFIX[pageId] || '') + 'kodex-price-val');
+  return el ? (parseFloat(el.textContent.replace(/[^0-9.]/g, '')) || 0) : 0;
+}
+/* 단위 → 원 배율 (joo = 해당 페이지 현재가) */
 function unitToWon(unit, pageId) {
   if (unit === 'eok') return 1e8;
   if (unit === 'man') return 1e4;
-  if (unit === 'joo') {
-    /* 현재가로 환산 */
-    var pid = pageId || (document.querySelector('.app-page.active') || {id:'page-simulator'}).id;
-    var priceMap = {
-      'page-simulator': 'kodex-price-val',
-      'page-sol':       'sol-kodex-price-val',
-      'page-tiger':     'tiger-kodex-price-val',
-      'page-tigerdiv':  'tigerdiv-kodex-price-val'
-    };
-    var el = document.getElementById(priceMap[pid] || 'kodex-price-val');
-    var price = el ? parseFloat(el.textContent.replace(/[^0-9.]/g,'')) || 0 : 0;
-    return price > 0 ? price : 1;
-  }
+  if (unit === 'joo') { var p = simPrice(pageId || 'page-simulator'); return p > 0 ? p : 1; }
   return 1;
 }
+function simReadWon(pageId, field) {
+  var el = simEl(pageId, 'ni', field);
+  var num = el ? (parseFloat(el.value.replace(/,/g, '')) || 0) : 0;
+  return num * unitToWon(simUnit(pageId, field), pageId);
+}
+/* 원 → 입력란 표시 (원·주: 정수 / 만원·억원: 소수 4자리) */
+function simWriteWon(pageId, field, won) {
+  var el = simEl(pageId, 'ni', field); if (!el) return;
+  var u = simUnit(pageId, field), v = won / unitToWon(u, pageId);
+  el.value = commaFmt((u === 'won' || u === 'joo') ? Math.round(v) : parseFloat(v.toFixed(4)));
+}
+function simInfo(el) {
+  var pg = el.closest('.app-page'), pageId = pg ? pg.id : 'page-simulator';
+  return { pageId: pageId, field: el.id.slice((SIM_PREFIX[pageId] || '').length).replace(/^(ni|sl)-/, '') };
+}
+function simRun(pageId) { var fn = window[SIM_UPDATE[pageId]]; if (typeof fn === 'function') fn(); }
+function simSyncSlider(pageId, field) {
+  var sl = simEl(pageId, 'sl', field); if (!sl) return;
+  sl.value = Math.min(Math.max(simReadWon(pageId, field), parseFloat(sl.min)), parseFloat(sl.max));
+}
+/* 콤마 포맷 (소수점 1개 허용, 커서 위치 유지) */
+function simFormatInput(el) {
+  var pos = el.selectionStart, oldLen = el.value.length;
+  var s = el.value.replace(/[^0-9.]/g, ''), i = s.indexOf('.');
+  if (i >= 0) s = s.slice(0, i + 1) + s.slice(i + 1).replace(/\./g, '');
+  var p = s.split('.');
+  el.value = s === '' ? '' : parseInt(p[0] || '0', 10).toLocaleString('ko-KR') + (p.length > 1 ? '.' + p[1] : '');
+  try { var np = Math.max(0, (pos || 0) + el.value.length - oldLen); el.setSelectionRange(np, np); } catch (e) {}
+}
+function simOnInput(el)  { var o = simInfo(el); simFormatInput(el); simSyncSlider(o.pageId, o.field); simRun(o.pageId); }
+function simOnBlur(el)   { var o = simInfo(el); simWriteWon(o.pageId, o.field, simReadWon(o.pageId, o.field)); el.classList.remove('error'); simRun(o.pageId); }
+function simOnSlider(sl) { var o = simInfo(sl); simWriteWon(o.pageId, o.field, parseFloat(sl.value) || 0); simRun(o.pageId); }
 
-/* 내부 값 읽기: 항상 만원 단위로 반환 */
-function getFancyWan(id) {
-  const raw = (document.getElementById('ni-' + id).value || '0').replace(/,/g, '');
-  const num = parseFloat(raw) || 0;
-  /* 현재 활성 페이지 기준 단위 우선 사용 */
-  const activePage = document.querySelector('.app-page.active');
-  const pageId = activePage ? activePage.id : 'page-simulator';
-  const unit = fancyUnit[pageId + '_' + id] || fancyUnit[id] || 'won';
-  /* joo 단위: 주수 × 현재가 */
-  if (unit === 'joo') {
-    var won = num * unitToWon('joo', pageId);
-    return won / 10000;
-  }
-  return num * unitToWon(unit, pageId) / 10000;
+/* 단위 전환: 원화 값은 그대로 두고 표시만 변경 */
+function setFancyUnit(field, unit, btn) {
+  var pg = btn && btn.closest('.app-page'), pageId = pg ? pg.id : 'page-simulator';
+  if (unit === 'joo' && simPrice(pageId) <= 0) { alert('현재가가 아직 조회되지 않았습니다. 상단 [갱신]으로 현재가를 불러온 뒤 다시 선택해주세요.'); return; }
+  var won = simReadWon(pageId, field);
+  fancyUnit[pageId + '_' + field] = unit;
+  var el = simEl(pageId, 'ni', field);
+  if (el) { simWriteWon(pageId, field, won); el.placeholder = unit === 'joo' ? '주 수량 입력' : ''; }
+  (pg || document).querySelectorAll('.unit-btn[data-field="' + field + '"]').forEach(function (b) { b.classList.toggle('active', b === btn); });
+  simSyncSlider(pageId, field);
+  simRun(pageId);
 }
 
-/* 만원 → 현재 단위 표시값 */
-function wanToDisplay(wan, unit, pageId) {
-  const won = wan * 10000;
-  if (unit === 'joo') {
-    var mul = unitToWon('joo', pageId);
-    return mul > 1 ? won / mul : won;
-  }
-  return won / unitToWon(unit);
-}
+/* KODEX(page-simulator) 계산부 호환: 만원 단위 반환 */
+function getFancyWan(id) { return simReadWon('page-simulator', id) / 10000; }
 
 /* 숫자 → 콤마 문자열 (소수점 허용) */
 function commaFmt(n) {
@@ -6191,146 +6216,6 @@ function commaFmt(n) {
   const parts = String(n).split('.');
   parts[0] = parseInt(parts[0] || '0', 10).toLocaleString('ko-KR');
   return parts.length > 1 ? parts.join('.') : parts[0];
-}
-
-/* 콤마 입력 핸들러 */
-function onFancyInput(id) {
-  const input = document.getElementById('ni-' + id);
-  const cursorPos = input.selectionStart;
-  const oldVal    = input.value;
-  const oldLen    = oldVal.length;
-
-  /* 숫자와 소수점만 추출 */
-  const numStr  = oldVal.replace(/[^0-9.]/g, '');
-  const hasDecimal = numStr.includes('.');
-  let formatted;
-  if (hasDecimal) {
-    const [int, dec] = numStr.split('.');
-    formatted = (parseInt(int || '0', 10).toLocaleString('ko-KR')) + '.' + dec;
-  } else {
-    formatted = parseInt(numStr || '0', 10).toLocaleString('ko-KR');
-    if (numStr === '') formatted = '';
-  }
-  input.value = formatted;
-
-  /* 커서 위치 보정 */
-  const diff = formatted.length - oldLen;
-  const newPos = Math.max(0, cursorPos + diff);
-  try { input.setSelectionRange(newPos, newPos); } catch(e){}
-
-  /* 슬라이더 + 계산 동기화 */
-  syncFancyToSlider(id);
-  update();
-}
-
-/* blur: 정리 포맷 */
-function onFancyBlur(id) {
-  const input = document.getElementById('ni-' + id);
-  const wan   = getFancyWan(id);
-  const disp  = wanToDisplay(wan, fancyUnit[id]);
-  input.value = commaFmt(Math.round(disp * 1e6) / 1e6);
-  input.classList.remove('error');
-}
-
-/* 단위 전환 */
-function setFancyUnit(id, unit, btn) {
-  /* ── 어느 페이지의 버튼인지 파악 ── */
-  const page   = btn.closest('.app-page');
-  const pageId = page ? page.id : 'page-simulator';
-
-  /* ── 현재 페이지 내의 input 요소 찾기 ── */
-  const prefixMap = {
-    'page-simulator': '', 'page-sol': 'sol-',
-    'page-tiger': 'tiger-', 'page-tigerdiv': 'tigerdiv-'
-  };
-  const prefix = prefixMap[pageId] !== undefined ? prefixMap[pageId] : '';
-  const inputEl = document.getElementById(prefix + 'ni-' + id)
-               || document.getElementById('ni-' + id);
-
-  /* ── 현재가 조회 (joo 단위용) ── */
-  const priceMap2 = {
-    'page-simulator':'kodex-price-val','page-sol':'sol-kodex-price-val',
-    'page-tiger':'tiger-kodex-price-val','page-tigerdiv':'tigerdiv-kodex-price-val'
-  };
-  const priceEl2 = document.getElementById(priceMap2[pageId] || 'kodex-price-val');
-  const curPrice = priceEl2 ? (parseFloat(priceEl2.textContent.replace(/[^0-9.]/g,'')) || 0) : 0;
-
-  /* ── 단위 변환: 현재 값(원화) → 새 단위 표시 (joo 단위 포함 한 번에 처리) ── */
-  if (inputEl) {
-    /* 현재 표시 단위 (페이지별 저장) — 변환 전 원래 단위를 먼저 확정 */
-    const prevKey  = pageId + '_' + id;
-    const prevUnit = fancyUnit[prevKey] || fancyUnit[id] || 'won';
-    const rawNum   = parseFloat(inputEl.value.replace(/,/g,'')) || 0;
-    /* prevUnit이 joo이면 가격을 곱해 원화로, 아니면 기존 unitToWon 사용 */
-    const won = prevUnit === 'joo' ? rawNum * (curPrice > 0 ? curPrice : 1)
-                                    : rawNum * unitToWon(prevUnit, pageId);
-
-    /* 단위 저장은 변환 계산 완료 후에 (다음 단계에서 참조되지 않도록) */
-    fancyUnit[prevKey] = unit;
-    fancyUnit[id]      = unit;
-
-    if (unit === 'joo') {
-      /* 새 단위가 joo면 현재가로 나눠 주식수(정수)로 표시 */
-      const shares = curPrice > 0 ? Math.round(won / curPrice) : 0;
-      inputEl.value = commaFmt(shares);
-      inputEl.placeholder = '주 수량 입력';
-      inputEl.style.width = '110px';
-    } else {
-      const wan  = won / 10000;
-      const disp = wanToDisplay(wan, unit, pageId);
-      inputEl.value = commaFmt(unit === 'won' ? Math.round(disp) : parseFloat(disp.toFixed(4)));
-      inputEl.placeholder = '';
-    }
-  }
-
-  /* ── active 표시: 현재 페이지 내 버튼만 ── */
-  const scope = page || document;
-  scope.querySelectorAll('.unit-btn[data-field="' + id + '"]')
-    .forEach(b => b.classList.toggle('active', b === btn));
-
-  /* ── 슬라이더 동기화 및 업데이트: 현재 페이지에 맞게 ── */
-  if (pageId === 'page-simulator') { syncFancyToSlider(id); update(); }
-  else if (pageId === 'page-sol'      && window.solUpdate)      window.solUpdate();
-  else if (pageId === 'page-tiger'    && window.tigerUpdate)    window.tigerUpdate();
-  else if (pageId === 'page-tigerdiv' && window.tigerdivUpdate) window.tigerdivUpdate();
-}
-
-/* 슬라이더 동기화 (amount / target만) */
-function syncFancyToSlider(id) {
-  const sl = document.getElementById('sl-' + id);
-  if (!sl) return;
-  const won = getFancyWan(id) * 10000;
-  sl.value = Math.min(Math.max(won, parseFloat(sl.min)), parseFloat(sl.max));
-}
-
-/* 슬라이더 → 입력란 (amount) */
-function syncAmountFromSlider() {
-  const won  = parseFloat(document.getElementById('sl-amount').value);
-  const wan  = won / 10000;
-  const disp = wanToDisplay(wan, fancyUnit['amount']);
-  document.getElementById('ni-amount').value =
-    commaFmt(fancyUnit['amount'] === 'won' ? Math.round(disp) : parseFloat(disp.toFixed(4)));
-  update();
-}
-
-/* 슬라이더 → 입력란 (target) */
-function syncTargetFromSlider() {
-  const won  = parseFloat(document.getElementById('sl-target').value);
-  const wan  = won / 10000;
-  const disp = wanToDisplay(wan, fancyUnit['target']);
-  document.getElementById('ni-target').value =
-    commaFmt(fancyUnit['target'] === 'won' ? Math.round(disp) : parseFloat(disp.toFixed(4)));
-  update();
-}
-
-/* 슬라이더 → 입력란 (monthly) */
-function syncMonthlyFromSlider() {
-  const won  = parseFloat(document.getElementById('sl-monthly').value);
-  const wan  = won / 10000;
-  const disp = wanToDisplay(wan, fancyUnit['monthly']);
-  document.getElementById('ni-monthly').value =
-    commaFmt(fancyUnit['monthly'] === 'won' ? Math.round(disp) : parseFloat(disp.toFixed(4)));
-  update();
 }
 
 /* ── 아코디언 토글 ── */
@@ -6385,7 +6270,6 @@ function updateDivLabel() {
       .replace(/(?<![분배])분배(?!금|률|소득|수령)|(?<![배])분배(?!금)/g, word);
   });
 }
-
 
 /* ── 세율 포맷: 소수점 최대 4자리, 후행 0 제거 ── */
 function fmtRate(n) {
@@ -6912,7 +6796,7 @@ async function fetchKodexPrice() {
 update();
 
 /* ════════════════════════════════════════
-   SOL 200타겟위클리커버드콜 (0167B0.KS)
+   [SOL] SOL 200타겟위클리커버드콜 (0167B0.KS)
    운용수수료 0.3%, 콜옵션 13%, 배당금 2%
 ════════════════════════════════════════ */
 (function() {
@@ -6931,36 +6815,8 @@ update();
   function getV(id)      { const el=$id(id); return el ? parseFloat(el.value.replace(/,/g,''))||0 : 0; }
 
   /* 단위 인식 값 읽기/쓰기 헬퍼 */
-  function getVWon(fieldId) {
-    var el = $id(fieldId);
-    if (!el) return 0;
-    var num = parseFloat(el.value.replace(/,/g,'')) || 0;
-    var field = fieldId.replace('ni-', '');
-    var unit = (window.fancyUnit && (window.fancyUnit['page-sol_' + field] || window.fancyUnit[field])) || 'won';
-    if (unit === 'joo') {
-      var priceEl = document.getElementById('sol-kodex-price-val') || document.getElementById('kodex-price-val');
-      var price = priceEl ? (parseFloat(priceEl.textContent.replace(/[^0-9.]/g,'')) || 0) : 0;
-      return num * (price > 0 ? price : 1);
-    }
-    return num * (unit === 'eok' ? 1e8 : unit === 'man' ? 1e4 : 1);
-  }
-  function setDispFromWon(fieldId, wonValue) {
-    var el = $id(fieldId);
-    if (!el) return;
-    var field = fieldId.replace('ni-', '');
-    var unit = (window.fancyUnit && (window.fancyUnit['page-sol_' + field] || window.fancyUnit[field])) || 'won';
-    if (unit === 'joo') {
-      var priceEl = document.getElementById('sol-kodex-price-val') || document.getElementById('kodex-price-val');
-      var price = priceEl ? (parseFloat(priceEl.textContent.replace(/[^0-9.]/g,'')) || 0) : 0;
-      var shares = price > 0 ? Math.round(wonValue / price) : 0;
-      el.value = shares.toLocaleString('ko-KR');
-      return;
-    }
-    var disp = wonValue / (unit === 'eok' ? 1e8 : unit === 'man' ? 1e4 : 1);
-    el.value = unit === 'won'
-      ? Math.round(disp).toLocaleString('ko-KR')
-      : parseFloat(disp.toFixed(6)).toLocaleString('ko-KR');
-  }
+  function getVWon(fieldId) { return simReadWon('page-sol', fieldId.replace('ni-', '')); }  /* → [SIM-UNIT] */
+  function setDispFromWon(fieldId, won) { simWriteWon('page-sol', fieldId.replace('ni-', ''), won); }
   function fmt(n)        { return Math.round(n).toLocaleString('ko-KR'); }
 
   // ── 현재가 조회 ──────────────────────────
@@ -7534,90 +7390,9 @@ update();
   }
   window.solSyncToSlider  = key => syncNI(key);
   window.solSyncToNum     = (k,s,d) => syncSL(k,s,d);
-  window.solSyncAmount    = function() {
-    const sl=$id('sl-amount'), ni=$id('ni-amount');
-    if(!sl||!ni) return;
-    setDispFromWon('ni-amount', parseFloat(sl.value));
-    solUpdate();
-  };
-  window.solSyncMonthly   = function() {
-    const sl=$id('sl-monthly'), ni=$id('ni-monthly');
-    if(!sl||!ni) return;
-    setDispFromWon('ni-monthly', parseFloat(sl.value));
-    solUpdate();
-  };
-  window.solSyncTarget    = function() {
-    const sl=$id('sl-target'), ni=$id('ni-target');
-    if(!sl||!ni) return;
-    setDispFromWon('ni-target', parseFloat(sl.value));
-    solUpdate();
-  };
-  window.solOnAmtInput    = function() {
-    const ni=$id('ni-amount'); if(!ni) return;
-    const ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '';
-    const sl=$id('sl-amount');
-    if(sl && ns) { var wonV=getVWon('ni-amount'); sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max)); }
-    solUpdate();
-  };
-  window.solOnAmtBlur     = function() {
-    const ni=$id('ni-amount'); if(!ni) return;
-    const ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '100,000,000';
-    solUpdate();
-  };
-  window.solOnMonthlyInput= function() {
-    const ni=$id('ni-monthly'); if(!ni) return;
-    const ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '';
-    const sl=$id('sl-monthly');
-    if(sl&&ns){var wonV=getVWon('ni-monthly');sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max));}
-    solUpdate();
-  };
-  window.solOnMonthlyBlur = function() {
-    const ni=$id('ni-monthly'); if(!ni) return;
-    const ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '0';
-    solUpdate();
-  };
 
   // ── setDetailTab / setChartTab ────────────
-  
-  window.solOnTargetInput = function() {
-    var ni=$id('ni-target'); if(!ni) return;
-    var ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';
-    var sl=$id('sl-target');
-    if(sl&&ns){var wonV=getVWon('ni-target');sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max));}
-    solUpdate();
-  };
-  window.solOnTargetBlur = function() {
-    var ni=$id('ni-target'); if(!ni) return;
-    var ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'0';
-  };
-  window.solOnOtherIncomeInput = function() {
-    var ni=$id('ni-otherincome'); if(!ni) return;
-    var ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';
-    solUpdate();
-  };
-  window.solOnOtherIncomeBlur = function() {
-    var ni=$id('ni-otherincome'); if(!ni) return;
-    var ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'0';
-  };
 
-window.solSetDetailTab = function(tab, btn) {
-    const pg=document.getElementById('page-sol');
-    if(pg) pg.querySelectorAll('#sol-dtab-annual,#sol-dtab-monthly').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const da=$id('detail-annual'), dm=$id('detail-monthly'), dt=$id('detail-title');
-    if(da) if (da) da.style.display = tab==='annual' ? '' : 'none';
-    if(dm) dm.style.display = tab==='monthly'?'':'none';
-    if(dt) dt.textContent   = tab==='annual'?'연간 상세 내역':'월간 상세 내역';
-    if (tab==='monthly' && _solCache) renderSolMonthlyTable(_solCache);
-  };
     window.solSetChartTab = function(tab,btn) {
     _solChartTab=tab;
     ['annual','monthly'].forEach(function(t){
@@ -7629,6 +7404,9 @@ window.solSetDetailTab = function(tab, btn) {
 
 })();
 
+/* ════════════════════════════════════════
+   [TIGER] TIGER 200 타겟위클리커버드콜
+════════════════════════════════════════ */
 (function() {
   const S = window._tigerState = {
     investMode: 'reinvest',
@@ -7643,36 +7421,8 @@ window.solSetDetailTab = function(tab, btn) {
   function getV(id) { const el=$id(id); return el ? parseFloat(el.value.replace(/,/g,''))||0 : 0; }
 
   /* 단위 인식 값 읽기/쓰기 헬퍼 */
-  function getVWon(fieldId) {
-    var el = $id(fieldId);
-    if (!el) return 0;
-    var num = parseFloat(el.value.replace(/,/g,'')) || 0;
-    var field = fieldId.replace('ni-', '');
-    var unit = (window.fancyUnit && (window.fancyUnit['page-tiger_' + field] || window.fancyUnit[field])) || 'won';
-    if (unit === 'joo') {
-      var priceEl = document.getElementById('tiger-kodex-price-val') || document.getElementById('kodex-price-val');
-      var price = priceEl ? (parseFloat(priceEl.textContent.replace(/[^0-9.]/g,'')) || 0) : 0;
-      return num * (price > 0 ? price : 1);
-    }
-    return num * (unit === 'eok' ? 1e8 : unit === 'man' ? 1e4 : 1);
-  }
-  function setDispFromWon(fieldId, wonValue) {
-    var el = $id(fieldId);
-    if (!el) return;
-    var field = fieldId.replace('ni-', '');
-    var unit = (window.fancyUnit && (window.fancyUnit['page-tiger_' + field] || window.fancyUnit[field])) || 'won';
-    if (unit === 'joo') {
-      var priceEl = document.getElementById('tiger-kodex-price-val') || document.getElementById('kodex-price-val');
-      var price = priceEl ? (parseFloat(priceEl.textContent.replace(/[^0-9.]/g,'')) || 0) : 0;
-      var shares = price > 0 ? Math.round(wonValue / price) : 0;
-      el.value = shares.toLocaleString('ko-KR');
-      return;
-    }
-    var disp = wonValue / (unit === 'eok' ? 1e8 : unit === 'man' ? 1e4 : 1);
-    el.value = unit === 'won'
-      ? Math.round(disp).toLocaleString('ko-KR')
-      : parseFloat(disp.toFixed(6)).toLocaleString('ko-KR');
-  }
+  function getVWon(fieldId) { return simReadWon('page-tiger', fieldId.replace('ni-', '')); }  /* → [SIM-UNIT] */
+  function setDispFromWon(fieldId, won) { simWriteWon('page-tiger', fieldId.replace('ni-', ''), won); }
   function fmt(n)   { return Math.round(n).toLocaleString('ko-KR'); }
 
   // ── 현재가 조회 ──────────────────────────
@@ -7742,7 +7492,6 @@ window.solSetDetailTab = function(tab, btn) {
   // ── 계산 ──────────────────────────────────
   let _tigerChartTab = 'annual';
   let _tigerCache = null;
-
 
   window.tigerOnKodexRatioChange = function() {
     tigerUpdate();
@@ -8017,40 +7766,7 @@ window.solSetDetailTab = function(tab, btn) {
   function syncSL(key,scale,dec){const ni=$id('ni-'+key),sl=$id('sl-'+key);if(!ni||!sl)return;ni.value=(parseFloat(sl.value)/scale).toFixed(dec);tigerUpdate();}
   window.tigerSyncToSlider=key=>syncNI(key);
   window.tigerSyncToNum=(k,s,d)=>syncSL(k,s,d);
-  window.tigerSyncAmount=function(){const sl=$id('sl-amount'),ni=$id('ni-amount');if(!sl||!ni)return;setDispFromWon('ni-amount',parseFloat(sl.value));tigerUpdate();};
-  window.tigerSyncMonthly=function(){const sl=$id('sl-monthly'),ni=$id('ni-monthly');if(!sl||!ni)return;setDispFromWon('ni-monthly',parseFloat(sl.value));tigerUpdate();};
-  window.tigerSyncTarget=function(){const sl=$id('sl-target'),ni=$id('ni-target');if(!sl||!ni)return;setDispFromWon('ni-target',parseFloat(sl.value));tigerUpdate();};
-  window.tigerOnAmtInput=function(){const ni=$id('ni-amount');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';const sl=$id('sl-amount');if(sl&&ns){var wonV=getVWon('ni-amount');sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max));}tigerUpdate();};
-  window.tigerOnAmtBlur=function(){const ni=$id('ni-amount');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'100,000,000';tigerUpdate();};
-  window.tigerOnMonthlyInput=function(){const ni=$id('ni-monthly');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';const sl=$id('sl-monthly');if(sl&&ns){var wonV=getVWon('ni-monthly');sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max));}tigerUpdate();};
-  window.tigerOnMonthlyBlur=function(){const ni=$id('ni-monthly');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'0';tigerUpdate();};
-  
-  window.tigerOnTargetInput = function() {
-    var ni=$id('ni-target'); if(!ni) return;
-    var ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';
-    var sl=$id('sl-target');
-    if(sl&&ns){var wonV=getVWon('ni-target');sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max));}
-    tigerUpdate();
-  };
-  window.tigerOnTargetBlur = function() {
-    var ni=$id('ni-target'); if(!ni) return;
-    var ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'0';
-  };
-  window.tigerOnOtherIncomeInput = function() {
-    var ni=$id('ni-otherincome'); if(!ni) return;
-    var ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';
-    tigerUpdate();
-  };
-  window.tigerOnOtherIncomeBlur = function() {
-    var ni=$id('ni-otherincome'); if(!ni) return;
-    var ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'0';
-  };
 
-window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('page-tiger');if(pg) pg.querySelectorAll('#tiger-dtab-annual,#tiger-dtab-monthly').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const da=$id('detail-annual'),dm=$id('detail-monthly'),dt=$id('detail-title');if(da)if (da) da.style.display = tab==='annual' ? '' : 'none';if(dm)dm.style.display=tab==='monthly'?'':'none';if(dt)dt.textContent=tab==='annual'?'연간 상세 내역':'월간 상세 내역';if(tab==='monthly'&&_tigerCache)renderTigerMonthlyTable(_tigerCache);};
     window.tigerSetChartTab = function(tab,btn) {
     _tigerChartTab=tab;
     ['annual','monthly'].forEach(function(t){
@@ -8062,6 +7778,9 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
 
 })();
 
+/* ════════════════════════════════════════
+   [TIGERDIV] TIGER 배당커버드콜액티브
+════════════════════════════════════════ */
 (function() {
   const S = window._tigerdivState = {
     investMode: 'reinvest',
@@ -8076,39 +7795,9 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
   function getV(id) { const el=$id(id); return el ? parseFloat(el.value.replace(/,/g,''))||0 : 0; }
 
   /* ── 단위 인식 값 읽기/쓰기 헬퍼 ── */
-  function _tdUnitMult(field) {
-    if (field === 'monthly') {
-      return _tdMonthlyUnit === 'eok' ? 1e8 : _tdMonthlyUnit === 'man' ? 1e4 : 1;
-    }
-    if (field === 'target') {
-      return (_tdTargetUnit || 'won') === 'eok' ? 1e8 : (_tdTargetUnit || 'won') === 'man' ? 1e4 : 1;
-    }
-    /* amount: fancyUnit['page-tigerdiv_amount'] 참조 */
-    var u = (window.fancyUnit && (window.fancyUnit['page-tigerdiv_' + field] || window.fancyUnit[field])) || 'won';
-    if (u === 'joo') {
-      var priceEl = document.getElementById('tigerdiv-kodex-price-val') || document.getElementById('kodex-price-val');
-      var price = priceEl ? (parseFloat(priceEl.textContent.replace(/[^0-9.]/g,'')) || 0) : 0;
-      return price > 0 ? price : 1;
-    }
-    return u === 'eok' ? 1e8 : u === 'man' ? 1e4 : 1;
-  }
-  function getVWon(fieldId) {
-    var el = $id(fieldId);
-    if (!el) return 0;
-    var num = parseFloat(el.value.replace(/,/g,'')) || 0;
-    var field = fieldId.replace('ni-', '');
-    return num * _tdUnitMult(field);
-  }
-  function setDispFromWon(fieldId, wonValue) {
-    var el = $id(fieldId);
-    if (!el) return;
-    var field = fieldId.replace('ni-', '');
-    var mult = _tdUnitMult(field);
-    var disp = wonValue / mult;
-    el.value = mult === 1
-      ? Math.round(disp).toLocaleString('ko-KR')
-      : parseFloat(disp.toFixed(6)).toLocaleString('ko-KR');
-  }
+  
+  function getVWon(fieldId) { return simReadWon('page-tigerdiv', fieldId.replace('ni-', '')); }  /* → [SIM-UNIT] */
+  function setDispFromWon(fieldId, won) { simWriteWon('page-tigerdiv', fieldId.replace('ni-', ''), won); }
   function fmt(n)   { return Math.round(n).toLocaleString('ko-KR'); }
 
   // ── 현재가 조회 ──────────────────────────
@@ -8178,7 +7867,6 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
   // ── 계산 ──────────────────────────────────
   let _tigerdivChartTab = 'annual';
   let _tigerdivCache = null;
-
 
   window.tigerdivOnKodexRatioChange = function() {
     tigerdivUpdate();
@@ -8456,55 +8144,7 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
   function syncSL(key,scale,dec){const ni=$id('ni-'+key),sl=$id('sl-'+key);if(!ni||!sl)return;ni.value=(parseFloat(sl.value)/scale).toFixed(dec);tigerdivUpdate();}
   window.tigerdivSyncToSlider=key=>syncNI(key);
   window.tigerdivSyncToNum=(k,s,d)=>syncSL(k,s,d);
-  
-  window.tigerdivSyncMonthly=function(){
-    var sl=$id('sl-monthly'); if(!sl) return;
-    setDispFromWon('ni-monthly', parseFloat(sl.value));
-    tigerdivUpdate();
-  };
-  window.tigerdivSyncTarget=function(){
-    var sl=$id('sl-target'); if(!sl) return;
-    var wonV=parseFloat(sl.value);
-    var ni=$id('ni-target');
-    if(ni){
-      var unit=_tdTargetUnit||'won';
-      var disp=wonV/(unit==='eok'?1e8:unit==='man'?1e4:1);
-      ni.value=unit==='won'
-        ?Math.round(disp).toLocaleString('ko-KR')
-        :parseFloat(disp.toFixed(4)).toLocaleString('ko-KR');
-    }
-    tigerdivUpdate();
-  };
-  
-  
-  window.tigerdivOnMonthlyInput=function(){
-    var ni=$id('ni-monthly'); if(!ni) return;
-    var ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';
-    var sl=$id('sl-monthly');
-    if(sl&&ns){var wonV=getVWon('ni-monthly');sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max));}
-    tigerdivUpdate();
-  };
-  window.tigerdivOnMonthlyBlur=function(){const ni=$id('ni-monthly');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'0';tigerdivUpdate();};
-  
-  window.tigerdivOnOtherIncomeInput = function() {
-    var ni=$id('ni-otherincome'); if(!ni) return;
-    var ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';
-    tigerdivUpdate();
-  };
-  window.tigerdivOnOtherIncomeBlur = function() {
-    var ni=$id('ni-otherincome'); if(!ni) return;
-    var ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'0';
-  };
 
-  window.tigerdivSetDetailTab=function(tab,btn){
-    /* 상세 탭 버튼 active 직접 제어 */
-    ['annual','monthly'].forEach(function(t) {
-      var b = document.getElementById('tigerdiv-dtab-' + t);
-      if (b) b.classList.toggle('active', t === tab);
-    });const da=$id('detail-annual'),dm=$id('detail-monthly'),dt=$id('detail-title');if(da)if (da) da.style.display = tab==='annual' ? '' : 'none';if(dm)dm.style.display=tab==='monthly'?'':'none';if(dt)dt.textContent=tab==='annual'?'연간 상세 내역':'월간 상세 내역';if(tab==='monthly'&&_tigerdivCache)renderTigerdivMonthlyTable(_tigerdivCache);};
   window.tigerdivSetChartTab=function(tab,btn){
     _tigerdivChartTab=tab;
     /* 차트 탭 버튼 active 직접 제어 */
@@ -8514,186 +8154,8 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
     });if(_tigerdivCache)renderTigerdivChart(_tigerdivCache.rows,_tigerdivCache.years,_tigerdivCache.rate,_tigerdivCache.keepRate);};
 
   /* 배당 프리셋 (일반/특별배당) */
-  window.tigerdivOnAmtInput  = function() {
-    var ni=$id('ni-amount'); if(!ni) return;
-    var ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';
-    var sl=$id('sl-amount');
-    if(sl&&ns){var wonV=getVWon('ni-amount');sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max));}
-    tigerdivUpdate();
-  };
-  window.tigerdivOnAmtBlur   = function() {
-    const ni=$id('ni-amount'); if(!ni) return;
-    const ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '0';
-  };
-  window.tigerdivSyncAmount  = function() {
-    const sl=$id('sl-amount');
-    if(!sl) return;
-    setDispFromWon('ni-amount', parseFloat(sl.value));
-    tigerdivUpdate();
-  };
-  window.tigerdivSyncMonthly = function() {
-    const sl=$id('sl-monthly'), ni=$id('ni-monthly');
-    if(!sl||!ni) return;
-    setDispFromWon('ni-monthly', parseFloat(sl.value));
-    tigerdivUpdate();
-  };
-  window.tigerdivOnMonthlyInput = function() {
-    const ni=$id('ni-monthly'); if(!ni) return;
-    const ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '';
-    tigerdivUpdate();
-  };
-  window.tigerdivOnMonthlyBlur  = function() {
-    const ni=$id('ni-monthly'); if(!ni) return;
-    const ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '0';
-  };
-  window.tigerdivSyncTarget  = function() {
-    var sl=$id('sl-target'); if(!sl) return;
-    var wonV=parseFloat(sl.value);
-    var ni=$id('ni-target');
-    if(ni){
-      var unit=_tdTargetUnit||'won';
-      var disp=wonV/(unit==='eok'?1e8:unit==='man'?1e4:1);
-      ni.value=unit==='won'
-        ?Math.round(disp).toLocaleString('ko-KR')
-        :parseFloat(disp.toFixed(4)).toLocaleString('ko-KR');
-    }
-    tigerdivUpdate();
-  };
-
-  var _tdMonthlyUnit = 'won';
-  window.tigerdivSetMonthlyUnit = function(unit, btn) {
-    var ni = $id('ni-monthly');
-    if (!ni) return;
-    var wonV = getVWon('ni-monthly');  /* 현재 단위로 원화 변환 */
-    _tdMonthlyUnit = unit;             /* 단위 먼저 업데이트 */
-    setDispFromWon('ni-monthly', wonV); /* 새 단위로 표시 */
-    var sl = $id('sl-monthly');
-    if (sl) sl.value = Math.min(Math.max(wonV, parseInt(sl.min)), parseInt(sl.max));
-    var pg = document.getElementById('page-tigerdiv');
-    if(pg) pg.querySelectorAll('[data-tdunit="monthly"]').forEach(function(b){b.classList.toggle('active',b===btn);});
-    tigerdivUpdate();
-  };
-
 
   /* ── tigerdiv 전용 단위 함수 (전역 fancyUnit 오염 방지) ── */
-  var getVWon = function(fieldId) {
-    var el = $id(fieldId);
-    if (!el) return 0;
-    var num = parseFloat(el.value.replace(/,/g,'')) || 0;
-    var field = fieldId.replace('ni-','');
-    var unit = field === 'target'  ? (_tdTargetUnit  || 'won')
-             : field === 'monthly' ? (_tdMonthlyUnit || 'won')
-             : 'won';
-    return num * (unit === 'eok' ? 1e8 : unit === 'man' ? 1e4 : 1);
-  };
-  var setDispFromWon = function(fieldId, wonValue) {
-    var el = $id(fieldId);
-    if (!el) return;
-    var field = fieldId.replace('ni-','');
-    if (field === 'amount') {
-      var mult = _tdUnitMult('amount');
-      var u = (window.fancyUnit && (window.fancyUnit['page-tigerdiv_amount'] || window.fancyUnit['amount'])) || 'won';
-      if (u === 'joo') {
-        var shares = mult > 0 ? Math.round(wonValue / mult) : 0;
-        el.value = shares.toLocaleString('ko-KR');
-        return;
-      }
-      var dispA = wonValue / mult;
-      el.value = mult === 1
-        ? Math.round(dispA).toLocaleString('ko-KR')
-        : parseFloat(dispA.toFixed(6)).toLocaleString('ko-KR');
-      return;
-    }
-    var unit = field === 'target'  ? (_tdTargetUnit  || 'won')
-             : field === 'monthly' ? (_tdMonthlyUnit || 'won')
-             : 'won';
-    var disp = wonValue / (unit === 'eok' ? 1e8 : unit === 'man' ? 1e4 : 1);
-    el.value = unit === 'won'
-      ? Math.round(disp).toLocaleString('ko-KR')
-      : parseFloat(disp.toFixed(6)).toLocaleString('ko-KR');
-  };
-  var _tdTargetUnit = 'won';
-  window.tigerdivSetTargetUnit = function(unit, btn) {
-    var ni = $id('ni-target');
-    if (!ni) return;
-    /* 현재 _tdTargetUnit 기준으로 원화 환산 */
-    var rawNum = parseFloat((ni.value||'0').replace(/,/g,'')) || 0;
-    var curUnit = _tdTargetUnit || 'won';
-    var wonV = rawNum * (curUnit==='eok'?1e8:curUnit==='man'?1e4:1);
-    _tdTargetUnit = unit;
-    /* 새 단위로 표시 */
-    var disp = wonV / (unit==='eok'?1e8:unit==='man'?1e4:1);
-    ni.value = unit==='won'
-      ? Math.round(disp).toLocaleString('ko-KR')
-      : parseFloat(disp.toFixed(4)).toLocaleString('ko-KR');
-    var sl = $id('sl-target');
-    if (sl) sl.value = Math.min(Math.max(wonV, parseInt(sl.min)), parseInt(sl.max));
-    var pg = document.getElementById('page-tigerdiv');
-    if(pg) pg.querySelectorAll('[data-tdunit="target"]').forEach(function(b){b.classList.toggle('active',b===btn);});
-    tigerdivUpdate();
-  };
-
-  window.tigerdivOnTargetInput = function() {
-    var ni=$id('ni-target'); if(!ni) return;
-    var ns=ni.value.replace(/[^0-9.]/g,'');
-    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';
-    var sl=$id('sl-target');
-    if(sl&&ns){
-      var unit=_tdTargetUnit||'won';
-      var rawNum=parseFloat(ns)||0;
-      var wonV=rawNum*(unit==='eok'?1e8:unit==='man'?1e4:1);
-      sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max));
-    }
-    tigerdivUpdate();
-  };
-  window.tigerdivOnTargetBlur = function() {
-    var ni=$id('ni-target'); if(!ni) return;
-    var ns=ni.value.replace(/[^0-9.]/g,'');
-    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'0';
-  };
-
-  window.tigerdivSetPreset = function(mode, btn) {
-    const pg = document.getElementById('page-tigerdiv');
-    if (!pg) return;
-    pg.querySelectorAll('#tigerdiv-preset-normal, #tigerdiv-preset-special')
-      .forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    if (mode === 'special') {
-      /* 특별배당: 콜옵션 22% + 배당금 2% = 연 24% */
-      const callEl = $id('ni-calloption');
-      const divEl  = $id('ni-divportion');
-      const rateEl = $id('ni-rate');
-      const rateSl = $id('sl-rate');
-      if (callEl) callEl.value = 22;
-      if (divEl)  divEl.value  = 2;
-      if (rateEl) rateEl.value = 24;
-      if (rateSl) rateSl.value = 24;
-      const callSl = $id('sl-calloption');
-      const divSl  = $id('sl-divportion');
-      if (callSl) callSl.value = 22;
-      if (divSl)  divSl.value  = 2;
-    } else {
-      /* 일반: 콜옵션 5% + 배당금 2% = 연 7% */
-      const callEl = $id('ni-calloption');
-      const divEl  = $id('ni-divportion');
-      const rateEl = $id('ni-rate');
-      const rateSl = $id('sl-rate');
-      if (callEl) callEl.value = 5;
-      if (divEl)  divEl.value  = 2;
-      if (rateEl) rateEl.value = 7;
-      if (rateSl) rateSl.value = 7;
-      const callSl = $id('sl-calloption');
-      const divSl  = $id('sl-divportion');
-      if (callSl) callSl.value = 5;
-      if (divSl)  divSl.value  = 2;
-    }
-    tigerdivUpdate();
-  };
-
 
   window.tigerdivValidateNum = function(key) {
     const el = $id('ni-' + key);
@@ -8711,10 +8173,8 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
 })();
 /* ── TIGER END ── */
 
-
-
 /* ════════════════════════════════════════
-   환율 계산기
+   [FX] 환율 계산기
    1순위: Anthropic Web Search (실시간)
    2순위: exchangerate-api 공개 엔드포인트
    기준통화: KRW (원화)
@@ -9011,9 +8471,8 @@ function fxSwap() {
 
 /* 모바일 반응형: fx-rate-grid 2열 */
 
-
 /* ════════════════════════════════════════
-   건강보험료 계산기 (2025년 기준)
+   [HEALTH] 건강보험료 계산기 (2025년 기준)
 ════════════════════════════════════════ */
 let _healthType = 'work';
 
@@ -9029,23 +8488,6 @@ function healthSetType(type, btn) {
 }
 
 function hFmt(n) { return Math.round(n).toLocaleString('ko-KR') + '원'; }
-function hGetNum(id) {
-  const el = document.getElementById(id);
-  return el ? parseFloat(el.value.replace(/,/g,'')) || 0 : 0;
-}
-function hSetComma(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const n = parseFloat(el.value.replace(/,/g,'')) || 0;
-  el.value = n > 0 ? Math.round(n).toLocaleString('ko-KR') : '0';
-}
-function hSalaryBlur()  { hUnitBlur('h-salary');  }
-function hExtraBlur()   { hUnitBlur('h-extra');   }
-function hIncomeBlur()  { hUnitBlur('h-income');  }
-function hPropBlur()    { hUnitBlur('h-prop');    }
-function hCarBlur()     { hUnitBlur('h-car');     }
-function hDepositBlur() { hUnitBlur('h-deposit'); }
-function hBlurField(id) { hUnitBlur(id); }
 
 /* ── 단위 시스템 ── */
 const _hUnits = {};   // fieldId → 'won'|'man'|'eok'
@@ -9125,31 +8567,6 @@ const H_PROP_PTS = [
 ];
 
 /* ── 지역 가입자 자동차 점수 (차량기준가액 기준) ── */
-function hCarPts(carVal) {
-  if (carVal <= 0) return 0;
-  const wan = carVal / 10000;
-  if (wan < 4000) return 0; // 4천만원 미만 제외(생계형 등)
-  // 4천만원 이상: 가액 × 0.01 (간이)
-  if (wan >= 4000 && wan < 6000) return 30;
-  if (wan >= 6000 && wan < 8000) return 40;
-  if (wan >= 8000 && wan < 10000) return 50;
-  return 60;
-}
-
-function hGetIncomePts(annualIncome) {
-  const wan = annualIncome / 10000;
-  for (let i = 0; i < H_INCOME_PTS.length; i++) {
-    if (wan <= H_INCOME_PTS[i][0]) {
-      /* 구간 내 선형 보간 */
-      if (i === 0) return 0;
-      const [hi, pts] = H_INCOME_PTS[i];
-      const [lo, plo] = H_INCOME_PTS[i-1];
-      if (lo === hi) return pts;
-      return Math.round(plo + (pts-plo) * (wan-lo) / (hi-lo));
-    }
-  }
-  return 700;
-}
 
 function hGetPropPts(propVal) {
   const basic_deduct = 50000000; // 기본공제 5000만원
@@ -9274,21 +8691,14 @@ function calcHealth() {
   }
 }
 
-
 /* ═══════════════════════════════════════════
-   월간 테이블 연차 아코디언 헬퍼
+   [YEAR-ACC] 월간 테이블 연차 아코디언 헬퍼
    insertYearAccordionRow(tbody, yearNum, colSpan)
    toggleYearGroup(hdrRow)
 ═══════════════════════════════════════════ */
 /* ── 아코디언 열린 상태 기억 (tbodyId → Set<yearNum>) ── */
 const _yrOpenState = {};
 
-function getOpenYears(tbody) {
-  const id = tbody.id || tbody.dataset.accId;
-  if (!id) return new Set();
-  const s = _yrOpenState[id];
-  return s ? new Set(s) : new Set();
-}
 function saveOpenYears(tbody) {
   const id = tbody.id || tbody.dataset.accId;
   if (!id) return;
@@ -9386,9 +8796,8 @@ function toggleAllYears(tbodyId, btn) {
   saveOpenYears(tbody);
 }
 
-
 /* ═══════════════════════════════════════════════════
-   공포 & 탐욕 지수 (feargreedchart.com API)
+   [FEAR] 공포 & 탐욕 지수 (feargreedchart.com API)
    ═══════════════════════════════════════════════════ */
 let _fearData = null;
 let _fearHistChart = null;
@@ -9583,7 +8992,6 @@ async function fetchFearGreed() {
   }
 }
 
-
 /* ── 보유 수량 계산 헬퍼 ── */
 function calcShares(portEnd, priceNow, growth, monthNum) {
   if (!priceNow || priceNow <= 0 || !portEnd) return null;
@@ -9599,11 +9007,11 @@ function fmtShares(shares) {
 window.addEventListener('load', function() { fetchKodexPrice(); setTimeout(function(){ update(); }, 100); });
 
 /* ════════════════════════════════════════
-   KOSPI 성장률 분석
+   [KOSPI] KOSPI 성장률 분석
 ════════════════════════════════════════ */
 
 /* ════════════════════════════════════════
-   KOSDAQ 성장률 분석 — 독립 모듈
+   [KOSDAQ] KOSDAQ 성장률 분석 — 독립 모듈
    기준: 1996-07-01, 기준지수 1000
    티커: ^KQ11 (Yahoo Finance)
 ════════════════════════════════════════ */
@@ -9806,7 +9214,7 @@ function fmtWon(n) {
 }
 
 /* ════════════════════════════════════════
-   기간별 성장률 계산
+   [PERIOD] 기간별 성장률 계산
    과거 지수값: Yahoo Finance 실시간 조회 + 내장 테이블 fallback
 ════════════════════════════════════════ */
 const _kospiPeriod  = { kospi: 15, k200: 15 };
@@ -10006,7 +9414,7 @@ function calcKospiRates(currentVal, asOfDate) {
 }
 
 /* ═══════════════════════════════════════
-   KOSPI 지수 조회
+   [KOSPI-FETCH] KOSPI 지수 조회
    1순위: Anthropic API + web_search
    2순위: CORS 프록시 순차 시도
    실패 시 마지막 성공값 유지
@@ -10145,34 +9553,12 @@ async function fetchKospi() {
   }
 }
 
-function useDefaultKospi() {
-  const now = new Date();
-  document.getElementById('kospi-current-val').textContent =
-    _lastKospi.toLocaleString('ko-KR', {minimumFractionDigits:2, maximumFractionDigits:2});
-  document.getElementById('kospi-date-label').textContent  = nowStr() + ' 기준';
-  document.getElementById('kospi-source-label').textContent = '↺ 갱신 버튼으로 최신 지수 조회';
-  calcKospiRates(_lastKospi, now);
-}
-
 /* ════════════════════════════════════════
    앱 탭 전환
 ════════════════════════════════════════ */
 /* ════════════════════════════════════════
-   탭 그룹 드롭다운
+   [NAV] 탭 그룹 드롭다운
 ════════════════════════════════════════ */
-function switchSubTabDirect(tab, grpId, btn) {
-  document.querySelectorAll('.tab-dropdown').forEach(d => d.classList.remove('open'));
-  document.querySelectorAll('.tab-group-btn').forEach(b => b.classList.remove('open'));
-  document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + tab).classList.add('active');
-  document.querySelectorAll('.drop-item').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-group-btn').forEach(b => b.classList.remove('has-active'));
-  const grpBtn = document.getElementById('grp-' + grpId + '-btn');
-  if (grpBtn) grpBtn.classList.add('has-active');
-  if (tab === 'fear') fetchFearGreed();
-  if (tab === 'moneyspeed') { setTimeout(function(){ if (typeof fetchMSAll === 'function') fetchMSAll(); }, 400); }
-  if (tab === 'muhan') { requestAnimationFrame(function(){ requestAnimationFrame(function(){ if (typeof muhanInit === 'function') muhanInit(); }); }); }
-}
 
 function toggleTabGroup(grpId) {
   const btn  = document.getElementById('grp-' + grpId + '-btn');
@@ -10215,6 +9601,7 @@ function switchSubTab(tab, grpId, btn) {
   // 탭 진입 시 초기화
   if (tab === 'simulator') fetchKodexPrice();
   if (tab === 'fear') fetchFearGreed();
+  if (tab === 'muhan') requestAnimationFrame(function(){ requestAnimationFrame(function(){ if (typeof muhanInit === 'function') muhanInit(); }); });
   if (tab === 'tigerdiv')  {
     if (window._tigerdivState) {
       /* 분배금 모드 버튼 active 직접 복원 */
@@ -10399,7 +9786,7 @@ document.addEventListener('click', e => {
 }, true);
 
 /* ════════════════════════════════════════
-   복리 계산기
+   [COMPOUND] 복리 계산기
 ════════════════════════════════════════ */
 
 function getCpdWon(id) {
@@ -10596,7 +9983,7 @@ function calcCompound() {
 }
 
 /* ════════════════════════════════════════
-   대출 이자 계산기
+   [LOAN] 대출 이자 계산기
 ════════════════════════════════════════ */
 let loanMethod = 'equal';
 const loanUnit_s = { amount: 'won' };
@@ -10660,31 +10047,7 @@ const GRAD_MODE_DESC = {
   geo:   '초회납입금 A + 월체증률 k_m · PMT=A×(1+k_m)^(m-1) (복리 증가)',
 };
 
-function setGradMode(mode, btn) {
-  gradMode = mode;
-  ['fixed','arith','geo'].forEach(m => {
-    document.getElementById('grad-mode-'+m).classList.toggle('active', m===mode);
-  });
-  document.getElementById('grad-mode-desc').textContent = GRAD_MODE_DESC[mode];
-  document.getElementById('grad-input-fixed').style.display = mode==='fixed' ? '' : 'none';
-  document.getElementById('grad-input-arith').style.display = mode==='arith' ? '' : 'none';
-  document.getElementById('grad-input-geo').style.display   = mode==='geo'   ? '' : 'none';
-  calcLoan();
-}
-
-function formatCommaInput(el) {
-  const raw = el.value.replace(/,/g,'');
-  const n = parseInt(raw);
-  if (!isNaN(n)) el.value = n.toLocaleString('ko-KR');
-}
-
 let gradType = 'manual';
-
-function syncGradRateSl() {
-  const v = parseFloat(document.getElementById('loan-grad-rate-input').value)||2.7795;
-  const sl = document.getElementById('loan-grad-rate-sl');
-  if(sl) sl.value = v;
-}
 
 function setLoanMethod(method,btn) {
   loanMethod=method;
@@ -10701,152 +10064,24 @@ function setLoanMethod(method,btn) {
   calcLoan();
 }
 /* ════════════════════════════════════════
-   기준금리 조회
+   [RATE] 기준금리 조회
    BOK: ECOS 실인증키 + CORS 프록시
    Fed: US Treasury Fiscal Data API (CORS 기본지원) + FRED via corsproxy
 ════════════════════════════════════════ */
 
 const BOK_API_KEY = 'RVTLLDCO3IW1YUKQSSPJ';
 
-function applyRate(valElId, dateElId, rate, src) {
-  rate = parseFloat(String(rate).replace(/,/g,''));
-  if (isNaN(rate) || rate < 0 || rate > 30) return false;
-  const now = new Date();
-  const ns  = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-'
-            + String(now.getDate()).padStart(2,'0');
-  document.getElementById(valElId).textContent  = rate.toFixed(2) + '%';
-  document.getElementById(dateElId).textContent = ns + ' 기준 | ' + src;
-  return true;
-}
-
 /* CORS 프록시 경유 fetch */
-async function proxyGet(url, ms) {
-  ms = ms || 10000;
-  const strategies = [
-    // corsproxy.io — FRED/ECOS에 가장 신뢰성 높음
-    async () => {
-      const r = await fetchWithTimeout('https://corsproxy.io/?' + encodeURIComponent(url), ms);
-      return r.ok ? r.text() : null;
-    },
-    // allorigins /get — {contents, status} 래핑 형태
-    async () => {
-      const r = await fetchWithTimeout('https://api.allorigins.win/get?url=' + encodeURIComponent(url), ms);
-      if (!r.ok) return null;
-      const j = await r.json();
-      return j.contents || null;
-    },
-    // allorigins /raw
-    async () => {
-      const r = await fetchWithTimeout('https://api.allorigins.win/raw?url=' + encodeURIComponent(url), ms);
-      return r.ok ? r.text() : null;
-    },
-  ];
-  for (const fn of strategies) {
-    try { const t = await fn(); if (t && t.length > 5) return t; } catch {}
-  }
-  return null;
-}
-
-async function fetchWithTimeout(url, ms) {
-  const ctrl = new AbortController();
-  const tid  = setTimeout(() => ctrl.abort(), ms);
-  try { return await fetch(url, { cache: 'no-cache', signal: ctrl.signal }); }
-  finally { clearTimeout(tid); }
-}
 
 /* FRED 텍스트 파일 파싱 */
-function parseFredTxt(txt) {
-  if (!txt) return null;
-  const lines = txt.split('\n').filter(l => /^\d{4}-\d{2}-\d{2}\s+[\d.]+/.test(l.trim()));
-  if (!lines.length) return null;
-  const parts = lines[lines.length-1].trim().split(/\s+/);
-  const v = parseFloat(parts[parts.length-1]);
-  return (v > 0 && v <= 20) ? v : null;
-}
 
 /* BOK ECOS JSON 파싱 */
-function parseEcos(txt) {
-  if (!txt) return null;
-  try {
-    let obj = JSON.parse(txt);
-    // allorigins /get 래핑 해제
-    if (obj && typeof obj.contents === 'string') {
-      try { obj = JSON.parse(obj.contents); } catch {}
-    }
-    if (obj?.RESULT?.CODE) {
-      console.warn('ECOS API 오류:', obj.RESULT.MESSAGE);
-      return null;
-    }
-    const rows = obj?.StatisticSearch?.row;
-    if (!rows?.length) return null;
-    for (let i = rows.length-1; i >= 0; i--) {
-      const v = parseFloat(rows[i].DATA_VALUE);
-      if (v > 0 && v <= 20) return v;
-    }
-  } catch (e) { console.log('ECOS parse error:', e, txt?.slice(0,200)); }
-  return null;
-}
 
 /* ── 미국 연준 기준금리 ──
    1순위: US Treasury Fiscal Data API (CORS 기본지원, 인증 불필요)
           → avg_interest_rates 에서 단기 채권 금리 사용
    2순위: FRED FEDFUNDS.txt via corsproxy.io
    3순위: FRED DFEDTARU.txt (Fed 목표범위 상단) via corsproxy.io */
-async function fetchFedRate() {
-  const btn  = document.getElementById('fed-refresh-btn');
-  const icon = document.getElementById('fed-icon');
-  const dEl  = document.getElementById('fed-date');
-  btn.disabled = true; icon.textContent = '⏳';
-  dEl.textContent = '조회 중...';
-
-  /* ① US Treasury Fiscal Data API (직접 호출, CORS 기본지원) */
-  try {
-    const url = 'https://api.fiscaldata.treasury.gov/services/api/v1/accounting/od/avg_interest_rates'
-              + '?fields=record_date,security_type_desc,security_desc,avg_interest_rate_amt'
-              + '&sort=-record_date&limit=50'
-              + '&filter=security_type_desc:eq:Marketable';
-    const resp = await fetchWithTimeout(url, 10000);
-    if (resp.ok) {
-      const json = await resp.json();
-      const rows = json?.data || [];
-      /* Federal Funds 직접 탐색 */
-      const fedRow = rows.find(r =>
-        /federal.?fund/i.test(r.security_desc || '')
-      );
-      if (fedRow) {
-        const v = parseFloat(fedRow.avg_interest_rate_amt);
-        if (v > 0 && v <= 20) {
-          applyRate('fed-rate', 'fed-date', v, 'US Treasury (Federal Funds)');
-          btn.disabled = false; icon.textContent = '↺'; return;
-        }
-      }
-      /* 단기 T-Bill 금리 사용 (fed rate와 가장 유사) */
-      const billRow = rows.find(r => /bill/i.test(r.security_desc || ''));
-      if (billRow) {
-        const v = parseFloat(billRow.avg_interest_rate_amt);
-        if (v > 0 && v <= 20) {
-          applyRate('fed-rate', 'fed-date', v, 'US Treasury T-Bill (' + (billRow.security_desc||'') + ')');
-          btn.disabled = false; icon.textContent = '↺'; return;
-        }
-      }
-    }
-  } catch (e) { console.log('Treasury API fail:', e); }
-
-  /* ② FRED FEDFUNDS.txt via corsproxy.io */
-  for (const series of ['FEDFUNDS', 'DFEDTARU', 'DFEDTARL']) {
-    try {
-      const txt = await proxyGet('https://fred.stlouisfed.org/data/' + series + '.txt', 9000);
-      const v   = parseFredTxt(txt);
-      if (v !== null) {
-        applyRate('fed-rate', 'fed-date', v, 'FRED (' + series + ')');
-        btn.disabled = false; icon.textContent = '↺'; return;
-      }
-    } catch {}
-  }
-
-  dEl.textContent = '조회 실패 — ↺ 재시도';
-  btn.disabled = false; icon.textContent = '↺';
-}
 
 /* ── 한국은행 기준금리 ──
    실인증키 RVTLLDCO3IW1YUKQSSPJ 사용
@@ -10854,50 +10089,6 @@ async function fetchFedRate() {
    2순위: corsproxy.io 경유
    3순위: allorigins 경유
    통계표 722Y001 / 항목 0101000 (기준금리) */
-async function fetchBokRate() {
-  const btn  = document.getElementById('bok-refresh-btn');
-  const icon = document.getElementById('bok-icon');
-  const dEl  = document.getElementById('bok-date');
-  btn.disabled = true; icon.textContent = '⏳';
-  dEl.textContent = '조회 중...';
-
-  const now     = new Date();
-  const endYM   = now.getFullYear() + String(now.getMonth()+1).padStart(2,'0');
-  const d6      = new Date(now); d6.setMonth(d6.getMonth()-6);
-  const startYM = d6.getFullYear() + String(d6.getMonth()+1).padStart(2,'0');
-
-  /* 실인증키 URL (startNo=1, endNo=10, 기준금리 항목) */
-  const ecosUrl = 'https://ecos.bok.or.kr/api/StatisticSearch/'
-    + BOK_API_KEY + '/json/kr/1/10/722Y001/MM/'
-    + startYM + '/' + endYM + '/0101000';
-
-  /* ① 직접 호출 */
-  try {
-    const resp = await fetchWithTimeout(ecosUrl, 10000);
-    if (resp.ok) {
-      const txt = await resp.text();
-      const v   = parseEcos(txt);
-      if (v !== null) {
-        applyRate('bok-rate', 'bok-date', v, 'BOK ECOS API (직접)');
-        btn.disabled = false; icon.textContent = '↺'; return;
-      }
-    }
-  } catch {}
-
-  /* ② CORS 프록시 경유 */
-  try {
-    const txt = await proxyGet(ecosUrl, 10000);
-    const v   = parseEcos(txt);
-    if (v !== null) {
-      applyRate('bok-rate', 'bok-date', v, 'BOK ECOS API (proxy)');
-      btn.disabled = false; icon.textContent = '↺'; return;
-    }
-  } catch (e) { console.log('BOK proxy fail:', e); }
-
-  dEl.textContent = '조회 실패 — ↺ 재시도';
-  btn.disabled = false; icon.textContent = '↺';
-}
-
 
 function calcLoan() {
   const principal=getLoanWon('amount');
@@ -11099,43 +10290,8 @@ function renderLoanMonthly() {
   restoreOpenYears(tbody);
 }
 
-function switchAppTab(tab, btn) {
-  /* 모든 app-tab active 제거 (드롭다운 내부 포함) */
-  document.querySelectorAll('#mainNav .app-tab').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('page-' + tab).classList.add('active');
-  if (tab === 'simulator') fetchKodexPrice();
-  if (tab === 'loan')      calcLoan();
-  if (tab === 'cagr')     calcCAGR();
-  if (tab === 'compound') { setCpdMode('simple', document.getElementById('cpd-mode-simple')); calcCompound(); }
-  if (tab === 'fx')        fetchFxRates();
-  if (tab === 'health')    calcHealth();
-  if (tab === 'kospi'    && document.getElementById('kospi-current-val').textContent === '—')  useDefaultKospi();
-  if (tab === 'kospi200' && document.getElementById('k200-current-val').textContent  === '—')  useDefaultKospi200();
-  const usIdx = ['nasdaq','nasdaq100','dowjones','sp500'];
-  if (usIdx.includes(tab) && document.getElementById(tab+'-current-val').textContent === '—') {
-    useDefaultIndex(tab);
-  }
-  /* ── 탭 전환 시 해당 페이지의 단위 버튼 active 상태 복원 ── */
-  const switchedPage = document.getElementById('page-' + tab);
-  if (switchedPage) {
-    ['amount','monthly','target','otherincome'].forEach(function(field) {
-      const key  = 'page-' + tab + '_' + field;
-      const unit = fancyUnit[key] || 'won';
-      switchedPage.querySelectorAll('.unit-btn[data-field="' + field + '"]')
-        .forEach(function(b) {
-          b.classList.toggle('active', b.dataset.unit === unit);
-        });
-    });
-  }
-  // 메인 탭 클릭 시 드롭다운 닫기
-  document.querySelectorAll('.tab-dropdown').forEach(d => d.classList.remove('open'));
-  document.querySelectorAll('.tab-group-btn').forEach(b => { b.classList.remove('open'); b.classList.remove('has-active'); });
-}
-
 /* ═══════════════════════════════════════
-   미국 4대 지수 — 제너릭 조회 시스템
+   [US-INDEX] 미국 4대 지수 — 제너릭 조회 시스템
 ═══════════════════════════════════════ */
 const INDEX_CONFIG = {
   nasdaq:   { name:'나스닥 종합', ticker:'%5EIXIC', baseDate:'1971-02-08', baseVal:100,   defaultVal:18000, minP:1000,  maxP:100000 },
@@ -11366,25 +10522,8 @@ async function fetchIndex(id) {
   }
 }
 
-function useDefaultIndex(id) {
-  const cfg = INDEX_CONFIG[id];
-  const def = _indexCache[id] || cfg.defaultVal;
-  const now = new Date();
-  const ns  = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-'
-    + String(now.getDate()).padStart(2,'0') + ' ' + now.toTimeString().slice(0,8);
-  document.getElementById(id+'-current-val').textContent =
-    def.toLocaleString('ko-KR', {minimumFractionDigits:2, maximumFractionDigits:2});
-  document.getElementById(id+'-date-label').textContent    = ns + ' 기준';
-  document.getElementById(id+'-source-label').textContent  = '↺ 갱신 버튼으로 최신 지수 조회';
-  const py3 = _indexPeriod[id] || 0;
-  const ck3 = id + '_' + py3;
-  const hc3 = _indexHistCache[ck3];
-  const sv3 = py3 === 0 ? null : (hc3 ? hc3.price : (OVERSEAS_HIST[id] && OVERSEAS_HIST[id][(now.getFullYear()-py3)]) || null);
-  calcIndexRates(id, def, now, py3, sv3, hc3 ? hc3.date : null);
-}
-
 /* ═══════════════════════════════════════
-   KOSPI 200 성장률
+   [KOSPI200] KOSPI 200 성장률
    기준: 1990-01-03 / 지수 100
    티커: ^KS200 (Yahoo Finance)
 ═══════════════════════════════════════ */
@@ -11500,19 +10639,8 @@ async function fetchKospi200() {
   }
 }
 
-function useDefaultKospi200() {
-  _lastKospi200 = 350;
-  const now = new Date();
-  const nowStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-'
-    + String(now.getDate()).padStart(2,'0') + ' ' + now.toTimeString().slice(0,8);
-  document.getElementById('k200-current-val').textContent = '350.00';
-  document.getElementById('k200-date-label').textContent  = nowStr + ' 기준';
-  document.getElementById('k200-source-label').textContent = '↺ 갱신 버튼으로 최신 지수 조회';
-  calcKospi200Rates(350, now);
-}
-
 /* ════════════════════════════════════════
-   CAGR 계산기
+   [CAGR] CAGR 계산기
 ════════════════════════════════════════ */
 let cagrChart2    = null;
 let cagrChartTab2 = 'value';
@@ -11769,7 +10897,7 @@ function renderCagrChart(cache) {
 }
 
 /* ════════════════════════════════════════
-   돈·자산·노동의 가치 속도 — 실시간 데이터
+   [MONEYSPEED] 돈·자산·노동의 가치 속도 — 실시간 데이터
    귀금속(금/은): Yahoo Finance GC=F / SI=F
    주가지수: Yahoo Finance 기존 패턴 재활용
    기간: 현재 ~ 15년 전
@@ -12097,18 +11225,8 @@ async function fetchMSAll() {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
 /* ════════════════════════════════════════════════════════════
-   무한매수법 4.0 — 데이터 코드 방식 (서버/계정 없음)
+   [MUHAN] 무한매수법 4.0 — 데이터 코드 방식 (서버/계정 없음)
    저장: localStorage(muhan4_data)
    이기기 동기화: Base64 코드 복사/붙여넣기
 ════════════════════════════════════════════════════════════ */
@@ -12255,14 +11373,20 @@ async function fetchMSAll() {
 
   /* ── 계산 ── */
   function mhGetSession(){ return MH.sessions[MH.curSession]||{trades:[]}; }
+  /* 세션 계산: 매수는 원가 누적, 매도는 평단 유지·원가 비례 차감 → T = 보유원가 ÷ 1회매수금 */
   function mhCalcSession(){
-    var ses=mhGetSession(), trades=(ses.trades||[]).filter(function(t){return t.type.startsWith('buy');});
-    var tq=0,ta=0;
-    trades.forEach(function(t){var q=parseFloat(t.qty)||0,p=parseFloat(t.price)||0;tq+=q;ta+=q*p;});
-    var avg=tq>0?ta/tq:0, splits=MH.settings.splits||40, seed=MH.settings.seed||20000;
-    var oneDiv=seed/splits, cash=Math.max(seed-ta,0), tp=avg>0?avg*(1+(MH.settings.targetPct||15)/100):0;
-    return{totalQty:tq,totalAmt:ta,avg:avg,tradeCount:trades.length,splits:splits,seed:seed,oneDiv:oneDiv,cash:cash,targetPrice:tp};
+    var ses=mhGetSession(), splits=MH.settings.splits||40, seed=MH.settings.seed||20000;
+    var qty=0, cost=0, cash=seed, buys=0;
+    (ses.trades||[]).slice().sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0;}).forEach(function(t){
+      var q=parseFloat(t.qty)||0, p=parseFloat(t.price)||0;
+      if(t.type.indexOf('buy')===0){ qty+=q; cost+=q*p; cash-=q*p; buys++; }
+      else if(qty>0){ var sq=Math.min(q,qty); cost-=cost*(sq/qty); qty-=sq; cash+=sq*p; }
+    });
+    var avg=qty>0?cost/qty:0, oneDiv=seed/splits;
+    return{totalQty:qty,totalAmt:cost,avg:avg,tradeCount:buys,splits:splits,seed:seed,oneDiv:oneDiv,cash:Math.max(cash,0),
+           T:oneDiv>0?cost/oneDiv:0,targetPrice:avg>0?avg*(1+(MH.settings.targetPct||15)/100):0};
   }
+  function usd(n){ return '$'+(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 
   /* ── 메인 렌더 ── */
   function mhRenderMain(){
@@ -12270,32 +11394,28 @@ async function fetchMSAll() {
     if($('mh-header-sub'))$('mh-header-sub').textContent=ticker+' · '+c.splits+'분할 · $'+(MH.settings.seed||0).toLocaleString('ko-KR');
     if($('mh-recent-title'))$('mh-recent-title').textContent=ticker+' 최근 종가';
     var mid=Math.floor(c.splits/2);
-    if($('mh-slider-mid'))$('mh-slider-mid').textContent=mid+' (추천반)';
+    if($('mh-slider-mid'))$('mh-slider-mid').textContent=mid+' (후반전)';
     if($('mh-slider-max'))$('mh-slider-max').textContent=c.splits;
-    var pct=c.splits>0?Math.min(c.tradeCount/c.splits*100,100):0;
+    var pct=c.splits>0?Math.min(c.T/c.splits*100,100):0;
     if($('mh-progress-fill'))$('mh-progress-fill').style.width=pct+'%';
     if($('mh-progress-thumb'))$('mh-progress-thumb').style.left=pct+'%';
-    if(MH.curPrice&&$('mh-cur-price')){
-      $('mh-cur-price').textContent=MH.curPrice.toFixed(5);
-      $('mh-price-arrow').textContent=MH.prevClose&&MH.curPrice>MH.prevClose?'↑':'↓';
-      $('mh-price-arrow').style.color=MH.prevClose&&MH.curPrice>MH.prevClose?'#34d399':'#f87171';
-    }
-    if($('mh-stat-avg'))     $('mh-stat-avg').textContent=c.avg>0?'$'+c.avg.toFixed(2):'-';
+    if($('mh-cur-price'))$('mh-cur-price').textContent=c.T.toFixed(5);
+    if($('mh-stat-avg'))     $('mh-stat-avg').textContent=c.avg>0?usd(c.avg):'-';
     if($('mh-stat-qty'))     $('mh-stat-qty').textContent=c.totalQty.toLocaleString('ko-KR')+'주';
-    if($('mh-stat-cash'))    $('mh-stat-cash').textContent='$'+c.cash.toFixed(2);
+    if($('mh-stat-cash'))    $('mh-stat-cash').textContent=usd(c.cash);
     if($('mh-stat-pct'))     $('mh-stat-pct').textContent='+'+t.toFixed(2)+'%';
-    if($('mh-stat-target'))  $('mh-stat-target').textContent=c.targetPrice>0?'$'+c.targetPrice.toFixed(2):'-';
-    if($('mh-stat-onediv'))  $('mh-stat-onediv').textContent='$'+c.oneDiv.toFixed(2);
+    if($('mh-stat-target'))  $('mh-stat-target').textContent=c.targetPrice>0?usd(c.targetPrice):'-';
+    if($('mh-stat-onediv'))  $('mh-stat-onediv').textContent=usd(c.oneDiv);
     if($('mh-stat-onediv-krw'))$('mh-stat-onediv-krw').textContent='(₩'+Math.round(c.oneDiv*MH.usdKrw).toLocaleString('ko-KR')+')';
     if($('mh-usdkrw-row'))   $('mh-usdkrw-row').textContent='USD/KRW ₩'+MH.usdKrw.toLocaleString('ko-KR')+' · '+new Date().toISOString().slice(0,10);
-    if($('mh-cycle-onediv')) $('mh-cycle-onediv').textContent='$'+c.oneDiv.toFixed(2);
+    if($('mh-cycle-onediv')) $('mh-cycle-onediv').textContent=usd(c.oneDiv);
     var prevC=MH.prevClose||0;
     if($('mh-cycle-prevclose'))$('mh-cycle-prevclose').textContent=prevC>0?'$'+prevC.toFixed(2):'조회 중...';
     if(prevC>0&&$('mh-cycle-bignum-info')){
       var bn=prevC*(1+(MH.settings.bigNumPct||12)/100);
       $('mh-cycle-bignum-info').textContent='★ 큰수 = 종가 × '+(1+(MH.settings.bigNumPct||12)/100).toFixed(2)+' = $'+bn.toFixed(2)+' (큰수% 설정 '+(MH.settings.bigNumPct||12)+'%)';
     }
-    if($('mh-record-btn'))$('mh-record-btn').textContent=c.tradeCount===0?'처음매수':'오늘 기록';
+    if($('mh-record-btn'))$('mh-record-btn').textContent=c.T<=0?'처음매수':(c.T<c.splits/2?'전반전':'후반전');
     mhRenderOrders(c);
   }
 
@@ -12311,7 +11431,7 @@ async function fetchMSAll() {
     for(var n=nStart;n<=nEnd;n++){
       var lp=oneDiv/n;if(lp<=0)continue;
       html+='<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 18px;border-bottom:1px solid rgba(255,255,255,0.03);">' +
-        '<div style="display:flex;align-items:center;gap:6px;"><span style="font-size:10px;padding:2px 6px;border-radius:3px;background:var(--bg3);color:var(--text3);">LOC</span><span style="font-size:10px;padding:2px 6px;border-radius:3px;background:var(--bg3);color:var(--text3);">LOC</span></div>' +
+        '<div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;color:var(--text2);">LOC</span><span style="font-size:10px;padding:2px 6px;border-radius:3px;background:rgba(0,229,176,0.1);color:var(--accent);">LOC</span></div>' +
         '<div style="text-align:right;"><span style="font-family:var(--mono);font-size:13px;color:var(--text2);">$'+lp.toFixed(2)+'</span><span style="font-family:var(--mono);font-size:12px;color:var(--text3);margin-left:8px;">1주</span></div></div>';
     }
     el.innerHTML=html;
@@ -12357,20 +11477,19 @@ async function fetchMSAll() {
     if(last5.length>0){var avg5=last5.reduce(function(a,b){return a+b;},0)/last5.length;if($('mh-5day-avg'))$('mh-5day-avg').textContent='5일 평균 $'+avg5.toFixed(2);}
   }
 
+  /* 공포&탐욕: 공포·탐욕 탭과 같은 출처(feargreedchart.com) + 공용 캐시 _fearData */
   window.mhFetchFG = async function(){
     try{
-      var resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:50,tools:[{type:'web_search_20250305',name:'web_search'}],
-          messages:[{role:'user',content:'CNN Fear and Greed Index current integer value only?'}]})});
-      if(!resp.ok)return;
-      var data=await resp.json();
-      var txt=(data.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
-      var m=txt.match(/\b(\d{1,3})\b/);
-      if(m){var val=parseInt(m[1]),label=val<=25?'극도 공포':val<=45?'공포':val<=55?'중립':val<=75?'탐욕':'극도 탐욕';
-        if($('mh-fg-val')){$('mh-fg-val').textContent=val;$('mh-fg-val').style.color=val<=25?'#ef4444':val<=55?'#f97316':val<=75?'#22c55e':'#16a34a';}
-        if($('mh-fg-label'))$('mh-fg-label').textContent=label;
-        if($('mh-fg-cursor'))$('mh-fg-cursor').style.left=val+'%';}
-    }catch(e){}
+      if(typeof _fearData==='undefined'||!_fearData){
+        var r=await fetch('https://feargreedchart.com/api/?action=all'); if(!r.ok) return;
+        _fearData=await r.json();
+      }
+      var val=Math.round(_fearData.score.score);
+      var label=val<=25?'극도 공포':val<=45?'공포':val<=55?'중립':val<=75?'탐욕':'극도 탐욕';
+      if($('mh-fg-val')){$('mh-fg-val').textContent=val;$('mh-fg-val').style.color=val<=25?'#ef4444':val<=55?'#f97316':val<=75?'#22c55e':'#16a34a';}
+      if($('mh-fg-label'))$('mh-fg-label').textContent=label;
+      if($('mh-fg-cursor'))$('mh-fg-cursor').style.left=val+'%';
+    }catch(e){ if($('mh-fg-label'))$('mh-fg-label').textContent='조회 실패'; }
   };
 
   /* ── 설정 패널 ── */
@@ -12435,7 +11554,6 @@ async function fetchMSAll() {
   });
 
 })();
-
 
 </script>
   <!-- ── 하단 후원/문의 배너 ── -->
