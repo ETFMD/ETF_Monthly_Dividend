@@ -22,7 +22,7 @@ UA = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
       '(KHTML, like Gecko) Chrome/124.0 Safari/537.36')
 
 ETF     = ['498400.KS', '0167B0.KS', '0104N0.KS', '472150.KS', '0177R0.KS']   # KODEX·SOL·TIGER·TIGER배당·TIGER반도체
-INDEX   = ['^KS11', '^KS200', '^KQ11', '^IXIC', '^NDX', '^DJI', '^GSPC', '^SOX']   # ^SOX = 필라델피아 반도체
+INDEX   = ['^KS11', '^KS200', '^KQ11', '^IXIC', '^NDX', '^DJI', '^GSPC', '^SOX', '^DJUSSC']   # ^SOX = 필라델피아 반도체 · ^DJUSSC = 다우존스 미국 반도체
 METAL   = ['GC=F', 'SI=F']
 FX      = ['USDKRW=X', 'EURKRW=X', 'JPYKRW=X', 'CNYKRW=X', 'GBPKRW=X', 'HKDKRW=X',
            'SGDKRW=X', 'AUDKRW=X', 'CADKRW=X', 'CHFKRW=X', 'THBKRW=X', 'USDVND=X']
@@ -33,6 +33,8 @@ HIST_YEARS, HIST_MAX_AGE_H = 31, 20
 HIST_VERSION = 4   # 형식·출처가 바뀌면 올려서 즉시 다시 수집
 # Yahoo는 국내 지수(특히 코스피200)의 과거 데이터가 짧거나 비어 있음 → 네이버 금융 주봉으로 앞부분을 채움
 NAVER_INDEX = {'^KS11': 'KOSPI', '^KS200': 'KPI200', '^KQ11': 'KOSDAQ'}
+# 야후가 비거나 오래된 값을 줄 때 쓰는 보조 시세 (현재가만) — 트레이딩뷰 → 구글 파이낸스 순
+ALT_QUOTE = {'^DJUSSC': {'tv': 'DJ:DJUSSC', 'google': 'DJUSSC:INDEXDJX', 'stooq': '^djussc'}}
 
 # 분배 시뮬레이터 '지수 비교' 차트 (data/compare.json): ETF 상장 이후 일봉 + 분배금, 비교 지수 일봉
 COMPARE = os.path.join(ROOT, 'compare.json')
@@ -181,6 +183,49 @@ def merge_older(primary, older):
     if not primary: return older
     first = primary[0][0]
     return [p for p in older if p[0] < first - 3] + primary
+
+
+def tv_quote(symbol):
+    """트레이딩뷰 공개 스캐너에서 현재가 (예: DJ:DJUSSC)"""
+    q = urllib.parse.quote(symbol, safe='')
+    d = get_json(f'https://scanner.tradingview.com/symbol?symbol={q}&fields=close,change_abs&no_404=true',
+                 headers={'Origin': 'https://www.tradingview.com', 'Referer': 'https://www.tradingview.com/'})
+    price = float(d.get('close') or 0)
+    if price <= 0:
+        raise ValueError('트레이딩뷰 값 없음')
+    chg = d.get('change_abs')
+    prev = round(price - float(chg), 4) if isinstance(chg, (int, float)) else None
+    now = int(time.time())
+    return {'price': round(price, 4), 'prev': prev, 'time': now, 'currency': 'USD', 'daily': [[now, round(price, 4)]]}
+
+
+def google_quote(symbol):
+    """구글 파이낸스 시세 페이지에서 현재가 (예: DJUSSC:INDEXDJX)"""
+    html = get_text(f'https://www.google.com/finance/quote/{symbol}?hl=en')
+    m = re.search(r'data-last-price="([\d.]+)"', html)
+    if not m:
+        raise ValueError('구글 값 없음')
+    price = float(m.group(1))
+    t = re.search(r'data-last-normal-market-timestamp="(\d+)"', html)
+    ts = int(t.group(1)) if t else int(time.time())
+    return {'price': round(price, 4), 'prev': None, 'time': ts, 'currency': 'USD', 'daily': [[ts, round(price, 4)]]}
+
+
+def stooq_history(symbol):
+    """stooq 주봉 CSV → [[일수, 종가], ...] (야후 과거 데이터가 없을 때 보조)"""
+    txt = get_text(f'https://stooq.com/q/d/l/?s={urllib.parse.quote(symbol)}&i=w')
+    out = []
+    for line in txt.splitlines()[1:]:
+        p = line.split(',')
+        if len(p) >= 5:
+            try:
+                d = datetime.datetime.strptime(p[0], '%Y-%m-%d').replace(tzinfo=datetime.timezone.utc)
+                c = float(p[4])
+                if c > 0:
+                    out.append([int(d.timestamp()) // 86400, round(c, 2)])
+            except ValueError:
+                pass
+    return out
 
 
 def fear_greed():
@@ -433,21 +478,23 @@ def main():
     quotes, fails = dict(old.get('quotes') or {}), []
     for sym in QUOTES:
         sources = ([('네이버', lambda: naver_quote(NAVER_INDEX[sym]))] if sym in NAVER_INDEX else []) + \
-                  [('야후', lambda: build_quote(yahoo_chart(sym, 'range=1mo&interval=1d')))]
-        err = None
+                  [('야후', lambda: build_quote(yahoo_chart(sym, 'range=1mo&interval=1d')))] + \
+                  ([('트레이딩뷰', lambda: tv_quote(ALT_QUOTE[sym]['tv'])),
+                    ('구글', lambda: google_quote(ALT_QUOTE[sym]['google']))] if sym in ALT_QUOTE else [])
+        errs, ok = [], False
         for name, fn in sources:
             try:
                 q = fn()
                 if not fresh_enough(q):
-                    raise ValueError(f'{name} 시세가 오래됨 ({utc_date(q["time"]).date()})')
+                    raise ValueError(f'시세가 오래됨 ({utc_date(q["time"]).date()})')
                 quotes[sym] = q
-                if name == '네이버': print(f'  {sym} ← 네이버 {q["price"]}')
-                err = None
+                if name != '야후' or errs: print(f'  {sym} ← {name} {q["price"]}' + (f'  (앞선 실패: {"; ".join(errs)})' if errs else ''))
+                ok = True
                 break
             except Exception as e:
-                err = e
-        if err is not None:
-            fails.append(sym); print(f'  {sym} 실패(직전값 유지): {err}')
+                errs.append(f'{name}: {e}')
+        if not ok:
+            fails.append(sym); print(f'  {sym} 실패(직전값 유지): {"; ".join(errs)}')
     market = {'quotes': quotes, 'fear': old.get('fear'), 'fearCnn': old.get('fearCnn')}
     try:
         market['fearCnn'] = cnn_fear_full(cnn_raw())
@@ -483,6 +530,12 @@ def main():
                     npts = naver_history(NAVER_INDEX[sym], HIST_YEARS)
                 except Exception as e:
                     print(f'  {sym} 네이버 히스토리 실패: {e}')
+            if not ypts and sym in ALT_QUOTE and ALT_QUOTE[sym].get('stooq'):
+                try:
+                    ypts = stooq_history(ALT_QUOTE[sym]['stooq'])
+                    print(f'  {sym} 야후 히스토리 없음 → stooq {len(ypts)}개')
+                except Exception as e:
+                    print(f'  {sym} stooq 히스토리 실패: {e}')
             merged = merge_older(npts, ypts) if npts else ypts   # 국내 지수는 네이버 우선 · [일수, 종가]
             if len(merged) > 50:
                 series[sym] = merged
