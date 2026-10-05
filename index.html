@@ -861,7 +861,7 @@
     #nasdaq100-rate-grid,
     #dowjones-rate-grid,
     #sp500-rate-grid,
-    #sox-rate-grid { grid-template-columns: 1fr !important; }
+    #sox-rate-grid, #djsemi-rate-grid { grid-template-columns: 1fr !important; }
 
     #kospi-sim-grid,
     #k200-sim-grid,
@@ -870,7 +870,7 @@
     #nasdaq100-sim-grid,
     #dowjones-sim-grid,
     #sp500-sim-grid,
-    #sox-sim-grid  { grid-template-columns: 1fr 1fr !important; }
+    #sox-sim-grid, #djsemi-sim-grid  { grid-template-columns: 1fr 1fr !important; }
 
     /* 현재 지수 배너 넘침 방지 */
     #kospi-status, #k200-status,
@@ -882,9 +882,9 @@
     }
 
     /* 성장률 숫자 크기 모바일 축소 */
-    #nasdaq-annual, #nasdaq100-annual, #dowjones-annual, #sp500-annual, #sox-annual,
-    #nasdaq-monthly, #nasdaq100-monthly, #dowjones-monthly, #sp500-monthly, #sox-monthly,
-    #nasdaq-daily, #nasdaq100-daily, #dowjones-daily, #sp500-daily, #sox-daily {
+    #nasdaq-annual, #nasdaq100-annual, #dowjones-annual, #sp500-annual, #sox-annual, #djsemi-annual,
+    #nasdaq-monthly, #nasdaq100-monthly, #dowjones-monthly, #sp500-monthly, #sox-monthly, #djsemi-monthly,
+    #nasdaq-daily, #nasdaq100-daily, #dowjones-daily, #sp500-daily, #sox-daily, #djsemi-daily {
       font-size: 26px !important;
     }
   }
@@ -5652,6 +5652,74 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <p style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.7;">※ 과거 성장률이 미래를 보장하지 않습니다.</p>
     </div>
   </div><!-- /page-sox -->
+
+  <!-- ── 다우존스 미국 반도체 지수 페이지 ── -->
+  <div class="app-page" id="page-djsemi">
+    <div class="header">
+      <div class="header-left">
+        <span class="badge">DJ US SEMICONDUCTORS</span>
+        <h1>다우존스 미국 반도체 지수 <span>성장률 분석</span></h1>
+        <p class="subtitle">Dow Jones U.S. Semiconductors Index (DJUSSC) — 현재 지수 기반 연평균·월평균·일평균 성장률</p>
+      </div>
+      <button id="djsemi-refresh-btn" onclick="fetchIndex('djsemi')"
+        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
+        <span id="djsemi-refresh-icon">↺</span> 지수 갱신
+      </button>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:20px 24px;margin-bottom:20px;">
+      <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px;">다우존스 미국 반도체 지수(DJUSSC)란?</p>
+      <p style="font-size:13px;color:var(--text2);line-height:1.9;"><strong style="color:var(--accent);">다우존스 미국 반도체 지수</strong>(Dow Jones U.S. Semiconductors Index, 티커 DJUSSC)는 S&amp;P 다우존스 인디시즈가 산출하는 지수로, 미국 상장 기업 중 반도체 세부 업종에 속한 기업들의 주가 성과를 측정합니다. 반도체 2배 레버리지 ETF인 ProShares Ultra Semiconductors(USD)의 기초지수이기도 합니다. 필라델피아 반도체지수(SOX)와 함께 반도체 업황을 보여 주는 지표이며, 업황에 따라 등락 폭이 커서 시작 시점에 따라 성장률 차이가 큽니다. <span style="color:var(--text3);">※ 전체 기간은 이 사이트가 보유한 과거 데이터의 첫 날짜부터 계산합니다.</span></p>
+    </div>
+    <div id="djsemi-status" style="background:var(--bg3);border:1px solid var(--card-border);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">현재 다우존스 미국 반도체 지수</p>
+        <p style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--text);" id="djsemi-current-val">—</p>
+      </div>
+      <div style="flex:1;min-width:160px;">
+        <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">기준일</p>
+        <p style="font-size:13px;color:var(--text2);" id="djsemi-date-label">데이터 없음</p>
+        <p style="font-size:11px;color:var(--text3);margin-top:2px;" id="djsemi-source-label"></p>
+      </div>
+      <div id="djsemi-loading" style="display:none;font-size:12px;color:var(--text3);">⏳ 조회 중...</div>
+    </div>
+    <!-- 기간 선택 -->
+    <div class="period-tabs" id="djsemi-period-tabs">
+      <button class="period-btn" onclick="setIndexPeriod('djsemi',5,this)">최근 5년</button>
+      <button class="period-btn" onclick="setIndexPeriod('djsemi',10,this)">최근 10년</button>
+      <button class="period-btn active" onclick="setIndexPeriod('djsemi',15,this)">최근 15년</button>
+      <button class="period-btn" onclick="setIndexPeriod('djsemi',20,this)">최근 20년</button>
+      <button class="period-btn" onclick="setIndexPeriod('djsemi',30,this)">최근 30년</button>
+      <button class="period-btn" id="djsemi-period-all" onclick="setIndexPeriod('djsemi',0,this)">전체 기간</button>
+    </div>
+
+    <div id="djsemi-rate-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">연평균 성장률 (CAGR)</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:var(--accent);" id="djsemi-annual">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="djsemi-annual-sub">기준 — → 현재</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">월평균 성장률</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:var(--accent2);" id="djsemi-monthly">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="djsemi-monthly-sub">CAGR의 월 환산</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+        <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">일평균 성장률</p>
+        <p style="font-family:var(--mono);font-size:36px;font-weight:500;color:#fe9800;" id="djsemi-daily">—</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;" id="djsemi-daily-sub">CAGR의 일 환산</p>
+      </div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
+      <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:16px;">다우존스 미국 반도체 지수 CAGR 기준 1억 투자 시뮬레이션</p>
+      <div id="djsemi-sim-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">10년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="djsemi-sim-10">—</p></div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">20년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="djsemi-sim-20">—</p></div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">30년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="djsemi-sim-30">—</p></div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--card-border);"><p style="font-size:11px;color:var(--text3);margin-bottom:5px;">40년 후</p><p style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);" id="djsemi-sim-40">—</p></div>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.7;">※ 과거 성장률이 미래를 보장하지 않습니다.</p>
+    </div>
+  </div><!-- /page-djsemi -->
 
   <!-- ── 공포 & 탐욕 지수 페이지 ── -->
   <div class="app-page" id="page-fear">
@@ -11144,7 +11212,7 @@ function switchSubTab(tab, grpId, btn) {
       }
     });
   }
-  const usIdx = ['nasdaq','nasdaq100','dowjones','sp500','sox'];
+  const usIdx = ['nasdaq','nasdaq100','dowjones','sp500','sox','djsemi'];
   if (usIdx.includes(tab)) {
     fetchIndex(tab).then(() => {
       const py = _indexPeriod[tab] || 0;
@@ -11687,6 +11755,8 @@ const INDEX_CONFIG = {
   dowjones: { name:'다우존스',    ticker:'%5EDJI',  baseDate:'1896-05-26', baseVal:40.94, defaultVal:42000, minP:100,   maxP:500000 },
   sp500:    { name:'S&P 500',    ticker:'%5EGSPC', baseDate:'1928-01-03', baseVal:17.66, defaultVal:5800,  minP:100,   maxP:50000  },
   sox:      { name:'필라델피아 반도체', ticker:'%5ESOX', baseDate:'1993-12-01', baseVal:200, defaultVal:null, minP:50, maxP:200000 },
+  /* 기준일·기준값 미확인 → baseVal:null — '전체 기간'은 data/history.json(^DJUSSC)의 첫 데이터부터 계산 */
+  djsemi:   { name:'다우존스 미국 반도체', ticker:'%5EDJUSSC', baseDate:null, baseVal:null, defaultVal:null, minP:50, maxP:2000000 },
 };
 
 /* 해외 지수 연간 fallback 테이블 (연초 기준) */
@@ -11696,12 +11766,13 @@ const OVERSEAS_HIST = {
   dowjones: {1990:2810,1995:3838,2000:11497,2005:10783,2010:10428,2015:17832,2020:28538,2021:30606,2022:36338,2023:33136,2024:37690,2025:42732},
   sp500:    {1990:353,1995:459,2000:1469,2005:1248,2010:1115,2015:2059,2020:3231,2021:3756,2022:4797,2023:3853,2024:4770,2025:5882},
   sox:      {},   /* 내장값 없음 — 과거값은 data/history.json(^SOX)에서만 사용 */
+  djsemi:   {},   /* 내장값 없음 — 과거값은 data/history.json(^DJUSSC)에서만 사용 */
 };
 
 const _indexCache    = {};
 const _indexFetching = {};
 /* 해외 지수 기간 상태 */
-const _indexPeriod   = { nasdaq:15, nasdaq100:15, dowjones:15, sp500:15, sox:15 };
+const _indexPeriod   = { nasdaq:15, nasdaq100:15, dowjones:15, sp500:15, sox:15, djsemi:15 };
 const _indexHistCache = {}; /* {id_years: {price, date}} */
 
 function calcIndexRates(id, price, asOf, periodYears, startVal, histDateStr) {
@@ -11712,13 +11783,16 @@ function calcIndexRates(id, price, asOf, periodYears, startVal, histDateStr) {
 
   let sv, startDate, periodLabel;
   if (periodYears === 0) {
-    sv          = cfg.baseVal;
-    startDate   = baseDate;
-    const totalMs   = now - baseDate;
+    /* 기준값이 없는 지수는 보유 데이터의 첫 날짜·값(startVal, histDateStr)부터 계산 */
+    const fromData  = cfg.baseVal == null;
+    if (fromData && !(startVal > 0 && histDateStr)) return;
+    sv          = fromData ? startVal : cfg.baseVal;
+    startDate   = fromData ? new Date(histDateStr) : baseDate;
+    const totalMs   = now - startDate;
     const totalYrs  = Math.floor(totalMs / (1000*60*60*24*365.25));
     const totalMons = Math.floor((totalMs / (1000*60*60*24*365.25) - totalYrs) * 12);
-    const bdLabel   = cfg.baseDate.replace(/-/g,'.');
-    periodLabel = '상장이후 전체 (' + bdLabel + ' ~ 현재, ' + totalYrs + '년 ' + totalMons + '개월)';
+    const bdLabel   = (fromData ? histDateStr : cfg.baseDate).replace(/-/g,'.');
+    periodLabel = (fromData ? '데이터 시작 이후 전체 (' : '상장이후 전체 (') + bdLabel + ' ~ 현재, ' + totalYrs + '년 ' + totalMons + '개월)';
   } else {
     const sy = now.getFullYear() - periodYears;
     const ck = id + '_' + periodYears;
@@ -11764,6 +11838,30 @@ function calcIndexRates(id, price, asOf, periodYears, startVal, histDateStr) {
   });
 }
 
+/* 기준값이 없는 지수의 '전체 기간' 시작점: data/history.json 의 첫 데이터 → 없으면 Yahoo 월봉 첫 값
+   결과는 _indexHistCache[id+'_0'] = {price, date:'YYYY-MM-DD'} 로 저장 */
+async function indexFirstPoint(id) {
+  const ck = id + '_0';
+  if (_indexHistCache[ck]) return _indexHistCache[ck];
+  const sym = decodeURIComponent(INDEX_CONFIG[id].ticker);
+  const ymd = t => { const d = new Date(t); return d.getUTCFullYear() + '-' + String(d.getUTCMonth()+1).padStart(2,'0') + '-' + String(d.getUTCDate()).padStart(2,'0'); };
+  let fp = null;
+  try {
+    const h = window.mdLoad ? await window.mdLoad('history.json') : null;
+    const s = h && h.series && h.series[sym];
+    if (s && s.length && s[0][1] > 0) fp = { price: s[0][1], date: ymd(s[0][0] * 86400000) };
+  } catch (e) {}
+  if (!fp) {
+    try {
+      const r = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/' + INDEX_CONFIG[id].ticker + '?interval=1mo&range=max');
+      const j = await r.json(), res = j.chart.result[0], ts = res.timestamp || [], cl = res.indicators.quote[0].close || [];
+      for (let i = 0; i < ts.length; i++) if (cl[i] > 0) { fp = { price: cl[i], date: ymd(ts[i] * 1000) }; break; }
+    } catch (e) {}
+  }
+  if (fp) _indexHistCache[ck] = fp;
+  return fp;
+}
+
 /* 기간 선택 버튼 클릭 */
 async function setIndexPeriod(id, years, btn) {
   _indexPeriod[id] = years;
@@ -11774,6 +11872,11 @@ async function setIndexPeriod(id, years, btn) {
   const curVal = _indexCache[id] || INDEX_CONFIG[id].defaultVal;
   if (!curVal) return;   /* 현재 지수 미조회 + 기본값 없음 */
   if (years === 0) {
+    if (INDEX_CONFIG[id].baseVal == null) {          /* 기준값 없는 지수: 데이터 첫 값 사용 */
+      const fp = await indexFirstPoint(id);
+      if (fp) calcIndexRates(id, curVal, new Date(), 0, fp.price, fp.date);
+      return;
+    }
     calcIndexRates(id, curVal, new Date(), 0, null, null);
     return;
   }
@@ -11817,7 +11920,7 @@ function applyIndexValue(id, price, src) {
   const py  = _indexPeriod[id] || 0;
   const ck  = id + '_' + py;
   const hc  = _indexHistCache[ck];
-  const sv2 = py === 0 ? null : (hc ? hc.price : (OVERSEAS_HIST[id] && OVERSEAS_HIST[id][(now.getFullYear()-py)]) || null);
+  const sv2 = py === 0 ? (hc ? hc.price : null) : (hc ? hc.price : (OVERSEAS_HIST[id] && OVERSEAS_HIST[id][(now.getFullYear()-py)]) || null);
   const hd2 = hc ? hc.date : null;
   calcIndexRates(id, price, now, py, sv2, hd2);
   return true;
@@ -14104,6 +14207,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
     <button class="drop-item" id="drop-dowjones" onclick="switchSubTab('dowjones','overseas',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="9" width="5" height="7.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="6" width="5.5" height="10.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="3.5" y="6" width="1.5" height="3" fill="currentColor" opacity="0.5"/><path d="M2 8 L6 5 L10 6.5 L15.5 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 1.5 h3 v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>다우존스 성장률</button>
     <button class="drop-item" id="drop-sp500" onclick="switchSubTab('sp500','overseas',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M9 2 Q13 9 9 16 M9 2 Q5 9 9 16" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M2.5 7 Q9 5.5 15.5 7 M2 11 Q9 12.5 16 11" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M5 12 L9 8 L12 10 L15 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>S&P 500 성장률</button>
     <button class="drop-item" id="drop-sox" onclick="switchSubTab('sox','overseas',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="7" y="7" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.6"/><path d="M7 2v2.5M11 2v2.5M7 13.5V16M11 13.5V16M2 7h2.5M2 11h2.5M13.5 7H16M13.5 11H16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>필라델피아 반도체 성장률</button>
+    <button class="drop-item" id="drop-djsemi" onclick="switchSubTab('djsemi','overseas',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="7" y="7" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.6"/><path d="M7 2v2.5M11 2v2.5M7 13.5V16M11 13.5V16M2 7h2.5M2 11h2.5M13.5 7H16M13.5 11H16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>다우존스 반도체 성장률</button>
   </div>
   <div class="tab-dropdown" id="grp-theme-drop">
     <button class="drop-item theme-item" data-theme-opt="dark" onclick="setSiteTheme('dark')">☾ 다크</button>
