@@ -48,6 +48,11 @@ COMPARE_PAIRS = {                                     # 분배 시뮬레이터 E
 }
 KST = 9 * 3600
 
+# 기타 금융 자료 'ETF CAGR 비교' (data/etfcagr.json): 상장 이후 일봉 종가 + 분배금 (야후, 6시간마다)
+ETF_CAGR = ['QQQ', 'SPY', 'SOXX', 'SSO', 'ROM', 'USD', 'QLD', 'TQQQ', 'TECL', 'SOXL', 'SPXL', 'UPRO']
+ETFCAGR = os.path.join(ROOT, 'etfcagr.json')
+ETFCAGR_MAX_AGE_H = 6
+
 
 def utc_now():
     return datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
@@ -487,6 +492,37 @@ def build_compare():
                               'series': series, 'divs': divs}, old)
 
 
+def build_etfcagr():
+    """ETF CAGR 비교용 상장 이후 일봉 (분할 반영 종가) + 분배금 → data/etfcagr.json
+    형식: series[T] = {d0: 첫 거래일(일수), dd: 거래일 간격 배열, c: 종가 배열, div: [[일수, 분배금]]}"""
+    old = load(ETFCAGR)
+    age_h = 1e9
+    if old.get('updated'):
+        age_h = (utc_now() - datetime.datetime.fromisoformat(old['updated'][:-1])).total_seconds() / 3600
+    series = dict(old.get('series') or {})
+    if age_h < ETFCAGR_MAX_AGE_H and set(ETF_CAGR) <= set(series) and '--etfcagr' not in sys.argv:
+        print(f'  etfcagr.json: 최근 갱신({age_h:.1f}시간 전) — 건너뜀')
+        return
+    for sym in ETF_CAGR:
+        try:
+            res = yahoo_chart(sym, 'range=max&interval=1d&events=div')
+            ny = lambda t: datetime.datetime.fromtimestamp(t, NY).date().toordinal() - 719163   # 미국 거래일 날짜
+            pts = {}
+            for t, cl in zip(res.get('timestamp') or [], ((res.get('indicators') or {}).get('quote') or [{}])[0].get('close') or []):
+                if cl is not None and cl > 0:
+                    pts[ny(t)] = round(float(cl), 4)
+            days = sorted(pts)
+            if len(days) < 250:
+                raise ValueError(f'일봉 부족 ({len(days)}개)')
+            divs = sorted([ny(int(d['date'])), round(float(d['amount']), 4)]
+                          for d in ((res.get('events') or {}).get('dividends') or {}).values() if d.get('amount'))
+            series[sym] = {'d0': days[0], 'dd': [b - a for a, b in zip(days, days[1:])], 'c': [pts[d] for d in days], 'div': divs}
+            print(f'  CAGR {sym} {len(days)}일 (상장 {datetime.date.fromordinal(719163 + days[0])}) · 분배 {len(divs)}회')
+        except Exception as e:
+            print(f'  CAGR {sym} 실패(직전값 유지): {e}')
+    save_if_changed(ETFCAGR, {'unit': 'day', 'series': series}, old)
+
+
 def main():
     os.makedirs(ROOT, exist_ok=True)
     old = load(MARKET)
@@ -523,6 +559,10 @@ def main():
         print('  feargreedchart 실패(직전값 유지):', e)
     save_if_changed(MARKET, market, old)
     build_muhan(market)
+    try:
+        build_etfcagr()
+    except Exception as e:
+        print('  ETF CAGR 데이터 실패(직전값 유지):', e)
     try:
         build_compare()
     except Exception as e:

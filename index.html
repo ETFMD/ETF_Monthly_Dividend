@@ -1116,6 +1116,42 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     .kcmp-head .chart-tab { padding:4px 9px; font-size:11px; white-space:nowrap; }
     .kcmp-head > div { gap:8px !important; }
   }
+  /* [ETF-CAGR] ETF CAGR 비교 */
+  .ec-card { padding:20px 24px; }
+  .ec-top { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+  .ec-pick-bar { display:flex; align-items:center; gap:6px; margin-bottom:8px; }
+  .ec-pick-label { font-size:12px; color:var(--text3); margin-right:4px; }
+  .ec-mini { font-family:var(--font); font-size:11px; color:var(--text2); background:var(--bg3); border:1px solid var(--card-border); border-radius:6px; padding:3px 10px; cursor:pointer; }
+  .ec-chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+  .ec-chip { display:flex; align-items:center; gap:6px; font-family:var(--font); font-size:12px; color:var(--text); background:var(--bg3); border:1px solid var(--card-border); border-radius:999px; padding:5px 11px 5px 9px; cursor:pointer; transition:opacity .15s, border-color .15s; }
+  .ec-chip .ec-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+  .ec-chip .ec-lev { font-size:10px; color:var(--text3); }
+  .ec-chip .ec-val { font-family:var(--mono); font-size:11px; font-weight:600; }
+  .ec-chip.off { opacity:.38; }
+  .ec-chip.off .ec-dot { background:transparent !important; box-shadow:inset 0 0 0 1.5px var(--text3); }
+  .ec-wrap { position:relative; height:420px; }
+  .ec-info { margin-top:20px; padding:20px 24px; }
+  .ec-info-sub { font-size:12px; color:var(--text2); line-height:1.7; margin-bottom:14px; }
+  .ec-group { margin-bottom:16px; }
+  .ec-group-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:8px; }
+  .ec-group-title span { font-size:11px; font-weight:400; color:var(--text3); margin-left:6px; }
+  .ec-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:10px; }
+  .ec-item { background:var(--bg3); border:1px solid var(--card-border); border-radius:10px; padding:12px 14px; border-left-width:3px; }
+  .ec-item-head { display:flex; align-items:baseline; gap:8px; margin-bottom:4px; flex-wrap:wrap; }
+  .ec-item-tk { font-family:var(--mono); font-size:15px; font-weight:700; }
+  .ec-item-lev { font-size:10px; font-weight:600; padding:1px 7px; border-radius:999px; background:rgba(var(--fg-rgb),0.07); color:var(--text2); }
+  .ec-item-name { font-size:12px; color:var(--text2); margin-bottom:6px; }
+  .ec-item-row { display:flex; justify-content:space-between; gap:10px; font-size:11px; color:var(--text3); line-height:1.75; }
+  .ec-item-row b { color:var(--text2); font-weight:500; text-align:right; }
+  .ec-item-desc { font-size:11px; color:var(--text3); line-height:1.6; margin-top:6px; }
+  .ec-howto { border-top:1px solid var(--card-border); padding-top:12px; margin-top:4px; font-size:11px; color:var(--text3); line-height:1.75; }
+  .ec-howto b { color:var(--text2); }
+  .ec-src { margin-top:6px; }
+  @media (max-width: 768px) {
+    .ec-card, .ec-info { padding:16px; }
+    .ec-wrap { height:320px; }
+    .ec-chip { font-size:11px; padding:4px 9px 4px 7px; }
+  }
 </style>
 </head>
 <body>
@@ -6430,6 +6466,67 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   <!-- [MUHAN] 무한매수법 기록 — 화면은 JS가 #mh-root 에 그림 -->
   <div class="app-page" id="page-muhan"><div id="mh-root"></div></div><!-- /page-muhan -->
 
+  <!-- ── ETF CAGR 비교 페이지 ── [ETF-CAGR] ── -->
+  <div class="app-page" id="page-etfcagr">
+    <div class="header">
+      <div class="header-left">
+        <span class="badge">ETF CAGR</span>
+        <h1>ETF <span>CAGR 비교</span></h1>
+        <p class="subtitle">미국 대표 지수·레버리지 ETF 12종 — 시작일부터 매 거래일까지의 연평균 성장률(CAGR) 추이 비교</p>
+      </div>
+    </div>
+
+    <div class="card ec-card">
+      <div class="ec-top">
+        <span class="acc-title">기간별 CAGR 추이</span>
+        <div class="chart-tabs">
+          <button class="chart-tab active" id="ec-mode-price" onclick="ecSetMode(false)">주가</button>
+          <button class="chart-tab"        id="ec-mode-total" onclick="ecSetMode(true)">분배금 포함</button>
+        </div>
+      </div>
+      <div class="ec-pick-bar">
+        <span class="ec-pick-label">표시할 종목</span>
+        <button class="ec-mini" onclick="ecSelectAll(true)">전체 선택</button>
+        <button class="ec-mini" onclick="ecSelectAll(false)">전체 해제</button>
+      </div>
+      <div class="ec-chips" id="ec-chips"></div>
+      <div class="ec-wrap">
+        <canvas id="ec-chart" role="img" aria-label="ETF 12종 CAGR 추이 비교 차트"></canvas>
+        <p class="kcmp-status" id="ec-status">데이터를 불러오는 중…</p>
+      </div>
+      <div class="chart-tabs kcmp-tabs" id="ec-tabs">
+        <button class="chart-tab" data-per="1Y"  onclick="ecSetPeriod('1Y')">1Y</button>
+        <button class="chart-tab" data-per="3Y"  onclick="ecSetPeriod('3Y')">3Y</button>
+        <button class="chart-tab" data-per="5Y"  onclick="ecSetPeriod('5Y')">5Y</button>
+        <button class="chart-tab" data-per="10Y" onclick="ecSetPeriod('10Y')">10Y</button>
+        <button class="chart-tab" data-per="15Y" onclick="ecSetPeriod('15Y')">15Y</button>
+        <button class="chart-tab active" data-per="MAX" onclick="ecSetPeriod('MAX')">MAX</button>
+        <button class="chart-tab" data-per="CUSTOM" onclick="ecSetPeriod('CUSTOM')">기간설정</button>
+      </div>
+      <div class="kcmp-custom" id="ec-custom" style="display:none;">
+        <input type="date" class="kcmp-date" id="ec-from" aria-label="시작일">
+        <span style="color:var(--text3);">~</span>
+        <input type="date" class="kcmp-date" id="ec-to" aria-label="종료일">
+        <button class="kcmp-apply" onclick="ecApplyCustom()">적용</button>
+        <span class="kcmp-err" id="ec-err"></span>
+      </div>
+      <p class="kcmp-note" id="ec-note">—</p>
+    </div>
+
+    <div class="card ec-info">
+      <p class="card-title" style="margin-bottom:6px;">종목 설명</p>
+      <p class="ec-info-sub">같은 지수를 1배·2배·3배로 추종하는 상품끼리 묶었습니다. 레버리지 ETF는 <b>하루 수익률</b>의 2배·3배를 목표로 매일 재조정되므로, 장기 수익률은 지수 수익률의 정확히 2배·3배가 되지 않습니다(변동성이 클수록 손실 쪽으로 벌어짐).</p>
+      <div id="ec-info-groups"></div>
+      <div class="ec-howto">
+        <p><b>CAGR 계산 방법</b> — 시작일(MAX는 각 종목 상장일, 그 외 기간은 선택한 시작일 직전 거래일) 종가를 기준으로, 이후 매 거래일 t의 CAGR = (t일 종가 ÷ 기준 종가)<sup>1/경과연수</sup> − 1.</p>
+        <p>시작 직후에는 짧은 기간을 1년으로 환산해 값이 크게 출렁이므로, 기간 길이의 1/4(최대 1년, 최소 20일)이 지난 뒤부터 그립니다.</p>
+        <p>'분배금 포함'은 분배락일 종가로 분배금을 재투자했다고 가정한 총수익 기준이며, 종가는 주식분할이 반영된 값입니다. 운용보수는 가격에 이미 반영되어 있습니다.</p>
+        <p class="ec-src">데이터: Yahoo Finance 일봉 (GitHub Actions로 6시간마다 수집) · 종목 정보: 각 운용사 공식 페이지(Invesco, State Street, iShares, ProShares, Direxion) 기준, 보수는 변경될 수 있음</p>
+      </div>
+    </div>
+  </div><!-- /page-etfcagr -->
+
+
 
 
 
@@ -6611,6 +6708,7 @@ function applySiteTheme() {
   var mp = document.getElementById('page-muhan');
   if (mp && mp.classList.contains('active') && window.MHdebug) window.MHdebug.render();
   if (window.kcmpRender) window.kcmpRender();   /* 비교 차트 색(빨강·파랑·글자)을 새 테마로 */
+  if (window.ecRender) window.ecRender();       /* ETF CAGR 비교 차트 글자·격자 색 */
 }
 function setSiteTheme(m) {
   localStorage.setItem('site-theme', m);
@@ -7756,6 +7854,231 @@ async function fetchKodexPrice() {
   });
 })();
 update();
+
+/* ════════════════════════════════════════
+   [ETF-CAGR] ETF CAGR 비교 (기타 금융 자료)
+   데이터: data/etfcagr.json (Actions: 야후 상장 이후 일봉 + 분배금) → 없으면 Yahoo 직접(프록시)
+   계산: 기준일 b(MAX=종목 상장일, 그 외=시작일 직전 거래일) 종가 대비 매 거래일 t 의
+         CAGR_t = (P_t / P_b)^(365.25 / (t − b)) − 1   · 분배금 포함 시 P 는 재투자 총수익 지수
+   표시: 시작 직후 연환산 왜곡을 피해 (기간 길이 × 1/4, 20일~1년) 경과 후부터 그림
+════════════════════════════════════════ */
+(function () {
+  /* 종목 정보 — 각 운용사 공식 페이지 기준 (2026-10 확인, 보수는 순보수) */
+  var ETFS = [
+    { tk:'QQQ',  lev:1, grp:'ndx',  color:'#3182f6', name:'Invesco QQQ Trust',              issuer:'Invesco',      index:'나스닥 100',                  inc:'1999-03-10', er:'0.18%',  desc:'나스닥에 상장된 금융주를 제외한 시가총액 상위 100개 기업. 2025년 12월 일반 ETF 구조로 전환하며 보수가 0.20%→0.18%로 인하.' },
+    { tk:'QLD',  lev:2, grp:'ndx',  color:'#22b8f0', name:'ProShares Ultra QQQ',            issuer:'ProShares',    index:'나스닥 100',                  inc:'2006-06-19', er:'0.95%',  desc:'나스닥 100 지수의 하루 수익률 2배를 목표로 매일 재조정.' },
+    { tk:'TQQQ', lev:3, grp:'ndx',  color:'#6366f1', name:'ProShares UltraPro QQQ',         issuer:'ProShares',    index:'나스닥 100',                  inc:'2010-02-09', er:'0.82%',  desc:'나스닥 100 지수의 하루 수익률 3배를 목표로 매일 재조정.' },
+    { tk:'SPY',  lev:1, grp:'spx',  color:'#f04452', name:'SPDR S&P 500 ETF Trust',         issuer:'State Street', index:'S&P 500',                     inc:'1993-01-22', er:'0.0945%', desc:'미국 대형주 500개로 구성된 S&P 500을 추종하는 최초의 미국 상장 ETF.' },
+    { tk:'SSO',  lev:2, grp:'spx',  color:'#ff8a95', name:'ProShares Ultra S&P500',         issuer:'ProShares',    index:'S&P 500',                     inc:'2006-06-19', er:'0.87%',  desc:'S&P 500의 하루 수익률 2배를 목표로 매일 재조정.' },
+    { tk:'UPRO', lev:3, grp:'spx',  color:'#d61f69', name:'ProShares UltraPro S&P500',      issuer:'ProShares',    index:'S&P 500',                     inc:'2009-06-23', er:'0.89%',  desc:'S&P 500의 하루 수익률 3배를 목표로 매일 재조정.' },
+    { tk:'SPXL', lev:3, grp:'spx',  color:'#ff6b2c', name:'Direxion Daily S&P 500 Bull 3X', issuer:'Direxion',     index:'S&P 500',                     inc:'2008-11-05', er:'0.84%',  desc:'S&P 500의 하루 수익률 3배를 목표로 매일 재조정 (UPRO와 같은 지수·배율, 운용사만 다름).' },
+    { tk:'SOXX', lev:1, grp:'semi', color:'#16b980', name:'iShares Semiconductor ETF',      issuer:'iShares',      index:'NYSE 반도체 지수',             inc:'2001-07-10', er:'0.33%',  desc:'미국 상장 반도체 기업 상위 30개(수정 시가총액 가중). 2021년 필라델피아 반도체지수(SOX)에서 ICE(현 NYSE) 반도체 지수로 변경.' },
+    { tk:'USD',  lev:2, grp:'semi', color:'#84cc16', name:'ProShares Ultra Semiconductors', issuer:'ProShares',    index:'다우존스 미국 반도체 지수',      inc:'2007-01-30', er:'0.95%',  desc:'다우존스 미국 반도체 지수(DJUSSC)의 하루 수익률 2배. SOXX·SOXL과 기초지수가 다름.' },
+    { tk:'SOXL', lev:3, grp:'semi', color:'#0ea5a4', name:'Direxion Daily Semiconductor Bull 3X', issuer:'Direxion', index:'NYSE 반도체 지수',          inc:'2010-03-11', er:'0.75%',  desc:'SOXX와 같은 NYSE 반도체 지수의 하루 수익률 3배. 2021년 8월 SOX에서 ICE(현 NYSE) 반도체 지수로 변경.' },
+    { tk:'ROM',  lev:2, grp:'tech', color:'#a855f7', name:'ProShares Ultra Technology',     issuer:'ProShares',    index:'S&P 기술 섹터 지수',            inc:'2007-01-30', er:'0.95%',  desc:'S&P 500 정보기술 업종(소프트웨어·하드웨어·반도체·IT서비스)으로 구성된 Technology Select Sector Index의 하루 수익률 2배.' },
+    { tk:'TECL', lev:3, grp:'tech', color:'#e879f9', name:'Direxion Daily Technology Bull 3X', issuer:'Direxion',  index:'S&P 기술 섹터 지수',            inc:'2008-12-17', er:'0.87%',  desc:'ROM과 같은 Technology Select Sector Index의 하루 수익률 3배.' }
+  ];
+  var GROUPS = [
+    { id:'ndx',  title:'나스닥 100',        sub:'QQQ 1배 · QLD 2배 · TQQQ 3배' },
+    { id:'spx',  title:'S&P 500',           sub:'SPY 1배 · SSO 2배 · UPRO·SPXL 3배' },
+    { id:'semi', title:'반도체',             sub:'SOXX 1배 · USD 2배 · SOXL 3배 (USD만 기초지수가 다름)' },
+    { id:'tech', title:'기술 섹터',          sub:'ROM 2배 · TECL 3배' }
+  ];
+  var DASH = { 1: [], 2: [6, 4], 3: [] }, WIDTH = { 1: 2.2, 2: 1.6, 3: 1.6 };
+  var YEARS = { '1Y': 1, '3Y': 3, '5Y': 5, '10Y': 10, '15Y': 15 };
+  var S = { data: null, src: '', on: {}, period: 'MAX', total: false, from: null, to: null, chart: null, loading: null, cache: {} };
+  ETFS.forEach(function (e) { S.on[e.tk] = true; });
+  function $(id) { return document.getElementById(id); }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function dayStr(d, sep) { var t = new Date(d * 86400000); sep = sep || '-'; return t.getUTCFullYear() + sep + pad(t.getUTCMonth() + 1) + sep + pad(t.getUTCDate()); }
+  function strDay(s) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); return m ? Math.floor(Date.UTC(+m[1], +m[2] - 1, +m[3]) / 86400000) : null; }
+  function pct(v) { return v == null || !isFinite(v) ? '—' : (v >= 0 ? '+' : '') + v.toFixed(2) + '%'; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function status(m) { var s = $('ec-status'); if (s) { s.textContent = m || ''; s.style.display = m ? 'flex' : 'none'; } }
+
+  /* compact {d0, dd[], c[], div[]} → {days[], px[], tr[]} */
+  function expand(o) {
+    var days = [o.d0], i;
+    for (i = 0; i < o.dd.length; i++) days.push(days[i] + o.dd[i]);
+    var px = o.c.slice(), tr = new Array(px.length), dm = {}, dd = [], di = 0;
+    (o.div || []).forEach(function (d) { dm[d[0]] = (dm[d[0]] || 0) + d[1]; });
+    dd = Object.keys(dm).map(Number).sort(function (a, b) { return a - b; });
+    for (i = 0; i < px.length; i++) {
+      var dv = 0;
+      while (di < dd.length && dd[di] <= days[i]) { if (i > 0) dv += dm[dd[di]]; di++; }
+      tr[i] = i === 0 ? px[0] : tr[i - 1] * (px[i] + dv) / px[i - 1];
+    }
+    return { days: days, px: px, tr: tr };
+  }
+  async function yahooSeries(tk) {
+    var r = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/' + tk + '?range=max&interval=1d&events=div');
+    var j = await r.json(), res = j.chart.result[0], ts = res.timestamp || [], cl = res.indicators.quote[0].close || [];
+    var m = {}, days, ev = res.events && res.events.dividends, div = [];
+    ts.forEach(function (t, i) { if (cl[i] > 0) m[Math.floor((t - 4 * 3600) / 86400)] = cl[i]; });
+    days = Object.keys(m).map(Number).sort(function (a, b) { return a - b; });
+    if (ev) Object.keys(ev).forEach(function (k) { var e = ev[k]; if (e && e.amount > 0) div.push([Math.floor((e.date - 4 * 3600) / 86400), e.amount]); });
+    return { d0: days[0], dd: days.slice(1).map(function (d, i) { return d - days[i]; }), c: days.map(function (d) { return m[d]; }), div: div };
+  }
+  function load() {
+    if (S.loading) return S.loading;
+    S.loading = (async function () {
+      var out = {}, raw = null;
+      try { var j = window.mdLoad ? await window.mdLoad('etfcagr.json') : null; raw = j && j.series; if (j && j.updated) S.src = 'Yahoo Finance 일봉 (' + j.updated.slice(0, 10) + ' 갱신)'; } catch (e) {}
+      for (var i = 0; i < ETFS.length; i++) {
+        var tk = ETFS[i].tk, o = raw && raw[tk];
+        if (!o) { try { o = await yahooSeries(tk); if (!S.src) S.src = 'Yahoo Finance'; } catch (e) { o = null; } }
+        if (o && o.c && o.c.length > 20) out[tk] = expand(o);
+      }
+      if (!Object.keys(out).length) { S.loading = null; return false; }
+      S.data = out; return true;
+    })();
+    return S.loading;
+  }
+  function lastIdxLE(days, d) {           /* d 이하 마지막 인덱스 (없으면 -1) */
+    var lo = 0, hi = days.length - 1, r = -1;
+    while (lo <= hi) { var m = (lo + hi) >> 1; if (days[m] <= d) { r = m; lo = m + 1; } else hi = m - 1; }
+    return r;
+  }
+  /* 기간 → [시작, 끝] (일수) */
+  function windowOf() {
+    var last = 0, first = 1e9;
+    ETFS.forEach(function (e) { var s = S.data[e.tk]; if (s && S.on[e.tk]) { last = Math.max(last, s.days[s.days.length - 1]); first = Math.min(first, s.days[0]); } });
+    if (first === 1e9) ETFS.forEach(function (e) { var s = S.data[e.tk]; if (s) { last = Math.max(last, s.days[s.days.length - 1]); first = Math.min(first, s.days[0]); } });
+    if (S.period === 'MAX') return [first, last];
+    if (S.period === 'CUSTOM') return [S.from != null ? S.from : first, S.to != null ? Math.min(S.to, last) : last];
+    var t = new Date(last * 86400000);
+    return [Math.floor(Date.UTC(t.getUTCFullYear() - YEARS[S.period], t.getUTCMonth(), t.getUTCDate()) / 86400000), last];
+  }
+  function seriesFor(tk, w, minDays) {
+    var s = S.data[tk]; if (!s) return null;
+    var arr = S.total ? s.tr : s.px, b = lastIdxLE(s.days, w[0]);
+    if (b < 0) b = 0;                                     /* 시작일 이후 상장 → 상장일 기준 */
+    var e = lastIdxLE(s.days, w[1]); if (e <= b) return null;
+    var base = arr[b], bd = s.days[b], pts = [], i, last = null;
+    for (i = b + 1; i <= e; i++) {
+      var el = s.days[i] - bd; if (el < minDays) continue;
+      var v = (Math.pow(arr[i] / base, 365.25 / el) - 1) * 100;
+      pts.push({ x: s.days[i], y: +v.toFixed(3) }); last = v;
+    }
+    return { pts: pts, last: last, baseDay: bd, endDay: s.days[e] };
+  }
+  function renderChips(vals) {
+    var box = $('ec-chips'); if (!box) return;
+    box.innerHTML = ETFS.map(function (e) {
+      var on = S.on[e.tk], v = vals && vals[e.tk];
+      return '<button class="ec-chip' + (on ? '' : ' off') + '" onclick="ecToggle(\'' + e.tk + '\')" title="' + esc(e.name) + '">'
+        + '<span class="ec-dot" style="background:' + e.color + '"></span><b>' + e.tk + '</b><span class="ec-lev">' + e.lev + 'x</span>'
+        + '<span class="ec-val" style="color:' + e.color + '">' + (on && v ? pct(v.last) : '') + '</span></button>';
+    }).join('');
+  }
+  function render() {
+    if (!S.data || !window.Chart) return;
+    var canvas = $('ec-chart'); if (!canvas) return;
+    var w = windowOf(), span = w[1] - w[0];
+    var minDays = Math.round(Math.min(365, Math.max(20, span * 0.25)));
+    var vals = {}, ds = [], anyOn = false;
+    ETFS.forEach(function (e) {
+      if (!S.data[e.tk]) return;
+      var r = seriesFor(e.tk, w, minDays); vals[e.tk] = r;
+      if (!S.on[e.tk]) return; anyOn = true;
+      if (!r || !r.pts.length) return;
+      ds.push({ label: e.tk, data: r.pts, borderColor: e.color, backgroundColor: e.color, borderWidth: WIDTH[e.lev], borderDash: DASH[e.lev],
+                pointRadius: 0, pointHoverRadius: 3, tension: 0, fill: false, parsing: false });
+    });
+    renderChips(vals);
+    var f = $('ec-from'), t = $('ec-to');
+    if (f && !f.min) { var w0 = (function () { var p = S.period; S.period = 'MAX'; var x = windowOf(); S.period = p; return x; })(); f.min = t.min = dayStr(w0[0]); f.max = t.max = dayStr(w0[1]); }
+    if (S.chart) { S.chart.destroy(); S.chart = null; }
+    if (!anyOn) { status('표시할 종목을 하나 이상 선택하세요.'); return; }
+    if (!ds.length) { status('선택한 기간이 너무 짧아 CAGR을 그릴 수 없습니다.'); return; }
+    status('');
+    var narrow = (canvas.parentNode.clientWidth || 800) < 520, tick = getComputedStyle(document.documentElement).getPropertyValue('--text3').trim() || '#888';
+    var xmin = Infinity, xmax = -Infinity; ds.forEach(function (d) { xmin = Math.min(xmin, d.data[0].x); xmax = Math.max(xmax, d.data[d.data.length - 1].x); });
+    S.chart = new Chart(canvas, {
+      type: 'line', data: { datasets: ds },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false, parsing: false, normalized: true,
+        interaction: { mode: 'nearest', axis: 'x', intersect: false },
+        plugins: {
+          legend: { display: false },
+          decimation: { enabled: true, algorithm: 'lttb', samples: narrow ? 300 : 700 },
+          tooltip: { itemSort: function (a, b) { return b.parsed.y - a.parsed.y; },
+            callbacks: { title: function (it) { return it.length ? dayStr(it[0].parsed.x, '/') : ''; },
+                         label: function (c) { return ' ' + c.dataset.label + '  ' + pct(c.parsed.y); } } }
+        },
+        scales: {
+          x: { type: 'linear', min: xmin, max: xmax, grid: { display: false }, border: { color: fgA(0.25) },
+               /* 눈금: 1년 넘는 기간은 매년(또는 2·5·10년 간격) 1월 1일, 짧은 기간은 매월(1·2·3·6개월 간격) 1일 */
+               afterBuildTicks: function (ax) {
+                 var lim = narrow ? 4 : 7, a = new Date(xmin * 86400000), z = new Date(xmax * 86400000), out = [], y, m, step;
+                 var months = (z.getUTCFullYear() - a.getUTCFullYear()) * 12 + z.getUTCMonth() - a.getUTCMonth();
+                 if (months > 24) {
+                   step = [1, 2, 5, 10].find(function (s) { return months / 12 / s <= lim; }) || 10;
+                   for (y = a.getUTCFullYear() + 1; y <= z.getUTCFullYear(); y++) if (y % step === 0) out.push({ value: Date.UTC(y, 0, 1) / 86400000 });
+                 } else {
+                   step = [1, 2, 3, 6].find(function (s) { return months / s <= lim; }) || 6;
+                   for (m = 1; m <= months; m++) { var d = new Date(Date.UTC(a.getUTCFullYear(), a.getUTCMonth() + m, 1)); if (d.getUTCMonth() % step === 0) out.push({ value: d.getTime() / 86400000 }); }
+                 }
+                 ax.ticks = out.filter(function (t) { return t.value >= xmin && t.value <= xmax; });
+               },
+               ticks: { color: tick, maxRotation: 0, autoSkip: false, font: { size: narrow ? 10 : 11 },
+                        callback: function (v) { var s = dayStr(v, '/'); return s.slice(5) === '01/01' ? s.slice(0, 4) : s.slice(0, 7); } } },
+          y: { position: 'right', border: { display: false },
+               grid: { color: function (c) { return c.tick && c.tick.value === 0 ? fgA(0.28) : fgA(0.07); } },
+               ticks: { color: tick, maxTicksLimit: 8, font: { size: narrow ? 10 : 11 }, callback: function (v) { return v + '%'; } } }
+        }
+      }
+    });
+    var note = $('ec-note');
+    if (note) note.innerHTML = (S.period === 'MAX' ? '각 종목 상장일부터 ' : '기간 ' + dayStr(w[0], '/') + ' 직전 거래일부터 ') + dayStr(w[1], '/') + '까지 · 시작 후 ' + minDays + '일 경과 시점부터 표시<br>'
+      + (S.total ? '분배금 포함(재투자 가정) 총수익 기준' : '주가 기준(분배금 제외)') + ' · 종목 옆 숫자는 기간 끝 시점의 CAGR · 출처: ' + (S.src || 'Yahoo Finance');
+  }
+  function setActive(per) { var tabs = $('ec-tabs'); if (tabs) tabs.querySelectorAll('.chart-tab').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-per') === per); }); }
+  function renderInfo() {
+    var box = $('ec-info-groups'); if (!box || box.childElementCount) return;
+    box.innerHTML = GROUPS.map(function (g) {
+      return '<div class="ec-group"><p class="ec-group-title">' + esc(g.title) + '<span>' + esc(g.sub) + '</span></p><div class="ec-grid">'
+        + ETFS.filter(function (e) { return e.grp === g.id; }).map(function (e) {
+          return '<div class="ec-item" style="border-left-color:' + e.color + '"><div class="ec-item-head"><span class="ec-item-tk" style="color:' + e.color + '">' + e.tk + '</span>'
+            + '<span class="ec-item-lev">' + (e.lev === 1 ? '1배 (일반)' : '일일 ' + e.lev + '배 레버리지') + '</span></div>'
+            + '<p class="ec-item-name">' + esc(e.name) + '</p>'
+            + '<div class="ec-item-row">운용사<b>' + esc(e.issuer) + '</b></div>'
+            + '<div class="ec-item-row">기초지수<b>' + esc(e.index) + '</b></div>'
+            + '<div class="ec-item-row">상장일<b>' + e.inc.replace(/-/g, '.') + '</b></div>'
+            + '<div class="ec-item-row">총보수(순)<b>' + e.er + '</b></div>'
+            + '<p class="ec-item-desc">' + esc(e.desc) + '</p></div>';
+        }).join('') + '</div></div>';
+    }).join('');
+  }
+
+  window.ecRender = function () {
+    var pg = $('page-etfcagr'); if (!pg || !pg.classList.contains('active')) return;
+    renderInfo();
+    if (S.data) { render(); return; }
+    renderChips(null); status('데이터를 불러오는 중…');
+    load().then(function (ok) { if (ok) render(); else status('데이터를 불러오지 못했습니다. 잠시 후 다시 열어 주세요.'); });
+  };
+  window.ecToggle = function (tk) { S.on[tk] = !S.on[tk]; render(); };
+  window.ecSelectAll = function (on) { ETFS.forEach(function (e) { S.on[e.tk] = on; }); render(); };
+  window.ecSetMode = function (total) { S.total = !!total; $('ec-mode-price').classList.toggle('active', !S.total); $('ec-mode-total').classList.toggle('active', S.total); render(); };
+  window.ecSetPeriod = function (p) {
+    setActive(p); var box = $('ec-custom');
+    if (p === 'CUSTOM') {
+      if (box) box.style.display = 'flex';
+      var f = $('ec-from'), t = $('ec-to');
+      if (S.data && f && !f.value) { var w = windowOf(); f.value = dayStr(w[0]); t.value = dayStr(w[1]); }
+      S.period = 'CUSTOM'; window.ecApplyCustom(); return;
+    }
+    if (box) box.style.display = 'none';
+    S.period = p; render();
+  };
+  window.ecApplyCustom = function () {
+    var f = strDay(($('ec-from') || {}).value), t = strDay(($('ec-to') || {}).value), err = $('ec-err');
+    if (err) err.textContent = '';
+    if (f != null && t != null && f >= t) { if (err) err.textContent = '종료일은 시작일보다 뒤여야 합니다.'; return; }
+    S.from = f; S.to = t; S.period = 'CUSTOM'; render();
+  };
+})();
 
 /* ════════════════════════════════════════
    [KODEX-CMP] 분배 시뮬레이터 공통 — ETF ↔ 코스피 수익률 비교 (상장 이후)
@@ -11013,6 +11336,7 @@ function switchSubTab(tab, grpId, btn) {
   // 탭 진입 시 초기화
   if (tab === 'simulator') fetchKodexPrice();
   if (tab === 'fear') fetchFearGreed();
+  if (tab === 'etfcagr' && window.ecRender) window.ecRender();
   if (tab === 'muhan') requestAnimationFrame(function(){ requestAnimationFrame(function(){ if (typeof muhanInit === 'function') muhanInit(); }); });
   if (tab === 'tigerdiv')  {
     if (window._tigerdivState) {
@@ -14221,6 +14545,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
     <button class="drop-item" id="drop-fear" onclick="switchSubTab('fear','etc',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M9 2a7 7 0 1 0 0 14A7 7 0 0 0 9 2z" stroke="currentColor" stroke-width="1.3"/><path d="M6 7.5 C6 6.7 6.7 6 7.5 6 S9 6.7 9 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M9 7.5 C9 6.7 9.7 6 10.5 6 S12 6.7 12 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><circle cx="7.5" cy="7.5" r="0.8" fill="currentColor"/><circle cx="10.5" cy="7.5" r="0.8" fill="currentColor"/><path d="M6.5 11.5 Q9 10 11.5 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>공포 &amp; 탐욕 지수</button>
     <button class="drop-item" id="drop-moneyspeed" onclick="switchSubTab('moneyspeed','etc',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M9 5.5v4l2.5 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 3.5 L5 1.5 M12 3.5 L13 1.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" opacity="0.5"/></svg>돈, 자산, 노동의 가치 속도</button>
     <button class="drop-item" id="drop-muhan" onclick="switchSubTab('muhan','etc',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="2.5" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 6.5h7M5.5 9h5M5.5 11.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>무한매수법 기록</button>
+    <button class="drop-item" id="drop-etfcagr" onclick="switchSubTab('etfcagr','etc',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2 15.5h14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M2.5 13 L6.5 9 L9.5 11 L15.5 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 13.5 L7 11.5 L10 12.5 L15.5 8.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/></svg>ETF CAGR 비교</button>
   </div>
   <div class="tab-dropdown" id="grp-domestic-drop">
     <button class="drop-item" id="drop-kospi" onclick="switchSubTab('kospi','domestic',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>코스피 성장률</button>
