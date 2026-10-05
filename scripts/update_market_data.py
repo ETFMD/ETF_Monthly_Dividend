@@ -173,23 +173,11 @@ def merge_older(primary, older):
 
 
 def fear_greed():
-    try:   # 1순위: feargreedchart.com (페이지와 같은 출처)
-        d = get_json('https://feargreedchart.com/api/?action=all')
-        if d.get('score', {}).get('score') is not None:
-            return {'score': d['score'], 'recent': (d.get('recent') or [])[-400:], 'source': 'feargreedchart.com'}
-    except Exception as e:
-        print('  feargreedchart 실패:', e)
-    # 2순위: CNN 공개 그래프 데이터 → 같은 형식으로 변환
-    d = get_json('https://production.dataviz.cnn.io/index/fearandgreed/graphdata')
-    names = [('market_momentum_sp500', 'Momentum'), ('stock_price_strength', 'Strength'),
-             ('stock_price_breadth', 'Breadth'), ('put_call_options', 'Put/Call'),
-             ('market_volatility_vix', 'Volatility'), ('junk_bond_demand', 'Junk Bonds'),
-             ('safe_haven_demand', 'Safe Haven')]
-    comps = [{'name': n, 'val': round(d[k]['score'])} for k, n in names if k in d and 'score' in d[k]]
-    hist = [{'date': utc_date(p['x'] / 1000).strftime('%Y-%m-%d'), 'score': round(p['y'])}
-            for p in d['fear_and_greed_historical']['data']]
-    return {'score': {'score': round(d['fear_and_greed']['score']), 'components': comps},
-            'recent': hist[-400:], 'source': 'CNN'}
+    """대체 자료: feargreedchart.com (CNN 자료를 한 번도 받지 못했을 때만 화면에 사용)"""
+    d = get_json('https://feargreedchart.com/api/?action=all')
+    if d.get('score', {}).get('score') is None:
+        raise ValueError('점수 없음')
+    return {'score': d['score'], 'recent': (d.get('recent') or [])[-400:], 'source': 'feargreedchart.com'}
 
 
 def load(path):
@@ -275,15 +263,43 @@ def muhan_ticker(sym, old):
     return {'days': sorted(days.values(), key=lambda x: x['date'])[-25:], 'closes': closes, 'closesAt': closesAt, 'quote': quote}
 
 
-def cnn_fear():
+CNN_UA = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+          'Chrome/126.0.0.0 Safari/537.36')
+CNN_PARTS = [('market_momentum_sp500', '주가 모멘텀'), ('stock_price_strength', '주가 강도'),
+             ('stock_price_breadth', '주가 폭'), ('put_call_options', '풋/콜 비율'),
+             ('market_volatility_vix', '시장 변동성 (VIX)'), ('safe_haven_demand', '안전자산 수요'),
+             ('junk_bond_demand', '정크본드 수요')]
+
+
+def cnn_raw():
+    """CNN 공포·탐욕 지수 원본 (1년치) — 봇 차단(418)을 피하려고 브라우저와 같은 헤더 사용"""
     since = (utc_now() - datetime.timedelta(days=370)).strftime('%Y-%m-%d')
-    d = get_json(f'https://production.dataviz.cnn.io/index/fearandgreed/graphdata/{since}', tries=2,
-                 headers={'Referer': 'https://edition.cnn.com/', 'Origin': 'https://edition.cnn.com',
-                          'Accept-Language': 'en-US,en;q=0.9', 'Accept': 'application/json, text/plain, */*'})
+    hdr = {'User-Agent': CNN_UA, 'Referer': 'https://edition.cnn.com/markets/fear-and-greed',
+           'Origin': 'https://edition.cnn.com', 'Accept': 'application/json, text/plain, */*',
+           'Accept-Language': 'en-US,en;q=0.9,ko;q=0.8', 'Sec-Fetch-Site': 'cross-site', 'Sec-Fetch-Mode': 'cors',
+           'Sec-Fetch-Dest': 'empty', 'Cache-Control': 'no-cache'}
+    err = None
+    for url in (f'https://production.dataviz.cnn.io/index/fearandgreed/graphdata/{since}',
+                'https://production.dataviz.cnn.io/index/fearandgreed/graphdata'):
+        try:
+            return get_json(url, tries=2, headers=hdr)
+        except Exception as e:
+            err = e
+    raise err
+
+
+def cnn_fear_full(d):
+    """기타 금융 자료 › 공포 & 탐욕 탭용: 점수·과거값·7개 구성 지표·1년 추이"""
     fg = d['fear_and_greed']
-    hist = [{'date': utc_date(p['x'] / 1000).strftime('%Y-%m-%d'), 'score': round(p['y'], 1), 'rating': p.get('rating')}
+    parts = [{'key': k, 'name': n, 'score': round(d[k]['score'], 1), 'rating': d[k].get('rating')}
+             for k, n in CNN_PARTS if isinstance(d.get(k), dict) and d[k].get('score') is not None]
+    hist = [{'date': utc_date(p['x'] / 1000).strftime('%Y-%m-%d'), 'score': round(p['y'], 1)}
             for p in d['fear_and_greed_historical']['data']]
-    return {'current': {'score': round(fg['score'], 1), 'rating': fg['rating']}, 'historical': hist, 'source': 'CNN'}
+    return {'source': 'CNN', 'score': round(fg['score'], 1), 'rating': fg.get('rating'),
+            'time': fg.get('timestamp'),
+            'prev': {'close': fg.get('previous_close'), 'w1': fg.get('previous_1_week'),
+                     'm1': fg.get('previous_1_month'), 'y1': fg.get('previous_1_year')},
+            'components': parts, 'historical': hist}
 
 
 def rating_of(v):
@@ -305,10 +321,12 @@ def build_muhan(market):
     usd = (market.get('quotes') or {}).get('USDKRW=X')
     if usd:
         out['fx'] = {'rate': round(usd['price'], 2), 'date': utc_date(usd.get('time') or time.time()).strftime('%Y-%m-%d')}
-    try:
-        out['fear'] = cnn_fear()
-    except Exception as e:
-        print('  CNN 공포탐욕 실패:', e)
+    cf = market.get('fearCnn')
+    if cf and cf.get('historical'):   # CNN 값을 그대로 사용 (무한매수법 카드 형식으로)
+        out['fear'] = {'current': {'score': cf['score'], 'rating': cf.get('rating') or rating_of(cf['score'])},
+                       'historical': [{'date': h['date'], 'score': h['score'], 'rating': rating_of(h['score'])} for h in cf['historical']],
+                       'source': 'CNN'}
+    else:
         f = market.get('fear')   # 대체: feargreedchart.com
         if f and f.get('score'):
             sc = f['score']['score']
@@ -339,11 +357,16 @@ def main():
                 err = e
         if err is not None:
             fails.append(sym); print(f'  {sym} 실패(직전값 유지): {err}')
-    market = {'quotes': quotes, 'fear': old.get('fear')}
+    market = {'quotes': quotes, 'fear': old.get('fear'), 'fearCnn': old.get('fearCnn')}
     try:
-        market['fear'] = fear_greed()
+        market['fearCnn'] = cnn_fear_full(cnn_raw())
+        print(f"  CNN 공포탐욕 {market['fearCnn']['score']} ({market['fearCnn']['rating']}) · 구성 지표 {len(market['fearCnn']['components'])}개")
     except Exception as e:
-        print('  공포탐욕 실패(직전값 유지):', e)
+        print('  CNN 공포탐욕 실패(직전값 유지):', e)
+    try:
+        market['fear'] = fear_greed()   # 대체 자료 (CNN을 한 번도 못 받았을 때만 화면에 사용)
+    except Exception as e:
+        print('  feargreedchart 실패(직전값 유지):', e)
     save_if_changed(MARKET, market, old)
     build_muhan(market)
 
