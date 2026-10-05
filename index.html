@@ -1089,6 +1089,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 #page-muhan .mh-done{width:100%;margin-top:10px;padding:12px;border-radius:12px;border:1px solid var(--m-ac-b);background:var(--m-ac-s);color:var(--m-t2);font:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 #page-muhan .mh-done .ic{width:16px;height:16px;border-radius:50%;border:1.5px solid currentColor;display:inline-flex;align-items:center;justify-content:center;font-size:10px}
 #page-muhan .mh-done.on{background:rgba(49,130,246,.14);border-color:rgba(49,130,246,.45);color:var(--m-ok)}#page-muhan .mh-done.on .ic{background:var(--m-ok);border-color:var(--m-ok);color:var(--m-s1)}
+  /* ETF 명칭 옆 티커(종목코드) */
+  .etf-ticker { font-family:var(--mono); font-size:11px; font-weight:500; color:var(--text3); margin-left:4px; letter-spacing:.02em; }
+  .etf-ticker-h1 { font-size:0.42em; vertical-align:middle; padding:3px 8px; border:1px solid var(--card-border); border-radius:6px; background:var(--card); }
 </style>
 </head>
 <body>
@@ -1518,7 +1521,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   <div class="header">
     <div class="header-left">
       <span class="badge">WEEKLY COVERED CALL ETF</span>
-      <h1>KODEX 200 <span>타겟위클리커버드콜</span></h1>
+      <h1>KODEX 200 <span>타겟위클리커버드콜</span> <span class="etf-ticker etf-ticker-h1">498400</span></h1>
       <p class="subtitle">분배 시뮬레이터 - 투자 금액과 기간을 설정하여 예상 분배금을 확인하세요.<br>운용수수료 : 연 0.39% &nbsp;|&nbsp; 목표 분배자원 : 콜옵션(비과세, 연 15%) + 배당금(과세, 연 2%) = 연 17%</p>
       <!-- 현재가 패널 -->
       <div style="display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap;">
@@ -2022,7 +2025,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   <div class="header">
     <div class="header-left">
       <span class="badge">WEEKLY COVERED CALL ETF</span>
-      <h1>SOL 200 <span>타겟위클리커버드콜</span></h1>
+      <h1>SOL 200 <span>타겟위클리커버드콜</span> <span class="etf-ticker etf-ticker-h1">0167B0</span></h1>
       <p class="subtitle">분배 시뮬레이터 - 투자 금액과 기간을 설정하여 예상 분배금을 확인하세요.<br>운용수수료 : 연 0.3% &nbsp;|&nbsp; 목표 분배자원 : 콜옵션(비과세, 연 13%) + 배당금(과세, 연 2%) = 연 15%</p>
       <!-- 현재가 패널 -->
       <div style="display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap;">
@@ -2528,7 +2531,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   <div class="header">
     <div class="header-left">
       <span class="badge">WEEKLY COVERED CALL ETF</span>
-      <h1>TIGER 200 <span>타겟위클리커버드콜</span></h1>
+      <h1>TIGER 200 <span>타겟위클리커버드콜</span> <span class="etf-ticker etf-ticker-h1">0104N0</span></h1>
       <p class="subtitle">분배 시뮬레이터 - 투자 금액과 기간을 설정하여 예상 분배금을 확인하세요.<br>운용수수료 : 연 0.25% &nbsp;|&nbsp; 목표 분배자원 : 콜옵션(비과세, 연 5%) + 배당금(과세, 연 2%) = 연 7%</p>
       <!-- 현재가 패널 -->
       <div style="display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap;">
@@ -3035,7 +3038,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   <div class="header">
     <div class="header-left">
       <span class="badge">WEEKLY COVERED CALL ETF</span>
-      <h1>TIGER <span>배당커버드콜액티브</span></h1>
+      <h1>TIGER <span>배당커버드콜액티브</span> <span class="etf-ticker etf-ticker-h1">472150</span></h1>
       <p class="subtitle">분배 시뮬레이터 - 투자 금액과 기간을 설정하여 예상 분배금을 확인하세요.<br>운용수수료 : 연 0.5% &nbsp;|&nbsp; 과거 지급 내역 기준 : 콜옵션(비과세, 연 5%) + 배당금(과세, 연 2%) = 연 7% / 특별배당 시 콜옵션 22% + 배당금 2% = 연 24%</p>
       <!-- 현재가 패널 -->
       <div style="display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap;">
