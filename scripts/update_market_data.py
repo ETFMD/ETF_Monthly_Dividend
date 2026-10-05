@@ -30,7 +30,7 @@ US_ETF  = ['TQQQ', 'SOXL']                                              # 무한
 QUOTES  = ETF + INDEX + METAL + FX + US_ETF
 HIST    = INDEX + METAL + ['USDKRW=X']
 HIST_YEARS, HIST_MAX_AGE_H = 31, 20
-HIST_VERSION = 2   # 형식·출처가 바뀌면 올려서 즉시 다시 수집
+HIST_VERSION = 3   # 형식·출처가 바뀌면 올려서 즉시 다시 수집
 # Yahoo는 국내 지수(특히 코스피200)의 과거 데이터가 짧거나 비어 있음 → 네이버 금융 주봉으로 앞부분을 채움
 NAVER_INDEX = {'^KS11': 'KOSPI', '^KS200': 'KPI200', '^KQ11': 'KOSDAQ'}
 
@@ -116,6 +116,12 @@ def naver_weekly(symbol, years):
         if c > 0:
             out.append([int(d.timestamp()) // 86400, round(c, 2)])
     return sorted(out)
+
+
+def fresh_enough(q, days=10):
+    """마지막 체결이 days일 이내인지 (데이터가 끊긴 종목을 걸러냄)"""
+    t = q.get('time')
+    return bool(t) and (time.time() - t) < days * 86400
 
 
 def naver_quote(symbol):
@@ -287,15 +293,22 @@ def main():
     old = load(MARKET)
     quotes, fails = dict(old.get('quotes') or {}), []
     for sym in QUOTES:
-        try:
-            quotes[sym] = build_quote(yahoo_chart(sym, 'range=1mo&interval=1d'))
-        except Exception as e:
-            if sym in NAVER_INDEX:   # 국내 지수는 네이버 일봉으로 대체
-                try:
-                    quotes[sym] = naver_quote(NAVER_INDEX[sym]); print(f'  {sym} 야후 실패 → 네이버 사용'); continue
-                except Exception as e2:
-                    e = e2
-            fails.append(sym); print(f'  {sym} 실패(직전값 유지): {e}')
+        sources = ([('네이버', lambda: naver_quote(NAVER_INDEX[sym]))] if sym in NAVER_INDEX else []) + \
+                  [('야후', lambda: build_quote(yahoo_chart(sym, 'range=1mo&interval=1d')))]
+        err = None
+        for name, fn in sources:
+            try:
+                q = fn()
+                if not fresh_enough(q):
+                    raise ValueError(f'{name} 시세가 오래됨 ({utc_date(q["time"]).date()})')
+                quotes[sym] = q
+                if name == '네이버': print(f'  {sym} ← 네이버 {q["price"]}')
+                err = None
+                break
+            except Exception as e:
+                err = e
+        if err is not None:
+            fails.append(sym); print(f'  {sym} 실패(직전값 유지): {err}')
     market = {'quotes': quotes, 'fear': old.get('fear')}
     try:
         market['fear'] = fear_greed()
@@ -322,7 +335,7 @@ def main():
                     npts = naver_weekly(NAVER_INDEX[sym], HIST_YEARS)
                 except Exception as e:
                     print(f'  {sym} 네이버 히스토리 실패: {e}')
-            merged = merge_older(ypts, npts)   # [일수(1970-01-01 기준), 종가]
+            merged = merge_older(npts, ypts) if npts else ypts   # 국내 지수는 네이버 우선 · [일수, 종가]
             if len(merged) > 50:
                 series[sym] = merged
                 print(f'  {sym} 히스토리 {len(merged)}주 (시작 {datetime.date.fromordinal(719163 + merged[0][0])})')
