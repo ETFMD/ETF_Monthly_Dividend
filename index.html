@@ -4370,8 +4370,8 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
             <div style="min-width:0;">
               <span style="font-size:12px;color:var(--text2);">보수연액 (세전 연봉)</span>
-              <p style="font-size:10px;color:var(--text3);margin-top:1px;">수당·상여 포함, 비과세 제외</p>
-              <p style="font-size:10px;color:var(--text3);">2026년 중위임금 ≈ 38,880,000원</p>
+              <p style="font-size:10px;color:var(--text3);margin-top:1px;">수당·상여 포함, 비과세 소득(식대 등) 제외</p>
+              <p style="font-size:10px;color:var(--text3);">보수월액 = 연간 보수 ÷ 12</p>
             </div>
             <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
               <div class="num-pill">
@@ -4386,21 +4386,59 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
               </div>
             </div>
           </div>
+          <p style="font-size:11px;color:var(--accent);font-weight:500;margin:10px 0 2px;">보수 외 소득 (연간 소득금액)</p>
+          <p style="font-size:10px;color:var(--text3);margin-bottom:4px;">반영 소득 합계가 연 2,000만원을 넘으면 넘는 금액에 소득월액보험료가 붙어요 (전액 본인 부담)</p>
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
             <div style="min-width:0;">
-              <span style="font-size:12px;color:var(--text2);">추가 소득 (연간)</span>
-              <p style="font-size:10px;color:var(--text3);margin-top:1px;">근로 외 소득 · 연 2,000만원 초과 시 추가 부과</p>
+              <span style="font-size:12px;color:var(--text2);">이자·배당소득</span>
+              <p style="font-size:10px;color:var(--text3);margin-top:1px;">합계 1,000만원 이하는 미반영 · 초과 시 전액 100% 반영</p>
             </div>
             <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
               <div class="num-pill">
-                <input class="num-input" id="h-extra" type="text" inputmode="decimal"
-                  value="0" oninput="calcHealth()" onblur="hUnitBlur('h-extra')"
+                <input class="num-input" id="h-x-fin" type="text" inputmode="decimal"
+                  value="0" oninput="calcHealth()" onblur="hUnitBlur('h-x-fin')"
                   style="width:150px;text-align:right;padding-right:10px;">
               </div>
-              <div class="unit-tabs" id="h-extra-units">
-                <button class="unit-btn" onclick="hSetUnit('h-extra','eok',this)">억원</button>
-                <button class="unit-btn" onclick="hSetUnit('h-extra','man',this)">만원</button>
-                <button class="unit-btn active" onclick="hSetUnit('h-extra','won',this)">원</button>
+              <div class="unit-tabs" id="h-x-fin-units">
+                <button class="unit-btn" onclick="hSetUnit('h-x-fin','eok',this)">억원</button>
+                <button class="unit-btn" onclick="hSetUnit('h-x-fin','man',this)">만원</button>
+                <button class="unit-btn active" onclick="hSetUnit('h-x-fin','won',this)">원</button>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
+            <div style="min-width:0;">
+              <span style="font-size:12px;color:var(--text2);">사업·임대·기타소득</span>
+              <p style="font-size:10px;color:var(--text3);margin-top:1px;">소득금액(필요경비 차감 후) 100% 반영</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <div class="num-pill">
+                <input class="num-input" id="h-x-biz" type="text" inputmode="decimal"
+                  value="0" oninput="calcHealth()" onblur="hUnitBlur('h-x-biz')"
+                  style="width:150px;text-align:right;padding-right:10px;">
+              </div>
+              <div class="unit-tabs" id="h-x-biz-units">
+                <button class="unit-btn" onclick="hSetUnit('h-x-biz','eok',this)">억원</button>
+                <button class="unit-btn" onclick="hSetUnit('h-x-biz','man',this)">만원</button>
+                <button class="unit-btn active" onclick="hSetUnit('h-x-biz','won',this)">원</button>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
+            <div style="min-width:0;">
+              <span style="font-size:12px;color:var(--text2);">공적연금소득</span>
+              <p style="font-size:10px;color:var(--text3);margin-top:1px;">국민·공무원·사학·군인연금 · 50% 반영</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <div class="num-pill">
+                <input class="num-input" id="h-x-pension" type="text" inputmode="decimal"
+                  value="0" oninput="calcHealth()" onblur="hUnitBlur('h-x-pension')"
+                  style="width:150px;text-align:right;padding-right:10px;">
+              </div>
+              <div class="unit-tabs" id="h-x-pension-units">
+                <button class="unit-btn" onclick="hSetUnit('h-x-pension','eok',this)">억원</button>
+                <button class="unit-btn" onclick="hSetUnit('h-x-pension','man',this)">만원</button>
+                <button class="unit-btn active" onclick="hSetUnit('h-x-pension','won',this)">원</button>
               </div>
             </div>
           </div>
@@ -4414,7 +4452,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           </div>
           <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
             <span style="font-size:12px;color:var(--text2);">장기요양보험료율</span>
-            <span style="font-family:var(--mono);font-size:12px;color:var(--accent);">12.95% (건강보험료 × )</span>
+            <span style="font-family:var(--mono);font-size:12px;color:var(--accent);">0.9448% (건강보험료의 13.14%)</span>
           </div>
           <div style="display:flex;justify-content:space-between;">
             <span style="font-size:12px;color:var(--text2);">근로자 / 사업주 각 부담</span>
@@ -4434,7 +4472,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
             <div style="padding-top:2px;min-width:0;">
               <span style="font-size:12px;color:var(--text2);">사업소득</span>
-              <span style="font-size:10px;color:var(--text3);margin-left:4px;">100% 반영</span>
+              <span style="display:block;font-size:10px;color:var(--text3);margin-top:1px;">100% 반영 (임대소득 포함)</span>
             </div>
             <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
               <div class="num-pill">
@@ -4452,7 +4490,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
             <div style="padding-top:2px;min-width:0;">
               <span style="font-size:12px;color:var(--text2);">근로소득</span>
-              <span style="font-size:10px;color:var(--text3);margin-left:4px;">100% 반영</span>
+              <span style="display:block;font-size:10px;color:var(--text3);margin-top:1px;">근로소득금액 50% 반영</span>
             </div>
             <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
               <div class="num-pill">
@@ -4470,7 +4508,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
             <div style="padding-top:2px;min-width:0;">
               <span style="font-size:12px;color:var(--text2);">이자소득</span>
-              <span style="font-size:10px;color:var(--text3);margin-left:4px;">100% 반영</span>
+              <span style="display:block;font-size:10px;color:var(--text3);margin-top:1px;">이자+배당 1,000만원 초과 시 전액</span>
             </div>
             <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
               <div class="num-pill">
@@ -4488,7 +4526,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
             <div style="padding-top:2px;min-width:0;">
               <span style="font-size:12px;color:var(--text2);">배당소득</span>
-              <span style="font-size:10px;color:var(--text3);margin-left:4px;">100% 반영</span>
+              <span style="display:block;font-size:10px;color:var(--text3);margin-top:1px;">이자+배당 1,000만원 초과 시 전액</span>
             </div>
             <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
               <div class="num-pill">
@@ -4506,7 +4544,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
             <div style="padding-top:2px;min-width:0;">
               <span style="font-size:12px;color:var(--text2);">공적연금소득</span>
-              <span style="font-size:10px;color:var(--accent);margin-left:4px;">50% 반영</span>
+              <span style="display:block;font-size:10px;color:var(--accent);margin-top:1px;">50% 반영</span>
             </div>
             <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
               <div class="num-pill">
@@ -4524,7 +4562,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
             <div style="padding-top:2px;min-width:0;">
               <span style="font-size:12px;color:var(--text2);">기타소득</span>
-              <span style="font-size:10px;color:var(--text3);margin-left:4px;">100% 반영</span>
+              <span style="display:block;font-size:10px;color:var(--text3);margin-top:1px;">100% 반영</span>
             </div>
             <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
               <div class="num-pill">
@@ -4542,7 +4580,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         </div>
 
         <div style="margin-top:10px;padding:10px 12px;background:rgba(49,130,246,0.06);border-radius:8px;display:flex;justify-content:space-between;">
-          <span style="font-size:12px;color:var(--text2);">과세 소득 합계</span>
+          <span style="font-size:12px;color:var(--text2);">반영 소득 합계</span>
           <span style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500;" id="h-income-sum">—</span>
         </div>
 
@@ -4553,7 +4591,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
             <div style="padding-top:2px;min-width:0;">
               <span style="font-size:12px;color:var(--text2);">재산세 과세표준</span>
-              <p style="font-size:10px;color:var(--text3);margin-top:1px;">토지·건물 (기본공제 5,000만원)</p>
+              <p style="font-size:10px;color:var(--text3);margin-top:1px;">토지·건축물·주택 등 (시가 아님)</p>
             </div>
             <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
               <div class="num-pill">
@@ -4571,7 +4609,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
             <div style="padding-top:2px;min-width:0;">
               <span style="font-size:12px;color:var(--text2);">전월세 보증금</span>
-              <p style="font-size:10px;color:var(--text3);margin-top:1px;">× 30% → 재산 과세표준에 합산</p>
+              <p style="font-size:10px;color:var(--text3);margin-top:1px;">주택 미소유 세대만 · (보증금+월세×40)×30% 반영</p>
             </div>
             <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
               <div class="num-pill">
@@ -4586,6 +4624,61 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
               </div>
             </div>
           </div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
+            <div style="min-width:0;">
+              <span style="font-size:12px;color:var(--text2);">월세 (월)</span>
+              <p style="font-size:10px;color:var(--text3);margin-top:1px;">보증금과 함께 입력 · 월세 × 40을 보증금으로 환산</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <div class="num-pill">
+                <input class="num-input" id="h-rent" type="text" inputmode="decimal"
+                  value="0" oninput="calcHealth()" onblur="hUnitBlur('h-rent')"
+                  style="width:150px;text-align:right;padding-right:10px;">
+              </div>
+              <div class="unit-tabs" id="h-rent-units">
+                <button class="unit-btn" onclick="hSetUnit('h-rent','eok',this)">억원</button>
+                <button class="unit-btn" onclick="hSetUnit('h-rent','man',this)">만원</button>
+                <button class="unit-btn active" onclick="hSetUnit('h-rent','won',this)">원</button>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:11px;color:var(--accent);font-weight:500;margin:10px 0 2px;">주택금융부채 공제 (공단에 신청한 경우)</p>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
+            <div style="min-width:0;">
+              <span style="font-size:12px;color:var(--text2);">주택담보대출 잔액</span>
+              <p style="font-size:10px;color:var(--text3);margin-top:1px;">1세대 1주택 · 대출 × 60% 공제 (최대 5,000만원)</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <div class="num-pill">
+                <input class="num-input" id="h-loan-own" type="text" inputmode="decimal"
+                  value="0" oninput="calcHealth()" onblur="hUnitBlur('h-loan-own')"
+                  style="width:150px;text-align:right;padding-right:10px;">
+              </div>
+              <div class="unit-tabs" id="h-loan-own-units">
+                <button class="unit-btn" onclick="hSetUnit('h-loan-own','eok',this)">억원</button>
+                <button class="unit-btn" onclick="hSetUnit('h-loan-own','man',this)">만원</button>
+                <button class="unit-btn active" onclick="hSetUnit('h-loan-own','won',this)">원</button>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:5px 0;">
+            <div style="min-width:0;">
+              <span style="font-size:12px;color:var(--text2);">전월세 대출 잔액</span>
+              <p style="font-size:10px;color:var(--text3);margin-top:1px;">무주택 세대 · 대출 × 30% 공제 (최대 1억 5,000만원)</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <div class="num-pill">
+                <input class="num-input" id="h-loan-rent" type="text" inputmode="decimal"
+                  value="0" oninput="calcHealth()" onblur="hUnitBlur('h-loan-rent')"
+                  style="width:150px;text-align:right;padding-right:10px;">
+              </div>
+              <div class="unit-tabs" id="h-loan-rent-units">
+                <button class="unit-btn" onclick="hSetUnit('h-loan-rent','eok',this)">억원</button>
+                <button class="unit-btn" onclick="hSetUnit('h-loan-rent','man',this)">만원</button>
+                <button class="unit-btn active" onclick="hSetUnit('h-loan-rent','won',this)">원</button>
+              </div>
+            </div>
+          </div>
 
         </div>
 
@@ -4597,15 +4690,15 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           </div>
           <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
             <span style="font-size:12px;color:var(--text2);">재산 점수당 금액</span>
-            <span style="font-family:var(--mono);font-size:12px;color:var(--accent);">211.3원</span>
+            <span style="font-family:var(--mono);font-size:12px;color:var(--accent);">211.5원</span>
           </div>
           <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
             <span style="font-size:12px;color:var(--text2);">최저 보험료</span>
-            <span style="font-family:var(--mono);font-size:12px;color:var(--accent);">20,060원</span>
+            <span style="font-family:var(--mono);font-size:12px;color:var(--accent);">20,160원</span>
           </div>
           <div style="display:flex;justify-content:space-between;">
             <span style="font-size:12px;color:var(--text2);">장기요양보험료율</span>
-            <span style="font-family:var(--mono);font-size:12px;color:var(--accent);">12.95% (건강보험료 × )</span>
+            <span style="font-family:var(--mono);font-size:12px;color:var(--accent);">0.9448% (건강보험료의 13.14%)</span>
           </div>
         </div>
       </div>
@@ -4631,7 +4724,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
             <p style="font-family:var(--mono);font-size:32px;font-weight:500;color:#fe9800;" id="h-w-total" style="color:#fe9800;">—</p>
           </div>
           <div id="h-w-extra-block" style="display:none;background:var(--bg3);border-radius:10px;padding:14px;margin-bottom:12px;">
-            <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">소득월액보험료 (추가 소득)</p>
+            <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">소득월액보험료 (보수 외 소득 · 장기요양 포함, 전액 본인 부담)</p>
             <p style="font-family:var(--mono);font-size:18px;font-weight:500;color:#fe9800;" id="h-w-extra-prem">—</p>
             <p style="font-size:11px;color:var(--text3);margin-top:2px;" id="h-w-extra-sub">—</p>
           </div>
@@ -4653,11 +4746,11 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <div id="health-local-result" style="display:none;">
           <div style="background:var(--bg3);border-radius:10px;padding:14px;margin-bottom:10px;">
             <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span style="font-size:12px;color:var(--text3);">연간 과세 소득</span>
+              <span style="font-size:12px;color:var(--text3);">연간 반영 소득</span>
               <span style="font-family:var(--mono);font-size:13px;color:var(--text);" id="h-l-income-pts">—</span>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
-              <span style="font-size:12px;color:var(--text3);">소득 월 보험료 (×7.19%÷12)</span>
+              <span style="font-size:12px;color:var(--text3);">소득 보험료 (÷12×7.19%)</span>
               <span style="font-family:var(--mono);font-size:13px;color:var(--text);" id="h-l-income-prem">—</span>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
@@ -4665,7 +4758,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
               <span style="font-family:var(--mono);font-size:13px;color:var(--text);" id="h-l-prop-pts">—</span>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
-              <span style="font-size:12px;color:var(--text3);">재산 보험료 (점수×211.3)</span>
+              <span style="font-size:12px;color:var(--text3);">재산 보험료 (점수×211.5원)</span>
               <span style="font-family:var(--mono);font-size:13px;color:var(--text);" id="h-l-prop-prem">—</span>
             </div>
           </div>
@@ -4697,25 +4790,28 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <div>
           <p style="font-size:12px;color:var(--accent);font-weight:500;margin-bottom:6px;">직장 가입자</p>
           <p style="font-size:12px;color:var(--text2);line-height:1.8;">
-            • 건강보험료율: <b>7.19%</b> (근로자 3.595% + 사업주 3.595%)<br>
-            • 장기요양보험료: 건강보험료(본인) × <b>12.95%</b><br>
-            • 월 상한: 보수월액 <b>1억 293만원</b> 한도<br>
-            • 월 하한: 보수월액 <b>283만원</b> 이상 시 정상 부과<br>
-            • 추가 소득 연 2,000만원 초과분: 소득월액보험료 별도 부과
+            • 건강보험료 = 보수월액 × <b>7.19%</b> (근로자·사업주 각 3.595%)<br>
+            • 장기요양보험료 = 건강보험료 × <b>13.14%</b> (0.9448% ÷ 7.19%)<br>
+            • 월 보험료 상한 <b>9,183,480원</b> (본인 4,591,740원) · 하한 <b>20,160원</b> (본인 10,080원)<br>
+            • 보수 외 소득이 연 2,000만원 초과 시 소득월액보험료 = (반영 소득 − 2,000만원) ÷ 12 × 7.19%, 전액 본인 부담 (상한 월 4,591,740원)<br>
+            • 반영 기준: 이자·배당(합계 1,000만원 초과 시 전액)·사업·기타 100%, 공적연금 50%<br>
+            • 보험료는 10원 미만 절사
           </p>
         </div>
         <div>
           <p style="font-size:12px;color:var(--accent);font-weight:500;margin-bottom:6px;">지역 가입자</p>
           <p style="font-size:12px;color:var(--text2);line-height:1.8;">
-            • 점수당 금액: <b>211.3원</b><br>
-            • 소득 보험료: 연간 과세소득 × 7.19% ÷ 12 (정률제)<br>
-            • 재산 보험료: 과세표준 구간별 점수 × 211.3원 (기본공제 5,000만원)<br>
-            • 자동차: 2026년부터 부과 폐지<br>
-            • 최저 보험료: 월 <b>20,060원</b>
+            • 보험료 = 소득 보험료 + 재산 보험료 (세대 단위)<br>
+            • 소득 보험료 = 연간 반영 소득 ÷ 12 × <b>7.19%</b> — 연 소득 약 336만원 이하는 최저보험료 <b>20,160원</b><br>
+            • 반영 기준: 사업·기타 100%, 이자·배당 합계 1,000만원 초과 시 전액, 근로·공적연금 50%<br>
+            • 재산 보험료 = 재산 점수(60등급) × <b>211.5원</b> — 재산세 과세표준 합계에서 기본공제 <b>1억원</b> 차감<br>
+            • 전월세(무주택 세대): (보증금 + 월세 × 40) × 30% · 주택금융부채는 신청 시 공제<br>
+            • 자동차: 2024년 2월부터 보험료 부과 폐지<br>
+            • 월 보험료 상한 <b>4,591,740원</b> · 장기요양보험료 = 건강보험료 × 13.14%
           </p>
         </div>
       </div>
-      <p style="font-size:11px;color:var(--text3);margin-top:12px;">※ 본 계산기는 참고용이며 실제 부과액은 건강보험공단 확인 바랍니다.</p>
+      <p style="font-size:11px;color:var(--text3);margin-top:12px;">※ 2026년 1월 1일 시행 기준(보험료율 7.19%, 장기요양 0.9448%, 점수당 211.5원). 실제 부과액은 소득·재산 자료 반영 시점과 감면·경감 여부에 따라 다를 수 있으니 국민건강보험공단(1577-1000)에서 확인하세요.</p>
     </div>
   </div><!-- /page-health -->
 
@@ -9744,7 +9840,7 @@ function fxSwap() {
 /* 모바일 반응형: fx-rate-grid 2열 */
 
 /* ════════════════════════════════════════
-   [HEALTH] 건강보험료 계산기 (2025년 기준)
+   [HEALTH] 건강보험료 계산기 (2026년 기준)
 ════════════════════════════════════════ */
 let _healthType = 'work';
 
@@ -9805,158 +9901,131 @@ function hUnitBlur(id) {
   calcHealth();
 }
 
-/* ── 2026 상수 ── */
-const H_RATE      = 0.0719;    // 건강보험료율 7.19%
-const H_EMP_RATE  = 0.03595;   // 근로자 부담 3.595%
-const H_LTC_RATE  = 0.1295;    // 장기요양보험료율 12.95%
-const H_PT_VAL    = 211.3;     // 점수당 금액 (지역) 211.3원
-const H_MIN_PREM  = 20060;     // 지역 최저보험료 20,060원
-const H_SALARY_CAP = 102930000; // 직장 보수월액 상한 (1억 293만원)
-const H_SALARY_MIN = 2830000;   // 직장 보수월액 하한 (283만원)
+/* ── 2026년 기준 (2026.1.1 시행) ──
+   · 건강보험료율 7.19% (국민건강보험법 시행령 제44조) · 장기요양보험료율 0.9448% (소득 대비)
+   · 월별 보험료 상한 9,183,480원 / 하한 20,160원 (직장 보수월액보험료, 2026 고시)
+   · 소득월액보험료·지역가입자 상한 4,591,740원 · 재산보험료부과점수당 금액 211.5원
+   · 재산 점수표: 시행령 [별표 4] (2024.5.7 개정) 60등급 · 기본공제 1억원 · 자동차 부과 폐지(2024.2)
+   · 보험료는 10원 미만 절사 */
+const H_RATE        = 0.0719;          // 건강보험료율 7.19%
+const H_LTC_INCOME  = 0.009448;        // 장기요양보험료율 0.9448% (소득 대비)
+const H_LTC_RATIO   = H_LTC_INCOME / H_RATE;   // 건강보험료 대비 ≈ 13.14%
+const H_PT_VAL      = 211.5;           // 재산보험료부과점수당 금액
+const H_PREM_MAX    = 9183480;         // 직장 보수월액보험료 월 상한 (근로자+사업주)
+const H_PREM_MIN    = 20160;           // 월 보험료 하한 (직장 전체 · 지역 최저보험료)
+const H_PREM_MAX_SELF = 4591740;       // 소득월액보험료 · 지역가입자 월 상한
+const H_EXTRA_DEDUCT = 20000000;       // 보수 외 소득 공제 기준 연 2,000만원
+const H_FIN_THRESH  = 10000000;        // 이자+배당 합계 1,000만원 초과 시 전액 반영
+const H_PROP_DEDUCT = 100000000;       // 재산 기본공제 1억원
+const H_LOAN_OWN_CAP  = 50000000;      // 주택담보대출 공제 한도 (과표 5,000만원)
+const H_LOAN_RENT_CAP = 150000000;     // 전월세 대출 공제 한도 (과표 1억 5,000만원)
 
-/* ── 지역 가입자 소득 점수 테이블 (2025) ──
-   [소득 상한(만원), 점수] 구간별 */
-const H_INCOME_PTS = [
-  [0,0],[100,28],[200,43],[300,56],[400,66],[500,75],
-  [600,83],[700,90],[800,97],[900,103],[1000,108],
-  [1200,118],[1400,127],[1600,134],[1800,141],[2000,147],
-  [2500,159],[3000,170],[4000,188],[5000,203],[6000,215],
-  [7000,225],[8000,234],[9000,242],[10000,249],
-  [12000,262],[15000,278],[20000,298],[30000,325],
-  [40000,345],[50000,361],[Infinity,700]
-];
+function hFloor10(n) { return Math.floor(Math.max(0, n) / 10) * 10; }
 
-/* ── 지역 가입자 재산 점수 테이블 (2025, 과세표준 구간)
-   [과세표준 상한(만원), 점수] */
+/* ── 재산 등급별 점수 (시행령 별표 4) : [구간 상한(만원), 점수] ── */
 const H_PROP_PTS = [
-  [0,0],[450,22],[900,44],[1350,66],[1800,88],[2700,110],
-  [3600,132],[4800,154],[6000,176],[7500,198],[9000,220],
-  [11250,242],[13500,264],[16875,286],[20250,308],[25650,330],
-  [30600,352],[38250,374],[45900,396],[57375,418],[68850,440],
-  [86250,462],[103500,484],[129375,506],[155250,528],
-  [194250,550],[233250,572],[291375,594],[349500,616],
-  [Infinity,700]
+  [450,22],[900,44],[1350,66],[1800,97],[2250,122],[2700,146],[3150,171],[3600,195],[4050,219],[4500,244],
+  [5020,268],[5590,294],[6220,320],[6930,344],[7710,365],[8590,386],[9570,412],[10700,439],[11900,465],[13300,490],
+  [14800,516],[16400,535],[18300,559],[20400,586],[22700,611],[25300,637],[28100,659],[31300,681],[34900,706],[38800,731],
+  [43200,757],[48100,785],[53600,812],[59700,841],[66500,881],[74000,921],[82400,961],[91800,1001],[103000,1041],[114000,1091],
+  [127000,1141],[142000,1191],[158000,1241],[176000,1291],[196000,1341],[218000,1391],[242000,1451],[270000,1511],[300000,1571],[330000,1641],
+  [363000,1711],[399300,1781],[439230,1851],[483153,1921],[531468,1991],[584615,2061],[643077,2131],[707385,2201],[778124,2271],[Infinity,2341]
 ];
-
-/* ── 지역 가입자 자동차 점수 (차량기준가액 기준) ── */
-
-function hGetPropPts(propVal) {
-  const basic_deduct = 50000000; // 기본공제 5000만원
-  const net = Math.max(0, propVal - basic_deduct);
-  const wan = net / 10000;
-  for (let i = 0; i < H_PROP_PTS.length; i++) {
-    if (wan <= H_PROP_PTS[i][0]) {
-      if (i === 0) return 0;
-      const [hi, pts] = H_PROP_PTS[i];
-      const [lo, plo] = H_PROP_PTS[i-1];
-      if (lo === hi) return pts;
-      return Math.round(plo + (pts-plo) * (wan-lo) / (hi-lo));
-    }
-  }
-  return 700;
+/* 공제 후 재산 금액(원) → [등급, 점수] (0 이하이면 [0, 0]) */
+function hGetPropPts(netWon) {
+  if (!(netWon > 0)) return [0, 0];
+  const wan = netWon / 10000;
+  for (let i = 0; i < H_PROP_PTS.length; i++) if (wan <= H_PROP_PTS[i][0]) return [i + 1, H_PROP_PTS[i][1]];
+  return [60, 2341];
 }
 
 function calcHealth() {
   /* 초기 단위 설정 (미설정 시 HTML active 버튼 읽기) */
-  ['h-salary','h-extra','h-i-biz','h-i-work','h-i-interest','h-i-div',
-   'h-i-pension','h-i-etc','h-prop','h-deposit'].forEach(id => {
+  ['h-salary','h-x-fin','h-x-biz','h-x-pension','h-i-biz','h-i-work','h-i-interest','h-i-div',
+   'h-i-pension','h-i-etc','h-prop','h-deposit','h-rent','h-loan-own','h-loan-rent'].forEach(id => {
     if (!_hUnits[id]) {
       const cont = document.getElementById(id+'-units');
-      if (cont) {
-        const ab = cont.querySelector('.unit-btn.active');
-        if (ab) {
-          _hUnits[id] = ab.textContent.includes('억') ? 'eok' : ab.textContent.includes('만') ? 'man' : 'won';
-        }
-      }
+      const ab = cont && cont.querySelector('.unit-btn.active');
+      if (ab) _hUnits[id] = ab.textContent.includes('억') ? 'eok' : ab.textContent.includes('만') ? 'man' : 'won';
     }
   });
-  const type = _healthType;
+  const setH = (id, v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  const pos = id => Math.max(0, hGetWon(id));
 
-  if (type === 'work') {
-    /* ── 직장 가입자 계산 ── */
-    const annualSalary = Math.min(Math.max(hGetWon('h-salary'), 0), H_SALARY_CAP * 12);
-    const salary       = annualSalary / 12;   // 보수월액
-    const extra        = hGetWon('h-extra');  // 연간 추가 소득
+  if (_healthType === 'work') {
+    /* ── 직장 가입자: 보수월액보험료 (근로자·사업주 반반) ── */
+    const annualSalary = pos('h-salary');
+    const salary   = annualSalary / 12;                                   // 보수월액
+    const rawTotal = salary * H_RATE;
+    const total    = Math.min(Math.max(rawTotal, H_PREM_MIN), H_PREM_MAX); // 상·하한
+    const empPrem  = hFloor10(total / 2);                                  // 근로자 부담
+    const emplrPrem = empPrem;                                             // 사업주 부담 (동일)
+    const ltcEmp   = hFloor10(empPrem * H_LTC_RATIO);
+    const ltcEmplr = ltcEmp;
 
-    /* 보수월액보험료 */
-    const totalPrem    = Math.round(salary * H_RATE);
-    const empPrem      = Math.round(salary * H_EMP_RATE);
-    const emplrPrem    = totalPrem - empPrem;
-    const ltcPrem      = Math.round(empPrem * H_LTC_RATE);
-    const monthTotal   = empPrem + ltcPrem;
-
-    /* 소득월액보험료 (연 2000만원 초과분) */
-    let extraPrem = 0;
-    const extraThresh = 20000000;
-    if (extra > extraThresh) {
-      const extraIncome = extra - extraThresh;
-      const extraMonthly = extraIncome / 12;
-      extraPrem = Math.round(extraMonthly * H_RATE / 2); // 본인 부담
+    /* ── 소득월액보험료: 보수 외 소득 (전액 본인 부담) ── */
+    const fin = pos('h-x-fin'), biz = pos('h-x-biz'), pen = pos('h-x-pension');
+    const evalExtra = (fin > H_FIN_THRESH ? fin : 0) + biz + pen * 0.5;
+    let extraPrem = 0, extraLtc = 0;
+    if (evalExtra > H_EXTRA_DEDUCT) {
+      extraPrem = Math.min(hFloor10((evalExtra - H_EXTRA_DEDUCT) / 12 * H_RATE), H_PREM_MAX_SELF);
+      extraLtc  = hFloor10(extraPrem * H_LTC_RATIO);
     }
+    const monthTotal = empPrem + ltcEmp + extraPrem + extraLtc;
+    const capNote = rawTotal > H_PREM_MAX ? ' · 상한 적용' : rawTotal < H_PREM_MIN ? ' · 하한 적용' : '';
 
-    const finalMonthly = monthTotal + extraPrem;
-
-    const setH = (id, v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
     setH('h-w-health',     hFmt(empPrem));
-    setH('h-w-health-sub', '보수월액 ' + hFmt(salary) + ' (연봉 ' + hFmt(annualSalary) + '/12) × 3.595%');
-    setH('h-w-ltc',        hFmt(ltcPrem));
-    setH('h-w-ltc-sub',    '건강보험료 ' + hFmt(empPrem) + ' × 12.95%');
-    setH('h-w-total',      hFmt(finalMonthly));
-    setH('h-w-employer',   hFmt(emplrPrem + Math.round(emplrPrem * H_LTC_RATE)));
-    setH('h-w-annual',     hFmt(finalMonthly * 12));
+    setH('h-w-health-sub', '보수월액 ' + hFmt(salary) + ' × 7.19% ÷ 2' + capNote);
+    setH('h-w-ltc',        hFmt(ltcEmp));
+    setH('h-w-ltc-sub',    '건강보험료 ' + hFmt(empPrem) + ' × 13.14% (0.9448% ÷ 7.19%)');
+    setH('h-w-total',      hFmt(monthTotal));
+    setH('h-w-employer',   hFmt(emplrPrem + ltcEmplr));
+    setH('h-w-annual',     hFmt(monthTotal * 12));
 
     const extraBlock = document.getElementById('h-w-extra-block');
     if (extraPrem > 0) {
       extraBlock.style.display = '';
-      setH('h-w-extra-prem', hFmt(extraPrem));
-      setH('h-w-extra-sub',  '연봉 외 소득 ' + hFmt(extra) + ' → 초과분 × 7.19% ÷ 12 ÷ 2');
+      setH('h-w-extra-prem', hFmt(extraPrem + extraLtc));
+      setH('h-w-extra-sub',  '반영 소득 ' + hFmt(evalExtra) + ' − 2,000만원 → ÷12 × 7.19% = 건강 ' + hFmt(extraPrem) + ' + 장기요양 ' + hFmt(extraLtc)
+        + (extraPrem >= H_PREM_MAX_SELF ? ' (상한 적용)' : ''));
     } else {
       extraBlock.style.display = 'none';
     }
 
   } else {
-    /* ── 지역 가입자 계산 ── */
-    /* 소득 항목별 과세 소득 계산 */
-    const iBiz      = hGetWon('h-i-biz');       // 사업소득 100%
-    const iWork     = hGetWon('h-i-work');      // 근로소득 100%
-    const iInterest = hGetWon('h-i-interest');  // 이자소득 100%
-    const iDiv2     = hGetWon('h-i-div');       // 배당소득 100%
-    const iPension  = hGetWon('h-i-pension');   // 공적연금소득 50%만
-    const iEtc      = hGetWon('h-i-etc');       // 기타소득 100%
+    /* ── 지역 가입자: 소득 보험료 + 재산 보험료 ── */
+    const iBiz = pos('h-i-biz'), iWork = pos('h-i-work'), iInt = pos('h-i-interest'), iDiv = pos('h-i-div');
+    const iPen = pos('h-i-pension'), iEtc = pos('h-i-etc');
+    const finSum = iInt + iDiv;
+    const finIn  = finSum > H_FIN_THRESH ? finSum : 0;                    // 1,000만원 이하는 미반영
+    const income = iBiz + iEtc + finIn + iWork * 0.5 + iPen * 0.5;
 
-    /* 과세 소득 합산 (공적연금 50% 반영) */
-    const taxableIncome = iBiz + iWork + iInterest + iDiv2 + (iPension * 0.5) + iEtc;
-
-    /* 소득 합계 표시 */
     const incomeSum = document.getElementById('h-income-sum');
-    if (incomeSum) incomeSum.textContent = hFmt(Math.round(taxableIncome)) + ' (연간 과세소득)';
+    if (incomeSum) incomeSum.textContent = hFmt(income) + (finSum > 0 && !finIn ? ' (금융소득 1,000만원 이하 미반영)' : '');
 
-    /* 소득 보험료: 정률제 (연간 과세소득 × 7.19% ÷ 12) */
-    const incomeMonthPrem = Math.round(taxableIncome * H_RATE / 12);
+    const rawIncomePrem = income / 12 * H_RATE;
+    const incomePrem    = Math.max(rawIncomePrem, H_PREM_MIN);            // 연 소득 약 336만원 이하 → 최저보험료
 
-    const prop    = hGetWon('h-prop');
-    const deposit = hGetWon('h-deposit');
+    /* 재산: 과세표준 + 임차(보증금+월세×40)×30% − 기본공제 1억 − 주택금융부채 공제 */
+    const prop = pos('h-prop'), rentEval = (pos('h-deposit') + pos('h-rent') * 40) * 0.3;
+    const loanOwn  = Math.min(pos('h-loan-own') * 0.6, H_LOAN_OWN_CAP, prop);
+    const loanRent = Math.min(pos('h-loan-rent') * 0.3, H_LOAN_RENT_CAP, rentEval);
+    const propNet  = prop + rentEval - H_PROP_DEDUCT - loanOwn - loanRent;
+    const gp       = hGetPropPts(propNet);
+    const propPrem = gp[1] * H_PT_VAL;
 
-    /* 전월세 보증금 30% → 재산 과세표준 합산 */
-    const propTotal = prop + deposit * 0.3;
+    const rawHealth  = incomePrem + propPrem;
+    const healthPrem = Math.min(hFloor10(rawHealth), H_PREM_MAX_SELF);
+    const ltcPrem    = hFloor10(healthPrem * H_LTC_RATIO);
+    const monthTotal = healthPrem + ltcPrem;
 
-    /* 재산 보험료: 점수제 (과세표준 구간 점수 × 211.3원) */
-    const propPts  = hGetPropPts(propTotal);
-    const propPrem = Math.round(propPts * H_PT_VAL);
-
-    /* 총 건강보험료 = 소득 보험료 + 재산 보험료 (최저 적용) */
-    const rawHealthPrem  = incomeMonthPrem + propPrem;
-    const healthPrem     = Math.max(H_MIN_PREM, rawHealthPrem);
-    const ltcPrem        = Math.round(healthPrem * H_LTC_RATE);
-    const monthTotal     = healthPrem + ltcPrem;
-
-    const setH = (id, v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
-    setH('h-l-income-pts',  hFmt(Math.round(taxableIncome)) + ' / 년');
-    setH('h-l-income-prem', hFmt(incomeMonthPrem) + ' / 월');
-    setH('h-l-prop-pts',    propPts + '점');
-    setH('h-l-prop-prem',   hFmt(propPrem) + ' / 월' + (propPts===0?' (해당 없음)':''));
+    setH('h-l-income-pts',  hFmt(income) + ' / 년');
+    setH('h-l-income-prem', hFmt(incomePrem) + ' / 월' + (rawIncomePrem < H_PREM_MIN ? ' (최저)' : ''));
+    setH('h-l-prop-pts',    gp[1] ? gp[1].toLocaleString('ko-KR') + '점 (' + gp[0] + '등급 · 공제 후 ' + hFmt(propNet) + ')' : '0점 (공제 후 0원)');
+    setH('h-l-prop-prem',   hFmt(propPrem) + ' / 월' + (gp[1] === 0 ? ' (해당 없음)' : ''));
     setH('h-l-health',      hFmt(healthPrem));
-    setH('h-l-health-sub',  '소득' + hFmt(incomeMonthPrem) + ' + 재산' + hFmt(propPrem) + (healthPrem===H_MIN_PREM?' (최저 적용)':''));
+    setH('h-l-health-sub',  '소득 ' + hFmt(incomePrem) + ' + 재산 ' + hFmt(propPrem)
+      + (rawIncomePrem < H_PREM_MIN ? ' · 소득분 최저보험료 적용' : '') + (hFloor10(rawHealth) > H_PREM_MAX_SELF ? ' · 상한 적용' : '') + ' (10원 미만 절사)');
     setH('h-l-ltc',         hFmt(ltcPrem));
     setH('h-l-total',       hFmt(monthTotal));
     setH('h-l-annual',      hFmt(monthTotal * 12));
