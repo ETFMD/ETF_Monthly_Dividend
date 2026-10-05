@@ -34,6 +34,11 @@ HIST_VERSION = 4   # 형식·출처가 바뀌면 올려서 즉시 다시 수집
 # Yahoo는 국내 지수(특히 코스피200)의 과거 데이터가 짧거나 비어 있음 → 네이버 금융 주봉으로 앞부분을 채움
 NAVER_INDEX = {'^KS11': 'KOSPI', '^KS200': 'KPI200', '^KQ11': 'KOSDAQ'}
 
+# 분배 시뮬레이터 '지수 비교' 차트 (data/compare.json): ETF 상장 이후 일봉 + 분배금, 비교 지수 일봉
+COMPARE = os.path.join(ROOT, 'compare.json')
+COMPARE_PAIRS = {'498400.KS': {'naver': '498400', 'bench': '^KS11'}}   # KODEX 200타겟위클리커버드콜 ↔ 코스피
+KST = 9 * 3600
+
 
 def utc_now():
     return datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
@@ -336,6 +341,77 @@ def build_muhan(market):
     save_if_changed(MUHAN, out, old)
 
 
+def naver_daily(symbol, count):
+    """네이버 일봉 종가 → [[일수(KST 날짜), 종가], ...] (종목·지수 공통)"""
+    xml = get_text(f'https://fchart.stock.naver.com/sise.nhn?symbol={symbol}&timeframe=day&count={count}&requestType=0', enc='euc-kr')
+    return _naver_points(xml, FCHART_RE)
+
+
+def yahoo_daily(sym):
+    """야후 상장 이후 일봉 종가와 분배금 → ([[일수, 종가]], [[일수, 분배금]])"""
+    res = yahoo_chart(sym, 'range=max&interval=1d&events=div')
+    pts = [[(t + KST) // 86400, c] for t, c in points(res, 2)]
+    divs = []
+    for d in ((res.get('events') or {}).get('dividends') or {}).values():
+        try:
+            divs.append([(int(d['date']) + KST) // 86400, round(float(d['amount']), 4)])
+        except Exception:
+            pass
+    return pts, sorted(divs)
+
+
+def dedup(pts):
+    out = {}
+    for d, c in pts:
+        out[int(d)] = c
+    return [[d, out[d]] for d in sorted(out)]
+
+
+def build_compare():
+    """ETF 가격(네이버 우선·야후 보조)·분배금(야후)·비교 지수(네이버 우선) 일봉을 compare.json 으로 저장"""
+    old = load(COMPARE)
+    series, divs = dict(old.get('series') or {}), dict(old.get('divs') or {})
+    for sym, cfg in COMPARE_PAIRS.items():
+        ypts, ydiv = [], []
+        try:
+            ypts, ydiv = yahoo_daily(sym)
+        except Exception as e:
+            print(f'  {sym} 야후 일봉 실패: {e}')
+        npts = []
+        try:
+            npts = naver_daily(cfg['naver'], 1500)
+        except Exception as e:
+            print(f'  {sym} 네이버 일봉 실패: {e}')
+        etf = dedup(merge_older(npts, ypts) if npts else ypts)
+        if len(etf) < 5:
+            print(f'  {sym} 일봉 부족(직전값 유지)'); continue
+        series[sym] = etf
+        price = dict(map(tuple, etf))
+        # 분배금은 그 시점 가격의 10% 미만인 값만 인정 (잘못된 값 방지)
+        okdiv = [[d, a] for d, a in ydiv if a > 0 and d >= etf[0][0] and a < 0.1 * (price.get(d) or etf[-1][1])]
+        if okdiv or sym not in divs:
+            divs[sym] = okdiv
+        bench, start = cfg['bench'], etf[0][0]
+        bpts = []
+        if bench in NAVER_INDEX:
+            try:
+                bpts = naver_daily(NAVER_INDEX[bench], int((etf[-1][0] - start) * 0.75) + 60)
+            except Exception as e:
+                print(f'  {bench} 네이버 일봉 실패: {e}')
+        try:
+            res = yahoo_chart(bench, f'period1={(start - 10) * 86400}&period2={int(time.time())}&interval=1d')
+            bpts = merge_older(bpts, [[(t + KST) // 86400, c] for t, c in points(res, 2)]) if bpts else \
+                   [[(t + KST) // 86400, c] for t, c in points(res, 2)]
+        except Exception as e:
+            print(f'  {bench} 야후 일봉 실패: {e}')
+        bpts = [p for p in dedup(bpts) if p[0] >= start - 7]
+        if len(bpts) >= 5:
+            series[bench] = bpts
+        print(f'  비교 {sym} {len(etf)}일 (상장 {datetime.date.fromordinal(719163 + start)}) · 분배 {len(divs.get(sym) or [])}회 · {bench} {len(series.get(bench) or [])}일')
+    save_if_changed(COMPARE, {'unit': 'day', 'pairs': {s: c['bench'] for s, c in COMPARE_PAIRS.items()},
+                              'series': series, 'divs': divs}, old)
+
+
 def main():
     os.makedirs(ROOT, exist_ok=True)
     old = load(MARKET)
@@ -369,6 +445,10 @@ def main():
         print('  feargreedchart 실패(직전값 유지):', e)
     save_if_changed(MARKET, market, old)
     build_muhan(market)
+    try:
+        build_compare()
+    except Exception as e:
+        print('  지수 비교 데이터 실패(직전값 유지):', e)
 
     oldh = load(HISTORY)
     age_h = 1e9
