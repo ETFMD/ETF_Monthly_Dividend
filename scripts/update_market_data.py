@@ -10,7 +10,7 @@
   · 종목 하나가 실패해도 직전에 저장된 값을 유지 → 페이지에 빈 값이 생기지 않음
   · 내용이 바뀌었을 때만 파일을 다시 씀 → 장 마감 후에는 커밋이 생기지 않음
 """
-import json, os, sys, time, datetime, urllib.request, urllib.parse
+import json, os, re, sys, time, datetime, urllib.request, urllib.parse
 from zoneinfo import ZoneInfo
 NY = ZoneInfo('America/New_York')
 
@@ -30,6 +30,9 @@ US_ETF  = ['TQQQ', 'SOXL']                                              # 무한
 QUOTES  = ETF + INDEX + METAL + FX + US_ETF
 HIST    = INDEX + METAL + ['USDKRW=X']
 HIST_YEARS, HIST_MAX_AGE_H = 31, 20
+HIST_VERSION = 2   # 형식·출처가 바뀌면 올려서 즉시 다시 수집
+# Yahoo는 국내 지수(특히 코스피200)의 과거 데이터가 짧거나 비어 있음 → 네이버 금융 주봉으로 앞부분을 채움
+NAVER_INDEX = {'^KS11': 'KOSPI', '^KS200': 'KPI200', '^KQ11': 'KOSDAQ'}
 
 
 def utc_now():
@@ -87,6 +90,52 @@ def build_quote(res):
         prev = pts[-2][1] if (last_day == mkt_day and len(pts) > 1) else pts[-1][1]
     return {'price': round(float(price), 4), 'prev': prev or m.get('chartPreviousClose'),
             'time': m.get('regularMarketTime'), 'currency': m.get('currency'), 'daily': pts[-30:]}
+
+
+def get_text(url, tries=3, enc='utf-8'):
+    err = None
+    for i in range(tries):
+        try:
+            req = urllib.request.Request(url, headers={'User-Agent': UA})
+            with urllib.request.urlopen(req, timeout=25) as r:
+                return r.read().decode(enc, errors='ignore')
+        except Exception as e:
+            err = e
+            time.sleep(2 * (i + 1))
+    raise err
+
+
+def naver_weekly(symbol, years):
+    """네이버 금융 지수 주봉 → [[일수, 종가], ...]  (item data="YYYYMMDD|시가|고가|저가|종가|거래량")"""
+    count = int(years * 53) + 10
+    xml = get_text(f'https://fchart.stock.naver.com/sise.nhn?symbol={symbol}&timeframe=week&count={count}&requestType=0', enc='euc-kr')
+    out = []
+    for m in re.finditer(r'data="(\d{8})\|[^|]*\|[^|]*\|[^|]*\|([\d.]+)', xml):
+        d = datetime.datetime.strptime(m.group(1), '%Y%m%d').replace(tzinfo=datetime.timezone.utc)
+        c = float(m.group(2))
+        if c > 0:
+            out.append([int(d.timestamp()) // 86400, round(c, 2)])
+    return sorted(out)
+
+
+def naver_quote(symbol):
+    """네이버 일봉으로 build_quote 와 같은 형식 생성"""
+    xml = get_text(f'https://fchart.stock.naver.com/sise.nhn?symbol={symbol}&timeframe=day&count=30&requestType=0', enc='euc-kr')
+    pts = []
+    for m in re.finditer(r'data="(\d{8})\|[^|]*\|[^|]*\|[^|]*\|([\d.]+)', xml):
+        d = datetime.datetime.strptime(m.group(1), '%Y%m%d').replace(hour=6, tzinfo=datetime.timezone.utc)
+        pts.append([int(d.timestamp()), round(float(m.group(2)), 2)])
+    if not pts:
+        raise ValueError('네이버 데이터 없음')
+    return {'price': pts[-1][1], 'prev': pts[-2][1] if len(pts) > 1 else None, 'time': pts[-1][0], 'currency': 'KRW', 'daily': pts[-30:]}
+
+
+def merge_older(primary, older):
+    """primary(야후) 앞쪽에 없는 기간만 older(네이버)로 채움"""
+    if not older: return primary
+    if not primary: return older
+    first = primary[0][0]
+    return [p for p in older if p[0] < first - 3] + primary
 
 
 def fear_greed():
@@ -241,6 +290,11 @@ def main():
         try:
             quotes[sym] = build_quote(yahoo_chart(sym, 'range=1mo&interval=1d'))
         except Exception as e:
+            if sym in NAVER_INDEX:   # 국내 지수는 네이버 일봉으로 대체
+                try:
+                    quotes[sym] = naver_quote(NAVER_INDEX[sym]); print(f'  {sym} 야후 실패 → 네이버 사용'); continue
+                except Exception as e2:
+                    e = e2
             fails.append(sym); print(f'  {sym} 실패(직전값 유지): {e}')
     market = {'quotes': quotes, 'fear': old.get('fear')}
     try:
@@ -254,16 +308,27 @@ def main():
     age_h = 1e9
     if oldh.get('updated'):
         age_h = (utc_now() - datetime.datetime.fromisoformat(oldh['updated'][:-1])).total_seconds() / 3600
-    if age_h >= HIST_MAX_AGE_H or set(HIST) - set((oldh.get('series') or {})) or '--history' in sys.argv:
+    if age_h >= HIST_MAX_AGE_H or oldh.get('v') != HIST_VERSION or set(HIST) - set((oldh.get('series') or {})) or '--history' in sys.argv:
         series, p1 = dict(oldh.get('series') or {}), int(time.time() - HIST_YEARS * 365.25 * 86400)
         for sym in HIST:
+            ypts = []
             try:
-                pts = points(yahoo_chart(sym, f'period1={p1}&period2={int(time.time())}&interval=1wk'), 2)
-                if len(pts) > 50:
-                    series[sym] = [[t // 86400, c] for t, c in pts]   # [일수(1970-01-01 기준), 종가]
+                ypts = [[t // 86400, c] for t, c in points(yahoo_chart(sym, f'period1={p1}&period2={int(time.time())}&interval=1wk'), 2)]
             except Exception as e:
-                print(f'  {sym} 히스토리 실패(직전값 유지): {e}')
-        save_if_changed(HISTORY, {'unit': 'day', 'series': series}, oldh)
+                print(f'  {sym} 야후 히스토리 실패: {e}')
+            npts = []
+            if sym in NAVER_INDEX:
+                try:
+                    npts = naver_weekly(NAVER_INDEX[sym], HIST_YEARS)
+                except Exception as e:
+                    print(f'  {sym} 네이버 히스토리 실패: {e}')
+            merged = merge_older(ypts, npts)   # [일수(1970-01-01 기준), 종가]
+            if len(merged) > 50:
+                series[sym] = merged
+                print(f'  {sym} 히스토리 {len(merged)}주 (시작 {datetime.date.fromordinal(719163 + merged[0][0])})')
+            else:
+                print(f'  {sym} 히스토리 부족(직전값 유지)')
+        save_if_changed(HISTORY, {'unit': 'day', 'v': HIST_VERSION, 'series': series}, oldh)
     print(f'완료 — 시세 {len(QUOTES) - len(fails)}/{len(QUOTES)} 성공')
     if len(fails) == len(QUOTES):
         sys.exit(1)   # 전부 실패하면 Actions에 빨간불로 표시
