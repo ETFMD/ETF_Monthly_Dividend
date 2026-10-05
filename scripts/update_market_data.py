@@ -11,9 +11,13 @@
   · 내용이 바뀌었을 때만 파일을 다시 씀 → 장 마감 후에는 커밋이 생기지 않음
 """
 import json, os, sys, time, datetime, urllib.request, urllib.parse
+from zoneinfo import ZoneInfo
+NY = ZoneInfo('America/New_York')
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data')
 MARKET, HISTORY = os.path.join(ROOT, 'market.json'), os.path.join(ROOT, 'history.json')
+MUHAN = os.path.join(ROOT, 'muhan.json')   # 무한매수법 탭 전용 (세션별 고저·10년 종가·VIX·CNN 공포탐욕)
+MUHAN_TICKERS = ['TQQQ', 'SOXL']
 UA = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
       '(KHTML, like Gecko) Chrome/124.0 Safari/537.36')
 
@@ -124,6 +128,111 @@ def save_if_changed(path, new, old):
     print(f'  {os.path.basename(path)}: 저장 ({os.path.getsize(path):,} bytes)')
 
 
+# ─────────────────────────────────────────────────────────────
+# 무한매수법 탭 데이터 (data/muhan.json)
+#   tickers.{T}.days   : 최근 거래일별 시가·종가·프리/정규/애프터 고가·저가
+#   tickers.{T}.closes : 10년 일봉 종가 [일수, 종가]  (하루 1회 갱신)
+#   tickers.{T}.quote  : 최신 체결가(프리·애프터 포함)
+#   vix, fx, fear(CNN 공포탐욕 1년)
+# ─────────────────────────────────────────────────────────────
+def session_of(minute):
+    if 240 <= minute < 570: return 'pre'
+    if 570 <= minute < 960: return 'regular'
+    if 960 <= minute < 1200: return 'post'
+    return None
+
+
+def muhan_ticker(sym, old):
+    daily = yahoo_chart(sym, 'range=2mo&interval=1d')
+    q = (daily.get('indicators') or {}).get('quote', [{}])[0]
+    days = {}
+    for i, t in enumerate(daily.get('timestamp') or []):
+        c = (q.get('close') or [None])[i]
+        if c is None: continue
+        d = datetime.datetime.fromtimestamp(t, NY).strftime('%Y-%m-%d')
+        o, h = (q.get('open') or [None])[i], (q.get('high') or [None])[i]
+        days[d] = {'date': d, 'close': round(c, 2), 'open': round(o, 2) if o else None, 'dayHigh': round(h, 2) if h else None}
+    try:   # 15분봉(프리·애프터 포함)으로 세션별 고가·저가
+        intra = yahoo_chart(sym, 'range=1mo&interval=15m&includePrePost=true')
+        iq = (intra.get('indicators') or {}).get('quote', [{}])[0]
+        last_px = None
+        for i, t in enumerate(intra.get('timestamp') or []):
+            hi, lo, cl = (iq.get('high') or [None])[i], (iq.get('low') or [None])[i], (iq.get('close') or [None])[i]
+            if hi is None or lo is None: continue
+            dt = datetime.datetime.fromtimestamp(t, NY)
+            ses = session_of(dt.hour * 60 + dt.minute)
+            if not ses: continue
+            day = days.get(dt.strftime('%Y-%m-%d'))
+            if not day: continue
+            day[ses + 'High'] = round(max(hi, day.get(ses + 'High', hi)), 2)
+            day[ses + 'Low'] = round(min(lo, day.get(ses + 'Low', lo)), 2)
+            if cl is not None: last_px = (round(cl, 2), t)
+        for day in days.values():
+            highs = [day.get(k) for k in ('preHigh', 'regularHigh', 'postHigh') if day.get(k) is not None]
+            if highs: day['dayHigh'] = max(highs)
+        quote = {'price': last_px[0], 'time': last_px[1]} if last_px else None
+    except Exception as e:
+        print(f'  {sym} 15분봉 실패(일봉만 사용): {e}')
+        quote = None
+    m = daily.get('meta') or {}
+    if not quote and m.get('regularMarketPrice'):
+        quote = {'price': round(m['regularMarketPrice'], 2), 'time': m.get('regularMarketTime')}
+    closes = (old or {}).get('closes') or []
+    fresh = closes and (time.time() / 86400 - closes[-1][0]) < 3 and (old or {}).get('closesAt', 0) > time.time() - HIST_MAX_AGE_H * 3600
+    closesAt = (old or {}).get('closesAt', 0)
+    if not fresh:
+        long = yahoo_chart(sym, 'range=10y&interval=1d')
+        closes = [[t // 86400, c] for t, c in points(long, 2)]
+        closesAt = int(time.time())
+    by = {c[0]: c for c in closes}
+    for d in days.values():   # 최근 일봉으로 꼬리 갱신
+        n = int(datetime.datetime.strptime(d['date'], '%Y-%m-%d').replace(tzinfo=datetime.timezone.utc).timestamp()) // 86400
+        by[n] = [n, d['close']]
+    closes = [by[k] for k in sorted(by)]
+    return {'days': sorted(days.values(), key=lambda x: x['date'])[-25:], 'closes': closes, 'closesAt': closesAt, 'quote': quote}
+
+
+def cnn_fear():
+    since = (utc_now() - datetime.timedelta(days=370)).strftime('%Y-%m-%d')
+    d = get_json(f'https://production.dataviz.cnn.io/index/fearandgreed/graphdata/{since}')
+    fg = d['fear_and_greed']
+    hist = [{'date': utc_date(p['x'] / 1000).strftime('%Y-%m-%d'), 'score': round(p['y'], 1), 'rating': p.get('rating')}
+            for p in d['fear_and_greed_historical']['data']]
+    return {'current': {'score': round(fg['score'], 1), 'rating': fg['rating']}, 'historical': hist, 'source': 'CNN'}
+
+
+def rating_of(v):
+    return 'extreme fear' if v < 25 else 'fear' if v < 45 else 'neutral' if v < 55 else 'greed' if v < 75 else 'extreme greed'
+
+
+def build_muhan(market):
+    old = load(MUHAN)
+    out = {'tickers': dict(old.get('tickers') or {}), 'vix': old.get('vix'), 'fx': old.get('fx'), 'fear': old.get('fear')}
+    for sym in MUHAN_TICKERS:
+        try:
+            out['tickers'][sym] = muhan_ticker(sym, out['tickers'].get(sym))
+        except Exception as e:
+            print(f'  무한매수 {sym} 실패(직전값 유지): {e}')
+    try:
+        out['vix'] = [[t // 86400, c] for t, c in points(yahoo_chart('^VIX', 'range=6mo&interval=1d'), 2)][-70:]
+    except Exception as e:
+        print('  VIX 실패(직전값 유지):', e)
+    usd = (market.get('quotes') or {}).get('USDKRW=X')
+    if usd:
+        out['fx'] = {'rate': round(usd['price'], 2), 'date': utc_date(usd.get('time') or time.time()).strftime('%Y-%m-%d')}
+    try:
+        out['fear'] = cnn_fear()
+    except Exception as e:
+        print('  CNN 공포탐욕 실패:', e)
+        f = market.get('fear')   # 대체: feargreedchart.com
+        if f and f.get('score'):
+            sc = f['score']['score']
+            out['fear'] = {'current': {'score': sc, 'rating': rating_of(sc)},
+                           'historical': [{'date': r['date'], 'score': r['score'], 'rating': rating_of(r['score'])} for r in (f.get('recent') or [])[-260:]],
+                           'source': 'feargreedchart.com'}
+    save_if_changed(MUHAN, out, old)
+
+
 def main():
     os.makedirs(ROOT, exist_ok=True)
     old = load(MARKET)
@@ -139,6 +248,7 @@ def main():
     except Exception as e:
         print('  공포탐욕 실패(직전값 유지):', e)
     save_if_changed(MARKET, market, old)
+    build_muhan(market)
 
     oldh = load(HISTORY)
     age_h = 1e9
