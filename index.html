@@ -5311,7 +5311,7 @@
         </div>
         <div style="margin-top:10px;padding:10px 14px;background:var(--bg3);border-radius:8px;border-left:3px solid var(--accent);">
           <p style="margin:0;font-size:11px;color:var(--text3);line-height:1.7;">
-            <b style="color:var(--text2);">출처: Yahoo Finance</b> · 현재가는 Anthropic Web Search 또는 Yahoo Finance API ·
+            <b style="color:var(--text2);">출처: Yahoo Finance</b> · GitHub Actions가 15분마다 수집 ·
             15년 전 가격은 Yahoo Finance 히스토리 조회 · 배당 미포함 가격지수 기준
           </p>
         </div>
@@ -5663,7 +5663,137 @@
    [KOSPI] [KOSPI200] [KOSDAQ] [US-INDEX] [PERIOD] [KOSPI-FETCH]  지수 성장률
    [FEAR] 공포&탐욕   [MONEYSPEED] 가치 속도   [MUHAN] 무한매수법 기록
    [YEAR-ACC]  연/월 상세 테이블 아코디언 헬퍼
+   [MARKET-DATA] 시세 데이터 계층 (모든 Yahoo·공포탐욕 요청 → data/*.json)
 ════════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════════
+   [MARKET-DATA] 시세 데이터 계층 — 모든 시세 요청이 이곳을 거칩니다
+   · GitHub Actions(.github/workflows/update-market-data.yml)가 서버에서
+     Yahoo Finance·공포탐욕 지수를 15분마다 수집해 data/*.json 으로 저장
+   · 페이지의 Yahoo / feargreedchart 요청은 아래 fetch 래퍼가 가로채
+     같은 도메인의 JSON으로 즉시 응답 → CORS·프록시 없음, 대기 없음
+   · JSON에 없는 종목(무한매수법 직접입력 등)만 프록시 3곳을 '동시에' 시도 (최대 6초)
+════════════════════════════════════════════════════════════ */
+(function () {
+  var nativeFetch = window.fetch.bind(window);
+  var TTL = 5 * 60 * 1000;                       /* JSON 재조회 간격 */
+  var files = {};                                 /* 파일명 → {t, p} */
+  var live = {};                                  /* 실시간 프록시 결과 캐시 (60초) */
+  var CHART = '/v8/finance/chart/';
+
+  function timeout(p, ms) {
+    return Promise.race([p, new Promise(function (_, rej) { setTimeout(function () { rej(new Error('timeout')); }, ms); })]);
+  }
+  function getJSON(url) {
+    return timeout(nativeFetch(url, { cache: 'no-cache' }), 6000)
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+  }
+  /* 같은 도메인 data/ → 오래됐거나 없으면 raw.githubusercontent(커밋 즉시 반영) 중 최신 사용 */
+  function rawURL(file) {
+    var m = location.hostname.match(/^([\w-]+)\.github\.io$/), repo = location.pathname.split('/')[1];
+    return m && repo ? 'https://raw.githubusercontent.com/' + m[1] + '/' + repo + '/main/data/' + file : null;
+  }
+  function loadFile(file) {
+    var c = files[file];
+    if (c && Date.now() - c.t < TTL) return c.p;
+    var v = '?v=' + Math.floor(Date.now() / TTL);
+    var p = getJSON('data/' + file + v).catch(function () { return null; }).then(function (a) {
+      var fresh = a && a.updated && (Date.now() - Date.parse(a.updated)) < 40 * 60 * 1000;
+      var raw = rawURL(file);
+      if (fresh || !raw) return a;
+      return getJSON(raw + v).catch(function () { return null; }).then(function (b) {
+        if (!b) return a;
+        if (!a) return b;
+        return Date.parse(b.updated) > Date.parse(a.updated) ? b : a;
+      });
+    }).then(function (d) { if (!d) delete files[file]; return d; });
+    files[file] = { t: Date.now(), p: p };
+    return p;
+  }
+  window.mdLoad = loadFile;                       /* 다른 코드에서 직접 쓰고 싶을 때 */
+
+  /* 프록시로 감싼 URL까지 풀어서 Yahoo 차트 요청인지 판별 */
+  function parseYahoo(url) {
+    var u = String(url);
+    for (var i = 0; i < 3 && u.indexOf(CHART) < 0; i++) { try { u = decodeURIComponent(u); } catch (e) { break; } }
+    var k = u.indexOf(CHART);
+    if (k < 0 || u.indexOf('finance.yahoo.com') < 0) return null;
+    var rest = u.slice(k + CHART.length), q = rest.indexOf('?');
+    var sym = q < 0 ? rest : rest.slice(0, q), qs = q < 0 ? '' : rest.slice(q + 1), prm = {};
+    try { sym = decodeURIComponent(sym); } catch (e) {}
+    qs.split('&').forEach(function (kv) { var p = kv.split('='); if (p[0]) prm[p[0]] = p[1]; });
+    return { sym: sym.toUpperCase(), prm: prm, url: 'https://query1.finance.yahoo.com' + CHART + encodeURIComponent(sym) + (qs ? '?' + qs : '') };
+  }
+  function jsonResponse(obj) {
+    return new Response(JSON.stringify(obj), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  }
+  function chartResponse(sym, q, pts) {
+    return jsonResponse({ chart: { error: null, result: [{
+      meta: { symbol: sym, currency: q.currency, regularMarketPrice: q.price, previousClose: q.prev,
+              chartPreviousClose: q.prev, regularMarketTime: q.time },
+      timestamp: pts.map(function (p) { return p[0]; }),
+      indicators: { quote: [{ close: pts.map(function (p) { return p[1]; }) }] } }] } });
+  }
+
+  /* data/*.json 으로 응답 가능한 Yahoo 요청이면 Response, 아니면 null */
+  function fromLocal(y) {
+    return loadFile('market.json').then(function (m) {
+      var q = m && m.quotes && m.quotes[y.sym];
+      if (y.prm.period1 && y.prm.period2) {                    /* 과거 특정 시점 */
+        var p1 = +y.prm.period1, p2 = +y.prm.period2, mid = (p1 + p2) / 2;
+        return loadFile('history.json').then(function (h) {
+          var s = h && h.series && h.series[y.sym];
+          var pts = (s || []).map(function (p) { return [p[0] * 86400, p[1]]; }).concat(q ? q.daily : []);
+          if (!pts.length || mid < pts[0][0] - 14 * 86400) return null;
+          var hit = pts.filter(function (p) { return p[0] >= p1 && p[0] <= p2; });
+          if (!hit.length) {                                     /* 창 밖이면 가장 가까운 한 점 */
+            var best = pts.reduce(function (a, b) { return Math.abs(b[0] - mid) < Math.abs(a[0] - mid) ? b : a; });
+            hit = [best];
+          }
+          return chartResponse(y.sym, q || { price: hit[hit.length - 1][1] }, hit);
+        });
+      }
+      if (!q) return null;
+      var n = parseInt(y.prm.range, 10) || 5;                   /* 3d·5d·15d … */
+      if (/mo$/.test(y.prm.range || '')) n = n * 22;
+      return chartResponse(y.sym, q, q.daily.slice(-n));
+    }).catch(function () { return null; });
+  }
+
+  /* JSON에 없을 때만: 프록시 3곳 동시 요청, 먼저 성공한 응답 사용 */
+  function fromProxies(y) {
+    var c = live[y.url];
+    if (c && Date.now() - c.t < 60000) return c.p.then(function (txt) { return new Response(txt, { status: 200 }); });
+    var urls = ['https://corsproxy.io/?url=' + encodeURIComponent(y.url),
+                'https://api.allorigins.win/raw?url=' + encodeURIComponent(y.url),
+                'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(y.url)];
+    var p = new Promise(function (resolve, reject) {
+      var left = urls.length;
+      urls.forEach(function (u) {
+        timeout(nativeFetch(u, { cache: 'no-cache' }), 6000)
+          .then(function (r) { if (!r.ok) throw 0; return r.text(); })
+          .then(function (txt) { if (txt.indexOf('"chart"') < 0) throw 0; resolve(txt); })
+          .catch(function () { if (--left === 0) reject(new Error('모든 프록시 실패')); });
+      });
+    });
+    live[y.url] = { t: Date.now(), p: p };
+    p.catch(function () { delete live[y.url]; });
+    return p.then(function (txt) { return new Response(txt, { status: 200 }); });
+  }
+
+  window.fetch = function (input, init) {
+    var url = typeof input === 'string' ? input : (input && input.url) || '';
+    if (url.indexOf('api.anthropic.com') >= 0) return Promise.reject(new Error('미사용 경로'));
+    if (url.indexOf('feargreedchart.com/api') >= 0) {
+      return loadFile('market.json').then(function (m) {
+        return m && m.fear ? jsonResponse(m.fear) : timeout(nativeFetch(input, init), 6000);
+      });
+    }
+    var y = parseYahoo(url);
+    if (!y) return nativeFetch(input, init);
+    return fromLocal(y).then(function (r) { return r || fromProxies(y); });
+  };
+})();
+
 /* [KODEX] KODEX 200 타겟위클리커버드콜 — 전역 상태/계산 시작 */
 
 /* ── 상태 ── */
@@ -6702,34 +6832,6 @@ async function fetchKodexPrice() {
   if (srcEl)  srcEl.textContent  = '';
 
   try {
-    /* 1순위: Anthropic API + web_search */
-    try {
-      const resp = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 400,
-          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-          messages: [{ role: 'user',
-            content: '한국 ETF KODEX 200타겟위클리커버드콜 종목코드 498400 현재 주가를 검색해줘. 반드시 {"v":숫자} 형식으로만 답해.' }]
-        })
-      });
-      if (resp.ok) {
-        const data = await resp.json();
-        const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join(' ');
-        const m = text.match(/"v"\s*:\s*([\d,]+(?:\.\d+)?)/);
-        let price = m ? parseFloat(m[1].replace(/,/g,'')) : null;
-        if (!price) {
-          /* fallback: 3000~30000 범위 숫자 추출 */
-          const nums = [...text.matchAll(/(\d[\d,]{3,5})/g)]
-            .map(n => parseFloat(n[1].replace(/,/g,'')))
-            .filter(n => n >= 3000 && n <= 30000);
-          if (nums.length) price = nums[0];
-        }
-        if (applyKodexPrice(price, 'Anthropic Web Search')) return;
-      }
-    } catch {}
 
     /* 2순위: Yahoo Finance 498400.KS CORS 프록시 순차 */
     const yfUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/498400.KS?interval=1d&range=3d';
@@ -6831,23 +6933,7 @@ update();
     if (icon) icon.textContent = '⏳';
     if (de)   de.textContent = '조회 중...';
     try {
-      // Anthropic API
-      try {
-        const resp = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514', max_tokens: 400,
-            tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-            messages: [{ role: 'user', content: 'SOL 200타겟위클리커버드콜 종목코드 0167B0 현재 주가를 검색해줘. 반드시 {"v":숫자} 형식으로만 답해.' }]
-          })
-        });
-        if (resp.ok) {
-          const data = await resp.json();
-          const txt  = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join(' ');
-          const m    = txt.match(/"v"\s*:\s*([\d.]+)/);
-          if (m) { applyPrice(parseFloat(m[1]), 'Anthropic'); return; }
-        }
-      } catch {}
+      
       // Yahoo Finance
       const yf = 'https://query1.finance.yahoo.com/v8/finance/chart/0167B0.KS?interval=1d&range=5d';
       for (const pu of ['https://corsproxy.io/?'+encodeURIComponent(yf),'https://api.allorigins.win/get?url='+encodeURIComponent(yf)]) {
@@ -7437,22 +7523,7 @@ update();
     if (icon) icon.textContent = '⏳';
     if (de)   de.textContent = '조회 중...';
     try {
-      try {
-        const resp = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514', max_tokens: 400,
-            tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-            messages: [{ role: 'user', content: 'TIGER 200타겟위클리커버드콜 종목코드 0104N0 현재 주가를 검색해줘. 반드시 {"v":숫자} 형식으로만 답해.' }]
-          })
-        });
-        if (resp.ok) {
-          const data = await resp.json();
-          const txt  = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join(' ');
-          const m    = txt.match(/"v"\s*:\s*([\d.]+)/);
-          if (m) { applyPrice(parseFloat(m[1]), 'Anthropic'); return; }
-        }
-      } catch {}
+      
       const yf = 'https://query1.finance.yahoo.com/v8/finance/chart/0104N0.KS?interval=1d&range=5d';
       for (const pu of ['https://corsproxy.io/?'+encodeURIComponent(yf),'https://api.allorigins.win/get?url='+encodeURIComponent(yf)]) {
         try {
@@ -7812,22 +7883,7 @@ update();
     if (icon) icon.textContent = '⏳';
     if (de)   de.textContent = '조회 중...';
     try {
-      try {
-        const resp = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514', max_tokens: 400,
-            tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-            messages: [{ role: 'user', content: 'TIGER 배당커버드콜액티브 종목코드 472150 현재 주가를 검색해줘. 반드시 {"v":숫자} 형식으로만 답해.' }]
-          })
-        });
-        if (resp.ok) {
-          const data = await resp.json();
-          const txt  = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join(' ');
-          const m    = txt.match(/"v"\s*:\s*([\d.]+)/);
-          if (m) { applyPrice(parseFloat(m[1]), 'Anthropic'); return; }
-        }
-      } catch {}
+      
       const yf = 'https://query1.finance.yahoo.com/v8/finance/chart/472150.KS?interval=1d&range=5d';
       for (const pu of ['https://corsproxy.io/?'+encodeURIComponent(yf),'https://api.allorigins.win/get?url='+encodeURIComponent(yf)]) {
         try {
@@ -8175,7 +8231,7 @@ update();
 
 /* ════════════════════════════════════════
    [FX] 환율 계산기
-   1순위: Anthropic Web Search (실시간)
+   데이터: [MARKET-DATA] 시세 계층 (data/*.json)
    2순위: exchangerate-api 공개 엔드포인트
    기준통화: KRW (원화)
 ════════════════════════════════════════ */
@@ -8285,39 +8341,6 @@ async function fetchFxRates() {
     if (cnt >= 4) {
       setTimestamp('Yahoo Finance');
     } else {
-      /* ── 2순위: Anthropic Web Search (전체 실패 시 보완) ── */
-      try {
-        const resp = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514', max_tokens: 800,
-            tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-            messages: [{ role: 'user', content:
-              '야후 파이낸스 기준 현재 환율을 검색해줘. ' +
-              '1 USD, 1 EUR, 1 JPY, 1 CNY, 1 GBP, 1 HKD, 1 SGD, 1 AUD, 1 CAD, 1 CHF, 1 THB, 1 VND 각각 KRW(한국 원화)로 얼마인지 ' +
-              'JSON만 답해(다른 텍스트 없이): {"USD":숫자,"EUR":숫자,"JPY":숫자,"CNY":숫자,"GBP":숫자,"HKD":숫자,"SGD":숫자,"AUD":숫자,"CAD":숫자,"CHF":숫자,"THB":숫자,"VND":숫자}'
-            }]
-          })
-        });
-        if (resp.ok) {
-          const data = await resp.json();
-          const txt  = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join(' ');
-          const m = txt.match(/\{"USD"\s*:[\s\S]*?\}/);
-          if (m) {
-            try {
-              const j = JSON.parse(m[0]);
-              let c2 = 0;
-              FX_CURRENCIES.forEach(cur => {
-                /* 이미 YF에서 받은 것은 덮어쓰지 않음 */
-                if (!_fxRates[cur.code] && j[cur.code] > 0) {
-                  _fxRates[cur.code] = j[cur.code]; c2++;
-                }
-              });
-              if (cnt + c2 >= 4) setTimestamp('Yahoo Finance + Anthropic 보완');
-            } catch {}
-          }
-        }
-      } catch {}
 
       if (Object.keys(_fxRates).length < 4) {
         if (stat) stat.textContent = '조회 실패 — ↺ 버튼으로 재시도';
@@ -9149,23 +9172,7 @@ async function fetchKosdaq() {
   if (load) load.style.display = 'block';
   if (dl)   dl.textContent = '조회 중...';
   try {
-    /* 1순위: Anthropic Web Search */
-    try {
-      const resp = await fetch('https://api.anthropic.com/v1/messages', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({
-          model:'claude-sonnet-4-20250514', max_tokens:400,
-          tools:[{type:'web_search_20250305',name:'web_search'}],
-          messages:[{role:'user',content:'현재 코스닥(KOSDAQ) 지수를 검색해줘. 반드시 {"v":숫자} 형식으로만 답해.'}]
-        })
-      });
-      if (resp.ok) {
-        const data = await resp.json();
-        const txt  = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join(' ');
-        const m    = txt.match(/"v"\s*:\s*([\d.]+)/);
-        if (m && applyKosdaqValue(parseFloat(m[1]), 'Anthropic Web Search')) return;
-      }
-    } catch {}
+    
     /* 2순위: Yahoo Finance ^KQ11 */
     const yfUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/%5EKQ11?interval=1d&range=5d';
     const proxies = [
@@ -9415,7 +9422,7 @@ function calcKospiRates(currentVal, asOfDate) {
 
 /* ═══════════════════════════════════════
    [KOSPI-FETCH] KOSPI 지수 조회
-   1순위: Anthropic API + web_search
+   데이터: [MARKET-DATA] 시세 계층 (data/*.json)
    2순위: CORS 프록시 순차 시도
    실패 시 마지막 성공값 유지
 ═══════════════════════════════════════ */
@@ -9443,34 +9450,6 @@ function applyKospiValue(price, src) {
   return true;
 }
 
-/* ── 1순위: Anthropic API ── */
-async function tryAnthropic() {
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 500,
-      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-      messages: [{ role: 'user',
-        content: '지금 당장 KOSPI 지수 실시간 현재가를 검색해줘. 검색 후 반드시 숫자만 이 형식으로 답해: {"v":숫자}' }]
-    })
-  });
-  if (!resp.ok) throw new Error('http ' + resp.status);
-  const data = await resp.json();
-  const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join(' ');
-  // {"v": 2500.00} 또는 숫자 직접 추출
-  const m1 = text.match(/"v"\s*:\s*([\d]+(?:\.\d+)?)/);
-  if (m1) {
-    const p = parseFloat(m1[1]);
-    if (p >= 200 && p <= 20000) return p;
-  }
-  // KOSPI 범위(1000~9999) 숫자 fallback 파싱
-  const nums = [...text.matchAll(/([1-9]\d{3}(?:\.\d{1,2})?)/g)]
-    .map(m => parseFloat(m[1])).filter(n => n >= 1000 && n <= 9999);
-  if (nums.length > 0) return nums[0];
-  throw new Error('parse fail');
-}
 
 /* ── Yahoo Finance JSON 파싱 ── */
 function parseYahooJson(raw) {
@@ -9528,11 +9507,6 @@ async function fetchKospi() {
   document.getElementById('kospi-source-label').textContent = '';
 
   try {
-    /* 1순위: Anthropic */
-    try {
-      const price = await tryAnthropic();
-      if (applyKospiValue(price, 'Anthropic Web Search')) { return; }
-    } catch(e1) { /* 2순위로 */ }
 
     /* 2순위: Yahoo Finance CORS 프록시 */
     const price = await tryYahooProxies();
@@ -10432,34 +10406,6 @@ function applyIndexValue(id, price, src) {
   return true;
 }
 
-async function tryAnthropicIndex(id) {
-  const cfg  = INDEX_CONFIG[id];
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 300,
-      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-      messages: [{ role:'user',
-        content: '지금 ' + cfg.name + ' 현재 지수를 검색해줘. 숫자만 {"v":숫자} 형식으로 답해.' }]
-    })
-  });
-  if (!resp.ok) throw new Error('fail');
-  const data = await resp.json();
-  const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join(' ');
-  const m    = text.match(/"v"\s*:\s*([\d,]+(?:\.\d+)?)/);
-  if (m) {
-    const p = parseFloat(m[1].replace(/,/g,''));
-    if (p >= cfg.minP && p <= cfg.maxP) return p;
-  }
-  // fallback: 범위 내 숫자 추출
-  const all = [...text.matchAll(/(\d[\d,]*(?:\.\d{1,2})?)/g)]
-    .map(m => parseFloat(m[1].replace(/,/g,''))).filter(n => n >= cfg.minP && n <= cfg.maxP);
-  if (all.length) return all[0];
-  throw new Error('no valid price');
-}
-
 async function tryYahooIndex(id) {
   const cfg    = INDEX_CONFIG[id];
   const yfUrl  = 'https://query1.finance.yahoo.com/v8/finance/chart/' + cfg.ticker + '?interval=1d&range=3d';
@@ -10502,10 +10448,7 @@ async function fetchIndex(id) {
   document.getElementById(id+'-date-label').textContent   = '조회 중...';
   document.getElementById(id+'-source-label').textContent = '';
   try {
-    try {
-      const p = await tryAnthropicIndex(id);
-      if (applyIndexValue(id, p, 'Anthropic Web Search')) return;
-    } catch {}
+    
     const p = await tryYahooIndex(id);
     if (p && applyIndexValue(id, p, 'Yahoo Finance')) return;
     // 실패 — 이전값 유지
@@ -10555,29 +10498,6 @@ function calcKospi200Rates(currentVal, asOfDate) {
   calcIndexRatesByPeriod('k200', currentVal, asOfDate, py, sv, hd);
 }
 
-async function tryAnthropicK200() {
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 300,
-      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-      messages: [{ role: 'user',
-        content: '지금 당장 KOSPI 200 지수 현재가를 검색해줘. 숫자만 {"v":숫자} 형식으로 답해.' }]
-    })
-  });
-  if (!resp.ok) throw new Error('fail');
-  const data = await resp.json();
-  const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join(' ');
-  const m1 = text.match(/"v"\s*:\s*([\d,]+(?:\.\d+)?)/);
-  if (m1) { const p = parseFloat(m1[1].replace(/,/g,'')); if (p >= 50 && p <= 10000) return p; }
-  const nums = [...text.matchAll(/([1-9]\d{2,3}(?:\.\d{1,2})?)/g)]
-    .map(m => parseFloat(m[1])).filter(n => n >= 200 && n <= 5000);
-  if (nums.length > 0) return nums[0];
-  throw new Error('parse fail');
-}
-
 async function tryYahooK200() {
   const yfUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/%5EKS200?interval=1d&range=3d';
   const enc   = encodeURIComponent(yfUrl);
@@ -10621,10 +10541,7 @@ async function fetchKospi200() {
   document.getElementById('k200-date-label').textContent   = '조회 중...';
   document.getElementById('k200-source-label').textContent = '';
   try {
-    try {
-      const price = await tryAnthropicK200();
-      if (applyK200Value(price, 'Anthropic Web Search')) return;
-    } catch {}
+    
     const price = await tryYahooK200();
     if (price && applyK200Value(price, 'Yahoo Finance (^KS200)')) return;
     /* 실패 — 이전값 유지 */
@@ -11129,29 +11046,7 @@ async function fetchMSIndices() {
   var date15y = ms15yAgo();
 
   try {
-    /* 현재가: Anthropic Web Search 우선, Yahoo fallback */
     var curPrices = {};
-    try {
-      var resp = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514', max_tokens: 500,
-          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-          messages: [{ role: 'user', content:
-            '현재 KOSPI, KOSPI200, NASDAQ Composite, NASDAQ100, S&P500, Dow Jones 지수 현재가를 검색해줘. JSON만 답해: {"kospi":숫자,"k200":숫자,"nasdaq":숫자,"ndx":숫자,"sp500":숫자,"dji":숫자}'
-          }]
-        })
-      });
-      if (resp.ok) {
-        var data = await resp.json();
-        var txt  = (data.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join(' ');
-        var m    = txt.match(/\{[^}]*"kospi"[^}]*\}/);
-        if (m) {
-          try { curPrices = JSON.parse(m[0]); } catch(e) {}
-        }
-      }
-    } catch(e) {}
 
     /* Yahoo Finance fallback 병렬 */
     var yPromises = _msIdxConfigs.map(async function(cfg) {

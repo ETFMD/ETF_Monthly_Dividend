@@ -1,0 +1,33 @@
+name: 시세 데이터 갱신
+
+on:
+  schedule:
+    - cron: '*/15 0-7 * * 1-5'    # 한국장  (KST 09:00~16:59)
+    - cron: '*/15 13-21 * * 1-5'  # 미국장  (KST 22:00~06:59)
+    - cron: '7 */3 * * *'         # 그 외 3시간마다 (환율·공포탐욕·주말)
+  workflow_dispatch:              # Actions 탭에서 수동 실행
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: 시세 수집
+        run: python3 scripts/update_market_data.py
+      - name: 변경된 경우에만 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898099+github-actions[bot]@users.noreply.github.com'
+          git add data/
+          if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
+          git commit -m "chore: 시세 데이터 갱신"
+          git pull --rebase --autostash
+          git push
