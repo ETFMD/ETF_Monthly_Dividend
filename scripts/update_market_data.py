@@ -30,7 +30,7 @@ US_ETF  = ['TQQQ', 'SOXL']                                              # 무한
 QUOTES  = ETF + INDEX + METAL + FX + US_ETF
 HIST    = INDEX + METAL + ['USDKRW=X']
 HIST_YEARS, HIST_MAX_AGE_H = 31, 20
-HIST_VERSION = 3   # 형식·출처가 바뀌면 올려서 즉시 다시 수집
+HIST_VERSION = 4   # 형식·출처가 바뀌면 올려서 즉시 다시 수집
 # Yahoo는 국내 지수(특히 코스피200)의 과거 데이터가 짧거나 비어 있음 → 네이버 금융 주봉으로 앞부분을 채움
 NAVER_INDEX = {'^KS11': 'KOSPI', '^KS200': 'KPI200', '^KQ11': 'KOSDAQ'}
 
@@ -43,11 +43,11 @@ def utc_date(sec):
     return datetime.datetime.fromtimestamp(sec, datetime.timezone.utc).replace(tzinfo=None)
 
 
-def get_json(url, tries=3):
+def get_json(url, tries=3, headers=None):
     err = None
     for i in range(tries):
         try:
-            req = urllib.request.Request(url, headers={'User-Agent': UA, 'Accept': 'application/json'})
+            req = urllib.request.Request(url, headers=dict({'User-Agent': UA, 'Accept': 'application/json'}, **(headers or {})))
             with urllib.request.urlopen(req, timeout=25) as r:
                 return json.loads(r.read().decode('utf-8'))
         except Exception as e:
@@ -105,17 +105,45 @@ def get_text(url, tries=3, enc='utf-8'):
     raise err
 
 
-def naver_weekly(symbol, years):
-    """네이버 금융 지수 주봉 → [[일수, 종가], ...]  (item data="YYYYMMDD|시가|고가|저가|종가|거래량")"""
-    count = int(years * 53) + 10
-    xml = get_text(f'https://fchart.stock.naver.com/sise.nhn?symbol={symbol}&timeframe=week&count={count}&requestType=0', enc='euc-kr')
+def _naver_points(text, pattern):
     out = []
-    for m in re.finditer(r'data="(\d{8})\|[^|]*\|[^|]*\|[^|]*\|([\d.]+)', xml):
+    for m in re.finditer(pattern, text):
         d = datetime.datetime.strptime(m.group(1), '%Y%m%d').replace(tzinfo=datetime.timezone.utc)
         c = float(m.group(2))
         if c > 0:
             out.append([int(d.timestamp()) // 86400, round(c, 2)])
     return sorted(out)
+
+
+FCHART_RE = r'data="(\d{8})\|[^|]*\|[^|]*\|[^|]*\|([\d.]+)'
+SISE_RE = r'\[\s*"(\d{8})"\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*([\d.]+)'
+
+
+def naver_history(symbol, years):
+    """네이버 금융 지수 과거 종가 → [[일수, 종가], ...]
+    주봉(fchart)은 약 10년치만 와서, ① 기간 지정 주봉(siseJson) ② 월봉 으로 더 오래된 구간을 채움"""
+    end = utc_now()
+    start = (end - datetime.timedelta(days=int(years * 365.25))).strftime('%Y%m%d')
+    sources = []
+    try:
+        sources.append(_naver_points(get_text(f'https://api.finance.naver.com/siseJson.naver?symbol={symbol}&requestType=1'
+                                              f'&startTime={start}&endTime={end.strftime("%Y%m%d")}&timeframe=week', enc='euc-kr'), SISE_RE))
+    except Exception as e:
+        print(f'  {symbol} 네이버 기간주봉 실패: {e}')
+    for tf, cnt in (('week', int(years * 53) + 10), ('month', int(years * 12) + 6)):
+        try:
+            sources.append(_naver_points(get_text(f'https://fchart.stock.naver.com/sise.nhn?symbol={symbol}&timeframe={tf}'
+                                                  f'&count={cnt}&requestType=0', enc='euc-kr'), FCHART_RE))
+        except Exception as e:
+            print(f'  {symbol} 네이버 {tf} 실패: {e}')
+    sources = [x for x in sources if x]
+    if not sources:
+        return []
+    # 가장 촘촘한(주봉) 자료를 기준으로, 그보다 앞선 기간은 다른 자료로 차례로 채움
+    merged = []
+    for pts in sorted(sources, key=lambda x: -len(x)):
+        merged = merge_older(merged, pts) if merged else pts
+    return merged
 
 
 def fresh_enough(q, days=10):
@@ -249,7 +277,9 @@ def muhan_ticker(sym, old):
 
 def cnn_fear():
     since = (utc_now() - datetime.timedelta(days=370)).strftime('%Y-%m-%d')
-    d = get_json(f'https://production.dataviz.cnn.io/index/fearandgreed/graphdata/{since}')
+    d = get_json(f'https://production.dataviz.cnn.io/index/fearandgreed/graphdata/{since}', tries=2,
+                 headers={'Referer': 'https://edition.cnn.com/', 'Origin': 'https://edition.cnn.com',
+                          'Accept-Language': 'en-US,en;q=0.9', 'Accept': 'application/json, text/plain, */*'})
     fg = d['fear_and_greed']
     hist = [{'date': utc_date(p['x'] / 1000).strftime('%Y-%m-%d'), 'score': round(p['y'], 1), 'rating': p.get('rating')}
             for p in d['fear_and_greed_historical']['data']]
@@ -332,13 +362,15 @@ def main():
             npts = []
             if sym in NAVER_INDEX:
                 try:
-                    npts = naver_weekly(NAVER_INDEX[sym], HIST_YEARS)
+                    npts = naver_history(NAVER_INDEX[sym], HIST_YEARS)
                 except Exception as e:
                     print(f'  {sym} 네이버 히스토리 실패: {e}')
             merged = merge_older(npts, ypts) if npts else ypts   # 국내 지수는 네이버 우선 · [일수, 종가]
             if len(merged) > 50:
                 series[sym] = merged
-                print(f'  {sym} 히스토리 {len(merged)}주 (시작 {datetime.date.fromordinal(719163 + merged[0][0])})')
+                start_d = datetime.date.fromordinal(719163 + merged[0][0])
+                warn = '' if (datetime.date.today() - start_d).days > 15.2 * 365 else '  ⚠ 15년치 부족'
+                print(f'  {sym} 히스토리 {len(merged)}개 (시작 {start_d}){warn}')
             else:
                 print(f'  {sym} 히스토리 부족(직전값 유지)')
         save_if_changed(HISTORY, {'unit': 'day', 'v': HIST_VERSION, 'series': series}, oldh)
