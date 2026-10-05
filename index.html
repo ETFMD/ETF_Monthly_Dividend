@@ -2049,8 +2049,8 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <span class="acc-title">코스피 대비 수익률 비교</span>
       <div style="display:flex;align-items:center;gap:12px;">
         <div class="chart-tabs" onclick="event.stopPropagation()">
-          <button class="chart-tab active" id="kcmp-mode-price" onclick="kcmpSetMode(false,this)">주가</button>
-          <button class="chart-tab"        id="kcmp-mode-total" onclick="kcmpSetMode(true,this)">분배금 포함</button>
+          <button class="chart-tab active" id="kcmp-mode-price" onclick="kcmpSetMode('simulator',false)">주가</button>
+          <button class="chart-tab"        id="kcmp-mode-total" onclick="kcmpSetMode('simulator',true)">분배금 포함</button>
         </div>
         <span class="acc-arrow open">▼</span>
       </div>
@@ -2066,19 +2066,19 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <p class="kcmp-status" id="kcmp-status">비교 데이터를 불러오는 중…</p>
       </div>
       <div class="chart-tabs kcmp-tabs" id="kcmp-tabs">
-        <button class="chart-tab" data-per="1M"  onclick="kcmpSetPeriod('1M',this)">1M</button>
-        <button class="chart-tab" data-per="3M"  onclick="kcmpSetPeriod('3M',this)">3M</button>
-        <button class="chart-tab" data-per="6M"  onclick="kcmpSetPeriod('6M',this)">6M</button>
-        <button class="chart-tab" data-per="YTD" onclick="kcmpSetPeriod('YTD',this)">YTD</button>
-        <button class="chart-tab" data-per="1Y"  onclick="kcmpSetPeriod('1Y',this)">1Y</button>
-        <button class="chart-tab active" data-per="MAX" onclick="kcmpSetPeriod('MAX',this)">MAX</button>
-        <button class="chart-tab" data-per="CUSTOM" onclick="kcmpSetPeriod('CUSTOM',this)">기간설정</button>
+        <button class="chart-tab" data-per="1M" onclick="kcmpSetPeriod('simulator','1M')">1M</button>
+        <button class="chart-tab" data-per="3M" onclick="kcmpSetPeriod('simulator','3M')">3M</button>
+        <button class="chart-tab" data-per="6M" onclick="kcmpSetPeriod('simulator','6M')">6M</button>
+        <button class="chart-tab" data-per="YTD" onclick="kcmpSetPeriod('simulator','YTD')">YTD</button>
+        <button class="chart-tab" data-per="1Y" onclick="kcmpSetPeriod('simulator','1Y')">1Y</button>
+        <button class="chart-tab active" data-per="MAX" onclick="kcmpSetPeriod('simulator','MAX')">MAX</button>
+        <button class="chart-tab" data-per="CUSTOM" onclick="kcmpSetPeriod('simulator','CUSTOM')">기간설정</button>
       </div>
       <div class="kcmp-custom" id="kcmp-custom" style="display:none;">
         <input type="date" class="kcmp-date" id="kcmp-from" aria-label="시작일">
         <span style="color:var(--text3);">~</span>
         <input type="date" class="kcmp-date" id="kcmp-to" aria-label="종료일">
-        <button class="kcmp-apply" onclick="kcmpApplyCustom()">적용</button>
+        <button class="kcmp-apply" onclick="kcmpApplyCustom('simulator')">적용</button>
         <span class="kcmp-err" id="kcmp-err"></span>
       </div>
       <p class="kcmp-note" id="kcmp-note">—</p>
@@ -2590,6 +2590,47 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
     </div>
   </div>
+  <!-- ── 코스피 대비 수익률 비교 (상장 이후) ── [KODEX-CMP] ── -->
+  <div class="card kcmp-card">
+    <div class="acc-header kcmp-head" onclick="toggleAcc('sol-kcmp-body', this)">
+      <span class="acc-title">코스피 대비 수익률 비교</span>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="chart-tabs" onclick="event.stopPropagation()">
+          <button class="chart-tab active" id="sol-kcmp-mode-price" onclick="kcmpSetMode('sol',false)">주가</button>
+          <button class="chart-tab"        id="sol-kcmp-mode-total" onclick="kcmpSetMode('sol',true)">분배금 포함</button>
+        </div>
+        <span class="acc-arrow open">▼</span>
+      </div>
+    </div>
+    <div class="acc-body default-open" id="sol-kcmp-body">
+      <div class="legend kcmp-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent2);"></div>SOL 200타겟위클리커버드콜 <b class="kcmp-val" id="sol-kcmp-ret-etf" style="color:var(--accent2);">—</b></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent);"></div>코스피 <b class="kcmp-val" id="sol-kcmp-ret-bench" style="color:var(--accent);">—</b></div>
+        <div class="legend-item">차이 <b class="kcmp-val" id="sol-kcmp-ret-diff" style="color:var(--text);">—</b></div>
+      </div>
+      <div class="kcmp-wrap">
+        <canvas id="sol-kcmp-chart" role="img" aria-label="SOL 200타겟위클리커버드콜과 코스피 수익률 비교 차트"></canvas>
+        <p class="kcmp-status" id="sol-kcmp-status">비교 데이터를 불러오는 중…</p>
+      </div>
+      <div class="chart-tabs kcmp-tabs" id="sol-kcmp-tabs">
+        <button class="chart-tab" data-per="1M" onclick="kcmpSetPeriod('sol','1M')">1M</button>
+        <button class="chart-tab" data-per="3M" onclick="kcmpSetPeriod('sol','3M')">3M</button>
+        <button class="chart-tab" data-per="6M" onclick="kcmpSetPeriod('sol','6M')">6M</button>
+        <button class="chart-tab" data-per="YTD" onclick="kcmpSetPeriod('sol','YTD')">YTD</button>
+        <button class="chart-tab" data-per="1Y" onclick="kcmpSetPeriod('sol','1Y')">1Y</button>
+        <button class="chart-tab active" data-per="MAX" onclick="kcmpSetPeriod('sol','MAX')">MAX</button>
+        <button class="chart-tab" data-per="CUSTOM" onclick="kcmpSetPeriod('sol','CUSTOM')">기간설정</button>
+      </div>
+      <div class="kcmp-custom" id="sol-kcmp-custom" style="display:none;">
+        <input type="date" class="kcmp-date" id="sol-kcmp-from" aria-label="시작일">
+        <span style="color:var(--text3);">~</span>
+        <input type="date" class="kcmp-date" id="sol-kcmp-to" aria-label="종료일">
+        <button class="kcmp-apply" onclick="kcmpApplyCustom('sol')">적용</button>
+        <span class="kcmp-err" id="sol-kcmp-err"></span>
+      </div>
+      <p class="kcmp-note" id="sol-kcmp-note">—</p>
+    </div>
+  </div>
 </div><!-- /page-sol -->
 
   <div class="app-page" id="page-tiger">
@@ -3094,6 +3135,47 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         </div>
       </div>
 
+    </div>
+  </div>
+  <!-- ── 코스피 대비 수익률 비교 (상장 이후) ── [KODEX-CMP] ── -->
+  <div class="card kcmp-card">
+    <div class="acc-header kcmp-head" onclick="toggleAcc('tiger-kcmp-body', this)">
+      <span class="acc-title">코스피 대비 수익률 비교</span>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="chart-tabs" onclick="event.stopPropagation()">
+          <button class="chart-tab active" id="tiger-kcmp-mode-price" onclick="kcmpSetMode('tiger',false)">주가</button>
+          <button class="chart-tab"        id="tiger-kcmp-mode-total" onclick="kcmpSetMode('tiger',true)">분배금 포함</button>
+        </div>
+        <span class="acc-arrow open">▼</span>
+      </div>
+    </div>
+    <div class="acc-body default-open" id="tiger-kcmp-body">
+      <div class="legend kcmp-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent2);"></div>TIGER 200타겟위클리커버드콜 <b class="kcmp-val" id="tiger-kcmp-ret-etf" style="color:var(--accent2);">—</b></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent);"></div>코스피 <b class="kcmp-val" id="tiger-kcmp-ret-bench" style="color:var(--accent);">—</b></div>
+        <div class="legend-item">차이 <b class="kcmp-val" id="tiger-kcmp-ret-diff" style="color:var(--text);">—</b></div>
+      </div>
+      <div class="kcmp-wrap">
+        <canvas id="tiger-kcmp-chart" role="img" aria-label="TIGER 200타겟위클리커버드콜과 코스피 수익률 비교 차트"></canvas>
+        <p class="kcmp-status" id="tiger-kcmp-status">비교 데이터를 불러오는 중…</p>
+      </div>
+      <div class="chart-tabs kcmp-tabs" id="tiger-kcmp-tabs">
+        <button class="chart-tab" data-per="1M" onclick="kcmpSetPeriod('tiger','1M')">1M</button>
+        <button class="chart-tab" data-per="3M" onclick="kcmpSetPeriod('tiger','3M')">3M</button>
+        <button class="chart-tab" data-per="6M" onclick="kcmpSetPeriod('tiger','6M')">6M</button>
+        <button class="chart-tab" data-per="YTD" onclick="kcmpSetPeriod('tiger','YTD')">YTD</button>
+        <button class="chart-tab" data-per="1Y" onclick="kcmpSetPeriod('tiger','1Y')">1Y</button>
+        <button class="chart-tab active" data-per="MAX" onclick="kcmpSetPeriod('tiger','MAX')">MAX</button>
+        <button class="chart-tab" data-per="CUSTOM" onclick="kcmpSetPeriod('tiger','CUSTOM')">기간설정</button>
+      </div>
+      <div class="kcmp-custom" id="tiger-kcmp-custom" style="display:none;">
+        <input type="date" class="kcmp-date" id="tiger-kcmp-from" aria-label="시작일">
+        <span style="color:var(--text3);">~</span>
+        <input type="date" class="kcmp-date" id="tiger-kcmp-to" aria-label="종료일">
+        <button class="kcmp-apply" onclick="kcmpApplyCustom('tiger')">적용</button>
+        <span class="kcmp-err" id="tiger-kcmp-err"></span>
+      </div>
+      <p class="kcmp-note" id="tiger-kcmp-note">—</p>
     </div>
   </div>
 </div><!-- /page-tiger -->
@@ -3603,6 +3685,47 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
     </div>
   </div>
+  <!-- ── 코스피 대비 수익률 비교 (상장 이후) ── [KODEX-CMP] ── -->
+  <div class="card kcmp-card">
+    <div class="acc-header kcmp-head" onclick="toggleAcc('tigerdiv-kcmp-body', this)">
+      <span class="acc-title">코스피 대비 수익률 비교</span>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="chart-tabs" onclick="event.stopPropagation()">
+          <button class="chart-tab active" id="tigerdiv-kcmp-mode-price" onclick="kcmpSetMode('tigerdiv',false)">주가</button>
+          <button class="chart-tab"        id="tigerdiv-kcmp-mode-total" onclick="kcmpSetMode('tigerdiv',true)">분배금 포함</button>
+        </div>
+        <span class="acc-arrow open">▼</span>
+      </div>
+    </div>
+    <div class="acc-body default-open" id="tigerdiv-kcmp-body">
+      <div class="legend kcmp-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent2);"></div>TIGER 배당커버드콜액티브 <b class="kcmp-val" id="tigerdiv-kcmp-ret-etf" style="color:var(--accent2);">—</b></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent);"></div>코스피 <b class="kcmp-val" id="tigerdiv-kcmp-ret-bench" style="color:var(--accent);">—</b></div>
+        <div class="legend-item">차이 <b class="kcmp-val" id="tigerdiv-kcmp-ret-diff" style="color:var(--text);">—</b></div>
+      </div>
+      <div class="kcmp-wrap">
+        <canvas id="tigerdiv-kcmp-chart" role="img" aria-label="TIGER 배당커버드콜액티브과 코스피 수익률 비교 차트"></canvas>
+        <p class="kcmp-status" id="tigerdiv-kcmp-status">비교 데이터를 불러오는 중…</p>
+      </div>
+      <div class="chart-tabs kcmp-tabs" id="tigerdiv-kcmp-tabs">
+        <button class="chart-tab" data-per="1M" onclick="kcmpSetPeriod('tigerdiv','1M')">1M</button>
+        <button class="chart-tab" data-per="3M" onclick="kcmpSetPeriod('tigerdiv','3M')">3M</button>
+        <button class="chart-tab" data-per="6M" onclick="kcmpSetPeriod('tigerdiv','6M')">6M</button>
+        <button class="chart-tab" data-per="YTD" onclick="kcmpSetPeriod('tigerdiv','YTD')">YTD</button>
+        <button class="chart-tab" data-per="1Y" onclick="kcmpSetPeriod('tigerdiv','1Y')">1Y</button>
+        <button class="chart-tab active" data-per="MAX" onclick="kcmpSetPeriod('tigerdiv','MAX')">MAX</button>
+        <button class="chart-tab" data-per="CUSTOM" onclick="kcmpSetPeriod('tigerdiv','CUSTOM')">기간설정</button>
+      </div>
+      <div class="kcmp-custom" id="tigerdiv-kcmp-custom" style="display:none;">
+        <input type="date" class="kcmp-date" id="tigerdiv-kcmp-from" aria-label="시작일">
+        <span style="color:var(--text3);">~</span>
+        <input type="date" class="kcmp-date" id="tigerdiv-kcmp-to" aria-label="종료일">
+        <button class="kcmp-apply" onclick="kcmpApplyCustom('tigerdiv')">적용</button>
+        <span class="kcmp-err" id="tigerdiv-kcmp-err"></span>
+      </div>
+      <p class="kcmp-note" id="tigerdiv-kcmp-note">—</p>
+    </div>
+  </div>
 </div><!-- /page-tiger -->
 
   <!-- ── TIGER 반도체TOP10커버드콜액티브 페이지 ── -->
@@ -4108,6 +4231,47 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         </div>
       </div>
 
+    </div>
+  </div>
+  <!-- ── 코스피 대비 수익률 비교 (상장 이후) ── [KODEX-CMP] ── -->
+  <div class="card kcmp-card">
+    <div class="acc-header kcmp-head" onclick="toggleAcc('tigersemi-kcmp-body', this)">
+      <span class="acc-title">코스피 대비 수익률 비교</span>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="chart-tabs" onclick="event.stopPropagation()">
+          <button class="chart-tab active" id="tigersemi-kcmp-mode-price" onclick="kcmpSetMode('tigersemi',false)">주가</button>
+          <button class="chart-tab"        id="tigersemi-kcmp-mode-total" onclick="kcmpSetMode('tigersemi',true)">분배금 포함</button>
+        </div>
+        <span class="acc-arrow open">▼</span>
+      </div>
+    </div>
+    <div class="acc-body default-open" id="tigersemi-kcmp-body">
+      <div class="legend kcmp-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent2);"></div>TIGER 반도체TOP10커버드콜액티브 <b class="kcmp-val" id="tigersemi-kcmp-ret-etf" style="color:var(--accent2);">—</b></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent);"></div>코스피 <b class="kcmp-val" id="tigersemi-kcmp-ret-bench" style="color:var(--accent);">—</b></div>
+        <div class="legend-item">차이 <b class="kcmp-val" id="tigersemi-kcmp-ret-diff" style="color:var(--text);">—</b></div>
+      </div>
+      <div class="kcmp-wrap">
+        <canvas id="tigersemi-kcmp-chart" role="img" aria-label="TIGER 반도체TOP10커버드콜액티브과 코스피 수익률 비교 차트"></canvas>
+        <p class="kcmp-status" id="tigersemi-kcmp-status">비교 데이터를 불러오는 중…</p>
+      </div>
+      <div class="chart-tabs kcmp-tabs" id="tigersemi-kcmp-tabs">
+        <button class="chart-tab" data-per="1M" onclick="kcmpSetPeriod('tigersemi','1M')">1M</button>
+        <button class="chart-tab" data-per="3M" onclick="kcmpSetPeriod('tigersemi','3M')">3M</button>
+        <button class="chart-tab" data-per="6M" onclick="kcmpSetPeriod('tigersemi','6M')">6M</button>
+        <button class="chart-tab" data-per="YTD" onclick="kcmpSetPeriod('tigersemi','YTD')">YTD</button>
+        <button class="chart-tab" data-per="1Y" onclick="kcmpSetPeriod('tigersemi','1Y')">1Y</button>
+        <button class="chart-tab active" data-per="MAX" onclick="kcmpSetPeriod('tigersemi','MAX')">MAX</button>
+        <button class="chart-tab" data-per="CUSTOM" onclick="kcmpSetPeriod('tigersemi','CUSTOM')">기간설정</button>
+      </div>
+      <div class="kcmp-custom" id="tigersemi-kcmp-custom" style="display:none;">
+        <input type="date" class="kcmp-date" id="tigersemi-kcmp-from" aria-label="시작일">
+        <span style="color:var(--text3);">~</span>
+        <input type="date" class="kcmp-date" id="tigersemi-kcmp-to" aria-label="종료일">
+        <button class="kcmp-apply" onclick="kcmpApplyCustom('tigersemi')">적용</button>
+        <span class="kcmp-err" id="tigersemi-kcmp-err"></span>
+      </div>
+      <p class="kcmp-note" id="tigersemi-kcmp-note">—</p>
     </div>
   </div>
 </div><!-- /page-tigersemi -->
@@ -7399,16 +7563,22 @@ async function fetchKodexPrice() {
 update();
 
 /* ════════════════════════════════════════
-   [KODEX-CMP] KODEX 200타겟위클리커버드콜 ↔ 코스피 수익률 비교 (상장 이후)
+   [KODEX-CMP] 분배 시뮬레이터 공통 — ETF ↔ 코스피 수익률 비교 (상장 이후)
+   대상: KODEX·SOL·TIGER·TIGER배당·TIGER반도체 (KCMP_LIST) — 화면 id 는 '{접두어}kcmp-…'
    데이터: data/compare.json (Actions: 일봉 종가·분배금) → 없으면 Yahoo 직접(프록시)
    기간: 1M·3M·6M·YTD·1Y·MAX·기간설정 — 시작일(포함) 이전 마지막 거래일 종가를 0%로 맞춰 비교
    분배금 포함: 분배락일 종가로 재투자한다고 보고 TR_t = TR_t-1 × (P_t + D_t) / P_t-1
 ════════════════════════════════════════ */
 (function () {
-  var ETF = '498400.KS', BENCH = '^KS11';
+  var BENCH = '^KS11', BENCH_NAME = '코스피';
+  var KCMP_LIST = {
+    simulator: { page: 'page-simulator', pfx: '',          sym: '498400.KS', name: 'KODEX 200타겟위클리커버드콜' },
+    sol:       { page: 'page-sol',       pfx: 'sol-',      sym: '0167B0.KS', name: 'SOL 200타겟위클리커버드콜' },
+    tiger:     { page: 'page-tiger',     pfx: 'tiger-',    sym: '0104N0.KS', name: 'TIGER 200타겟위클리커버드콜' },
+    tigerdiv:  { page: 'page-tigerdiv',  pfx: 'tigerdiv-', sym: '472150.KS', name: 'TIGER 배당커버드콜액티브' },
+    tigersemi: { page: 'page-tigersemi', pfx: 'tigersemi-', sym: '0177R0.KS', name: 'TIGER 반도체TOP10커버드콜액티브' }
+  };
   var MONTHS = { '1M': 1, '3M': 3, '6M': 6, '1Y': 12 };
-  var C = { etf: null, bench: null, divs: [], src: '', period: 'MAX', total: false, from: null, to: null, chart: null, loading: null, rows: null };
-  function $(id) { return document.getElementById('kcmp-' + id); }
   function pad(n) { return (n < 10 ? '0' : '') + n; }
   function dayStr(d, sep) { var t = new Date(d * 86400000); sep = sep || '-'; return t.getUTCFullYear() + sep + pad(t.getUTCMonth() + 1) + sep + pad(t.getUTCDate()); }
   function strDay(s) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); return m ? Math.floor(Date.UTC(+m[1], +m[2] - 1, +m[3]) / 86400000) : null; }
@@ -7419,8 +7589,6 @@ update();
     var m = {}; p.forEach(function (x) { m[x[0]] = x[1]; });
     return Object.keys(m).map(Number).sort(function (a, b) { return a - b; }).map(function (d) { return [d, m[d]]; });
   }
-  function status(msg) { var s = $('status'); if (s) { s.textContent = msg || ''; s.style.display = msg ? 'flex' : 'none'; } }
-
   async function yahooDaily(sym, query) {
     var r = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?' + query);
     var j = await r.json(), res = j.chart.result[0], ts = res.timestamp || [], cl = (res.indicators.quote[0] || {}).close || [];
@@ -7430,153 +7598,170 @@ update();
     if (ev) Object.keys(ev).forEach(function (k) { var e = ev[k]; if (e && e.amount > 0) dv.push([kstDay(e.date), e.amount]); });
     return { pts: dedup(pts), divs: dv.sort(function (a, b) { return a[0] - b[0]; }) };
   }
-
-  function load() {
-    if (C.loading) return C.loading;
-    C.loading = (async function () {
-      try {
-        var j = window.mdLoad ? await window.mdLoad('compare.json') : null, s = j && j.series;
-        if (s && s[ETF] && s[ETF].length > 5 && s[BENCH] && s[BENCH].length > 5) {
-          C.etf = s[ETF]; C.bench = s[BENCH]; C.divs = (j.divs && j.divs[ETF]) || [];
-          C.src = '네이버 금융·Yahoo Finance 일봉' + (j.updated ? ' (' + j.updated.slice(0, 10) + ' 갱신)' : '');
-          return true;
-        }
-      } catch (e) {}
-      try {                                            /* 대체: Yahoo 직접 */
-        var e1 = await yahooDaily(ETF, 'range=max&interval=1d&events=div');
-        if (e1.pts.length < 5) throw new Error('ETF 일봉 없음');
-        var b1 = await yahooDaily(BENCH, 'period1=' + ((e1.pts[0][0] - 10) * 86400) + '&period2=' + Math.floor(Date.now() / 1000) + '&interval=1d');
-        if (b1.pts.length < 5) throw new Error('코스피 일봉 없음');
-        C.etf = e1.pts; C.bench = b1.pts; C.divs = e1.divs; C.src = 'Yahoo Finance';
-        return true;
-      } catch (e) { C.loading = null; return false; }
-    })();
-    return C.loading;
-  }
-
-  /* 기준축 = ETF 거래일, 코스피는 같은 날(휴장 차이면 직전) 종가 */
-  function build() {
-    var etf = C.etf, b = C.bench, bi = 0, bv = null, out = [], tr = 0, prev = 0, di = 0;
-    var dm = {}; (C.divs || []).forEach(function (d) { dm[d[0]] = (dm[d[0]] || 0) + d[1]; });
-    var dd = Object.keys(dm).map(Number).sort(function (x, y) { return x - y; });
-    for (var i = 0; i < etf.length; i++) {
-      var d = etf[i][0], p = etf[i][1], dv = 0;
-      while (bi < b.length && b[bi][0] <= d) { bv = b[bi][1]; bi++; }
-      while (di < dd.length && dd[di] <= d) { if (i > 0) dv += dm[dd[di]]; di++; }   /* 휴장일 분배락 → 다음 거래일 */
-      tr = i === 0 ? p : tr * (p + dv) / prev;
-      prev = p;
-      if (bv != null) out.push({ d: d, p: p, tr: tr, b: bv });
-    }
-    return out;
-  }
   function addMonths(day, n) {
     var t = new Date(day * 86400000), y = t.getUTCFullYear(), m = t.getUTCMonth() + n;
     var last = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
     return Math.floor(Date.UTC(y, m, Math.min(t.getUTCDate(), last)) / 86400000);
   }
-  /* 선택 기간 → [기준 인덱스, 끝 인덱스] */
-  function span(rows) {
-    var first = rows[0].d, last = rows[rows.length - 1].d, start = first, end = last, i;
-    if (C.period === 'YTD') start = Math.floor(Date.UTC(new Date(last * 86400000).getUTCFullYear(), 0, 1) / 86400000) - 1;
-    else if (C.period === 'CUSTOM') { start = C.from != null ? C.from : first; end = C.to != null ? C.to : last; }
-    else if (MONTHS[C.period]) start = addMonths(last, -MONTHS[C.period]);
-    var s = 0, e = rows.length - 1;
-    for (i = 0; i < rows.length && rows[i].d <= start; i++) s = i;
-    while (e > s && rows[e].d > end) e--;
-    return [s, e];
-  }
 
-  function render() {
-    if (!C.etf) return;
-    var canvas = $('chart'); if (!canvas || !window.Chart) return;
-    if (!C.rows) C.rows = build();
-    var rows = C.rows;
-    if (rows.length < 2) { status('비교할 데이터가 부족합니다.'); return; }
-    var hasDiv = C.divs && C.divs.length > 0, tb = $('mode-total');
-    if (tb) { tb.disabled = !hasDiv; tb.style.opacity = hasDiv ? '' : '0.4'; tb.title = hasDiv ? '' : '분배금 자료가 아직 없습니다'; }
-    if (!hasDiv && C.total) { C.total = false; setActive('mode', 'price'); }
-    var f = $('from'), t = $('to');
-    if (f && !f.min) { f.min = t.min = dayStr(rows[0].d); f.max = t.max = dayStr(rows[rows.length - 1].d); }
-    var se = span(rows), seg = rows.slice(se[0], se[1] + 1);
-    if (seg.length < 2) { status('선택한 기간에 비교할 거래일이 부족합니다.'); if (C.chart) { C.chart.destroy(); C.chart = null; } setVals(null); return; }
-    status('');
-    var k = C.total ? 'tr' : 'p', e0 = seg[0][k], b0 = seg[0].b;
-    var labels = seg.map(function (x) { return dayStr(x.d, '/'); });
-    var de = seg.map(function (x) { return +((x[k] / e0 - 1) * 100).toFixed(2); });
-    var db = seg.map(function (x) { return +((x.b / b0 - 1) * 100).toFixed(2); });
-    setVals([de[de.length - 1], db[db.length - 1]]);
-    var narrow = (canvas.parentNode.clientWidth || 600) < 500;
-    var red = cssVar('--accent2', '#f04452'), blue = cssVar('--accent', '#3182f6'), tick = cssVar('--text3', '#888');
-    var ds = [
-      { label: 'KODEX 200타겟위클리커버드콜', data: de, borderColor: red, backgroundColor: red },
-      { label: '코스피', data: db, borderColor: blue, backgroundColor: blue }
-    ].map(function (d) { return Object.assign(d, { borderWidth: 2, pointRadius: 0, pointHoverRadius: 3, tension: 0, fill: false }); });
-    var opts = {
-      responsive: true, maintainAspectRatio: false, animation: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: { legend: { display: false },
-        tooltip: { callbacks: { label: function (c) { return ' ' + c.dataset.label + '  ' + pct(c.parsed.y); } } } },
-      scales: {
-        x: { grid: { display: false }, border: { color: fgA(0.25) },
-             ticks: { color: tick, maxRotation: 0, autoSkip: true, autoSkipPadding: 16, maxTicksLimit: narrow ? 3 : 4, font: { size: narrow ? 10 : 11 } } },
-        y: { position: 'right', border: { display: false },
-             grid: { color: function (c) { return c.tick && c.tick.value === 0 ? fgA(0.28) : fgA(0.07); } },
-             ticks: { color: tick, maxTicksLimit: 7, font: { size: narrow ? 10 : 11 }, callback: function (v) { return v + '%'; } } }
+  /* ── ETF 하나당 비교 카드 하나 ── */
+  function Cmp(key, cfg) {
+    var C = { etf: null, bench: null, divs: [], src: '', period: 'MAX', total: false, from: null, to: null, chart: null, loading: null, rows: null };
+    function $(id) { return document.getElementById(cfg.pfx + 'kcmp-' + id); }
+    function status(msg) { var s = $('status'); if (s) { s.textContent = msg || ''; s.style.display = msg ? 'flex' : 'none'; } }
+
+    function load() {
+      if (C.loading) return C.loading;
+      C.loading = (async function () {
+        try {
+          var j = window.mdLoad ? await window.mdLoad('compare.json') : null, s = j && j.series;
+          if (s && s[cfg.sym] && s[cfg.sym].length > 5 && s[BENCH] && s[BENCH].length > 5) {
+            C.etf = s[cfg.sym]; C.bench = s[BENCH]; C.divs = (j.divs && j.divs[cfg.sym]) || [];
+            C.src = '네이버 금융·Yahoo Finance 일봉' + (j.updated ? ' (' + j.updated.slice(0, 10) + ' 갱신)' : '');
+            return true;
+          }
+        } catch (e) {}
+        try {                                          /* 대체: Yahoo 직접 */
+          var e1 = await yahooDaily(cfg.sym, 'range=max&interval=1d&events=div');
+          if (e1.pts.length < 5) throw new Error('ETF 일봉 없음');
+          var b1 = await yahooDaily(BENCH, 'period1=' + ((e1.pts[0][0] - 10) * 86400) + '&period2=' + Math.floor(Date.now() / 1000) + '&interval=1d');
+          if (b1.pts.length < 5) throw new Error('코스피 일봉 없음');
+          C.etf = e1.pts; C.bench = b1.pts; C.divs = e1.divs; C.src = 'Yahoo Finance';
+          return true;
+        } catch (e) { C.loading = null; return false; }
+      })();
+      return C.loading;
+    }
+    /* 기준축 = ETF 거래일, 코스피는 같은 날(휴장 차이면 직전) 종가 */
+    function build() {
+      var etf = C.etf, b = C.bench, bi = 0, bv = null, out = [], tr = 0, prev = 0, di = 0;
+      var dm = {}; (C.divs || []).forEach(function (d) { dm[d[0]] = (dm[d[0]] || 0) + d[1]; });
+      var dd = Object.keys(dm).map(Number).sort(function (x, y) { return x - y; });
+      for (var i = 0; i < etf.length; i++) {
+        var d = etf[i][0], p = etf[i][1], dv = 0;
+        while (bi < b.length && b[bi][0] <= d) { bv = b[bi][1]; bi++; }
+        while (di < dd.length && dd[di] <= d) { if (i > 0) dv += dm[dd[di]]; di++; }   /* 휴장일 분배락 → 다음 거래일 */
+        tr = i === 0 ? p : tr * (p + dv) / prev;
+        prev = p;
+        if (bv != null) out.push({ d: d, p: p, tr: tr, b: bv });
+      }
+      return out;
+    }
+    /* 선택 기간 → [기준 인덱스, 끝 인덱스] */
+    function span(rows) {
+      var first = rows[0].d, last = rows[rows.length - 1].d, start = first, end = last, i;
+      if (C.period === 'YTD') start = Math.floor(Date.UTC(new Date(last * 86400000).getUTCFullYear(), 0, 1) / 86400000) - 1;
+      else if (C.period === 'CUSTOM') { start = C.from != null ? C.from : first; end = C.to != null ? C.to : last; }
+      else if (MONTHS[C.period]) start = addMonths(last, -MONTHS[C.period]);
+      var s = 0, e = rows.length - 1;
+      for (i = 0; i < rows.length && rows[i].d <= start; i++) s = i;
+      while (e > s && rows[e].d > end) e--;
+      return [s, e];
+    }
+    function setVals(v) {
+      var a = $('ret-etf'), b = $('ret-bench'), c = $('ret-diff');
+      if (!a) return;
+      if (!v) { a.textContent = b.textContent = c.textContent = '—'; return; }
+      a.textContent = pct(v[0]); b.textContent = pct(v[1]);
+      var df = v[0] - v[1]; c.textContent = (df >= 0 ? '+' : '') + df.toFixed(2) + '%p';
+    }
+    function setActive(kind, val) {
+      if (kind === 'mode') { var p = $('mode-price'), t = $('mode-total'); if (p) p.classList.toggle('active', val === 'price'); if (t) t.classList.toggle('active', val === 'total'); }
+      else { var tabs = $('tabs'); if (tabs) tabs.querySelectorAll('.chart-tab').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-per') === val); }); }
+    }
+    function render() {
+      if (!C.etf) return;
+      var canvas = $('chart'); if (!canvas || !window.Chart) return;
+      if (!C.rows) C.rows = build();
+      var rows = C.rows;
+      if (rows.length < 2) { status('비교할 데이터가 부족합니다.'); return; }
+      var hasDiv = C.divs && C.divs.length > 0, tb = $('mode-total');
+      if (tb) { tb.disabled = !hasDiv; tb.style.opacity = hasDiv ? '' : '0.4'; tb.title = hasDiv ? '' : '분배금 자료가 아직 없습니다'; }
+      if (!hasDiv && C.total) { C.total = false; setActive('mode', 'price'); }
+      var f = $('from'), t = $('to');
+      if (f && !f.min) { f.min = t.min = dayStr(rows[0].d); f.max = t.max = dayStr(rows[rows.length - 1].d); }
+      var se = span(rows), seg = rows.slice(se[0], se[1] + 1);
+      if (seg.length < 2) { status('선택한 기간에 비교할 거래일이 부족합니다.'); if (C.chart) { C.chart.destroy(); C.chart = null; } setVals(null); return; }
+      status('');
+      var k = C.total ? 'tr' : 'p', e0 = seg[0][k], b0 = seg[0].b;
+      var labels = seg.map(function (x) { return dayStr(x.d, '/'); });
+      var de = seg.map(function (x) { return +((x[k] / e0 - 1) * 100).toFixed(2); });
+      var db = seg.map(function (x) { return +((x.b / b0 - 1) * 100).toFixed(2); });
+      setVals([de[de.length - 1], db[db.length - 1]]);
+      var narrow = (canvas.parentNode.clientWidth || 600) < 500;
+      var red = cssVar('--accent2', '#f04452'), blue = cssVar('--accent', '#3182f6'), tick = cssVar('--text3', '#888');
+      var ds = [
+        { label: cfg.name, data: de, borderColor: red, backgroundColor: red },
+        { label: BENCH_NAME, data: db, borderColor: blue, backgroundColor: blue }
+      ].map(function (d) { return Object.assign(d, { borderWidth: 2, pointRadius: 0, pointHoverRadius: 3, tension: 0, fill: false }); });
+      var opts = {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { display: false },
+          tooltip: { callbacks: { label: function (c) { return ' ' + c.dataset.label + '  ' + pct(c.parsed.y); } } } },
+        scales: {
+          x: { grid: { display: false }, border: { color: fgA(0.25) },
+               ticks: { color: tick, maxRotation: 0, autoSkip: true, autoSkipPadding: 16, maxTicksLimit: narrow ? 3 : 4, font: { size: narrow ? 10 : 11 } } },
+          y: { position: 'right', border: { display: false },
+               grid: { color: function (c) { return c.tick && c.tick.value === 0 ? fgA(0.28) : fgA(0.07); } },
+               ticks: { color: tick, maxTicksLimit: 7, font: { size: narrow ? 10 : 11 }, callback: function (v) { return v + '%'; } } }
+        }
+      };
+      if (C.chart) C.chart.destroy();
+      C.chart = new Chart(canvas, { type: 'line', data: { labels: labels, datasets: ds }, options: opts });
+      var note = $('note');
+      if (note) note.innerHTML = '기간 ' + labels[0] + ' ~ ' + labels[labels.length - 1] + ' (' + labels[0] + ' 종가 = 0%)<br>'
+        + (C.total ? '분배금 포함: 분배락일 종가로 분배금을 재투자했다고 가정한 총수익률' : '주가 수익률 (분배금 제외)')
+        + ' · 코스피는 지수 수익률 · 출처: ' + C.src;
+    }
+    return {
+      show: function () {
+        var pg = document.getElementById(cfg.page);
+        if (!pg || !pg.classList.contains('active') || !$('chart')) return;
+        if (C.etf) { render(); return; }
+        status('비교 데이터를 불러오는 중…');
+        load().then(function (ok) {
+          if (ok) render();
+          else status('비교 데이터를 불러오지 못했습니다. 잠시 후 다시 열어 주세요.');
+        });
+      },
+      setPeriod: function (p) {
+        setActive('period', p);
+        var box = $('custom');
+        if (p === 'CUSTOM') {
+          if (box) box.style.display = 'flex';
+          if (C.rows && C.rows.length) {                       /* 처음 열 때 현재 표시 기간으로 채움 */
+            var f = $('from'), t = $('to');
+            if (f && !f.value) { var se = span(C.rows); f.value = dayStr(C.rows[se[0]].d); t.value = dayStr(C.rows[se[1]].d); }
+          }
+          C.period = 'CUSTOM'; this.applyCustom(); return;
+        }
+        if (box) box.style.display = 'none';
+        C.period = p; render();
+      },
+      applyCustom: function () {
+        var f = strDay(($('from') || {}).value), t = strDay(($('to') || {}).value), err = $('err');
+        if (err) err.textContent = '';
+        if (f != null && t != null && f >= t) { if (err) err.textContent = '종료일은 시작일보다 뒤여야 합니다.'; return; }
+        C.from = f; C.to = t; C.period = 'CUSTOM'; render();
+      },
+      setMode: function (total) {
+        if (total && !(C.divs && C.divs.length)) return;
+        C.total = !!total; setActive('mode', total ? 'total' : 'price'); render();
       }
     };
-    if (C.chart) C.chart.destroy();
-    C.chart = new Chart(canvas, { type: 'line', data: { labels: labels, datasets: ds }, options: opts });
-    var note = $('note');
-    if (note) note.innerHTML = '기간 ' + labels[0] + ' ~ ' + labels[labels.length - 1] + ' (' + labels[0] + ' 종가 = 0%)<br>'
-      + (C.total ? '분배금 포함: 분배락일 종가로 분배금을 재투자했다고 가정한 총수익률' : '주가 수익률 (분배금 제외)')
-      + ' · 코스피는 지수 수익률 · 출처: ' + C.src;
-  }
-  function setVals(v) {
-    var a = $('ret-etf'), b = $('ret-bench'), c = $('ret-diff');
-    if (!a) return;
-    if (!v) { a.textContent = b.textContent = c.textContent = '—'; return; }
-    a.textContent = pct(v[0]); b.textContent = pct(v[1]);
-    var df = v[0] - v[1]; c.textContent = (df >= 0 ? '+' : '') + df.toFixed(2) + '%p';
-  }
-  function setActive(kind, val) {
-    if (kind === 'mode') { var p = $('mode-price'), t = $('mode-total'); if (p) p.classList.toggle('active', val === 'price'); if (t) t.classList.toggle('active', val === 'total'); }
-    else document.querySelectorAll('#kcmp-tabs .chart-tab').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-per') === val); });
   }
 
-  window.kcmpRender = function () {
-    var pg = document.getElementById('page-simulator');
-    if (!pg || !pg.classList.contains('active') || !$('chart')) return;
-    if (C.etf) { render(); return; }
-    status('비교 데이터를 불러오는 중…');
-    load().then(function (ok) {
-      if (ok) render();
-      else status('비교 데이터를 불러오지 못했습니다. 잠시 후 다시 열어 주세요.');
-    });
+  var CMP = {};
+  Object.keys(KCMP_LIST).forEach(function (k) { CMP[k] = Cmp(k, KCMP_LIST[k]); });
+  /* key 생략 시: 지금 열린 시뮬레이터 페이지의 차트를 (다시) 그림 — 탭 전환·테마 변경 때 호출 */
+  window.kcmpRender = function (key) {
+    if (key) { if (CMP[key]) CMP[key].show(); return; }
+    Object.keys(CMP).forEach(function (k) { CMP[k].show(); });
   };
-  window.kcmpSetPeriod = function (p, btn) {
-    setActive('period', p);
-    var box = $('custom');
-    if (p === 'CUSTOM') {
-      if (box) box.style.display = 'flex';
-      if (C.rows && C.rows.length) {                          /* 처음 열 때 현재 표시 기간으로 채움 */
-        var f = $('from'), t = $('to');
-        if (f && !f.value) { var se = span(C.rows); f.value = dayStr(C.rows[se[0]].d); t.value = dayStr(C.rows[se[1]].d); }
-      }
-      C.period = 'CUSTOM'; kcmpApplyCustom(); return;
-    }
-    if (box) box.style.display = 'none';
-    C.period = p; render();
-  };
-  window.kcmpApplyCustom = function () {
-    var f = strDay(($('from') || {}).value), t = strDay(($('to') || {}).value), err = $('err');
-    if (err) err.textContent = '';
-    if (f != null && t != null && f >= t) { if (err) err.textContent = '종료일은 시작일보다 뒤여야 합니다.'; return; }
-    C.from = f; C.to = t; C.period = 'CUSTOM'; render();
-  };
-  window.kcmpSetMode = function (total, btn) {
-    if (total && !(C.divs && C.divs.length)) return;
-    C.total = !!total; setActive('mode', total ? 'total' : 'price'); render();
-  };
+  window.kcmpSetPeriod = function (key, p) { if (CMP[key]) CMP[key].setPeriod(p); };
+  window.kcmpApplyCustom = function (key) { if (CMP[key]) CMP[key].applyCustom(); };
+  window.kcmpSetMode = function (key, total) { if (CMP[key]) CMP[key].setMode(total); };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(window.kcmpRender, 0); });
   else setTimeout(window.kcmpRender, 0);
 })();
@@ -10647,6 +10832,7 @@ function switchSubTab(tab, grpId, btn) {
   // 페이지 전환
   document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + tab).classList.add('active');
+  if (window.kcmpRender) window.kcmpRender(tab);   /* [KODEX-CMP] 코스피 비교 차트 (시뮬레이터 탭만 해당) */
   // drop-item active
   document.querySelectorAll('.drop-item').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -10657,7 +10843,7 @@ function switchSubTab(tab, grpId, btn) {
   // 메인 탭 active 해제
   document.querySelectorAll('#mainNav .app-tab').forEach(b => b.classList.remove('active'));
   // 탭 진입 시 초기화
-  if (tab === 'simulator') { fetchKodexPrice(); if (window.kcmpRender) window.kcmpRender(); }
+  if (tab === 'simulator') fetchKodexPrice();
   if (tab === 'fear') fetchFearGreed();
   if (tab === 'muhan') requestAnimationFrame(function(){ requestAnimationFrame(function(){ if (typeof muhanInit === 'function') muhanInit(); }); });
   if (tab === 'tigerdiv')  {
