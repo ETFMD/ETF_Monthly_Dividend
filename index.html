@@ -6554,6 +6554,37 @@ if (window.matchMedia) { var _mqTheme = matchMedia('(prefers-color-scheme: light
   if (_mqTheme.addEventListener) _mqTheme.addEventListener('change', _onMq); else if (_mqTheme.addListener) _mqTheme.addListener(_onMq); }
 document.addEventListener('DOMContentLoaded', applySiteTheme);
 
+/* ════════════════════════════════════════════════════════════
+   [COMMA-DEL] 천 단위 쉼표 옆에서 지우기 (모든 탭 공통)
+   · 문제: 쉼표 바로 뒤에서 Backspace(앞에서 Delete)를 누르면 쉼표만 지워지고
+           입력 핸들러가 곧바로 쉼표를 다시 넣어 아무것도 지워지지 않는 것처럼 보임
+   · 해결: 지울 글자가 쉼표면 그 너머의 숫자까지 함께 지우고 input 이벤트를 다시 발생
+           (beforeinput 사용 → PC 키보드·모바일 가상 키보드 모두 동작)
+════════════════════════════════════════════════════════════ */
+(function () {
+  function isTextInput(el) {
+    return el && el.tagName === 'INPUT' && (el.type === 'text' || el.type === 'tel' || el.type === 'search' || !el.type);
+  }
+  document.addEventListener('beforeinput', function (e) {
+    var el = e.target, t = e.inputType;
+    if (!isTextInput(el) || (t !== 'deleteContentBackward' && t !== 'deleteContentForward')) return;
+    var v = el.value, s = el.selectionStart, en = el.selectionEnd;
+    if (s == null || s !== en || v.indexOf(',') < 0) return;          /* 선택 영역이 있으면 기본 동작 */
+    var from, to;
+    if (t === 'deleteContentBackward') {
+      if (s < 2 || v.charAt(s - 1) !== ',' || !/\d/.test(v.charAt(s - 2))) return;
+      from = s - 2; to = s;                                           /* "1,|234" → "|234" */
+    } else {
+      if (v.charAt(s) !== ',' || !/\d/.test(v.charAt(s + 1))) return;
+      from = s; to = s + 2;                                           /* "1|,234" → "1|34" */
+    }
+    e.preventDefault();
+    el.value = v.slice(0, from) + v.slice(to);
+    try { el.setSelectionRange(from, from); } catch (err) {}
+    el.dispatchEvent(new Event('input', { bubbles: true }));         /* 각 칸의 서식·계산 핸들러 실행 */
+  }, true);
+})();
+
 /* [KODEX] KODEX 200 타겟위클리커버드콜 — 전역 상태/계산 시작 */
 
 /* ── 상태 ── */
