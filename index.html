@@ -233,9 +233,7 @@
   .sum-cell { background:var(--bg2); padding:18px 20px; }
   .sum-cell-label { font-size:11px; color:var(--text3); margin-bottom:6px; }
   .sum-cell-val { font-family:var(--mono); font-size:17px; font-weight:500; color:var(--text); }
-  .sum-cell-val.green { color:var(--accent); }
-  .sum-cell-val.blue  { color:var(--accent2); }
-  .sum-cell-red       { color:#f04452; }
+  .sum-cell-val.red   { color:var(--accent2); }   /* 강조: 5년차 연간 분배금 · 5년차 종료 자산 */
   .sum-cell-sub { font-size:11px; color:var(--text3); margin-top:3px; }
 
   /* ── Chart ── */
@@ -1431,12 +1429,12 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
             <span class="slider-label">이자소득세 공제</span>
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-              <span style="font-size:12px;color:var(--text3);" id="cpd-tax-off">OFF</span>
-              <div class="switch on" id="cpd-tax-sw" onclick="toggleCpdTax()"><div class="switch-thumb"></div></div>
-              <span style="font-size:12px;color:#f04452;" id="cpd-tax-on">ON</span>
+              <span style="font-size:12px;color:var(--text2);" id="cpd-tax-off">OFF</span>
+              <div class="switch" id="cpd-tax-sw" onclick="toggleCpdTax()"><div class="switch-thumb"></div></div>
+              <span style="font-size:12px;color:var(--text3);" id="cpd-tax-on">ON</span>
             </label>
           </div>
-          <div class="slider-block" id="cpd-tax-block">
+          <div class="slider-block" id="cpd-tax-block" style="opacity:0.3;pointer-events:none;">
             <div class="slider-header">
               <span class="slider-label">세율</span>
               <div class="num-pill"><input class="num-input" id="cpd-tax-rate" type="number" min="0" max="49.5" step="0.1" value="15.4" style="width:70px;" oninput="calcCompound()"><span class="num-unit">%</span></div>
@@ -1553,27 +1551,27 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   <div class="summary-bar">
     <div class="sum-cell">
       <div class="sum-cell-label">1년차 연간 <span class="txt-div">분배금</span></div>
-      <div class="sum-cell-val green" id="s-annual">—</div>
+      <div class="sum-cell-val" id="s-annual">—</div>
       <div class="sum-cell-sub"  id="s-weekly">월간 —</div>
     </div>
     <div class="sum-cell">
       <div class="sum-cell-label" id="s-label2">N년차 연간 분배금</div>
-      <div class="sum-cell-val"   id="s-final">—</div>
+      <div class="sum-cell-val red"   id="s-final">—</div>
       <div class="sum-cell-sub"   id="s-final-sub">월간 —</div>
     </div>
     <div class="sum-cell">
       <div class="sum-cell-label">누적 수령 <span class="txt-div">분배금</span></div>
-      <div class="sum-cell-val blue" id="s-total">—</div>
+      <div class="sum-cell-val" id="s-total">—</div>
       <div class="sum-cell-sub"      id="s-total-sub">수익률 —</div>
     </div>
     <div class="sum-cell">
       <div class="sum-cell-label" id="s-port-label">N년차 종료 자산</div>
-      <div class="sum-cell-val"   id="s-port">—</div>
+      <div class="sum-cell-val red"   id="s-port">—</div>
       <div class="sum-cell-sub"   id="s-port-sub">원금 대비 —배</div>
     </div>
     <div class="sum-cell">
       <div class="sum-cell-label">연평균 자산 상승률</div>
-      <div class="sum-cell-val green" id="s-cagr">—</div>
+      <div class="sum-cell-val" id="s-cagr">—</div>
       <div class="sum-cell-sub"       id="s-cagr-sub">월 평균 —</div>
     </div>
   </div>
@@ -2057,27 +2055,27 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   <div class="summary-bar">
     <div class="sum-cell">
       <div class="sum-cell-label">1년차 연간 <span class="txt-div">분배금</span></div>
-      <div class="sum-cell-val green" id="sol-s-annual">—</div>
+      <div class="sum-cell-val" id="sol-s-annual">—</div>
       <div class="sum-cell-sub"  id="sol-s-weekly">월간 —</div>
     </div>
     <div class="sum-cell">
       <div class="sum-cell-label" id="sol-s-label2">N년차 연간 분배금</div>
-      <div class="sum-cell-val"   id="sol-s-final">—</div>
+      <div class="sum-cell-val red"   id="sol-s-final">—</div>
       <div class="sum-cell-sub"   id="sol-s-final-sub">월간 —</div>
     </div>
     <div class="sum-cell">
       <div class="sum-cell-label">누적 수령 <span class="txt-div">분배금</span></div>
-      <div class="sum-cell-val blue" id="sol-s-total">—</div>
+      <div class="sum-cell-val" id="sol-s-total">—</div>
       <div class="sum-cell-sub"      id="sol-s-total-sub">수익률 —</div>
     </div>
     <div class="sum-cell">
       <div class="sum-cell-label" id="sol-s-port-label">N년차 종료 자산</div>
-      <div class="sum-cell-val"   id="sol-s-port">—</div>
+      <div class="sum-cell-val red"   id="sol-s-port">—</div>
       <div class="sum-cell-sub"   id="sol-s-port-sub">원금 대비 —배</div>
     </div>
     <div class="sum-cell">
       <div class="sum-cell-label">연평균 자산 상승률</div>
-      <div class="sum-cell-val green" id="sol-s-cagr">—</div>
+      <div class="sum-cell-val" id="sol-s-cagr">—</div>
       <div class="sum-cell-sub"       id="sol-s-cagr-sub">월 평균 —</div>
     </div>
   </div>
@@ -2563,27 +2561,27 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   <div class="summary-bar">
     <div class="sum-cell">
       <div class="sum-cell-label">1년차 연간 <span class="txt-div">분배금</span></div>
-      <div class="sum-cell-val green" id="tiger-s-annual">—</div>
+      <div class="sum-cell-val" id="tiger-s-annual">—</div>
       <div class="sum-cell-sub"  id="tiger-s-weekly">월간 —</div>
     </div>
     <div class="sum-cell">
       <div class="sum-cell-label" id="tiger-s-label2">N년차 연간 분배금</div>
-      <div class="sum-cell-val"   id="tiger-s-final">—</div>
+      <div class="sum-cell-val red"   id="tiger-s-final">—</div>
       <div class="sum-cell-sub"   id="tiger-s-final-sub">월간 —</div>
     </div>
     <div class="sum-cell">
       <div class="sum-cell-label">누적 수령 <span class="txt-div">분배금</span></div>
-      <div class="sum-cell-val blue" id="tiger-s-total">—</div>
+      <div class="sum-cell-val" id="tiger-s-total">—</div>
       <div class="sum-cell-sub"      id="tiger-s-total-sub">수익률 —</div>
     </div>
     <div class="sum-cell">
       <div class="sum-cell-label" id="tiger-s-port-label">N년차 종료 자산</div>
-      <div class="sum-cell-val"   id="tiger-s-port">—</div>
+      <div class="sum-cell-val red"   id="tiger-s-port">—</div>
       <div class="sum-cell-sub"   id="tiger-s-port-sub">원금 대비 —배</div>
     </div>
     <div class="sum-cell">
       <div class="sum-cell-label">연평균 자산 상승률</div>
-      <div class="sum-cell-val green" id="tiger-s-cagr">—</div>
+      <div class="sum-cell-val" id="tiger-s-cagr">—</div>
       <div class="sum-cell-sub"       id="tiger-s-cagr-sub">월 평균 —</div>
     </div>
   </div>
@@ -3070,27 +3068,27 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   <div class="summary-bar">
     <div class="sum-cell">
       <div class="sum-cell-label">1년차 연간 <span class="txt-div">분배금</span></div>
-      <div class="sum-cell-val green" id="tigerdiv-s-annual">—</div>
+      <div class="sum-cell-val" id="tigerdiv-s-annual">—</div>
       <div class="sum-cell-sub"  id="tigerdiv-s-weekly">월간 —</div>
     </div>
     <div class="sum-cell">
       <div class="sum-cell-label" id="tigerdiv-s-label2">N년차 연간 분배금</div>
-      <div class="sum-cell-val"   id="tigerdiv-s-final">—</div>
+      <div class="sum-cell-val red"   id="tigerdiv-s-final">—</div>
       <div class="sum-cell-sub"   id="tigerdiv-s-final-sub">월간 —</div>
     </div>
     <div class="sum-cell">
       <div class="sum-cell-label">누적 수령 <span class="txt-div">분배금</span></div>
-      <div class="sum-cell-val blue" id="tigerdiv-s-total">—</div>
+      <div class="sum-cell-val" id="tigerdiv-s-total">—</div>
       <div class="sum-cell-sub"      id="tigerdiv-s-total-sub">수익률 —</div>
     </div>
     <div class="sum-cell">
       <div class="sum-cell-label" id="tigerdiv-s-port-label">N년차 종료 자산</div>
-      <div class="sum-cell-val"   id="tigerdiv-s-port">—</div>
+      <div class="sum-cell-val red"   id="tigerdiv-s-port">—</div>
       <div class="sum-cell-sub"   id="tigerdiv-s-port-sub">원금 대비 —배</div>
     </div>
     <div class="sum-cell">
       <div class="sum-cell-label">연평균 자산 상승률</div>
-      <div class="sum-cell-val green" id="tigerdiv-s-cagr">—</div>
+      <div class="sum-cell-val" id="tigerdiv-s-cagr">—</div>
       <div class="sum-cell-sub"       id="tigerdiv-s-cagr-sub">월 평균 —</div>
     </div>
   </div>
@@ -4836,7 +4834,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <div style="display:flex;align-items:center;gap:10px;">
           <svg width="16" height="16" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 2a7 7 0 1 0 0 14A7 7 0 0 0 9 2z" stroke="currentColor" stroke-width="1.3"/><path d="M6 7.5 C6 6.7 6.7 6 7.5 6 S9 6.7 9 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M9 7.5 C9 6.7 9.7 6 10.5 6 S12 6.7 12 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><circle cx="7.5" cy="7.5" r="0.8" fill="currentColor"/><circle cx="10.5" cy="7.5" r="0.8" fill="currentColor"/><path d="M6.5 11.5 Q9 10 11.5 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>
           <span class="acc-title">공포 &amp; 탐욕 지수</span>
-          <span style="font-size:11px;color:var(--text3);">미국 주식 시장 투자 심리 · feargreedchart.com</span>
+          <span style="font-size:11px;color:var(--text3);">미국 주식 시장 투자 심리 · CNN</span>
         </div>
         <span class="acc-arrow open">▼</span>
       </div>
@@ -4901,40 +4899,53 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <div class="acc-body default-open" id="fear-explain-body">
           <div style="display:flex;flex-direction:column;gap:0;">
 
-            <!-- 1. VOLATILITY -->
+            <!-- 1. MARKET MOMENTUM -->
             <div style="padding:14px 0;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
-              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">1. VOLATILITY <span style="color:var(--text3);font-weight:400;">(변동성 - VIX)</span></p>
-              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 시카고옵션거래소(CBOE)에서 산출하는 VIX(Volatility Index)를 사용합니다. S&amp;P 500 지수 옵션 가격을 기반으로 향후 30일간의 시장 변동성 기대를 나타냅니다.</p>
-              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; VIX가 상승하면 시장이 불확실성에 공포를 느끼고 있다는 뜻으로 <span style="color:#f04452;">공포(Fear)</span>를 의미합니다. 반대로 VIX가 낮으면 시장이 안정적이라 판단하여 <span style="color:#3182f6;">탐욕(Greed)</span>으로 분류됩니다.</p>
-              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">지수 반영</span>&nbsp; VIX의 50일 이동평균을 사용하여 평균보다 높으면 공포, 낮으면 탐욕으로 해석합니다.</p>
+              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">1. MARKET MOMENTUM <span style="color:var(--text3);font-weight:400;">(주가 모멘텀 - S&amp;P 500)</span></p>
+              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; S&amp;P 500 지수를 최근 125거래일 이동평균과 비교합니다.</p>
+              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 지수가 이동평균보다 높을수록 상승 추세가 강하다는 뜻이라 <span style="color:#3182f6;">탐욕</span>, 낮을수록 <span style="color:#f04452;">공포</span>로 봅니다.</p>
             </div>
 
-            <!-- 2. MOMENTUM -->
+            <!-- 2. STOCK PRICE STRENGTH -->
             <div style="padding:14px 0;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
-              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">2. MOMENTUM <span style="color:var(--text3);font-weight:400;">(모멘텀 - S&amp;P 500)</span></p>
-              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; S&amp;P 500 지수의 현재 수준을 125일 이동평균선과 비교하여 산출합니다.</p>
-              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 현재 주가가 125일 이동평균선보다 높으면 상승 모멘텀이 강한 것으로 보아 <span style="color:#3182f6;">탐욕</span>으로 해석합니다. 반대로 이동평균선보다 낮으면 하락세가 강한 것으로 보아 <span style="color:#f04452;">공포</span>로 해석합니다.</p>
+              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">2. STOCK PRICE STRENGTH <span style="color:var(--text3);font-weight:400;">(주가 강도 - 52주 신고가 vs 신저가)</span></p>
+              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 뉴욕증권거래소(NYSE)에서 52주 신고가를 기록한 종목 수와 52주 신저가를 기록한 종목 수를 비교합니다.</p>
+              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 신고가 종목이 신저가 종목보다 훨씬 많으면 <span style="color:#3182f6;">탐욕</span>, 신저가 종목이 많으면 <span style="color:#f04452;">공포</span>입니다.</p>
             </div>
 
-            <!-- 3. PUT/CALL -->
+            <!-- 3. STOCK PRICE BREADTH -->
             <div style="padding:14px 0;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
-              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">3. PUT/CALL <span style="color:var(--text3);font-weight:400;">(풋/콜 비율)</span></p>
-              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 주식을 팔 권리인 '풋옵션(Put)' 거래량을 살 권리인 '콜옵션(Call)' 거래량으로 나눈 비율의 5일 평균을 측정합니다.</p>
-              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 풋옵션이 많아지면(비율 상승) 투자자들이 하락을 예상하고 헷지를 한다는 뜻이므로 <span style="color:#f04452;">공포</span> 신호입니다. 콜옵션이 많아지면(비율 하락) 상승을 예상하므로 <span style="color:#3182f6;">탐욕</span>입니다. 풋/콜 비율이 낮을수록 탐욕, 높을수록 공포를 의미합니다.</p>
+              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">3. STOCK PRICE BREADTH <span style="color:var(--text3);font-weight:400;">(주가 폭 - 상승·하락 거래량)</span></p>
+              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 맥클렐런 거래량 합산 지수(McClellan Volume Summation Index)로, 오르는 종목에 몰린 거래량과 내리는 종목에 몰린 거래량을 비교합니다.</p>
+              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 상승 종목 쪽 거래량이 많으면 <span style="color:#3182f6;">탐욕</span>, 하락 종목 쪽 거래량이 많으면 <span style="color:#f04452;">공포</span>로 해석합니다.</p>
             </div>
 
-            <!-- 4. SAFE HAVEN -->
+            <!-- 4. PUT AND CALL OPTIONS -->
             <div style="padding:14px 0;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
-              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">4. SAFE HAVEN <span style="color:var(--text3);font-weight:400;">(안전 자산 수요)</span></p>
-              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 주식(위험 자산)과 국채(안전 자산)의 최근 20거래일 수익률 차이를 분석합니다.</p>
-              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 투자자들이 주식보다 국채를 선호하면(안전 자산으로 도피) <span style="color:#f04452;">공포</span> 상황입니다. 20일 동안 국채 수익률이 주식 수익률보다 높거나 주식 수익률이 저조하면 안전 자산 선호도가 높아진 것으로 보아 공포로 해석합니다.</p>
+              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">4. PUT AND CALL OPTIONS <span style="color:var(--text3);font-weight:400;">(풋/콜 비율)</span></p>
+              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 하락에 베팅하는 풋옵션 거래량을 상승에 베팅하는 콜옵션 거래량으로 나눈 비율의 5일 평균입니다.</p>
+              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 비율이 높아질수록(풋 증가) 하락에 대비하는 투자자가 많다는 뜻이라 <span style="color:#f04452;">공포</span>, 낮아질수록 <span style="color:#3182f6;">탐욕</span>입니다.</p>
             </div>
 
-            <!-- 5. JUNK BONDS -->
+            <!-- 5. MARKET VOLATILITY -->
+            <div style="padding:14px 0;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
+              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">5. MARKET VOLATILITY <span style="color:var(--text3);font-weight:400;">(시장 변동성 - VIX)</span></p>
+              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; S&amp;P 500 옵션 가격으로 산출한 향후 30일 예상 변동성(VIX)을 50일 이동평균과 비교합니다.</p>
+              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; VIX가 평균보다 높으면 불확실성이 커진 <span style="color:#f04452;">공포</span>, 낮으면 시장이 안정적인 <span style="color:#3182f6;">탐욕</span>으로 봅니다.</p>
+            </div>
+
+            <!-- 6. SAFE HAVEN DEMAND -->
+            <div style="padding:14px 0;border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
+              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">6. SAFE HAVEN DEMAND <span style="color:var(--text3);font-weight:400;">(안전자산 수요)</span></p>
+              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 최근 20거래일 동안 주식과 국채의 수익률 차이를 비교합니다.</p>
+              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 국채 수익률이 주식보다 좋으면 안전자산으로 돈이 몰리는 <span style="color:#f04452;">공포</span>, 주식이 앞서면 <span style="color:#3182f6;">탐욕</span>입니다.</p>
+            </div>
+
+            <!-- 7. JUNK BOND DEMAND -->
             <div style="padding:14px 0;">
-              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">5. JUNK BONDS <span style="color:var(--text3);font-weight:400;">(정크본드 수요)</span></p>
-              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 신용등급이 낮은 투기등급 채권(정크본드)과 안전한 국채 간의 수익률 차이(Spread)를 분석합니다.</p>
-              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 투자자들이 위험을 감수하고 정크본드를 매수하면(수요 증가) 스프레드가 좁아지며 <span style="color:#3182f6;">탐욕</span>을 나타냅니다. 경계감이 커져 정크본드를 매도하면(스프레드 확대) <span style="color:#f04452;">공포</span> 상황으로 봅니다.</p>
+              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">7. JUNK BOND DEMAND <span style="color:var(--text3);font-weight:400;">(정크본드 수요)</span></p>
+              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 신용등급이 낮은 투기등급 채권(정크본드)과 투자등급 채권의 수익률 차이(스프레드)를 봅니다.</p>
+              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 스프레드가 좁아지면 위험을 감수하려는 <span style="color:#3182f6;">탐욕</span>, 넓어지면 위험을 피하는 <span style="color:#f04452;">공포</span> 신호입니다.</p>
             </div>
 
           </div>
@@ -4950,8 +4961,8 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       </div>
 
     </div>
-        <p style="text-align:center;font-size:11px;color:var(--text3);margin-top:24px;">
-          데이터 출처: feargreedchart.com · 15분 캐시 · 투자 참고용이며 투자 권고가 아닙니다.
+        <p id="fear-source-note" style="text-align:center;font-size:11px;color:var(--text3);margin-top:24px;">
+          데이터 출처: CNN Business Fear &amp; Greed Index · 15분 간격 수집 · 투자 참고용이며 투자 권고가 아닙니다.
         </p>
       </div><!-- /acc-body fear-main-body -->
     </div><!-- /card -->
@@ -5689,7 +5700,7 @@ function applySiteTheme() {
     Object.keys(sc).forEach(function (a) { var g = sc[a].grid; if (g && typeof g.color === 'string') { var mm = g.color.match(/^rgba\([^)]*,\s*([\d.]+)\)$/); if (mm) g.color = fgA(mm[1]); } });
     try { ch.update('none'); } catch (e) {}
   });
-  if (typeof _fearData !== 'undefined' && _fearData && typeof drawFearGauge === 'function') { try { drawFearGauge(Math.round(_fearData.score.score)); } catch (e) {} }
+  if (typeof _fearData !== 'undefined' && _fearData && typeof drawFearGauge === 'function') { try { drawFearGauge(Math.round(_fearData.score)); } catch (e) {} }
   var mp = document.getElementById('page-muhan');
   if (mp && mp.classList.contains('active') && window.MHdebug) window.MHdebug.render();
 }
@@ -6184,7 +6195,7 @@ function setChartTab(tab, btn) {
 var SIM_PREFIX = { 'page-simulator': '', 'page-sol': 'sol-', 'page-tiger': 'tiger-', 'page-tigerdiv': 'tigerdiv-' };
 var SIM_UPDATE = { 'page-simulator': 'update', 'page-sol': 'solUpdate', 'page-tiger': 'tigerUpdate', 'page-tigerdiv': 'tigerdivUpdate' };
 var fancyUnit = {};
-let cpdMode = 'simple'; let cpdTaxOn = true; let cpdChart = null; let cpdChartTab = 'val';
+let cpdMode = 'simple'; let cpdTaxOn = false;   /* 세금 설정 기본값: OFF */ let cpdChart = null; let cpdChartTab = 'val';
 const cpdUnit = { principal: 'won', monthly: 'won' };
 
 function simEl(pageId, kind, field) { return document.getElementById((SIM_PREFIX[pageId] || '') + kind + '-' + field); }
@@ -6511,7 +6522,7 @@ function update() {
   const _cagrMon = Math.pow(1 + _cagr, 1/12) - 1;
   const _cagrEl  = document.getElementById('s-cagr');
   _cagrEl.textContent = (_cagr >= 0 ? '+' : '') + (_cagr * 100).toFixed(2) + '%';
-  _cagrEl.className   = 'sum-cell-val ' + (_cagr >= 0 ? 'green' : 'sum-cell-red');
+  _cagrEl.className   = 'sum-cell-val';
   document.getElementById('s-cagr-sub').textContent =
     '월 평균 ' + (_cagrMon >= 0 ? '+' : '') + (_cagrMon * 100).toFixed(3) + '%';
 
@@ -7080,7 +7091,7 @@ update();
     setT('s-port',       fmt(rN.port));
     setT('s-port-sub',   '총 투입 ' + fmt(totInvest) + ' 대비');
     const cagrEl = $id('s-cagr');
-    if (cagrEl) { cagrEl.textContent = (cagr>=0?'+':'') + cagr.toFixed(2) + '%'; cagrEl.className = 'sum-cell-val ' + (cagr>=0?'green':'sum-cell-red'); }
+    if (cagrEl) { cagrEl.textContent = (cagr>=0?'+':'') + cagr.toFixed(2) + '%'; cagrEl.className = 'sum-cell-val'; }
     setT('s-cagr-sub',   '월 평균 ' + (cagrMon>=0?'+':'') + (cagrMon*100).toFixed(3) + '%');
 
     // ── 역산 ───────────────────────────────
@@ -7556,7 +7567,7 @@ update();
     setT('s-port',       fmt(rN.port));
     setT('s-port-sub',   '총 투입 ' + fmt(totInvest) + ' 대비');
     const cagrEl = $id('s-cagr');
-    if (cagrEl) { cagrEl.textContent=(cagr>=0?'+':'')+cagr.toFixed(2)+'%'; cagrEl.className='sum-cell-val '+(cagr>=0?'green':'sum-cell-red'); }
+    if (cagrEl) { cagrEl.textContent=(cagr>=0?'+':'')+cagr.toFixed(2)+'%'; cagrEl.className = 'sum-cell-val'; }
     setT('s-cagr-sub',   '월 평균 '+(cagrMon>=0?'+':'')+(cagrMon*100).toFixed(3)+'%');
     const targetV = getVWon('ni-target');
     if (targetV > 0) { setT('target-result', fmt((targetV*12)/rate)); setT('target-sub','분배율 '+(rate0*100).toFixed(1)+'% 기준'); }
@@ -7916,7 +7927,7 @@ update();
     setT('s-port',       fmt(rN.port));
     setT('s-port-sub',   '총 투입 ' + fmt(totInvest) + ' 대비');
     const cagrEl = $id('s-cagr');
-    if (cagrEl) { cagrEl.textContent=(cagr>=0?'+':'')+cagr.toFixed(2)+'%'; cagrEl.className='sum-cell-val '+(cagr>=0?'green':'sum-cell-red'); }
+    if (cagrEl) { cagrEl.textContent=(cagr>=0?'+':'')+cagr.toFixed(2)+'%'; cagrEl.className = 'sum-cell-val'; }
     setT('s-cagr-sub',   '월 평균 '+(cagrMon>=0?'+':'')+(cagrMon*100).toFixed(3)+'%');
     const targetV=getVWon('ni-target');
     if (targetV > 0) { setT('target-result', fmt((targetV*12)/rate)); setT('target-sub','분배율 '+(rate0*100).toFixed(1)+'% 기준'); }
@@ -8729,7 +8740,7 @@ function toggleAllYears(tbodyId, btn) {
 }
 
 /* ═══════════════════════════════════════════════════
-   [FEAR] 공포 & 탐욕 지수 (feargreedchart.com API)
+   [FEAR] 공포 & 탐욕 지수 — CNN Fear & Greed Index (data/market.json 의 fearCnn)
    ═══════════════════════════════════════════════════ */
 let _fearData = null;
 let _fearHistChart = null;
@@ -8758,11 +8769,11 @@ function drawFearGauge(score) {
   /* 반원 중심: 캔버스 맨 아래에 위치 → 반원만 보임 */
   var cx = W/2, cy = H - 10, r = 126;
   var zones = [
-    {from:0,  to:20,  col:'#f04452'},
-    {from:20, to:45,  col:'#fe9800'},
+    {from:0,  to:25,  col:'#f04452'},
+    {from:25, to:45,  col:'#fe9800'},
     {from:45, to:55,  col:'#fe9800'},
-    {from:55, to:80,  col:'#3182f6'},
-    {from:80, to:100, col:'#3182f6'}
+    {from:55, to:75,  col:'#3182f6'},
+    {from:75, to:100, col:'#3182f6'}
   ];
   /* 배경 아크 (흐리게) */
   zones.forEach(function(z) {
@@ -8892,29 +8903,49 @@ function renderFearComponents(components) {
   }).join('');
 }
 
+/* CNN 원본(graphdata) → 화면용 형식 */
+function cnnFearView(d) {
+  var fg = d.fear_and_greed, names = [['market_momentum_sp500','주가 모멘텀'],['stock_price_strength','주가 강도'],['stock_price_breadth','주가 폭'],
+    ['put_call_options','풋/콜 비율'],['market_volatility_vix','시장 변동성 (VIX)'],['safe_haven_demand','안전자산 수요'],['junk_bond_demand','정크본드 수요']];
+  return { source: 'CNN', score: fg.score, prev: { close: fg.previous_close, w1: fg.previous_1_week, m1: fg.previous_1_month, y1: fg.previous_1_year },
+    components: names.filter(function (n) { return d[n[0]] && d[n[0]].score != null; }).map(function (n) { return { name: n[1], score: d[n[0]].score }; }),
+    historical: ((d.fear_and_greed_historical || {}).data || []).map(function (p) { var t = new Date(p.x); return { date: t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0'), score: p.y }; }) };
+}
 async function fetchFearGreed() {
   var btn  = document.getElementById('fear-refresh-btn');
   var icon = document.getElementById('fear-refresh-icon');
   if (btn) btn.disabled = true;
   if (icon) icon.textContent = '\u23f3';
   function setT(id, v) { var el=document.getElementById(id); if(el) el.textContent=v; }
+  function r0(v) { return v == null || isNaN(v) ? '\u2014' : Math.round(v); }
   try {
-    var res = await fetch('https://feargreedchart.com/api/?action=all');
-    if (!res.ok) throw new Error('API error');
-    var data = await res.json();
-    _fearData = data;
-    var score = Math.round(data.score.score);
+    /* ① GitHub Actions가 수집한 CNN 자료  ② CNN 직접(브라우저에서 허용될 때)  ③ 대체 지표 */
+    var m = window.mdLoad ? await window.mdLoad('market.json') : null, v = m && m.fearCnn && m.fearCnn.historical ? m.fearCnn : null;
+    if (v) v = { source: 'CNN', score: v.score, prev: v.prev || {}, components: v.components || [], historical: v.historical, time: v.time };
+    if (!v) {
+      try { var cr = await Promise.race([fetch('https://production.dataviz.cnn.io/index/fearandgreed/graphdata'), new Promise(function (_, j) { setTimeout(function () { j(new Error('timeout')); }, 6000); })]);
+        if (cr.ok) v = cnnFearView(await cr.json()); } catch (e) {}
+    }
+    if (!v) {
+      var res = await fetch('https://feargreedchart.com/api/?action=all');
+      if (!res.ok) throw new Error('API error');
+      var fd = await res.json(), rc = fd.recent || [], n = rc.length;
+      v = { source: 'fallback', score: fd.score.score, components: (fd.score.components || []).map(function (x) { return { name: x.name, score: x.val }; }), historical: rc,
+            prev: { close: n > 1 ? rc[n-2].score : null, w1: n > 7 ? rc[n-8].score : null, m1: n > 30 ? rc[n-31].score : null, y1: n > 251 ? rc[n-252].score : null } };
+    }
+    _fearData = v;
+    var score = Math.round(v.score);
     setT('fear-score-val', score);
-    /* 점수/라벨은 drawFearGauge에서 캔버스에 직접 렌더링 */
-    var recent = data.recent || [];
-    var n = recent.length;
-    setT('fear-prev-close', n>1 ? Math.round(recent[n-2].score) : '\u2014');
-    setT('fear-prev-1w',    n>7 ? Math.round(recent[n-8].score) : '\u2014');
-    setT('fear-prev-1m',    n>30 ? Math.round(recent[n-31].score) : '\u2014');
-    setT('fear-prev-1y',    n>251 ? Math.round(recent[n-252].score) : '\u2014');
+    setT('fear-prev-close', r0(v.prev.close));
+    setT('fear-prev-1w',    r0(v.prev.w1));
+    setT('fear-prev-1m',    r0(v.prev.m1));
+    setT('fear-prev-1y',    r0(v.prev.y1));
     drawFearGauge(score);
-    if (data.score.components) renderFearComponents(data.score.components);
-    if (recent.length > 0) renderFearHistory(recent);
+    renderFearComponents(v.components.map(function (x) { return { name: x.name, val: x.score }; }));
+    if (v.historical.length > 0) renderFearHistory(v.historical);
+    setT('fear-source-note', v.source === 'CNN'
+      ? '데이터 출처: CNN Business Fear & Greed Index · 15분 간격 수집 · 투자 참고용이며 투자 권고가 아닙니다.'
+      : '⚠ CNN 자료를 아직 받지 못해 대체 지표(feargreedchart.com)를 표시 중입니다 · 투자 참고용이며 투자 권고가 아닙니다.');
   } catch(e) {
     console.error('Fear&Greed \uc624\ub958:', e);
     setT('fear-score-label', '\ub370\uc774\ud130 \uc870\ud68c \uc2e4\ud328 \u00b7 \uc7a0\uc2dc \ud6c4 \uc7ac\uc2dc\ub3c4');
@@ -9716,15 +9747,21 @@ function setCpdMode(mode, btn) {
 }
 function toggleCpdTax() {
   cpdTaxOn = !cpdTaxOn;
+  syncCpdTaxUI();
+  calcCompound();
+}
+/* 세금 스위치 화면을 cpdTaxOn 상태와 맞춤 (초기 표시도 이 함수 하나로) */
+function syncCpdTaxUI() {
   const sw  = document.getElementById('cpd-tax-sw');
+  if (!sw) return;
   const blk = document.getElementById('cpd-tax-block');
   sw.classList.toggle('on', cpdTaxOn);
   document.getElementById('cpd-tax-off').style.color = cpdTaxOn ? 'var(--text3)' : 'var(--text2)';
   document.getElementById('cpd-tax-on').style.color  = cpdTaxOn ? '#f04452' : 'var(--text3)';
   blk.style.opacity = cpdTaxOn ? '1' : '0.3';
   blk.style.pointerEvents = cpdTaxOn ? 'auto' : 'none';
-  calcCompound();
 }
+document.addEventListener('DOMContentLoaded', syncCpdTaxUI);
 function setCpdTaxPreset(v) {
   document.getElementById('cpd-tax-rate').value = v;
   calcCompound();
