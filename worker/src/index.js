@@ -14,7 +14,7 @@
  *   · 한국장(평일 09~17시)·미국장(평일 22~07시, 한국 시간) 15분마다, 그 밖에는 3시간마다
  *   · GH_TOKEN(저장소 1개·Actions 쓰기 권한만 있는 토큰) 비밀값이 있을 때만 동작 · GET /status 로 마지막 실행 결과 확인
  */
-const REPO = 'ETFMD/ETF_Monthly_Dividend';
+const REPO = 'ETFMD/d-capitalism';
 const WORKFLOW = 'update-market-data.yml';
 const BOT = /bot|crawl|spider|slurp|bingpreview|facebookexternalhit|kakaotalk-scrap|yeti|daum|headless|lighthouse|preview|python|curl|wget|java\/|go-http|axios|node-fetch/i;
 

@@ -1,6 +1,6 @@
 {
   "_comment": "도구(탭)별 고유 주소·제목·설명. scripts/build_pages.py 가 이 파일로 각 주소의 index.html·sitemap.xml 을 만듭니다. site 는 CNAME 파일(자체 도메인)이 있으면 그 도메인이 우선합니다.",
-  "site": "https://etfmd.github.io/ETF_Monthly_Dividend/",
+  "site": "https://d-capitalism.com/",
   "brand": "디코딩 자본주의",
   "home": {
     "tab": "home",
