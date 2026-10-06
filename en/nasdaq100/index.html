@@ -1567,6 +1567,30 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     .fc-kpis > div:last-child { grid-column:1 / -1; }
   }
   /* [VISITS] 맨 위 방문자 수 */
+  /* [CSEL] 금융 계산기 선택 목록 — 기본 select 대신 메뉴 드롭다운과 같은 모양 (원래 select 는 숨겨 두고 값·이벤트는 그대로 사용) */
+  .cs-wrap { position:relative; display:block; }
+  .cs-wrap.cs-inline { display:inline-block; }
+  .cs-native { position:absolute !important; left:0; top:0; width:1px !important; height:1px !important; opacity:0 !important; pointer-events:none !important; }
+  .cs-btn { display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%; min-height:38px; padding:9px 10px 9px 12px;
+    background:var(--bg3); border:1px solid var(--card-border); border-radius:10px; color:var(--text); font-family:var(--font); font-size:13px;
+    text-align:left; cursor:pointer; transition:border-color .15s, background .15s; box-sizing:border-box; }
+  .cs-inline .cs-btn { width:auto; min-height:0; padding:5px 10px; border-radius:8px; font-size:12px; }
+  .cs-btn:hover, .cs-btn[aria-expanded="true"] { border-color:rgba(49,130,246,0.45); }
+  .cs-btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .cs-label { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .cs-arrow { font-size:9px; opacity:.6; transition:transform .2s; flex-shrink:0; }
+  .cs-btn[aria-expanded="true"] .cs-arrow { transform:rotate(180deg); }
+  .cs-menu { position:fixed; display:none; flex-direction:column; gap:3px; padding:6px; overflow-y:auto; overscroll-behavior:contain;
+    background:var(--bg2); border:1px solid rgba(var(--fg-rgb),0.12); border-radius:12px;
+    box-shadow:0 12px 40px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3); z-index:10000; animation:dropIn .15s ease; }
+  .cs-menu.open { display:flex; }
+  .cs-opt { display:flex; align-items:center; gap:9px; width:100%; padding:9px 12px; border:none; border-radius:8px; background:transparent; flex-shrink:0;
+    color:var(--text2); font-family:var(--font); font-size:13px; line-height:1.45; text-align:left; cursor:pointer; transition:background .12s, color .12s; }
+  .cs-opt:hover, .cs-opt:focus-visible { background:rgba(var(--fg-rgb),0.07); color:var(--text); outline:none; }
+  .cs-opt.active { background:var(--accent-dim); color:var(--accent); }
+  .cs-opt .cs-t { flex:1; }
+  .cs-opt .lang-check { opacity:0; flex-shrink:0; }
+  .cs-opt.active .lang-check { opacity:1; }
   /* [I18N] 상단 줄: 방문자 수 · 언어 선택 (오른쪽 위) */
   .top-bar { display:flex; justify-content:flex-end; align-items:center; gap:12px; margin:-22px 0 8px; min-height:28px; }
   .visit-bar { display:flex; justify-content:flex-end; align-items:center; gap:6px; font-size:11px; color:var(--text3); min-height:16px; }
@@ -17121,6 +17145,112 @@ if (typeof module !== 'undefined') module.exports = MHE;
     <button class="drop-item theme-item" data-theme-opt="light" onclick="setSiteTheme('light')">☀ Light</button>
     <button class="drop-item theme-item" data-theme-opt="auto" onclick="setSiteTheme('auto')">⌬ Auto <span style="font-size:11px;opacity:.7">(follow device)</span></button>
   </div>
+<script>
+/* ════════════════════════════════════════════════════════════
+   [CSEL] 금융 계산기의 선택 목록(select)을 사이트 메뉴 드롭다운과 같은 모양으로
+   · 원래 <select> 는 화면에서만 숨기고 그대로 둠 → 값 읽기·change 이벤트·기존 계산 코드는 바뀌지 않음
+   · 코드가 select.value 를 바꾸거나 옵션을 새로 채워도 버튼 글자가 자동으로 따라감
+   · 키보드: 버튼에서 ↓·Enter·Space 로 열기, ↑↓ 이동, Enter 선택, Esc 닫기
+════════════════════════════════════════════════════════════ */
+(function () {
+  var SCOPE = ['salary', 'severance', 'mortgage', 'brokerage', 'compound', 'fx', 'loan', 'cagr', 'health']
+    .map(function (t) { return '#page-' + t + ' select'; }).join(', ');
+  var CHECK = '<svg class="lang-check" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var menu = null, cur = null;   /* 열린 목록과 그 select */
+  var VAL = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+  var IDX = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'selectedIndex');
+
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function sync(sel) {
+    var b = sel._csBtn; if (!b) return;
+    var o = sel.options[IDX.get.call(sel)];
+    b.querySelector('.cs-label').textContent = o ? o.text : '';
+    b.disabled = !!sel.disabled;
+    if (menu && cur === sel) fill(sel);
+  }
+  function fill(sel) {
+    var v = VAL.get.call(sel);
+    menu.innerHTML = Array.prototype.map.call(sel.options, function (o) {
+      var on = o.value === v;
+      return '<button type="button" class="cs-opt' + (on ? ' active' : '') + '" role="option" aria-selected="' + on + '" data-v="' + esc(o.value) + '"' + (o.disabled ? ' disabled' : '') + '><span class="cs-t">' + esc(o.text) + '</span>' + CHECK + '</button>';
+    }).join('');
+  }
+  function place(btn) {
+    var r = btn.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight;
+    var w = Math.min(Math.max(r.width, 180), 440, vw - 16);
+    menu.style.width = w + 'px';
+    menu.style.left = Math.max(8, Math.min(r.left, vw - w - 8)) + 'px';
+    var below = vh - r.bottom - 12, above = r.top - 12, h = Math.min(menu.scrollHeight, 340);
+    if (below >= Math.min(h, 220) || below >= above) { menu.style.top = (r.bottom + 6) + 'px'; menu.style.bottom = ''; menu.style.maxHeight = Math.max(120, Math.min(340, below)) + 'px'; }
+    else { menu.style.top = ''; menu.style.bottom = (vh - r.top + 6) + 'px'; menu.style.maxHeight = Math.max(120, Math.min(340, above)) + 'px'; }
+  }
+  function close(back) {
+    if (!menu || !cur) return;
+    var b = cur._csBtn; menu.classList.remove('open'); b.setAttribute('aria-expanded', 'false');
+    cur = null; if (back) b.focus();
+  }
+  function open(sel, focus) {
+    if (cur === sel) return close();
+    close();
+    cur = sel; fill(sel); menu.classList.add('open'); place(sel._csBtn);
+    sel._csBtn.setAttribute('aria-expanded', 'true');
+    var a = menu.querySelector('.cs-opt.active') || menu.querySelector('.cs-opt');
+    if (a) { a.scrollIntoView({ block: 'nearest' }); if (focus) a.focus(); }
+  }
+  function pick(v) {
+    var sel = cur; if (!sel) return;
+    close(true);
+    if (VAL.get.call(sel) === v) return;
+    VAL.set.call(sel, v); sync(sel);
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+  function enhance(sel) {
+    if (sel._csBtn) return;
+    var inline = !sel.closest('.fc-field') && !/width:\s*100%/.test(sel.getAttribute('style') || '');
+    var wrap = document.createElement('span'); wrap.className = 'cs-wrap' + (inline ? ' cs-inline' : '');
+    var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'cs-btn';
+    btn.setAttribute('aria-haspopup', 'listbox'); btn.setAttribute('aria-expanded', 'false');
+    var lab = sel.closest('label'), name = lab ? (lab.querySelector('span') || {}).textContent : '';
+    if (name) btn.setAttribute('aria-label', name.trim());
+    btn.innerHTML = '<span class="cs-label"></span><span class="cs-arrow">▼</span>';
+    sel.parentNode.insertBefore(wrap, sel);
+    wrap.appendChild(btn);            /* 버튼을 select 앞에 둬서 <label> 을 누르면 버튼(목록)이 열리게 */
+    wrap.appendChild(sel);
+    sel.classList.add('cs-native'); sel.tabIndex = -1; sel.setAttribute('aria-hidden', 'true');
+    sel._csBtn = btn;
+    /* 코드가 값을 바꿔도 버튼 글자가 따라가도록 이 select 의 value·selectedIndex 를 감쌈 */
+    Object.defineProperty(sel, 'value', { configurable: true, get: function () { return VAL.get.call(this); }, set: function (v) { VAL.set.call(this, v); sync(this); } });
+    Object.defineProperty(sel, 'selectedIndex', { configurable: true, get: function () { return IDX.get.call(this); }, set: function (v) { IDX.set.call(this, v); sync(this); } });
+    new MutationObserver(function () { sync(sel); }).observe(sel, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled', 'selected'] });
+    sel.addEventListener('change', function () { sync(sel); });
+    btn.addEventListener('click', function (e) { e.stopPropagation(); open(sel, e.detail === 0); });
+    btn.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); open(sel, true); }
+    });
+    sync(sel);
+  }
+  function init() {
+    menu = document.createElement('div'); menu.className = 'cs-menu'; menu.setAttribute('role', 'listbox');
+    document.body.appendChild(menu);
+    menu.addEventListener('click', function (e) { var o = e.target.closest('.cs-opt'); if (o && !o.disabled) { e.stopPropagation(); pick(o.getAttribute('data-v')); } });
+    menu.addEventListener('keydown', function (e) {
+      var list = Array.prototype.slice.call(menu.querySelectorAll('.cs-opt:not([disabled])')), i = list.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown') { e.preventDefault(); (list[i + 1] || list[0]).focus(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); (list[i - 1] || list[list.length - 1]).focus(); }
+      else if (e.key === 'Home') { e.preventDefault(); list[0].focus(); }
+      else if (e.key === 'End') { e.preventDefault(); list[list.length - 1].focus(); }
+      else if (e.key === 'Escape') { e.preventDefault(); close(true); }
+      else if (e.key === 'Tab') close();
+    });
+    document.addEventListener('click', function (e) { if (cur && !menu.contains(e.target)) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && cur) close(true); });
+    window.addEventListener('resize', function () { close(); });
+    window.addEventListener('scroll', function (e) { if (cur && !menu.contains(e.target)) close(); }, true);
+    Array.prototype.forEach.call(document.querySelectorAll(SCOPE), enhance);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
 <script>
 /* ════════════════════════════════════════════════════════════
    [ROUTER] 도구(탭)별 고유 주소 — /loan/, /fx/ … (scripts/build_pages.py 가 각 주소의 index.html 생성)
