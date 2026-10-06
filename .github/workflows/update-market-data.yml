@@ -8,7 +8,7 @@ on:
   workflow_dispatch:              # Actions 탭에서 수동 실행
   push:                           # 수집 스크립트·워크플로가 바뀌면 바로 한 번 실행
     branches: [main]
-    paths: ['scripts/**', '.github/workflows/update-market-data.yml']
+    paths: ['scripts/update_market_data.py', '.github/workflows/update-market-data.yml']
 
 permissions:
   contents: write
