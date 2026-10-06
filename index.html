@@ -4372,6 +4372,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <button class="chart-tab" data-per="5Y" onclick="dxySetPeriod('5Y')">5Y</button>
         <button class="chart-tab" data-per="10Y" onclick="dxySetPeriod('10Y')">10Y</button>
         <button class="chart-tab" data-per="MAX" onclick="dxySetPeriod('MAX')">MAX</button>
+        <button class="chart-tab" data-per="CUSTOM" onclick="dxySetPeriod('CUSTOM')">기간설정</button>
+      </div>
+      <div class="kcmp-custom" id="dxy-custom" style="display:none;">
+        <input type="date" class="kcmp-date" id="dxy-from" aria-label="시작일">
+        <span style="color:var(--text3);">~</span>
+        <input type="date" class="kcmp-date" id="dxy-to" aria-label="종료일">
+        <button class="kcmp-apply" onclick="dxyApplyCustom()">적용</button>
+        <span class="kcmp-err" id="dxy-err"></span>
       </div>
       <p class="kcmp-note" id="dxy-note"></p>
     </div>
@@ -10170,7 +10178,7 @@ window.chartZoom = (function () {
 ════════════════════════════════════════ */
 (function () {
   var SYM = 'DX-Y.NYB', MONTHS = { '1M': 1, '3M': 3, '6M': 6, '1Y': 12, '3Y': 36, '5Y': 60, '10Y': 120 };
-  var S = { pts: null, quote: null, src: '', period: '1Y', chart: null, loading: null };
+  var S = { pts: null, quote: null, src: '', period: '1Y', from: null, to: null, chart: null, loading: null };
   function $(id) { return document.getElementById(id); }
   function pad(n) { return (n < 10 ? '0' : '') + n; }
   function dayStr(d, sep) { var t = new Date(d * 86400000); sep = sep || '-'; return t.getUTCFullYear() + sep + pad(t.getUTCMonth() + 1) + sep + pad(t.getUTCDate()); }
@@ -10255,16 +10263,27 @@ window.chartZoom = (function () {
     }
   }
 
+  /* 선택 기간 → [기준 인덱스(시작일 이전 마지막 거래일), 끝 인덱스] */
+  function span() {
+    var pts = S.pts, first = pts[0][0], last = pts[pts.length - 1][0], start = first, end = last, i;
+    if (S.period === 'CUSTOM') { start = S.from != null ? S.from : first; end = S.to != null ? S.to : last; }
+    else if (MONTHS[S.period]) start = addMonths(last, -MONTHS[S.period]);
+    var s = 0, e = pts.length - 1;
+    for (i = 0; i < pts.length && pts[i][0] <= start; i++) s = i;
+    while (e > s && pts[e][0] > end) e--;
+    return [s, e];
+  }
+  function strDay(x) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(x || ''); return m ? Math.floor(Date.UTC(+m[1], +m[2] - 1, +m[3]) / 86400000) : null; }
+
   function render() {
     var page = $('page-fx');
     if (!S.pts || !page || !page.classList.contains('active') || !window.Chart) return;
     var canvas = $('dxy-chart'); if (!canvas) return;
     header();
-    var pts = S.pts, lastD = pts[pts.length - 1][0], startD = MONTHS[S.period] ? addMonths(lastD, -MONTHS[S.period]) : pts[0][0];
-    var s = 0;
-    for (var i = 0; i < pts.length && pts[i][0] <= startD; i++) s = i;   /* 시작일 이전 마지막 거래일 */
-    var seg = pts.slice(s);
-    if (seg.length < 2) { status('선택한 기간의 자료가 부족합니다.'); return; }
+    var se = span(), pts = S.pts, seg = pts.slice(se[0], se[1] + 1), lastD = seg[seg.length - 1][0];
+    var f = $('dxy-from'), t = $('dxy-to');
+    if (f && !f.min) { f.min = t.min = dayStr(pts[0][0]); f.max = t.max = dayStr(pts[pts.length - 1][0]); }
+    if (seg.length < 2) { status('선택한 기간에 거래일이 부족합니다.'); if (S.chart) { S.chart.destroy(); S.chart = null; } var st0 = $('dxy-stats'); if (st0) st0.innerHTML = ''; return; }
     status('');
     var data = seg.map(function (p) { return { x: p[0], y: p[1] }; });
     var v0 = seg[0][1], v1 = seg[seg.length - 1][1], hi = seg[0], lo = seg[0];
@@ -10326,9 +10345,22 @@ window.chartZoom = (function () {
     load().then(function (ok) { if (ok) render(); else status('달러인덱스 자료를 불러오지 못했습니다. 잠시 후 다시 열어 주세요.'); });
   };
   window.dxySetPeriod = function (p) {
-    S.period = p;
     var tabs = $('dxy-tabs'); if (tabs) tabs.querySelectorAll('.chart-tab').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-per') === p); });
-    render();
+    var box = $('dxy-custom');
+    if (p === 'CUSTOM') {
+      if (box) box.style.display = 'flex';
+      var f = $('dxy-from'), t = $('dxy-to');
+      if (S.pts && f && !f.value) { var se = span(); f.value = dayStr(S.pts[se[0]][0]); t.value = dayStr(S.pts[se[1]][0]); }   /* 처음 열 때 지금 보이는 기간으로 채움 */
+      window.dxyApplyCustom(); return;
+    }
+    if (box) box.style.display = 'none';
+    S.period = p; render();
+  };
+  window.dxyApplyCustom = function () {
+    var f = strDay(($('dxy-from') || {}).value), t = strDay(($('dxy-to') || {}).value), err = $('dxy-err');
+    if (err) err.textContent = '';
+    if (f != null && t != null && f >= t) { if (err) err.textContent = '종료일은 시작일보다 뒤여야 합니다.'; return; }
+    S.from = f; S.to = t; S.period = 'CUSTOM'; render();
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(window.dxyRender, 0); });
   else setTimeout(window.dxyRender, 0);
