@@ -1300,6 +1300,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .fc-field b { color:var(--accent); font-family:var(--mono); font-weight:600; margin-left:4px; }
   .fc-input { display:flex; align-items:center; gap:6px; background:var(--bg3); border:1px solid var(--card-border); border-radius:10px; padding:8px 12px; transition:border-color .15s; }
   .fc-input:focus-within { border-color:rgba(49,130,246,0.5); }
+  .fc-amt { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .fc-amt .fc-input { flex:1 1 120px; min-width:0; }
+  .fc-amt .unit-tabs { flex-shrink:0; }
   .fc-input input { flex:1; min-width:0; background:transparent; border:none; outline:none; color:var(--text); font-family:var(--mono); font-size:15px; text-align:right; }
   .fc-input em { font-style:normal; color:var(--text3); font-size:12px; white-space:nowrap; }
   .fc-field select, .fc-date { width:100%; background:var(--bg3); border:1px solid var(--card-border); border-radius:10px; padding:9px 10px; color:var(--text); font-family:var(--font); font-size:13px; outline:none; color-scheme:dark; }
@@ -1580,13 +1583,13 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     </div></div>
     <div class="layout">
       <div class="card fc-in">
-        <label class="fc-field"><span>연봉 (세전)</span><span class="fc-input"><input type="text" inputmode="decimal" id="sal-annual" value="5,000" data-fc="sal"><em>만원</em></span></label>
+        <label class="fc-field"><span>연봉 (세전)</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="sal-annual" value="5,000" data-fc="sal" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="sal-annual" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="sal-annual" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="sal-annual" data-unit="won">원</button></span></span></label>
         <div class="fc-quick" data-target="sal-annual" data-fc="sal">
           <button type="button" data-v="3000">3천</button><button type="button" data-v="4000">4천</button><button type="button" data-v="5000">5천</button><button type="button" data-v="6000">6천</button><button type="button" data-v="8000">8천</button><button type="button" data-v="10000">1억</button>
         </div>
         <div class="fc-field"><span>퇴직금</span>
           <div class="mode-toggle fc-seg" data-name="sal-sev"><button type="button" class="mode-btn active" data-v="0">별도</button><button type="button" class="mode-btn" data-v="1">연봉에 포함 (÷13)</button></div></div>
-        <label class="fc-field"><span>월 비과세액 <small>식대 월 20만원 등</small></span><span class="fc-input"><input type="text" inputmode="numeric" id="sal-nontax" value="20" data-fc="sal"><em>만원</em></span></label>
+        <label class="fc-field"><span>월 비과세액 <small>식대 월 20만원 등</small></span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="sal-nontax" value="20" data-fc="sal" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="sal-nontax" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="sal-nontax" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="sal-nontax" data-unit="won">원</button></span></span></label>
         <div class="fc-row2">
           <label class="fc-field"><span>부양가족 수 <small>본인 포함</small></span><select id="sal-family" data-fc="sal"></select></label>
           <label class="fc-field"><span>8~20세 자녀 수</span><select id="sal-kids" data-fc="sal"></select></label>
@@ -1639,10 +1642,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <label class="fc-field"><span>입사일</span><input type="date" class="fc-date" id="sev-start" value="2016-03-02" data-fc="sev"></label>
           <label class="fc-field"><span>퇴직일 <small>마지막 근무일 다음 날</small></span><input type="date" class="fc-date" id="sev-end" value="2026-10-01" data-fc="sev"></label>
         </div>
-        <label class="fc-field"><span>퇴직 전 3개월 임금 총액 <small>기본급+수당 (세전)</small></span><span class="fc-input"><input type="text" inputmode="decimal" id="sev-wage3" value="1,500" data-fc="sev"><em>만원</em></span></label>
-        <label class="fc-field"><span>연간 상여금 <small>최근 1년</small></span><span class="fc-input"><input type="text" inputmode="decimal" id="sev-bonus" value="0" data-fc="sev"><em>만원</em></span></label>
-        <label class="fc-field"><span>연차수당 <small>최근 1년 지급분</small></span><span class="fc-input"><input type="text" inputmode="decimal" id="sev-leave" value="0" data-fc="sev"><em>만원</em></span></label>
-        <label class="fc-field"><span>월 통상임금 <small>선택 · 평균임금보다 크면 통상임금 적용</small></span><span class="fc-input"><input type="text" inputmode="decimal" id="sev-ordinary" value="" placeholder="0" data-fc="sev"><em>만원</em></span></label>
+        <label class="fc-field"><span>퇴직 전 3개월 임금 총액 <small>기본급+수당 (세전)</small></span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="sev-wage3" value="1,500" data-fc="sev" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="sev-wage3" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="sev-wage3" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="sev-wage3" data-unit="won">원</button></span></span></label>
+        <label class="fc-field"><span>연간 상여금 <small>최근 1년</small></span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="sev-bonus" value="0" data-fc="sev" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="sev-bonus" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="sev-bonus" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="sev-bonus" data-unit="won">원</button></span></span></label>
+        <label class="fc-field"><span>연차수당 <small>최근 1년 지급분</small></span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="sev-leave" value="0" data-fc="sev" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="sev-leave" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="sev-leave" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="sev-leave" data-unit="won">원</button></span></span></label>
+        <label class="fc-field"><span>월 통상임금 <small>선택 · 평균임금보다 크면 통상임금 적용</small></span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="sev-ordinary" value="" placeholder="0" data-fc="sev" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="sev-ordinary" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="sev-ordinary" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="sev-ordinary" data-unit="won">원</button></span></span></label>
         <p class="fc-note">상여금·연차수당은 퇴직 전 1년간 받은 금액의 3/12만큼 3개월 임금에 더합니다 (고용노동부 행정해석).</p>
       </div>
       <div>
@@ -1670,7 +1673,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     </div>
     <div class="layout" id="sev-dc" style="display:none;">
       <div class="card fc-in">
-        <label class="fc-field"><span>현재 연봉 (세전)</span><span class="fc-input"><input type="text" inputmode="decimal" id="dc-salary" value="5,000" data-fc="dc"><em>만원</em></span></label>
+        <label class="fc-field"><span>현재 연봉 (세전)</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="dc-salary" value="5,000" data-fc="dc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="dc-salary" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="dc-salary" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="dc-salary" data-unit="won">원</button></span></span></label>
         <label class="fc-field"><span>앞으로 근무할 기간 <b id="dc-years-v">20년</b></span><input type="range" id="dc-years" min="1" max="40" step="1" value="20" data-fc="dc"></label>
         <label class="fc-field"><span>연 임금 상승률 <b id="dc-raise-v">3.0%</b></span><input type="range" id="dc-raise" min="0" max="10" step="0.5" value="3" data-fc="dc"></label>
         <label class="fc-field"><span>DC 계좌 연 운용수익률 <b id="dc-return-v">5.0%</b></span><input type="range" id="dc-return" min="0" max="15" step="0.5" value="5" data-fc="dc"></label>
@@ -1705,7 +1708,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     </div></div>
     <div class="layout">
       <div class="card fc-in">
-        <label class="fc-field"><span>주택 가격 (시가)</span><span class="fc-input"><input type="text" inputmode="decimal" id="mtg-price" value="100,000" data-fc="mtg"><em>만원</em></span></label>
+        <label class="fc-field"><span>주택 가격 (시가)</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="mtg-price" value="100,000" data-fc="mtg" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="mtg-price" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="mtg-price" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="mtg-price" data-unit="won">원</button></span></span></label>
         <div class="fc-field"><span>주택 소재지</span>
           <div class="mode-toggle fc-seg fc-seg-col" data-name="mtg-region"><button type="button" class="mode-btn active" data-v="reg">규제지역</button><button type="button" class="mode-btn" data-v="metro">비규제 수도권</button><button type="button" class="mode-btn" data-v="local">지방</button></div>
           <small class="fc-hint">규제지역: 서울 전역 · 과천 · 광명 · 성남(분당·수정·중원) · 수원(영통·장안·팔달) · 안양 동안 · 의왕 · 하남 · 용인(수지·기흥) · 화성 동탄구 · 구리</small></div>
@@ -1715,7 +1718,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <option value="first">생애최초 주택 구입</option>
           <option value="one">1주택자 (기존 주택 6개월 내 처분 조건)</option>
           <option value="multi">다주택자 (추가 구입)</option></select></label>
-        <label class="fc-field"><span>연소득 (세전) <small>차주 본인 · 공동차주면 합산</small></span><span class="fc-input"><input type="text" inputmode="decimal" id="mtg-income" value="7,000" data-fc="mtg"><em>만원</em></span></label>
+        <label class="fc-field"><span>연소득 (세전) <small>차주 본인 · 공동차주면 합산</small></span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="mtg-income" value="7,000" data-fc="mtg" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="mtg-income" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="mtg-income" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="mtg-income" data-unit="won">원</button></span></span></label>
         <div class="fc-row2">
           <label class="fc-field"><span>대출 금리</span><span class="fc-input"><input type="text" inputmode="decimal" id="mtg-rate" value="4.0" data-fc="mtg"><em>%</em></span></label>
           <label class="fc-field"><span>만기</span><select id="mtg-years" data-fc="mtg"></select></label>
@@ -1725,9 +1728,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <div class="fc-field"><span>금융권</span>
           <div class="mode-toggle fc-seg" data-name="mtg-bank"><button type="button" class="mode-btn active" data-v="0.4">은행 (DSR 40%)</button><button type="button" class="mode-btn" data-v="0.5">2금융권 (50%)</button></div></div>
         <p class="fc-sec-title">기존 대출</p>
-        <label class="fc-field"><span>기존 주담대·기타 대출 연간 원리금</span><span class="fc-input"><input type="text" inputmode="decimal" id="mtg-exist" value="0" data-fc="mtg"><em>만원/년</em></span></label>
+        <label class="fc-field"><span>기존 주담대·기타 대출 연간 원리금</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="mtg-exist" value="0" data-fc="mtg" data-unit="man"><em>/년</em></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="mtg-exist" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="mtg-exist" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="mtg-exist" data-unit="won">원</button></span></span></label>
         <div class="fc-row2">
-          <label class="fc-field"><span>신용대출 잔액</span><span class="fc-input"><input type="text" inputmode="decimal" id="mtg-credit" value="0" data-fc="mtg"><em>만원</em></span></label>
+          <label class="fc-field"><span>신용대출 잔액</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="mtg-credit" value="0" data-fc="mtg" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="mtg-credit" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="mtg-credit" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="mtg-credit" data-unit="won">원</button></span></span></label>
           <label class="fc-field"><span>신용대출 금리</span><span class="fc-input"><input type="text" inputmode="decimal" id="mtg-credit-rate" value="5.0" data-fc="mtg"><em>%</em></span></label>
         </div>
         <p class="fc-note">신용대출은 실제 상환 방식과 관계없이 5년에 나눠 갚는 것으로 보고 DSR에 넣습니다.</p>
@@ -1772,9 +1775,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <option value="house">주택 (아파트·빌라·단독 등)</option>
           <option value="officetel">주거용 오피스텔 (전용 85㎡ 이하 · 부엌·화장실·목욕시설)</option>
           <option value="other">그 외 (토지·상가·사무실·85㎡ 초과 오피스텔 등)</option></select></label>
-        <label class="fc-field" id="brk-price-f"><span>매매 가격</span><span class="fc-input"><input type="text" inputmode="decimal" id="brk-price" value="100,000" data-fc="brk"><em>만원</em></span></label>
-        <label class="fc-field" id="brk-deposit-f" style="display:none;"><span id="brk-deposit-l">보증금</span><span class="fc-input"><input type="text" inputmode="decimal" id="brk-deposit" value="30,000" data-fc="brk"><em>만원</em></span></label>
-        <label class="fc-field" id="brk-rent-f" style="display:none;"><span>월세</span><span class="fc-input"><input type="text" inputmode="decimal" id="brk-rent" value="100" data-fc="brk"><em>만원</em></span></label>
+        <label class="fc-field" id="brk-price-f"><span>매매 가격</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="brk-price" value="100,000" data-fc="brk" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="brk-price" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="brk-price" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="brk-price" data-unit="won">원</button></span></span></label>
+        <label class="fc-field" id="brk-deposit-f" style="display:none;"><span id="brk-deposit-l">보증금</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="brk-deposit" value="30,000" data-fc="brk" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="brk-deposit" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="brk-deposit" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="brk-deposit" data-unit="won">원</button></span></span></label>
+        <label class="fc-field" id="brk-rent-f" style="display:none;"><span>월세</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="brk-rent" value="100" data-fc="brk" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="brk-rent" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="brk-rent" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="brk-rent" data-unit="won">원</button></span></span></label>
         <label class="fc-check"><input type="checkbox" id="brk-vat" checked data-fc="brk"> 부가가치세 10% 포함해서 보기 <small>(일반과세자 중개사무소)</small></label>
       </div>
       <div>
@@ -11246,7 +11249,12 @@ var FC = (function () {
   function setT(id, v) { var e = $(id); if (e) e.textContent = v; }
   function setH(id, v) { var e = $(id); if (e) e.innerHTML = v; }
   function num(id) { var e = $(id); return e ? (parseFloat(String(e.value).replace(/,/g, '')) || 0) : 0; }
-  function man(id) { return Math.round(num(id) * 1e4); }
+  var UNIT = { eok: 1e8, man: 1e4, won: 1 };
+  function man(id) { var e = $(id); return Math.round(num(id) * (UNIT[e && e.getAttribute('data-unit')] || 1e4)); }   /* 입력값 → 원 (억원·만원·원 단위 반영) */
+  function fmtIn(v, unit) {                            /* 원 금액을 단위에 맞춰 입력칸 글자로 */
+    var d = v / UNIT[unit];
+    return d ? commaFmt(unit === 'won' ? Math.round(d) : parseFloat(d.toFixed(4))) : (v === 0 ? '0' : '');
+  }
   function won(n) { return Math.round(n).toLocaleString('ko-KR') + '원'; }
   function eok(n) {                                     /* 4억 8,000만원 */
     n = Math.round(n / 1e4) * 1e4;
@@ -11478,8 +11486,19 @@ var FC = (function () {
     var q = e.target.closest && e.target.closest('.fc-quick button');
     if (q) {
       var wrap = q.parentNode, tgt = $(wrap.getAttribute('data-target'));
-      tgt.value = (+q.getAttribute('data-v')).toLocaleString('ko-KR');
+      tgt.value = fmtIn(+q.getAttribute('data-v') * 1e4, tgt.getAttribute('data-unit') || 'man');   /* 버튼 값은 만원 기준 */
       RENDER[wrap.getAttribute('data-fc')]();
+      return;
+    }
+    var u = e.target.closest && e.target.closest('.unit-btn[data-fc-unit]');
+    if (u) {                                           /* 억원·만원·원 전환: 금액은 그대로, 표시만 바꿈 */
+      var inp = $(u.getAttribute('data-fc-unit')), unit = u.getAttribute('data-unit');
+      if (!inp) return;
+      var wonV = man(inp.id), empty = inp.value === '';
+      inp.setAttribute('data-unit', unit);
+      if (!empty) inp.value = fmtIn(wonV, unit);
+      u.parentNode.querySelectorAll('.unit-btn').forEach(function (b) { b.classList.toggle('active', b === u); });
+      RENDER[inp.getAttribute('data-fc')]();
     }
   });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { window.fcRender(); }); else window.fcRender();
