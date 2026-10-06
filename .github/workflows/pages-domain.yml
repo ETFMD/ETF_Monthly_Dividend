@@ -1,0 +1,49 @@
+name: 사이트 도메인 설정·점검
+
+# CNAME 파일의 도메인을 GitHub Pages 에 연결하고, DNS·HTTPS 인증서 상태를 점검합니다.
+# 인증서가 발급되면 HTTPS 강제(Enforce HTTPS)도 켭니다. 결과는 실행 화면의 알림(annotation)으로 남습니다.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['CNAME', '.github/workflows/pages-domain.yml']
+
+permissions:
+  contents: read
+  pages: write
+
+jobs:
+  domain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: DNS·Pages 점검 및 설정
+        run: |
+          set -u
+          D=$(head -n1 CNAME | tr -d '[:space:]')
+          echo "::notice::A 레코드 $D → $(dig +short A $D | tr '\n' ' ')"
+          echo "::notice::www → $(dig +short www.$D | tr '\n' ' ')"
+          cur=$(gh api repos/$REPO/pages --jq '.cname // ""' 2>/dev/null || echo "?")
+          echo "::notice::현재 Pages 도메인: ${cur:-없음}"
+          if [ "$cur" != "$D" ]; then
+            gh api -X PUT repos/$REPO/pages -f cname="$D" && echo "::notice::Pages 도메인을 $D 로 설정"
+          fi
+          for i in $(seq 1 18); do
+            info=$(gh api repos/$REPO/pages)
+            state=$(echo "$info" | jq -r '.https_certificate.state // "none"')
+            enf=$(echo "$info" | jq -r '.https_enforced')
+            echo "인증서 상태: $state · HTTPS 강제: $enf"
+            if [ "$state" = "approved" ] || [ "$state" = "issued" ]; then
+              if [ "$enf" != "true" ]; then gh api -X PUT repos/$REPO/pages -F https_enforced=true && enf=true; fi
+              break
+            fi
+            sleep 20
+          done
+          echo "::notice::인증서 상태: $state · HTTPS 강제: $enf"
+          code=$(curl -s -o /dev/null -w '%{http_code}' "http://$D/" || true); echo "::notice::http://$D → $code"
+          code=$(curl -s -o /dev/null -w '%{http_code}' "https://$D/" || true); echo "::notice::https://$D → $code"
+          gh api repos/$REPO/pages/health --jq '.domain | "health: dns_resolves=\(.dns_resolves) is_valid=\(.is_valid) https_error=\(.https_error // "") enforces_https=\(.enforces_https)"' 2>/dev/null | sed 's/^/::notice::/' || true

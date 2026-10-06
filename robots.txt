@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://etfmd.github.io/ETF_Monthly_Dividend/sitemap.xml
+Sitemap: https://d-capitalism.com/sitemap.xml
