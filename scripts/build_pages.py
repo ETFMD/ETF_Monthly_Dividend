@@ -170,6 +170,10 @@ def main():
     urls = ''.join(f'  <url><loc>{esc(SITE + (r["path"] + "/" if r["path"] else ""))}</loc><lastmod>{today}</lastmod>'
                    f'<changefreq>{"daily" if not r["path"] else "weekly"}</changefreq><priority>{"1.0" if not r["path"] else "0.8"}</priority></url>\n'
                    for r in ALL)
+    # 탭이 아닌 독립 페이지(개인정보처리방침 등): 폴더에 index.html 이 있을 때만 sitemap 에 포함
+    for extra in ('privacy',):
+        if os.path.isfile(os.path.join(ROOT, extra, 'index.html')):
+            urls += f'  <url><loc>{esc(SITE + extra + "/")}</loc><lastmod>{today}</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>\n'
     sitemap = f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n'
     old = open(os.path.join(ROOT, 'sitemap.xml'), encoding='utf-8').read() if os.path.exists(os.path.join(ROOT, 'sitemap.xml')) else ''
     if re.sub(r'<lastmod>[^<]*</lastmod>', '', old) != re.sub(r'<lastmod>[^<]*</lastmod>', '', sitemap):
