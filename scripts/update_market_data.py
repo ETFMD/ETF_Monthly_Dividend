@@ -10,7 +10,7 @@
   · 종목 하나가 실패해도 직전에 저장된 값을 유지 → 페이지에 빈 값이 생기지 않음
   · 내용이 바뀌었을 때만 파일을 다시 씀 → 장 마감 후에는 커밋이 생기지 않음
 """
-import json, os, re, sys, time, datetime, urllib.request, urllib.parse
+import json, os, re, sys, time, gzip, datetime, urllib.request, urllib.parse
 from zoneinfo import ZoneInfo
 NY = ZoneInfo('America/New_York')
 
@@ -53,7 +53,8 @@ KST = 9 * 3600
 REALTY = os.path.join(ROOT, 'realty.json')
 REALTY_FIRST_YEAR = 2006            # 실거래가 공개 시작
 REALTY_REFRESH_DAYS = 7             # 최근 2개 연도만 주 1회 다시 받음 (지난 연도는 확정값 재사용)
-REALTY_MAX_DOWNLOADS = 8            # 한 번 실행에서 받을 최대 연도 수 (사이트 일일 한도 100회 · 실행 시간 고려)
+REALTY_MAX_DOWNLOADS = 8
+REALTY_BUDGET_SEC = 420            # 한 번 실행에서 받을 최대 연도 수 (사이트 일일 한도 100회 · 실행 시간 고려)
 
 ETF_CAGR = ['QQQ', 'SPY', 'SOXX', 'SSO', 'ROM', 'USD', 'QLD', 'TQQQ', 'TECL', 'SOXL', 'SPXL', 'UPRO']
 ETFCAGR = os.path.join(ROOT, 'etfcagr.json')
@@ -537,24 +538,27 @@ def build_etfcagr():
     save_if_changed(ETFCAGR, {'unit': 'day', 'v': ETFCAGR_VERSION, 'series': series}, old)
 
 
-def molit_apt_year(year, sido='11000', sido_nm='서울특별시'):
+def molit_apt_year(year, sido='11000', sido_nm='서울특별시', deadline=None):
     """국토교통부 실거래가 공개시스템 '조건별 자료제공' CSV (아파트 매매, 계약일 기준, 1년 단위) → 거래 목록"""
     import http.cookiejar, csv as _csv, io
     base = 'https://rt.molit.go.kr'
     op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
-    hdr = {'User-Agent': UA, 'Referer': base + '/pt/xls/xls.do?mobileAt='}
-    def call(path, data=None, extra=None, timeout=180):
+    hdr = {'User-Agent': UA, 'Accept': '*/*', 'Accept-Encoding': 'gzip', 'Referer': base + '/pt/xls/xls.do?mobileAt='}
+    def call(path, data=None, extra=None, timeout=90):
         err = None
-        for i in range(4):
+        for i in range(2):
+            if deadline and time.time() > deadline:
+                raise TimeoutError('실거래 수집 시간 예산 초과')
             try:
                 req = urllib.request.Request(base + path, data=data, headers=dict(hdr, **(extra or {})))
                 with op.open(req, timeout=timeout) as r:
-                    return r.read()
+                    b = r.read()
+                    return gzip.decompress(b) if r.headers.get('Content-Encoding') == 'gzip' else b
             except Exception as e:
                 err = e
-                time.sleep(5 * (i + 1))
+                time.sleep(3)
         raise err
-    call('/pt/xls/xls.do?mobileAt=', timeout=60)                    # 세션 쿠키
+    call('/pt/xls/xls.do?mobileAt=', timeout=30)                    # 세션 쿠키
     form = urllib.parse.urlencode({
         'srhThingNo': 'A', 'srhDelngSecd': '1', 'srhAddrGbn': '1', 'srhLfstsSecd': '1',
         'sidoNm': sido_nm, 'sggNm': '전체', 'emdNm': '전체', 'loadNm': '전체', 'areaNm': '전체', 'hsmpNm': '전체', 'mobileAt': '',
@@ -562,8 +566,8 @@ def molit_apt_year(year, sido='11000', sido_nm='서울특별시'):
         'srhEmdCd': '', 'srhRoadNm': '', 'srhLoadCd': '', 'srhHsmpCd': '', 'srhArea': '', 'srhLrArea': '',
         'srhFromAmount': '', 'srhToAmount': ''}).encode()
     form_hdr = {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
-    cnt = json.loads(call('/pt/xls/ptXlsDownDataCheck.do', form, dict(form_hdr, **{'X-Requested-With': 'XMLHttpRequest'}), 60).decode('utf-8')).get('cnt', 0)
-    raw = call('/pt/xls/ptXlsCSVDown.do', form, form_hdr, 300)
+    cnt = json.loads(call('/pt/xls/ptXlsDownDataCheck.do', form, dict(form_hdr, **{'X-Requested-With': 'XMLHttpRequest'}), 30).decode('utf-8')).get('cnt', 0)
+    raw = call('/pt/xls/ptXlsCSVDown.do', form, form_hdr, 120)
     for enc in ('cp949', 'utf-8-sig', 'utf-8'):
         try:
             text = raw.decode(enc); break
@@ -616,21 +620,34 @@ def build_realty():
     if not todo:
         print('  realty.json: 최신 — 건너뜀')
         return
+    t0 = time.time()
+    deadline = t0 + REALTY_BUDGET_SEC
+    log = []
     for y in todo[:REALTY_MAX_DOWNLOADS]:
+        if time.time() > deadline:
+            log.append(f'{y}: 시간 예산 소진 — 다음 실행'); break
+        ty = time.time()
         try:
-            rows = molit_apt_year(y)
+            rows = molit_apt_year(y, deadline=deadline)
             s, g = realty_stats(rows, '서울특별시 '), realty_stats(rows, '서울특별시 강남구 ')
             if not s:
                 raise ValueError('거래 없음')
             years[str(y)] = {'seoul': s, 'gangnam': g}
             meta[str(y)] = now.replace(microsecond=0).isoformat()
+            log.append(f"{y}: ok {len(rows)}행 {time.time() - ty:.0f}s")
+            save_if_changed(REALTY, {'source': '국토교통부 실거래가 공개시스템 (아파트 매매, 계약일 기준, 해제 거래 제외)',
+                                     'unit': '만원', 'years': dict(sorted(years.items())), 'fetched': dict(sorted(meta.items())),
+                                     'log': log}, old)
+            old = load(REALTY)
             print(f"  실거래 {y}: 서울 {s['n']:,}건 평균 {s['mean']:,}만원 · 강남구 {g['n'] if g else 0:,}건 평균 {g['mean'] if g else 0:,}만원")
         except Exception as e:
+            log.append(f'{y}: 실패 {time.time() - ty:.0f}s {type(e).__name__}: {str(e)[:120]}')
             print(f'  실거래 {y} 실패(직전값 유지): {e}')
     if len(todo) > REALTY_MAX_DOWNLOADS:
         print(f'  실거래: 남은 연도 {len(todo) - REALTY_MAX_DOWNLOADS}개는 다음 실행에서 수집')
     save_if_changed(REALTY, {'source': '국토교통부 실거래가 공개시스템 (아파트 매매, 계약일 기준, 해제 거래 제외)',
-                             'unit': '만원', 'years': dict(sorted(years.items())), 'fetched': dict(sorted(meta.items()))}, old)
+                             'unit': '만원', 'years': dict(sorted(years.items())), 'fetched': dict(sorted(meta.items())),
+                             'log': log}, old)
 
 
 def main():
@@ -669,10 +686,6 @@ def main():
         print('  feargreedchart 실패(직전값 유지):', e)
     save_if_changed(MARKET, market, old)
     build_muhan(market)
-    try:
-        build_realty()
-    except Exception as e:
-        print('  실거래가 데이터 실패(직전값 유지):', e)
     try:
         build_etfcagr()
     except Exception as e:
@@ -720,6 +733,10 @@ def main():
             else:
                 print(f'  {sym} 히스토리 부족(직전값 유지)')
         save_if_changed(HISTORY, {'unit': 'day', 'v': HIST_VERSION, 'series': series}, oldh)
+    try:
+        build_realty()
+    except Exception as e:
+        print('  실거래가 데이터 실패(직전값 유지):', e)
     print(f'완료 — 시세 {len(QUOTES) - len(fails)}/{len(QUOTES)} 성공')
     if len(fails) == len(QUOTES):
         sys.exit(1)   # 전부 실패하면 Actions에 빨간불로 표시
