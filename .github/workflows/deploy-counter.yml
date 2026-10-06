@@ -61,6 +61,7 @@ jobs:
           url=$(grep -oE 'https://[a-zA-Z0-9.-]+\.workers\.dev' deploy.log | head -n1)
           [ -n "$url" ] || { echo "workers.dev 주소를 찾지 못했습니다 — Cloudflare 대시보드에서 Workers 하위 도메인(workers.dev)을 먼저 등록하세요"; exit 1; }
           curl -fsS "$url/" && echo
+          f=$(curl -s -m 20 "$url/fear" | head -c 300); echo "::notice::공포·탐욕 /fear 응답: $f"
           printf '{"endpoint":"%s"}\n' "$url" > ../data/counter.json
       - name: 주소 저장 (바뀐 경우에만 커밋)
         if: steps.chk.outputs.skip != '1'

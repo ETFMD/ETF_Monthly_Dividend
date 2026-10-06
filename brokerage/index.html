@@ -12514,9 +12514,19 @@ async function fetchFearGreed() {
   function setT(id, v) { var el=document.getElementById(id); if(el) el.textContent=v; }
   function r0(v) { return v == null || isNaN(v) ? '\u2014' : Math.round(v); }
   try {
-    /* ① GitHub Actions가 수집한 CNN 자료  ② CNN 직접(브라우저에서 허용될 때)  ③ 대체 지표 */
-    var m = window.mdLoad ? await window.mdLoad('market.json') : null, v = m && m.fearCnn && m.fearCnn.historical ? m.fearCnn : null;
-    if (v) v = { source: 'CNN', score: v.score, prev: v.prev || {}, components: v.components || [], historical: v.historical, time: v.time };
+    /* ① 실시간: Cloudflare Worker /fear (CNN 을 대신 받아 5분 캐시)  ② GitHub Actions 가 수집한 CNN 자료
+       ③ CNN 직접(브라우저에서 허용될 때)  ④ 대체 지표 — ①과 ② 중 CNN 기준 시각이 더 최근인 쪽을 씀 */
+    var v = null, live = null;
+    try {
+      var cc = window.mdLoad ? await window.mdLoad('counter.json') : null;
+      if (cc && /^https:\/\//.test(cc.endpoint || '')) {
+        var lr = await Promise.race([fetch(cc.endpoint.replace(/\/$/, '') + '/fear', { cache: 'no-store' }), new Promise(function (_, j) { setTimeout(function () { j(new Error('timeout')); }, 7000); })]);
+        if (lr.ok) { live = await lr.json(); if (!(live && live.historical && live.historical.length && live.score != null)) live = null; }
+      }
+    } catch (e) { live = null; }
+    var m = window.mdLoad ? await window.mdLoad('market.json') : null, mc = m && m.fearCnn && m.fearCnn.historical ? m.fearCnn : null;
+    var pick = live && (!mc || Date.parse(live.time || 0) >= Date.parse(mc.time || 0)) ? live : mc;
+    if (pick) v = { source: 'CNN', score: pick.score, prev: pick.prev || {}, components: pick.components || [], historical: pick.historical, time: pick.time, live: pick === live };
     if (!v) {
       try { var cr = await Promise.race([fetch('https://production.dataviz.cnn.io/index/fearandgreed/graphdata'), new Promise(function (_, j) { setTimeout(function () { j(new Error('timeout')); }, 6000); })]);
         if (cr.ok) v = cnnFearView(await cr.json()); } catch (e) {}
@@ -12538,8 +12548,10 @@ async function fetchFearGreed() {
     drawFearGauge(score);
     renderFearComponents(v.components.map(function (x) { return { name: x.name, val: x.score }; }));
     if (v.historical.length > 0) renderFearHistory(v.historical);
+    var ts = v.time ? new Date(v.time) : null, tsTxt = '';
+    if (ts && !isNaN(ts)) { var k = new Date(ts.getTime() + 9 * 3600e3).toISOString(); tsTxt = ' · CNN 기준 ' + k.slice(0, 10) + ' ' + k.slice(11, 16) + ' (한국 시간)'; }
     setT('fear-source-note', v.source === 'CNN'
-      ? '데이터 출처: CNN Business Fear & Greed Index · 15분 간격 수집 · 투자 참고용이며 투자 권고가 아닙니다.'
+      ? '데이터 출처: CNN Business Fear & Greed Index' + tsTxt + (v.live ? ' · 5분마다 자동 갱신' : '') + ' · 투자 참고용이며 투자 권고가 아닙니다.'
       : '⚠ CNN 자료를 아직 받지 못해 대체 지표(feargreedchart.com)를 표시 중입니다 · 투자 참고용이며 투자 권고가 아닙니다.');
   } catch(e) {
     console.error('Fear&Greed \uc624\ub958:', e);
@@ -13113,6 +13125,9 @@ function switchSubTab(tab, grpId, btn) {
   if (window.fcRender) window.fcRender(tab);   /* [FC] 연봉·퇴직금·주담대·중개수수료 계산기 */
   if (tab === 'simulator') fetchKodexPrice();
   if (tab === 'fear') fetchFearGreed();
+  /* 공포·탐욕 탭이 열려 있는 동안 5분마다 자동 갱신 */
+  clearInterval(window._fearTimer); window._fearTimer = null;
+  if (tab === 'fear') window._fearTimer = setInterval(function () { if (!document.hidden) fetchFearGreed(); }, 5 * 60 * 1000);
   if (tab === 'etfcagr' && window.ecRender) window.ecRender();
   if (tab === 'muhan') requestAnimationFrame(function(){ requestAnimationFrame(function(){ if (typeof muhanInit === 'function') muhanInit(); }); });
   if (tab === 'tigerdiv')  {
