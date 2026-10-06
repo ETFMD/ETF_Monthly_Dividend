@@ -31,7 +31,9 @@ DXY_SYM = 'DX-Y.NYB'                                                    # 달러
 QUOTES  = ETF + INDEX + METAL + FX + US_ETF + [DXY_SYM]
 HIST    = INDEX + METAL + ['USDKRW=X']
 HIST_YEARS, HIST_MAX_AGE_H = 31, 20
-HIST_VERSION = 4   # 형식·출처가 바뀌면 올려서 즉시 다시 수집
+HIST_VERSION = 5   # 형식·출처가 바뀌면 올려서 즉시 다시 수집 (5: 원달러 환율 이상값 제거)
+# 야후 과거 자료의 단위 오류 걸러내기 — 원달러 주봉에 2015~2017년 0.11 같은 값이 섞여 있음 (원화 환산이 틀어짐)
+HIST_RANGE = {'USDKRW=X': (500, 3000)}
 # Yahoo는 국내 지수(특히 코스피200)의 과거 데이터가 짧거나 비어 있음 → 네이버 금융 주봉으로 앞부분을 채움
 NAVER_INDEX = {'^KS11': 'KOSPI', '^KS200': 'KPI200', '^KQ11': 'KOSDAQ'}
 # 야후가 비거나 오래된 값을 줄 때 쓰는 보조 시세 — 현재가: CNBC → 트레이딩뷰 → 구글 / 과거: CNBC 주봉
@@ -61,6 +63,13 @@ REALTY_BUDGET_SEC = 420            # 한 번 실행에서 받을 최대 연도 �
 DXY = os.path.join(ROOT, 'dxy.json')
 DXY_MAX_AGE_H = 6
 DXY_PERIOD = 'period1=31536000&period2={now}&interval=1d'                 # 1971-01-01 ~ 현재 (range=max 는 월봉이 됨)
+
+# 홈 화면 '자본주의를 숫자로' (data/home.json): 연평균 기준 자산별 비교
+#  · 한국은행 ECOS: 소비자물가지수(901Y009, 2020=100, 연), 예금은행 저축성수신 금리(121Y002 BEABAA2, 신규취급액, 연 %)
+#  · history.json 주봉(코스피·S&P500·나스닥100·금·원달러), etfcagr.json SPY 일봉+분배금(배당 재투자), realty.json 실거래가
+HOME = os.path.join(ROOT, 'home.json')
+ECOS_KEY = 'RVTLLDCO3IW1YUKQSSPJ'          # 사이트(기준금리 조회)에서 쓰는 것과 같은 공개 인증키
+HOME_ECOS_REFRESH_DAYS = 7
 
 ETF_CAGR = ['QQQ', 'SPY', 'SOXX', 'SSO', 'ROM', 'USD', 'QLD', 'TQQQ', 'TECL', 'SOXL', 'SPXL', 'UPRO']
 ETFCAGR = os.path.join(ROOT, 'etfcagr.json')
@@ -637,6 +646,114 @@ def realty_stats(rows, prefix):
     return {'n': n, 'mean': round(sum(vals) / n), 'median': round(med)}
 
 
+def ecos_series(stat, cycle, t0, t1, items):
+    """한국은행 ECOS 통계 → {시점(문자열): 값}  예) ecos_series('901Y009', 'A', 1990, 2026, '0')"""
+    url = f'https://ecos.bok.or.kr/api/StatisticSearch/{ECOS_KEY}/json/kr/1/2000/{stat}/{cycle}/{t0}/{t1}/{items}'
+    rows = ((get_json(url).get('StatisticSearch') or {}).get('row')) or []
+    out = {}
+    for r in rows:
+        try:
+            out[str(r['TIME'])] = float(r['DATA_VALUE'])
+        except (KeyError, ValueError):
+            pass
+    if not out:
+        raise ValueError(f'ECOS {stat}/{items} 자료 없음')
+    return out
+
+
+def month_avg(pts):
+    """[[일수, 값], ...] → {'YYYYMM': 월평균}"""
+    acc = {}
+    for d, v in pts:
+        t = datetime.date.fromordinal(719163 + int(d))
+        acc.setdefault(f'{t.year}{t.month:02d}', []).append(v)
+    return {m: sum(v) / len(v) for m, v in acc.items()}
+
+
+def year_from_months(mon, need=12):
+    """{'YYYYMM': 값} → {연도: 월평균들의 평균} (12개월이 다 있는 해만 — 상장·수집 첫해와 진행 중인 해 제외)"""
+    acc = {}
+    for m, v in mon.items():
+        acc.setdefault(int(m[:4]), []).append(v)
+    return {y: sum(v) / len(v) for y, v in acc.items() if len(v) >= need}
+
+
+def build_home():
+    """홈 화면용 연평균 비교 자료 → data/home.json
+    · 모든 값은 '그해 평균' — 실거래가(연평균 거래금액)·소비자물가(연평균 지수)와 같은 잣대로 맞춤
+    · 원화 환산 = 월평균 지수 × 한국은행 월평균 원/달러 환율(매매기준율) → 12개월 평균"""
+    old = load(HOME)
+    now = utc_now()
+    this_year = now.year
+    out = {'unit': {'cpi': '2020=100', 'dep': '정기예금 신규 금리(연 %)', 'won': '원 환산'}, 'years': {}}
+    # 1) ECOS (월·연 통계라 주 1회만 다시 받음)
+    ecos = old.get('ecos') or {}
+    fetched = old.get('ecosFetched')
+    stale = not fetched or (now - datetime.datetime.fromisoformat(fetched)).days >= HOME_ECOS_REFRESH_DAYS
+    if stale or not all(ecos.get(k) for k in ('cpi', 'dep', 'fxm', 'fxa')):
+        try:
+            cpi = ecos_series('901Y009', 'A', 1990, this_year, '0')                       # 소비자물가지수 총지수
+            dep = ecos_series('121Y002', 'A', 1996, this_year, 'BEABAA211')               # 예금은행 정기예금 금리(신규취급액)
+            fxa = ecos_series('731Y004', 'A', 1995, this_year, '0000001/0000100')         # 원/달러 연평균
+            fxm = ecos_series('731Y004', 'M', '199501', f'{this_year}12', '0000001/0000100')  # 원/달러 월평균
+            if not (50 < cpi.get('1995', 0) < 54 and 100 < cpi.get('2025', 0) < 130):    # 1995 ≈ 52.0, 2025 ≈ 116.6
+                raise ValueError(f"물가지수 값 이상 (1995={cpi.get('1995')}, 2025={cpi.get('2025')})")
+            if not (900 < fxa.get('2006', 0) < 1000):                                    # 2006 평균 ≈ 955.5
+                raise ValueError(f"환율 값 이상 (2006={fxa.get('2006')})")
+            ecos = {'cpi': cpi, 'dep': dep, 'fxa': fxa, 'fxm': fxm}
+            fetched = now.replace(microsecond=0).isoformat()
+            print(f'  ECOS 물가 {min(cpi)}~{max(cpi)} · 예금금리 {min(dep)}~{max(dep)} · 환율 월 {min(fxm)}~{max(fxm)}')
+        except Exception as e:
+            print('  ECOS 실패(직전값 유지):', e)
+    out['ecosFetched'] = fetched
+    out['ecos'] = ecos
+    fxm = ecos.get('fxm') or {}
+    # 2) 시장 자료 (주봉·일봉 → 월평균 → 연평균)
+    hist = (load(HISTORY).get('series') or {})
+    def won(mon):                       # 달러 월평균 × 원/달러 월평균
+        return {m: v * fxm[m] for m, v in mon.items() if m in fxm}
+    ser = {
+        'kospi':   year_from_months(month_avg(hist.get('^KS11') or [])),
+        'sp500':   year_from_months(month_avg(hist.get('^GSPC') or [])),
+        'sp500k':  year_from_months(won(month_avg(hist.get('^GSPC') or []))),
+        'ndx100k': year_from_months(won(month_avg(hist.get('^NDX') or []))),
+        'goldk':   year_from_months(won(month_avg(hist.get('GC=F') or []))),
+    }
+    # S&P 500 배당 재투자 (SPY 일봉 + 분배금: 분배락일 종가로 재투자)
+    spy = ((load(ETFCAGR).get('series') or {}).get('SPY')) or {}
+    if spy.get('c'):
+        d, days = spy['d0'], [spy['d0']]
+        for g in spy['dd']:
+            d += g
+            days.append(d)
+        dv = {}
+        for dd_, a in spy.get('div') or []:
+            dv[dd_] = dv.get(dd_, 0) + a
+        tr, prev, pts = 1.0, None, []
+        for day, px in zip(days, spy['c']):
+            if prev is not None:
+                tr *= (px + dv.get(day, 0)) / prev
+            prev = px
+            pts.append([day, tr])
+        ser['spytrk'] = year_from_months(won(month_avg(pts)))
+    re_years = (load(REALTY).get('years') or {})
+    ser['seoul'] = {int(y): v['seoul']['mean'] for y, v in re_years.items() if v.get('seoul')}
+    ser['gangnam'] = {int(y): v['gangnam']['mean'] for y, v in re_years.items() if v.get('gangnam')}
+    ser['cpi'] = {int(k): v for k, v in (ecos.get('cpi') or {}).items()}
+    ser['dep'] = {int(k): v for k, v in (ecos.get('dep') or {}).items()}
+    ser['usdkrw'] = {int(k): v for k, v in (ecos.get('fxa') or {}).items()}
+    years = sorted({y for s_ in ser.values() for y in s_ if 1995 <= y < this_year})   # 진행 중인 올해는 제외(연평균 미확정)
+    for y in years:
+        row = {k: round(v[y], 4) for k, v in ser.items() if y in v}
+        if row:
+            out['years'][str(y)] = row
+    if not out['years'] or not ser['cpi']:
+        print('  home.json: 자료 부족 — 직전값 유지')
+        return
+    out['ecos'] = {k: v for k, v in ecos.items() if k != 'fxm'} | {'fxm': fxm}
+    save_if_changed(HOME, out, old)
+
+
 def build_realty():
     old = load(REALTY)
     years = dict(old.get('years') or {})
@@ -763,6 +880,12 @@ def main():
                     except Exception as e:
                         print(f'  {sym} {name} 히스토리 실패: {e}')
             merged = merge_older(npts, ypts) if npts else ypts   # 국내 지수는 네이버 우선 · [일수, 종가]
+            if sym in HIST_RANGE:
+                lo, hi = HIST_RANGE[sym]
+                n0 = len(merged)
+                merged = [p for p in merged if lo <= p[1] <= hi]
+                if n0 != len(merged):
+                    print(f'  {sym} 범위({lo}~{hi}) 밖 값 {n0 - len(merged)}개 제외')
             if len(merged) > 50:
                 series[sym] = merged
                 start_d = datetime.date.fromordinal(719163 + merged[0][0])
@@ -775,6 +898,10 @@ def main():
         build_realty()
     except Exception as e:
         print('  실거래가 데이터 실패(직전값 유지):', e)
+    try:
+        build_home()
+    except Exception as e:
+        print('  홈 화면 데이터 실패(직전값 유지):', e)
     print(f'완료 — 시세 {len(QUOTES) - len(fails)}/{len(QUOTES)} 성공')
     if len(fails) == len(QUOTES):
         sys.exit(1)   # 전부 실패하면 Actions에 빨간불로 표시
