@@ -1350,6 +1350,13 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     .fc-kpis { grid-template-columns:1fr 1fr; }
     .fc-kpis > div:last-child { grid-column:1 / -1; }
   }
+  /* [VISITS] 맨 위 방문자 수 */
+  .visit-bar { display:flex; justify-content:flex-end; align-items:center; gap:6px; font-size:11px; color:var(--text3); margin:-22px 0 6px; min-height:16px; }
+  .visit-bar[hidden] { display:none; }
+  .visit-bar b { font-family:var(--mono); font-weight:600; color:var(--text2); }
+  .visit-dot { width:6px; height:6px; border-radius:50%; background:#22c55e; box-shadow:0 0 0 3px rgba(34,197,94,0.15); }
+  .visit-sep { opacity:.5; }
+  @media (max-width: 600px) { .visit-bar { margin:-8px 0 8px; } }
   /* [CHART-ZOOM] 확대 상태에서 처음 범위로 돌아가는 버튼 */
   .zp-reset { position:absolute; top:4px; left:4px; z-index:2; font-family:var(--font); font-size:11px; font-weight:600; color:var(--accent); background:var(--card); border:1px solid rgba(49,130,246,0.35); border-radius:6px; padding:3px 9px; cursor:pointer; }
   .zp-hint { color:var(--text3); opacity:.85; }
@@ -1360,6 +1367,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 <div class="wrap">
 
   <!-- ── 앱 탭 네비게이션 ── -->
+  <!-- ── 방문자 수 (같은 IP 하루 1회) ── [VISITS] ── -->
+  <div class="visit-bar" id="visit-bar" hidden aria-label="방문자 수">
+    <span class="visit-dot"></span><span>오늘 <b id="visit-today">—</b>명</span><span class="visit-sep">·</span><span>전체 <b id="visit-total">—</b>명</span>
+  </div>
   <!-- ── 상단 오픈카카오 배너 ── -->
   <a href="https://open.kakao.com/o/gi9XfRpi" target="_blank" rel="noopener"
     style="display:flex;align-items:center;justify-content:center;gap:14px;
@@ -7179,6 +7190,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
    [KODEX]     KODEX 200 타겟위클리 = 전역 update()/renderMonthlyTable()
    [SOL] [TIGER] [TIGERDIV] [TIGERSEMI]  각 시뮬레이터 IIFE (getVWon/setDispFromWon은 [SIM-UNIT] 위임)
    [HOME]      메인 화면 (자본주의를 숫자로 · data/home.json)
+   [VISITS]    맨 위 방문자 수 (worker/ Cloudflare Worker · data/counter.json)
    [NAV]       탭 그룹 드롭다운·switchSubTab (탭 진입 시 자동 조회 훅 포함)
    [COMPOUND] [LOAN] [CAGR] [FX] [HEALTH] [RATE]  금융 계산기
    [FC-ENGINE] [FC-UI]  2026 연봉 실수령액·퇴직금(DB/DC)·주담대 LTV·DSR·중개수수료 계산기
@@ -11502,6 +11514,36 @@ var FC = (function () {
     }
   });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { window.fcRender(); }); else window.fcRender();
+})();
+
+/* ════════════════════════════════════════
+   [VISITS] 맨 위 방문자 수 — Cloudflare Worker(worker/)가 같은 IP를 하루(한국 시간) 1번만 셈
+   · 주소는 data/counter.json (Actions '방문자 수 카운터 배포'가 저장) — 없으면 표시하지 않음
+   · 이 브라우저가 오늘 이미 센 경우에는 세지 않고 숫자만 받아 옴 (서버도 IP로 다시 한 번 중복 확인)
+════════════════════════════════════════ */
+(function () {
+  function kstDay() { return new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10); }
+  function show(d) {
+    if (!d || typeof d.today !== 'number') return;
+    document.getElementById('visit-today').textContent = d.today.toLocaleString('ko-KR');
+    document.getElementById('visit-total').textContent = d.total.toLocaleString('ko-KR');
+    document.getElementById('visit-bar').hidden = false;
+  }
+  async function run() {
+    if (!/^https?:$/.test(location.protocol) || !window.mdLoad) return;
+    var cfg = null;
+    try { cfg = await window.mdLoad('counter.json'); } catch (e) {}
+    if (!cfg || !/^https:\/\//.test(cfg.endpoint || '')) return;
+    var day = kstDay(), seen = false;
+    try { seen = localStorage.getItem('etfmd-visit-day') === day; } catch (e) {}
+    try {
+      var r = await fetch(cfg.endpoint.replace(/\/$/, '') + (seen ? '/' : '/hit'), { method: seen ? 'GET' : 'POST', mode: 'cors', cache: 'no-store' });
+      if (!r.ok) return;
+      show(await r.json());
+      if (!seen) { try { localStorage.setItem('etfmd-visit-day', day); } catch (e) {} }
+    } catch (e) {}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
 })();
 
 /* ════════════════════════════════════════

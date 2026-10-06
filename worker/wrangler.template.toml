@@ -1,0 +1,16 @@
+# GitHub Actions(deploy-counter.yml)가 이 파일로 wrangler.toml 을 만듭니다 — __D1_ID__ 는 자동으로 채워집니다
+name = "etfmd-counter"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+workers_dev = true
+
+[vars]
+ALLOWED_ORIGINS = "__ORIGINS__"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "etfmd-visitors"
+database_id = "__D1_ID__"
+
+[triggers]
+crons = ["17 18 * * *"]   # 매일 03:17 (한국 시간) 오래된 해시 정리
