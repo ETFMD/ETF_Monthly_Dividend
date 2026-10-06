@@ -1564,7 +1564,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     .fc-kpis > div:last-child { grid-column:1 / -1; }
   }
   /* [VISITS] 맨 위 방문자 수 */
-  /* [CSEL] 금융 계산기 선택 목록 — 기본 select 대신 메뉴 드롭다운과 같은 모양 (원래 select 는 숨겨 두고 값·이벤트는 그대로 사용) */
+  /* [CSEL] 선택 목록·날짜 선택 (사이트 전체) — 기본 select 대신 메뉴 드롭다운과 같은 모양 (원래 select 는 숨겨 두고 값·이벤트는 그대로 사용) */
   .cs-wrap { position:relative; display:block; }
   .cs-wrap.cs-inline { display:inline-block; }
   .cs-native { position:absolute !important; left:0; top:0; width:1px !important; height:1px !important; opacity:0 !important; pointer-events:none !important; }
@@ -1588,6 +1588,41 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .cs-opt .cs-t { flex:1; }
   .cs-opt .lang-check { opacity:0; flex-shrink:0; }
   .cs-opt.active .lang-check { opacity:1; }
+  /* 원래 칸의 클래스(.mh-sel·.kcmp-date·.fc-date·.mh-in)를 이어받는 버튼 */
+  .cs-cbtn { display:inline-flex; align-items:center; justify-content:space-between; gap:8px; cursor:pointer; text-align:left; box-sizing:border-box; }
+  .cs-wrap:not(.cs-inline) > .cs-cbtn { width:100%; }
+  .cs-cbtn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .cs-cbtn:hover, .cs-cbtn[aria-expanded="true"] { border-color:rgba(49,130,246,0.45); }
+  .cs-cbtn .cs-label { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  /* [CDATE] 날짜 선택 버튼 · 달력 */
+  .cs-btn.cd-btn { min-height:0; }
+  .cd-btn .cd-text { flex:1; min-width:0; white-space:nowrap; }
+  .cd-btn.cd-empty .cd-text { color:var(--text3); }
+  .cd-btn .cd-ico { opacity:.55; flex-shrink:0; }
+  .cd-pop { padding:10px; gap:0; }
+  .cd-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  .cd-nav { width:30px; height:30px; border:none; border-radius:8px; background:transparent; color:var(--text2); font-size:18px; line-height:1; cursor:pointer; }
+  .cd-nav:hover, .cd-nav:focus-visible { background:rgba(var(--fg-rgb),0.07); color:var(--text); outline:none; }
+  .cd-title { display:inline-flex; align-items:center; gap:6px; border:none; background:transparent; color:var(--text); font-family:var(--font); font-size:13.5px; font-weight:600; padding:6px 10px; border-radius:8px; cursor:pointer; }
+  .cd-title:hover, .cd-title:focus-visible { background:rgba(var(--fg-rgb),0.07); outline:none; }
+  .cd-title.cd-static { cursor:default; background:none; }
+  .cd-grid { display:grid; grid-template-columns:repeat(7, 1fr); gap:2px; }
+  .cd-wk span { text-align:center; font-size:11px; color:var(--text3); padding:4px 0; }
+  .cd-wk span.cd-sun { color:rgba(240,68,82,0.8); }
+  .cd-day { height:34px; border:none; border-radius:8px; background:transparent; color:var(--text2); font-family:var(--mono); font-size:12.5px; cursor:pointer; transition:background .12s, color .12s; }
+  .cd-day:hover, .cd-day:focus-visible { background:rgba(var(--fg-rgb),0.07); color:var(--text); outline:none; }
+  .cd-day.cd-sun { color:rgba(240,68,82,0.85); }
+  .cd-day.cd-out { opacity:.4; }
+  .cd-day.cd-today { box-shadow:inset 0 0 0 1px rgba(49,130,246,0.6); color:var(--text); }
+  .cd-day.cd-sel, .cd-cell.cd-sel { background:var(--accent); color:#fff; font-weight:600; box-shadow:none; }
+  .cd-day:disabled, .cd-cell:disabled { opacity:.22; cursor:default; background:none; }
+  .cd-cells { display:grid; grid-template-columns:repeat(3, 1fr); gap:4px; }
+  .cd-cell { height:40px; border:none; border-radius:8px; background:transparent; color:var(--text2); font-family:var(--font); font-size:13px; cursor:pointer; transition:background .12s, color .12s; }
+  .cd-cell:hover, .cd-cell:focus-visible { background:rgba(var(--fg-rgb),0.07); color:var(--text); outline:none; }
+  .cd-foot { display:flex; justify-content:space-between; margin-top:8px; padding-top:8px; border-top:1px solid var(--card-border); }
+  .cd-link { border:none; background:transparent; color:var(--accent); font-family:var(--font); font-size:12px; padding:6px 8px; border-radius:7px; cursor:pointer; }
+  .cd-link:hover, .cd-link:focus-visible { background:var(--accent-dim); outline:none; }
+  .cd-link:disabled { opacity:.3; cursor:default; background:none; }
   /* [I18N] 상단 줄: 방문자 수 · 언어 선택 (오른쪽 위) */
   .top-bar { display:flex; justify-content:flex-end; align-items:center; gap:12px; margin:-22px 0 8px; min-height:28px; }
   .visit-bar { display:flex; justify-content:flex-end; align-items:center; gap:6px; font-size:11px; color:var(--text3); min-height:16px; }
@@ -17144,106 +17179,258 @@ if (typeof module !== 'undefined') module.exports = MHE;
   </div>
 <script>
 /* ════════════════════════════════════════════════════════════
-   [CSEL] 금융 계산기의 선택 목록(select)을 사이트 메뉴 드롭다운과 같은 모양으로
-   · 원래 <select> 는 화면에서만 숨기고 그대로 둠 → 값 읽기·change 이벤트·기존 계산 코드는 바뀌지 않음
-   · 코드가 select.value 를 바꾸거나 옵션을 새로 채워도 버튼 글자가 자동으로 따라감
-   · 키보드: 버튼에서 ↓·Enter·Space 로 열기, ↑↓ 이동, Enter 선택, Esc 닫기
+   [CSEL] 선택 목록(select)과 [CDATE] 날짜 선택(input type=date)을 사이트 메뉴 드롭다운과 같은 모양으로 — 사이트 전체
+   · 원래 <select>·<input type=date> 는 화면에서만 숨기고 그대로 둠 → 값 읽기·input/change 이벤트·기존 계산 코드는 바뀌지 않음
+   · 코드가 value 를 바꾸거나 옵션을 새로 채워도 버튼 글자가 자동으로 따라감
+   · 나중에 화면에 새로 생기는 목록·날짜 칸(무한매수법 화면 등)도 자동으로 바꿈
+   · 키보드: 버튼에서 ↓·Enter·Space 로 열기 · 목록 ↑↓ · 달력 ←→↑↓ (하루·일주일), PageUp/PageDown (한 달) · Enter 선택 · Esc 닫기
 ════════════════════════════════════════════════════════════ */
 (function () {
-  var SCOPE = ['salary', 'severance', 'mortgage', 'brokerage', 'compound', 'fx', 'loan', 'cagr', 'health']
-    .map(function (t) { return '#page-' + t + ' select'; }).join(', ');
   var CHECK = '<svg class="lang-check" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  var menu = null, cur = null;   /* 열린 목록과 그 select */
-  var VAL = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
-  var IDX = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'selectedIndex');
+  var CAL = '<svg class="cd-ico" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
+  var SVAL = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+  var SIDX = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'selectedIndex');
+  var IVAL = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+  var T = typeof L === 'function' ? L : function (ko) { return ko; };
+  var pop = null, cur = null, kind = null, view = null;   /* 열린 창 · 대상 요소 · 'sel' | 'date' · 달력 보기 상태 */
 
   function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-  function sync(sel) {
+  function fire(el, types) { types.forEach(function (t) { el.dispatchEvent(new Event(t, { bubbles: true })); }); }
+
+  /* 원래 요소를 숨기고 그 앞에 버튼을 둠 (버튼이 앞에 있어야 <label> 을 눌렀을 때 버튼이 열림) */
+  function wrapWith(el, btn, inline) {
+    var wrap = document.createElement('span');
+    wrap.className = 'cs-wrap' + (inline ? ' cs-inline' : '');
+    var fl = el.style.flex; if (fl) { wrap.style.flex = fl; wrap.style.minWidth = '0'; }
+    el.parentNode.insertBefore(wrap, el);
+    wrap.appendChild(btn); wrap.appendChild(el);
+    el.classList.add('cs-native'); el.tabIndex = -1; el.setAttribute('aria-hidden', 'true');
+    var lab = el.closest('label'), name = el.getAttribute('aria-label') || (lab && lab.querySelector('span') ? lab.querySelector('span').textContent : '');
+    if (name) btn.setAttribute('aria-label', name.trim());
+  }
+  /* 원래 요소에 클래스(.mh-sel·.kcmp-date·.fc-date·.mh-in 등)나 인라인 스타일이 있으면 버튼이 그 모양을 그대로 이어받음 */
+  function ownLook(el) { return el.className && el.className.replace(/\bcs-native\b/, '').trim(); }
+  function makeBtn(el, extra) {
+    var b = document.createElement('button'); b.type = 'button';
+    var own = ownLook(el);
+    b.className = (own ? own + ' cs-cbtn' : 'cs-btn') + (extra ? ' ' + extra : '');
+    var st = el.getAttribute('style'); if (st) b.setAttribute('style', st.replace(/flex\s*:[^;]+;?/g, ''));
+    b.setAttribute('aria-expanded', 'false');
+    return b;
+  }
+
+  /* ─────────── 공용 펼침 창 ─────────── */
+  function place(btn, wantW) {
+    var r = btn.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight;
+    var w = Math.min(Math.max(wantW || r.width, kind === 'date' ? 288 : 180), 440, vw - 16);
+    pop.style.width = w + 'px';
+    pop.style.left = Math.max(8, Math.min(r.left, vw - w - 8)) + 'px';
+    var below = vh - r.bottom - 12, above = r.top - 12, h = Math.min(pop.scrollHeight, 360);
+    if (below >= Math.min(h, 240) || below >= above) { pop.style.top = (r.bottom + 6) + 'px'; pop.style.bottom = ''; pop.style.maxHeight = Math.max(140, Math.min(380, below)) + 'px'; }
+    else { pop.style.top = ''; pop.style.bottom = (vh - r.top + 6) + 'px'; pop.style.maxHeight = Math.max(140, Math.min(380, above)) + 'px'; }
+  }
+  function btnOf(el) { return el && (el._csBtn || el._cdBtn); }
+  function close(back) {
+    if (!cur) return;
+    var b = btnOf(cur); pop.className = 'cs-menu'; pop.innerHTML = '';
+    if (b) b.setAttribute('aria-expanded', 'false');
+    cur = null; kind = null; view = null;
+    if (back && b && document.contains(b)) b.focus();
+  }
+
+  /* ─────────── [CSEL] 선택 목록 ─────────── */
+  function syncSel(sel) {
     var b = sel._csBtn; if (!b) return;
-    var o = sel.options[IDX.get.call(sel)];
+    var o = sel.options[SIDX.get.call(sel)];
     b.querySelector('.cs-label').textContent = o ? o.text : '';
     b.disabled = !!sel.disabled;
-    if (menu && cur === sel) fill(sel);
+    if (cur === sel) fillSel(sel);
   }
-  function fill(sel) {
-    var v = VAL.get.call(sel);
-    menu.innerHTML = Array.prototype.map.call(sel.options, function (o) {
+  function fillSel(sel) {
+    var v = SVAL.get.call(sel);
+    pop.innerHTML = Array.prototype.map.call(sel.options, function (o) {
       var on = o.value === v;
       return '<button type="button" class="cs-opt' + (on ? ' active' : '') + '" role="option" aria-selected="' + on + '" data-v="' + esc(o.value) + '"' + (o.disabled ? ' disabled' : '') + '><span class="cs-t">' + esc(o.text) + '</span>' + CHECK + '</button>';
     }).join('');
   }
-  function place(btn) {
-    var r = btn.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight;
-    var w = Math.min(Math.max(r.width, 180), 440, vw - 16);
-    menu.style.width = w + 'px';
-    menu.style.left = Math.max(8, Math.min(r.left, vw - w - 8)) + 'px';
-    var below = vh - r.bottom - 12, above = r.top - 12, h = Math.min(menu.scrollHeight, 340);
-    if (below >= Math.min(h, 220) || below >= above) { menu.style.top = (r.bottom + 6) + 'px'; menu.style.bottom = ''; menu.style.maxHeight = Math.max(120, Math.min(340, below)) + 'px'; }
-    else { menu.style.top = ''; menu.style.bottom = (vh - r.top + 6) + 'px'; menu.style.maxHeight = Math.max(120, Math.min(340, above)) + 'px'; }
-  }
-  function close(back) {
-    if (!menu || !cur) return;
-    var b = cur._csBtn; menu.classList.remove('open'); b.setAttribute('aria-expanded', 'false');
-    cur = null; if (back) b.focus();
-  }
-  function open(sel, focus) {
+  function openSel(sel, focus) {
     if (cur === sel) return close();
     close();
-    cur = sel; fill(sel); menu.classList.add('open'); place(sel._csBtn);
+    cur = sel; kind = 'sel'; pop.className = 'cs-menu open'; pop.setAttribute('role', 'listbox');
+    fillSel(sel); place(sel._csBtn);
     sel._csBtn.setAttribute('aria-expanded', 'true');
-    var a = menu.querySelector('.cs-opt.active') || menu.querySelector('.cs-opt');
+    var a = pop.querySelector('.cs-opt.active') || pop.querySelector('.cs-opt');
     if (a) { a.scrollIntoView({ block: 'nearest' }); if (focus) a.focus(); }
   }
-  function pick(v) {
+  function pickSel(v) {
     var sel = cur; if (!sel) return;
     close(true);
-    if (VAL.get.call(sel) === v) return;
-    VAL.set.call(sel, v); sync(sel);
-    sel.dispatchEvent(new Event('change', { bubbles: true }));
+    if (SVAL.get.call(sel) === v) return;
+    SVAL.set.call(sel, v); syncSel(sel); fire(sel, ['change']);
   }
-  function enhance(sel) {
-    if (sel._csBtn) return;
-    var inline = !sel.closest('.fc-field') && !/width:\s*100%/.test(sel.getAttribute('style') || '');
-    var wrap = document.createElement('span'); wrap.className = 'cs-wrap' + (inline ? ' cs-inline' : '');
-    var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'cs-btn';
-    btn.setAttribute('aria-haspopup', 'listbox'); btn.setAttribute('aria-expanded', 'false');
-    var lab = sel.closest('label'), name = lab ? (lab.querySelector('span') || {}).textContent : '';
-    if (name) btn.setAttribute('aria-label', name.trim());
+  function enhanceSel(sel) {
+    if (sel._csBtn || sel.multiple || sel.size > 1 || sel.hasAttribute('data-native')) return;
+    var btn = makeBtn(sel);
+    btn.setAttribute('aria-haspopup', 'listbox');
     btn.innerHTML = '<span class="cs-label"></span><span class="cs-arrow">▼</span>';
-    sel.parentNode.insertBefore(wrap, sel);
-    wrap.appendChild(btn);            /* 버튼을 select 앞에 둬서 <label> 을 누르면 버튼(목록)이 열리게 */
-    wrap.appendChild(sel);
-    sel.classList.add('cs-native'); sel.tabIndex = -1; sel.setAttribute('aria-hidden', 'true');
+    var inline = !ownLook(sel) && !sel.closest('.fc-field') && !/width:\s*100%/.test(sel.getAttribute('style') || '');
+    wrapWith(sel, btn, inline || !!ownLook(sel));
     sel._csBtn = btn;
-    /* 코드가 값을 바꿔도 버튼 글자가 따라가도록 이 select 의 value·selectedIndex 를 감쌈 */
-    Object.defineProperty(sel, 'value', { configurable: true, get: function () { return VAL.get.call(this); }, set: function (v) { VAL.set.call(this, v); sync(this); } });
-    Object.defineProperty(sel, 'selectedIndex', { configurable: true, get: function () { return IDX.get.call(this); }, set: function (v) { IDX.set.call(this, v); sync(this); } });
-    new MutationObserver(function () { sync(sel); }).observe(sel, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled', 'selected'] });
-    sel.addEventListener('change', function () { sync(sel); });
-    btn.addEventListener('click', function (e) { e.stopPropagation(); open(sel, e.detail === 0); });
-    btn.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); open(sel, true); }
-    });
-    sync(sel);
+    Object.defineProperty(sel, 'value', { configurable: true, get: function () { return SVAL.get.call(this); }, set: function (v) { SVAL.set.call(this, v); syncSel(this); } });
+    Object.defineProperty(sel, 'selectedIndex', { configurable: true, get: function () { return SIDX.get.call(this); }, set: function (v) { SIDX.set.call(this, v); syncSel(this); } });
+    new MutationObserver(function () { syncSel(sel); }).observe(sel, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled', 'selected'] });
+    sel.addEventListener('change', function () { syncSel(sel); });
+    btn.addEventListener('click', function (e) { e.stopPropagation(); openSel(sel, e.detail === 0); });
+    btn.addEventListener('keydown', function (e) { if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); openSel(sel, true); } });
+    syncSel(sel);
+  }
+
+  /* ─────────── [CDATE] 날짜 선택 (달력) ─────────── */
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function iso(y, m, d) { return y + '-' + pad(m + 1) + '-' + pad(d); }
+  function parse(v) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); return m ? { y: +m[1], m: +m[2] - 1, d: +m[3] } : null; }
+  function todayIso() { var t = new Date(); return iso(t.getFullYear(), t.getMonth(), t.getDate()); }
+  function shown(v) { var p = parse(v); return p ? p.y + '.' + pad(p.m + 1) + '.' + pad(p.d) : ''; }
+  function ok(inp, s) { return (!inp.min || s >= inp.min) && (!inp.max || s <= inp.max); }
+  function monthOk(inp, y, m) { var a = iso(y, m, 1), z = iso(y, m, new Date(y, m + 1, 0).getDate()); return (!inp.min || z >= inp.min) && (!inp.max || a <= inp.max); }
+  function yearOk(inp, y) { return (!inp.min || y >= +inp.min.slice(0, 4)) && (!inp.max || y <= +inp.max.slice(0, 4)); }
+  var MON_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function syncDate(inp) {
+    var b = inp._cdBtn; if (!b) return;
+    var v = IVAL.get.call(inp);
+    b.querySelector('.cd-text').textContent = v ? shown(v) : T('날짜 선택', 'Select date');
+    b.classList.toggle('cd-empty', !v);
+    b.disabled = !!inp.disabled;
+  }
+  function renderCal() {
+    var inp = cur, v = IVAL.get.call(inp), y = view.y, m = view.m, h = '';
+    if (view.mode === 'day') {
+      var title = T(y + '년 ' + (m + 1) + '월', MON_EN[m] + ' ' + y);
+      h += '<div class="cd-head"><button type="button" class="cd-nav" data-a="pm" aria-label="' + T('이전 달', 'Previous month') + '">‹</button>'
+        + '<button type="button" class="cd-title" data-a="mode">' + title + ' <span class="cs-arrow">▼</span></button>'
+        + '<button type="button" class="cd-nav" data-a="nm" aria-label="' + T('다음 달', 'Next month') + '">›</button></div>';
+      h += '<div class="cd-grid cd-wk">' + T('일 월 화 수 목 금 토', 'Su Mo Tu We Th Fr Sa').split(' ').map(function (w, i) { return '<span' + (i === 0 ? ' class="cd-sun"' : '') + '>' + w + '</span>'; }).join('') + '</div><div class="cd-grid" role="grid">';
+      var first = new Date(y, m, 1), start = new Date(y, m, 1 - first.getDay()), td = todayIso();
+      for (var i = 0; i < 42; i++) {
+        var d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i), s = iso(d.getFullYear(), d.getMonth(), d.getDate());
+        var cls = 'cd-day' + (d.getMonth() !== m ? ' cd-out' : '') + (s === v ? ' cd-sel' : '') + (s === td ? ' cd-today' : '') + (d.getDay() === 0 ? ' cd-sun' : '');
+        h += '<button type="button" class="' + cls + '" data-d="' + s + '"' + (ok(inp, s) ? '' : ' disabled') + ' tabindex="-1">' + d.getDate() + '</button>';
+      }
+      h += '</div><div class="cd-foot"><button type="button" class="cd-link" data-a="today"' + (ok(inp, td) ? '' : ' disabled') + '>' + T('오늘', 'Today') + '</button>'
+        + (inp.required ? '' : '<button type="button" class="cd-link" data-a="clear">' + T('지우기', 'Clear') + '</button>') + '</div>';
+    } else if (view.mode === 'month') {
+      h += '<div class="cd-head"><button type="button" class="cd-nav" data-a="py" aria-label="' + T('이전 해', 'Previous year') + '">‹</button>'
+        + '<button type="button" class="cd-title" data-a="mode">' + T(y + '년', String(y)) + ' <span class="cs-arrow">▼</span></button>'
+        + '<button type="button" class="cd-nav" data-a="ny" aria-label="' + T('다음 해', 'Next year') + '">›</button></div><div class="cd-cells">';
+      var pv = parse(v);
+      for (var k = 0; k < 12; k++) h += '<button type="button" class="cd-cell' + (pv && pv.y === y && pv.m === k ? ' cd-sel' : '') + '" data-m="' + k + '"' + (monthOk(inp, y, k) ? '' : ' disabled') + '>' + T((k + 1) + '월', MON_EN[k]) + '</button>';
+      h += '</div>';
+    } else {
+      var b0 = y - (y % 12);
+      h += '<div class="cd-head"><button type="button" class="cd-nav" data-a="pd" aria-label="' + T('이전 12년', 'Previous 12 years') + '">‹</button>'
+        + '<span class="cd-title cd-static">' + b0 + ' – ' + (b0 + 11) + '</span>'
+        + '<button type="button" class="cd-nav" data-a="nd" aria-label="' + T('다음 12년', 'Next 12 years') + '">›</button></div><div class="cd-cells">';
+      var py = parse(v);
+      for (var j = 0; j < 12; j++) h += '<button type="button" class="cd-cell' + (py && py.y === b0 + j ? ' cd-sel' : '') + '" data-y="' + (b0 + j) + '"' + (yearOk(inp, b0 + j) ? '' : ' disabled') + '>' + (b0 + j) + '</button>';
+      h += '</div>';
+    }
+    pop.innerHTML = h;
+  }
+  function focusDay(s) {
+    var b = pop.querySelector('.cd-day[data-d="' + s + '"]:not([disabled])') || pop.querySelector('.cd-day.cd-sel') || pop.querySelector('.cd-day:not(.cd-out):not([disabled])');
+    if (b) b.focus();
+  }
+  function openDate(inp, focus) {
+    if (cur === inp) return close();
+    close();
+    var p = parse(IVAL.get.call(inp)) || parse(inp.max && todayIso() > inp.max ? inp.max : (inp.min && todayIso() < inp.min ? inp.min : todayIso()));
+    cur = inp; kind = 'date'; view = { y: p.y, m: p.m, mode: 'day' };
+    pop.className = 'cs-menu cd-pop open'; pop.setAttribute('role', 'dialog');
+    renderCal(); place(inp._cdBtn, 288);
+    inp._cdBtn.setAttribute('aria-expanded', 'true');
+    if (focus) focusDay(IVAL.get.call(inp) || todayIso());
+  }
+  function setDate(s) {
+    var inp = cur; if (!inp) return;
+    close(true);
+    if (IVAL.get.call(inp) === s) return;
+    IVAL.set.call(inp, s); syncDate(inp); fire(inp, ['input', 'change']);
+  }
+  function calAction(a) {
+    if (a === 'pm' || a === 'nm') { var d = new Date(view.y, view.m + (a === 'pm' ? -1 : 1), 1); view.y = d.getFullYear(); view.m = d.getMonth(); }
+    else if (a === 'py' || a === 'ny') view.y += a === 'py' ? -1 : 1;
+    else if (a === 'pd' || a === 'nd') view.y += a === 'pd' ? -12 : 12;
+    else if (a === 'mode') view.mode = view.mode === 'day' ? 'month' : 'year';
+    else if (a === 'today') return setDate(todayIso());
+    else if (a === 'clear') return setDate('');
+    renderCal();
+  }
+  function enhanceDate(inp) {
+    if (inp._cdBtn || inp.hasAttribute('data-native')) return;
+    var btn = makeBtn(inp, 'cd-btn');
+    btn.setAttribute('aria-haspopup', 'dialog');
+    btn.innerHTML = '<span class="cd-text"></span>' + CAL;
+    wrapWith(inp, btn, !inp.classList.contains('fc-date') && !inp.classList.contains('mh-in') && !/width:\s*100%/.test(inp.getAttribute('style') || ''));
+    inp._cdBtn = btn;
+    Object.defineProperty(inp, 'value', { configurable: true, get: function () { return IVAL.get.call(this); }, set: function (v) { IVAL.set.call(this, v); syncDate(this); } });
+    new MutationObserver(function () { syncDate(inp); }).observe(inp, { attributes: true, attributeFilter: ['disabled', 'value'] });
+    inp.addEventListener('input', function () { syncDate(inp); });
+    inp.addEventListener('change', function () { syncDate(inp); });
+    btn.addEventListener('click', function (e) { e.stopPropagation(); openDate(inp, e.detail === 0); });
+    btn.addEventListener('keydown', function (e) { if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); openDate(inp, true); } });
+    syncDate(inp);
+  }
+
+  /* ─────────── 공용: 창 안 클릭·키보드, 바깥 클릭·스크롤로 닫기, 새로 생기는 요소 자동 적용 ─────────── */
+  function scan(root) {
+    if (!root || root.nodeType !== 1) return;
+    if (root.matches('select')) enhanceSel(root); else if (root.matches('input[type="date"]')) enhanceDate(root);
+    Array.prototype.forEach.call(root.querySelectorAll('select'), enhanceSel);
+    Array.prototype.forEach.call(root.querySelectorAll('input[type="date"]'), enhanceDate);
   }
   function init() {
-    menu = document.createElement('div'); menu.className = 'cs-menu'; menu.setAttribute('role', 'listbox');
-    document.body.appendChild(menu);
-    menu.addEventListener('click', function (e) { var o = e.target.closest('.cs-opt'); if (o && !o.disabled) { e.stopPropagation(); pick(o.getAttribute('data-v')); } });
-    menu.addEventListener('keydown', function (e) {
-      var list = Array.prototype.slice.call(menu.querySelectorAll('.cs-opt:not([disabled])')), i = list.indexOf(document.activeElement);
-      if (e.key === 'ArrowDown') { e.preventDefault(); (list[i + 1] || list[0]).focus(); }
-      else if (e.key === 'ArrowUp') { e.preventDefault(); (list[i - 1] || list[list.length - 1]).focus(); }
-      else if (e.key === 'Home') { e.preventDefault(); list[0].focus(); }
-      else if (e.key === 'End') { e.preventDefault(); list[list.length - 1].focus(); }
-      else if (e.key === 'Escape') { e.preventDefault(); close(true); }
-      else if (e.key === 'Tab') close();
+    pop = document.createElement('div'); pop.className = 'cs-menu';
+    document.body.appendChild(pop);
+    pop.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var o = e.target.closest('.cs-opt'); if (o && !o.disabled && kind === 'sel') return pickSel(o.getAttribute('data-v'));
+      if (kind !== 'date') return;
+      var d = e.target.closest('.cd-day'); if (d && !d.disabled) return setDate(d.getAttribute('data-d'));
+      var mm = e.target.closest('[data-m]'); if (mm && !mm.disabled) { view.m = +mm.getAttribute('data-m'); view.mode = 'day'; return renderCal(); }
+      var yy = e.target.closest('[data-y]'); if (yy && !yy.disabled) { view.y = +yy.getAttribute('data-y'); view.mode = 'month'; return renderCal(); }
+      var a = e.target.closest('[data-a]'); if (a && !a.disabled) calAction(a.getAttribute('data-a'));
     });
-    document.addEventListener('click', function (e) { if (cur && !menu.contains(e.target)) close(); });
+    pop.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { e.preventDefault(); return close(true); }
+      if (e.key === 'Tab' && kind === 'sel') return close();
+      if (kind === 'sel') {
+        var list = Array.prototype.slice.call(pop.querySelectorAll('.cs-opt:not([disabled])')), i = list.indexOf(document.activeElement);
+        if (e.key === 'ArrowDown') { e.preventDefault(); (list[i + 1] || list[0]).focus(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); (list[i - 1] || list[list.length - 1]).focus(); }
+        else if (e.key === 'Home') { e.preventDefault(); list[0].focus(); }
+        else if (e.key === 'End') { e.preventDefault(); list[list.length - 1].focus(); }
+        return;
+      }
+      var f = document.activeElement; if (!f || !f.classList || !f.classList.contains('cd-day')) return;
+      var p = parse(f.getAttribute('data-d')), step = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }[e.key], dt;
+      if (step) dt = new Date(p.y, p.m, p.d + step);
+      else if (e.key === 'PageUp' || e.key === 'PageDown') dt = new Date(p.y, p.m + (e.key === 'PageUp' ? -1 : 1), p.d);
+      if (!dt) return;
+      e.preventDefault();
+      var s = iso(dt.getFullYear(), dt.getMonth(), dt.getDate());
+      if (dt.getMonth() !== view.m || dt.getFullYear() !== view.y) { view.y = dt.getFullYear(); view.m = dt.getMonth(); renderCal(); }
+      focusDay(s);
+    });
+    document.addEventListener('click', function (e) { if (cur && !pop.contains(e.target)) close(); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && cur) close(true); });
     window.addEventListener('resize', function () { close(); });
-    window.addEventListener('scroll', function (e) { if (cur && !menu.contains(e.target)) close(); }, true);
-    Array.prototype.forEach.call(document.querySelectorAll(SCOPE), enhance);
+    window.addEventListener('scroll', function (e) { if (cur && !pop.contains(e.target)) close(); }, true);
+    scan(document.body);
+    /* 무한매수법처럼 화면을 다시 그리는 곳: 새로 생긴 목록·날짜 칸도 바로 적용, 열려 있던 대상이 사라지면 닫기 */
+    new MutationObserver(function (ms) {
+      for (var i = 0; i < ms.length; i++) for (var j = 0; j < ms[i].addedNodes.length; j++) scan(ms[i].addedNodes[j]);
+      if (cur && !document.contains(cur)) close();
+    }).observe(document.body, { childList: true, subtree: true });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
