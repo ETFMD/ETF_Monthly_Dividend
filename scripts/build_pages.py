@@ -43,9 +43,26 @@ def og_image(r):
     return SITE + (rel if os.path.exists(os.path.join(ROOT, rel)) else 'assets/og/home.png')
 
 
+NAV_LABEL = {}   # 탭 id → 메뉴에 보이는 탭 이름 (index.html 의 드롭다운 버튼 글자에서 읽음)
+
+
+def load_nav_labels(src):
+    for m in re.finditer(r'<button class="drop-item[^"]*"\s+id="drop-([a-z0-9]+)"[^>]*>(.*?)</button>', src, re.S):
+        NAV_LABEL[m.group(1)] = re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', '', m.group(2)))).strip()
+    missing = [x['tab'] for x in ALL if not NAV_LABEL.get(x['tab'])]
+    if missing:
+        sys.exit(f'메뉴에서 탭 이름을 찾지 못했습니다: {missing}')
+
+
+def tab_title(r):
+    """브라우저 탭 제목: '디코딩 자본주의 | 탭 이름' (탭 이름은 메뉴 글자 그대로 — 메뉴를 바꾸면 제목도 따라 바뀜)"""
+    return f"{BRAND} | {NAV_LABEL[r['tab']]}"
+
+
 def head_block(r):
     url = SITE + (r['path'] + '/' if r['path'] else '')
-    title = r['title'] if not r['path'] else f"{r['title']} | {BRAND}"
+    title = tab_title(r)                                                      # <title> · 검색 결과 제목
+    share = r['title'] if not r['path'] else f"{r['title']} | {BRAND}"     # 공유 미리보기 제목 (설명형)
     ld = {
         '@context': 'https://schema.org',
         '@type': 'WebSite' if not r['path'] else 'WebApplication',
@@ -57,7 +74,7 @@ def head_block(r):
                    'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'KRW'},
                    'isPartOf': {'@type': 'WebSite', 'name': BRAND, 'url': SITE}})
     registry = [{'path': x['path'], 'tab': x['tab'], 'group': x['group'],
-                 'title': x['title'] if not x['path'] else f"{x['title']} | {BRAND}", 'desc': x['desc']} for x in ALL]
+                 'title': tab_title(x), 'share': x['title'] if not x['path'] else f"{x['title']} | {BRAND}", 'desc': x['desc']} for x in ALL]
     lines = [
         BEGIN,
         f'<base href="{"../" if r["path"] else "./"}">',
@@ -70,14 +87,14 @@ def head_block(r):
         '<meta property="og:type" content="website">',
         f'<meta property="og:site_name" content="{esc(BRAND)}">',
         '<meta property="og:locale" content="ko_KR">',
-        f'<meta property="og:title" content="{esc(title)}">',
+        f'<meta property="og:title" content="{esc(share)}">',
         f'<meta property="og:description" content="{esc(r["desc"])}">',
         f'<meta property="og:url" content="{esc(url)}">',
         f'<meta property="og:image" content="{esc(og_image(r))}">',
         '<meta property="og:image:width" content="1200">',
         '<meta property="og:image:height" content="630">',
         '<meta name="twitter:card" content="summary_large_image">',
-        f'<meta name="twitter:title" content="{esc(title)}">',
+        f'<meta name="twitter:title" content="{esc(share)}">',
         f'<meta name="twitter:description" content="{esc(r["desc"])}">',
         f'<meta name="twitter:image" content="{esc(og_image(r))}">',
         '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False) + '</script>',
@@ -128,6 +145,7 @@ def write_if_changed(path, text):
 
 def main():
     src = open(SRC, encoding='utf-8').read()
+    load_nav_labels(src)
     # 원본에 이미 들어 있는 하위 페이지 표시(앞선 빌드 결과)가 있으면 루트 기준으로 되돌린 뒤 시작
     home = with_head(src, HOME)
     write_if_changed('index.html', home)
