@@ -21,7 +21,7 @@ function page(r, home) {
   .bar{position:absolute;left:0;top:0;bottom:0;width:10px;background:linear-gradient(#3182f6,#f04452)}
   </style></head><body><div class="bar"></div><div class="wrap">
   <div class="top"><div class="logo">₩</div>${esc(cfg.brand)}${home ? '' : `<span class="chip">${esc(GROUP[r.group] || '')}</span>`}</div>
-  <h1>${esc(home ? '커버드콜 ETF 분배 시뮬레이터 · 금융 계산기' : r.short)}</h1>
+  <h1>${esc(home ? '돈은 늘고, 현금의 가치는 줄어듭니다' : r.short)}</h1>
   <p>${esc(r.desc)}</p></div></body></html>`;
 }
 (async () => {
