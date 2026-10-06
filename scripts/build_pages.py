@@ -28,6 +28,10 @@ def site_url():
 
 
 SITE = site_url()
+DESC_MAX = 80   # 네이버 서치어드바이저 권장: 설명문 80자 이내
+for _r in [CFG['home']] + CFG['routes']:
+    if len(_r['desc']) > DESC_MAX:
+        sys.exit(f"설명이 {DESC_MAX}자를 넘습니다 ({len(_r['desc'])}자): {_r.get('path') or 'home'} — scripts/routes.json 의 desc 를 줄여 주세요")
 BRAND = CFG['brand']
 HOME = dict(CFG['home'], path='')
 ROUTES = CFG['routes']
