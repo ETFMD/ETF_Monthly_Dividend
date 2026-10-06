@@ -52,6 +52,9 @@ KST = 9 * 3600
 ETF_CAGR = ['QQQ', 'SPY', 'SOXX', 'SSO', 'ROM', 'USD', 'QLD', 'TQQQ', 'TECL', 'SOXL', 'SPXL', 'UPRO']
 ETFCAGR = os.path.join(ROOT, 'etfcagr.json')
 ETFCAGR_MAX_AGE_H = 6
+ETFCAGR_VERSION = 2   # 2: 월봉 오류 수정 → 형식이 바뀌면 올려서 즉시 다시 수집
+# 야후는 range=max 로 요청하면 긴 종목을 '월봉'으로 바꿔 줌 → 항상 기간(period1~period2)을 지정해 일봉을 받음
+DAILY_ALL = 'period1=504921600&period2={now}&interval=1d&events=div'   # 1986-01-01 ~ 현재
 
 
 def utc_now():
@@ -420,7 +423,7 @@ def naver_daily(symbol, count):
 
 def yahoo_daily(sym):
     """야후 상장 이후 일봉 종가와 분배금 → ([[일수, 종가]], [[일수, 분배금]])"""
-    res = yahoo_chart(sym, 'range=max&interval=1d&events=div')
+    res = yahoo_chart(sym, DAILY_ALL.format(now=int(time.time())))
     pts = [[(t + KST) // 86400, c] for t, c in points(res, 2)]
     divs = []
     for d in ((res.get('events') or {}).get('dividends') or {}).values():
@@ -500,12 +503,14 @@ def build_etfcagr():
     if old.get('updated'):
         age_h = (utc_now() - datetime.datetime.fromisoformat(old['updated'][:-1])).total_seconds() / 3600
     series = dict(old.get('series') or {})
-    if age_h < ETFCAGR_MAX_AGE_H and set(ETF_CAGR) <= set(series) and '--etfcagr' not in sys.argv:
+    if old.get('v') != ETFCAGR_VERSION:
+        series = {}                               # 이전 형식(월봉 섞임)은 버리고 새로 수집
+    if age_h < ETFCAGR_MAX_AGE_H and old.get('v') == ETFCAGR_VERSION and set(ETF_CAGR) <= set(series) and '--etfcagr' not in sys.argv:
         print(f'  etfcagr.json: 최근 갱신({age_h:.1f}시간 전) — 건너뜀')
         return
     for sym in ETF_CAGR:
         try:
-            res = yahoo_chart(sym, 'range=max&interval=1d&events=div')
+            res = yahoo_chart(sym, DAILY_ALL.format(now=int(time.time())))
             ny = lambda t: datetime.datetime.fromtimestamp(t, NY).date().toordinal() - 719163   # 미국 거래일 날짜
             pts = {}
             for t, cl in zip(res.get('timestamp') or [], ((res.get('indicators') or {}).get('quote') or [{}])[0].get('close') or []):
@@ -514,13 +519,16 @@ def build_etfcagr():
             days = sorted(pts)
             if len(days) < 250:
                 raise ValueError(f'일봉 부족 ({len(days)}개)')
+            gaps = sorted(b - a for a, b in zip(days, days[1:]))
+            if gaps[len(gaps) // 2] > 4:                     # 거래일 간격 중앙값이 4일 초과면 일봉이 아님(주봉·월봉)
+                raise ValueError(f'일봉이 아님 (간격 중앙값 {gaps[len(gaps) // 2]}일)')
             divs = sorted([ny(int(d['date'])), round(float(d['amount']), 4)]
                           for d in ((res.get('events') or {}).get('dividends') or {}).values() if d.get('amount'))
             series[sym] = {'d0': days[0], 'dd': [b - a for a, b in zip(days, days[1:])], 'c': [pts[d] for d in days], 'div': divs}
             print(f'  CAGR {sym} {len(days)}일 (상장 {datetime.date.fromordinal(719163 + days[0])}) · 분배 {len(divs)}회')
         except Exception as e:
             print(f'  CAGR {sym} 실패(직전값 유지): {e}')
-    save_if_changed(ETFCAGR, {'unit': 'day', 'series': series}, old)
+    save_if_changed(ETFCAGR, {'unit': 'day', 'v': ETFCAGR_VERSION, 'series': series}, old)
 
 
 def main():

@@ -6568,8 +6568,11 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   function timeout(p, ms) {
     return Promise.race([p, new Promise(function (_, rej) { setTimeout(function () { rej(new Error('timeout')); }, ms); })]);
   }
-  function getJSON(url) {
-    return timeout(nativeFetch(url, { cache: 'no-cache' }), 6000)
+  /* 파일별 갱신 주기(신선도)와 다운로드 제한 시간 — 큰 파일을 불필요하게 두 번 받지 않도록 */
+  var FRESH_MS = { 'etfcagr.json': 7 * 3600e3, 'history.json': 22 * 3600e3 };   /* 기본 40분 */
+  var BIG = { 'etfcagr.json': 1, 'history.json': 1, 'compare.json': 1, 'muhan.json': 1 };
+  function getJSON(url, ms) {
+    return timeout(nativeFetch(url, { cache: 'no-cache' }), ms || 6000)
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
   }
   /* 같은 도메인 data/ → 오래됐거나 없으면 raw.githubusercontent(커밋 즉시 반영) 중 최신 사용 */
@@ -6581,11 +6584,12 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     var c = files[file];
     if (c && Date.now() - c.t < TTL) return c.p;
     var v = '?v=' + Math.floor(Date.now() / TTL);
-    var p = getJSON('data/' + file + v).catch(function () { return null; }).then(function (a) {
-      var fresh = a && a.updated && (Date.now() - Date.parse(a.updated)) < 40 * 60 * 1000;
+    var ms = BIG[file] ? 25000 : 6000;
+    var p = getJSON('data/' + file + v, ms).catch(function () { return null; }).then(function (a) {
+      var fresh = a && a.updated && (Date.now() - Date.parse(a.updated)) < (FRESH_MS[file] || 40 * 60 * 1000);
       var raw = rawURL(file);
       if (fresh || !raw) return a;
-      return getJSON(raw + v).catch(function () { return null; }).then(function (b) {
+      return getJSON(raw + v, ms).catch(function () { return null; }).then(function (b) {
         if (!b) return a;
         if (!a) return b;
         return Date.parse(b.updated) > Date.parse(a.updated) ? b : a;
@@ -7911,7 +7915,8 @@ update();
     return { days: days, px: px, tr: tr };
   }
   async function yahooSeries(tk) {
-    var r = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/' + tk + '?range=max&interval=1d&events=div');
+    /* range=max 는 긴 종목을 월봉으로 돌려주므로 기간을 지정해 일봉을 받음 */
+    var r = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/' + tk + '?period1=504921600&period2=' + Math.floor(Date.now() / 1000) + '&interval=1d&events=div');
     var j = await r.json(), res = j.chart.result[0], ts = res.timestamp || [], cl = res.indicators.quote[0].close || [];
     var m = {}, days, ev = res.events && res.events.dividends, div = [];
     ts.forEach(function (t, i) { if (cl[i] > 0) m[Math.floor((t - 4 * 3600) / 86400)] = cl[i]; });
@@ -7919,18 +7924,30 @@ update();
     if (ev) Object.keys(ev).forEach(function (k) { var e = ev[k]; if (e && e.amount > 0) div.push([Math.floor((e.date - 4 * 3600) / 86400), e.amount]); });
     return { d0: days[0], dd: days.slice(1).map(function (d, i) { return d - days[i]; }), c: days.map(function (d) { return m[d]; }), div: div };
   }
+  function isDaily(o) {                    /* 거래일 간격 중앙값 ≤ 4일 이면 일봉 */
+    if (!o || !o.c || o.c.length < 250 || !o.dd || !o.dd.length) return false;
+    var g = o.dd.slice().sort(function (a, b) { return a - b; });
+    return g[g.length >> 1] <= 4;
+  }
+  function withTimeout(p, ms) { return Promise.race([p, new Promise(function (_, rej) { setTimeout(function () { rej(new Error('timeout')); }, ms); })]); }
+  /* ① 저장 파일(etfcagr.json)로 바로 그림 → ② 빠진 종목만 야후에서 '동시에' 받아 오는 대로 다시 그림 */
   function load() {
     if (S.loading) return S.loading;
     S.loading = (async function () {
-      var out = {}, raw = null;
+      var raw = null;
       try { var j = window.mdLoad ? await window.mdLoad('etfcagr.json') : null; raw = j && j.series; if (j && j.updated) S.src = 'Yahoo Finance 일봉 (' + j.updated.slice(0, 10) + ' 갱신)'; } catch (e) {}
-      for (var i = 0; i < ETFS.length; i++) {
-        var tk = ETFS[i].tk, o = raw && raw[tk];
-        if (!o) { try { o = await yahooSeries(tk); if (!S.src) S.src = 'Yahoo Finance'; } catch (e) { o = null; } }
-        if (o && o.c && o.c.length > 20) out[tk] = expand(o);
+      var out = {}, missing = [];
+      ETFS.forEach(function (e) { var o = raw && raw[e.tk]; if (isDaily(o)) out[e.tk] = expand(o); else missing.push(e.tk); });
+      S.data = out; S.missing = missing;
+      if (missing.length) {
+        S.fetching = Promise.all(missing.map(function (tk) {
+          return withTimeout(yahooSeries(tk), 12000).then(function (o) {
+            if (isDaily(o)) { S.data[tk] = expand(o); if (!S.src) S.src = 'Yahoo Finance'; S.missing = S.missing.filter(function (x) { return x !== tk; }); render(); }
+          }).catch(function () {});
+        })).then(function () { S.fetching = null; render(); });
       }
-      if (!Object.keys(out).length) { S.loading = null; return false; }
-      S.data = out; return true;
+      if (!Object.keys(out).length && !missing.length) { S.loading = null; return false; }
+      return true;
     })();
     return S.loading;
   }
@@ -7968,12 +7985,13 @@ update();
       var on = S.on[e.tk], v = vals && vals[e.tk];
       return '<button class="ec-chip' + (on ? '' : ' off') + '" onclick="ecToggle(\'' + e.tk + '\')" title="' + esc(e.name) + '">'
         + '<span class="ec-dot" style="background:' + e.color + '"></span><b>' + e.tk + '</b><span class="ec-lev">' + e.lev + 'x</span>'
-        + '<span class="ec-val" style="color:' + e.color + '">' + (on && v ? pct(v.last) : '') + '</span></button>';
+        + '<span class="ec-val" style="color:' + e.color + '">' + (on && v ? pct(v.last) : (on && S.data && !S.data[e.tk] ? (S.fetching ? '⏳' : '자료 없음') : '')) + '</span></button>';
     }).join('');
   }
   function render() {
     if (!S.data || !window.Chart) return;
     var canvas = $('ec-chart'); if (!canvas) return;
+    if (!Object.keys(S.data).length) { renderChips(null); status(S.fetching ? '데이터를 불러오는 중…' : '데이터를 불러오지 못했습니다. 잠시 후 다시 열어 주세요.'); return; }
     var w = windowOf(), span = w[1] - w[0];
     var minDays = Math.round(Math.min(365, Math.max(20, span * 0.25)));
     var vals = {}, ds = [], anyOn = false;
@@ -8056,7 +8074,7 @@ update();
     renderInfo();
     if (S.data) { render(); return; }
     renderChips(null); status('데이터를 불러오는 중…');
-    load().then(function (ok) { if (ok) render(); else status('데이터를 불러오지 못했습니다. 잠시 후 다시 열어 주세요.'); });
+    load().then(function (ok) { if (ok) render(); else { S.data = null; status('데이터를 불러오지 못했습니다. 잠시 후 다시 열어 주세요.'); } });
   };
   window.ecToggle = function (tk) { S.on[tk] = !S.on[tk]; render(); };
   window.ecSelectAll = function (on) { ETFS.forEach(function (e) { S.on[e.tk] = on; }); render(); };
@@ -8140,7 +8158,7 @@ update();
           }
         } catch (e) {}
         try {                                          /* 대체: Yahoo 직접 */
-          var e1 = await yahooDaily(cfg.sym, 'range=max&interval=1d&events=div');
+          var e1 = await yahooDaily(cfg.sym, 'period1=1577836800&period2=' + Math.floor(Date.now() / 1000) + '&interval=1d&events=div');
           if (e1.pts.length < 5) throw new Error('ETF 일봉 없음');
           var b1 = await yahooDaily(BENCH, 'period1=' + ((e1.pts[0][0] - 10) * 86400) + '&period2=' + Math.floor(Date.now() / 1000) + '&interval=1d');
           if (b1.pts.length < 5) throw new Error('코스피 일봉 없음');
