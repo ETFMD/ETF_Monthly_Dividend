@@ -6001,23 +6001,23 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
                 <div style="display:flex;align-items:center;gap:10px;">
                   <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
                   <b style="color:var(--text);font-size:12px;">부동산</b>
-                  <span style="font-size:10px;color:var(--text3);">KB 아파트 매매가격지수 (연평균)</span>
+                  <span style="font-size:10px;color:var(--text3);" id="ms-re-hdr">국토교통부 실거래가 · 아파트 매매 평균 거래금액</span>
                 </div>
               </td>
             </tr>
             <tr class="ms-row-realty" style="border-bottom:1px solid rgba(var(--fg-rgb),0.04);">
-              <td style="padding:7px 12px 7px 28px;color:var(--text2);">서울 아파트 (1995→2025)</td>
-              <td style="padding:7px 12px;text-align:center;color:var(--text3);">21.0</td>
-              <td style="padding:7px 12px;text-align:center;color:var(--text3);">93.3</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;">+5.1%</td>
-              <td style="padding:7px 12px;text-align:center;color:var(--text3);">×4.4</td>
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);" id="ms-re-seoul-name">서울 아파트 평균 실거래가</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-re-seoul-start">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-re-seoul-end">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;" id="ms-re-seoul-cagr">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-re-seoul-mult">—</td>
             </tr>
             <tr class="ms-row-realty" style="border-bottom:1px solid rgba(var(--fg-rgb),0.06);">
-              <td style="padding:7px 12px 7px 28px;color:var(--text2);">강남구 아파트 (2003→2025)</td>
-              <td style="padding:7px 12px;text-align:center;color:var(--text3);">30.5</td>
-              <td style="padding:7px 12px;text-align:center;color:var(--text3);">90.8</td>
-              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;">+5.1%</td>
-              <td style="padding:7px 12px;text-align:center;color:var(--text3);">×3.0</td>
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);" id="ms-re-gn-name">강남구 아파트 평균 실거래가</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-re-gn-start">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-re-gn-end">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#3182f6;" id="ms-re-gn-cagr">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-re-gn-mult">—</td>
             </tr>
 
             <!-- 물가 헤더 -->
@@ -6226,27 +6226,29 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     <!-- ④ 부동산 -->
     <div class="card" style="padding:0;overflow:hidden;">
       <div class="acc-header" onclick="toggleAcc('ms-realty-body',this)" style="border:none;background:transparent;margin:0;border-radius:0;padding:14px 20px;">
-        <span class="acc-title">부동산 — 서울·강남 아파트 매매가격지수</span>
+        <span class="acc-title">부동산 — 서울·강남 아파트 평균 실거래가</span>
         <span class="acc-arrow open">▼</span>
       </div>
       <div class="acc-body default-open" id="ms-realty-body" style="padding:0">
         <div style="padding:20px 20px 24px;">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
           <div style="background:var(--bg3);border-radius:10px;padding:16px;border-top:2px solid var(--accent);">
-            <p style="margin:0 0 3px;font-size:11px;color:var(--text3);">서울 아파트 매매가격지수 CAGR (1995→2025, 30년)</p>
-            <p style="margin:0;font-family:var(--mono);font-size:26px;font-weight:700;color:var(--accent);">+5.1%</p>
-            <p style="margin:5px 0 0;font-size:11px;color:var(--text3);">21.0 → 93.3 (연평균 지수, ×4.45배)</p>
+            <p style="margin:0 0 3px;font-size:11px;color:var(--text3);" id="ms-re-seoul-title">서울 아파트 평균 실거래가 CAGR</p>
+            <p style="margin:0;font-family:var(--mono);font-size:26px;font-weight:700;color:var(--accent);" id="ms-re-seoul-big">—</p>
+            <p style="margin:5px 0 0;font-size:11px;color:var(--text3);" id="ms-re-seoul-detail">실거래 자료 불러오는 중…</p>
+            <p style="margin:3px 0 0;font-size:11px;color:var(--text3);" id="ms-re-seoul-median"></p>
           </div>
           <div style="background:var(--bg3);border-radius:10px;padding:16px;border-top:2px solid var(--accent2);">
-            <p style="margin:0 0 3px;font-size:11px;color:var(--text3);">강남구 아파트 매매가격지수 CAGR (2003→2025, 22년)</p>
-            <p style="margin:0;font-family:var(--mono);font-size:26px;font-weight:700;color:var(--accent2);">+5.1%</p>
-            <p style="margin:5px 0 0;font-size:11px;color:var(--text3);">30.5 → 90.8 (×2.98배) · 같은 기간 서울 +4.2%</p>
+            <p style="margin:0 0 3px;font-size:11px;color:var(--text3);" id="ms-re-gn-title">강남구 아파트 평균 실거래가 CAGR</p>
+            <p style="margin:0;font-family:var(--mono);font-size:26px;font-weight:700;color:var(--accent2);" id="ms-re-gn-big">—</p>
+            <p style="margin:5px 0 0;font-size:11px;color:var(--text3);" id="ms-re-gn-detail">실거래 자료 불러오는 중…</p>
+            <p style="margin:3px 0 0;font-size:11px;color:var(--text3);" id="ms-re-gn-median"></p>
           </div>
         </div>
         <div style="padding:10px 14px;background:var(--bg3);border-radius:8px;border-left:3px solid var(--accent);">
-          <p style="margin:0;font-size:11px;color:var(--text3);line-height:1.7;">
-            <b style="color:var(--text2);">출처: KB국민은행 주택가격동향 (KB부동산 데이터허브)</b> · 매매가격지수는 같은 품질의 주택 가격 변화를 추적하는 지표입니다 ·
-            강남구 지수는 2003년부터 제공되어 기간이 다릅니다 · 참고: 2025년 서울 아파트 평균 매매가격 약 13.9억원(연평균), 12월 약 15.1억원 — KB 평균가격 통계는 2008년 12월부터 있어 1995년과 직접 비교할 수 없습니다
+          <p style="margin:0;font-size:11px;color:var(--text3);line-height:1.7;" id="ms-re-note">
+            <b style="color:var(--text2);">출처: 국토교통부 실거래가 공개시스템</b> (아파트 매매 원자료, 계약일 기준, 계약 해제 거래 제외) ·
+            실거래가 공개가 2006년부터라 2006년이 시작점입니다 · 해마다 거래된 아파트의 위치·면적 구성이 달라 평균 거래금액은 같은 집의 가격 변화(매매가격지수)와 다를 수 있습니다
           </p>
         </div>
               </div>
@@ -11666,7 +11668,7 @@ function switchSubTab(tab, grpId, btn) {
     });
   }
 
-  if (tab === 'moneyspeed') { setTimeout(function(){ if (typeof fetchMSAll === 'function') fetchMSAll(); }, 400); }}
+  if (tab === 'moneyspeed') { if (typeof msRenderRealty === 'function') msRenderRealty(); setTimeout(function(){ if (typeof fetchMSAll === 'function') fetchMSAll(); }, 400); }}
 
 // 외부 클릭 시 드롭다운 닫기
 document.addEventListener('click', e => {
@@ -13100,6 +13102,36 @@ async function fetchMSIndices() {
     if (btn)  btn.disabled = false;
     if (load) load.style.display = 'none';
   }
+}
+
+/* ── 부동산: 국토교통부 실거래가 원자료로 계산한 연도별 평균 거래금액 (data/realty.json, Actions 수집) ──
+   시작 = 가장 이른 연도(2006) · 끝 = 가장 최근의 '다 끝난' 해 · CAGR = (끝 평균 / 시작 평균)^(1/연수) − 1 */
+async function msRenderRealty() {
+  var j = null;
+  try { j = window.mdLoad ? await window.mdLoad('realty.json') : null; } catch (e) {}
+  var ys = j && j.years ? Object.keys(j.years).map(Number).sort(function (a, b) { return a - b; }) : [];
+  var thisYear = new Date().getFullYear();
+  var full = ys.filter(function (y) { return y < thisYear; });
+  function setT(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
+  function eok(v) { return (v / 10000).toFixed(2) + '억'; }
+  if (full.length < 2) { setT('ms-re-seoul-detail', '실거래 자료 수집 중 (GitHub Actions)'); setT('ms-re-gn-detail', '실거래 자료 수집 중 (GitHub Actions)'); return; }
+  var y0 = full[0], y1 = full[full.length - 1], n = y1 - y0;
+  /* 중간 연도가 빠져 있으면(수집 중) 시작~끝 계산은 가능하지만 표시로 알림 */
+  var missing = []; for (var y = y0; y <= y1; y++) if (!j.years[y]) missing.push(y);
+  setT('ms-re-hdr', y0 + '→' + y1 + ' · 국토교통부 실거래가 · 아파트 매매 평균 거래금액');
+  [['seoul', 'seoul', '서울'], ['gn', 'gangnam', '강남구']].forEach(function (k) {
+    var a = j.years[y0][k[1]], b = j.years[y1][k[1]];
+    if (!a || !b) return;
+    var cg = Math.pow(b.mean / a.mean, 1 / n) - 1, cm = Math.pow(b.median / a.median, 1 / n) - 1, sg = function (v) { return (v >= 0 ? '+' : '') + (v * 100).toFixed(1) + '%'; };
+    setT('ms-re-' + k[0] + '-name', k[2] + ' 아파트 평균 실거래가 (' + y0 + '→' + y1 + ')');
+    setT('ms-re-' + k[0] + '-start', eok(a.mean)); setT('ms-re-' + k[0] + '-end', eok(b.mean));
+    setT('ms-re-' + k[0] + '-cagr', sg(cg)); setT('ms-re-' + k[0] + '-mult', '×' + (b.mean / a.mean).toFixed(1));
+    setT('ms-re-' + k[0] + '-title', k[2] + ' 아파트 평균 실거래가 CAGR (' + y0 + '→' + y1 + ', ' + n + '년)');
+    setT('ms-re-' + k[0] + '-big', sg(cg));
+    setT('ms-re-' + k[0] + '-detail', '평균 ' + eok(a.mean) + ' → ' + eok(b.mean) + ' (×' + (b.mean / a.mean).toFixed(2) + '배) · 거래 ' + a.n.toLocaleString('ko-KR') + '건 → ' + b.n.toLocaleString('ko-KR') + '건');
+    setT('ms-re-' + k[0] + '-median', '중앙값 ' + eok(a.median) + ' → ' + eok(b.median) + ' · CAGR ' + sg(cm));
+  });
+  if (missing.length) setT('ms-re-hdr', y0 + '→' + y1 + ' · 국토교통부 실거래가 (일부 연도 수집 중: ' + missing.join(', ') + ')');
 }
 
 /* 귀금속 + 주가지수 통합 갱신 */

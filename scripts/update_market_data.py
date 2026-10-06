@@ -49,6 +49,12 @@ COMPARE_PAIRS = {                                     # 분배 시뮬레이터 E
 KST = 9 * 3600
 
 # 기타 금융 자료 'ETF CAGR 비교' (data/etfcagr.json): 상장 이후 일봉 종가 + 분배금 (야후, 6시간마다)
+# 가치 속도 '부동산' (data/realty.json): 국토교통부 실거래가 공개시스템 아파트 매매 원자료(2006~)로 연도별 평균·중앙 실거래가
+REALTY = os.path.join(ROOT, 'realty.json')
+REALTY_FIRST_YEAR = 2006            # 실거래가 공개 시작
+REALTY_REFRESH_DAYS = 7             # 최근 2개 연도만 주 1회 다시 받음 (지난 연도는 확정값 재사용)
+REALTY_MAX_DOWNLOADS = 8            # 한 번 실행에서 받을 최대 연도 수 (사이트 일일 한도 100회 · 실행 시간 고려)
+
 ETF_CAGR = ['QQQ', 'SPY', 'SOXX', 'SSO', 'ROM', 'USD', 'QLD', 'TQQQ', 'TECL', 'SOXL', 'SPXL', 'UPRO']
 ETFCAGR = os.path.join(ROOT, 'etfcagr.json')
 ETFCAGR_MAX_AGE_H = 6
@@ -531,6 +537,102 @@ def build_etfcagr():
     save_if_changed(ETFCAGR, {'unit': 'day', 'v': ETFCAGR_VERSION, 'series': series}, old)
 
 
+def molit_apt_year(year, sido='11000', sido_nm='서울특별시'):
+    """국토교통부 실거래가 공개시스템 '조건별 자료제공' CSV (아파트 매매, 계약일 기준, 1년 단위) → 거래 목록"""
+    import http.cookiejar, csv as _csv, io
+    base = 'https://rt.molit.go.kr'
+    op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+    hdr = {'User-Agent': UA, 'Referer': base + '/pt/xls/xls.do?mobileAt='}
+    def call(path, data=None, extra=None, timeout=180):
+        err = None
+        for i in range(4):
+            try:
+                req = urllib.request.Request(base + path, data=data, headers=dict(hdr, **(extra or {})))
+                with op.open(req, timeout=timeout) as r:
+                    return r.read()
+            except Exception as e:
+                err = e
+                time.sleep(5 * (i + 1))
+        raise err
+    call('/pt/xls/xls.do?mobileAt=', timeout=60)                    # 세션 쿠키
+    form = urllib.parse.urlencode({
+        'srhThingNo': 'A', 'srhDelngSecd': '1', 'srhAddrGbn': '1', 'srhLfstsSecd': '1',
+        'sidoNm': sido_nm, 'sggNm': '전체', 'emdNm': '전체', 'loadNm': '전체', 'areaNm': '전체', 'hsmpNm': '전체', 'mobileAt': '',
+        'srhFromDt': f'{year}-01-01', 'srhToDt': f'{year}-12-31', 'srhNewRonSecd': '', 'srhSidoCd': sido, 'srhSggCd': '',
+        'srhEmdCd': '', 'srhRoadNm': '', 'srhLoadCd': '', 'srhHsmpCd': '', 'srhArea': '', 'srhLrArea': '',
+        'srhFromAmount': '', 'srhToAmount': ''}).encode()
+    form_hdr = {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+    cnt = json.loads(call('/pt/xls/ptXlsDownDataCheck.do', form, dict(form_hdr, **{'X-Requested-With': 'XMLHttpRequest'}), 60).decode('utf-8')).get('cnt', 0)
+    raw = call('/pt/xls/ptXlsCSVDown.do', form, form_hdr, 300)
+    for enc in ('cp949', 'utf-8-sig', 'utf-8'):
+        try:
+            text = raw.decode(enc); break
+        except UnicodeDecodeError:
+            text = None
+    if text is None:
+        raise ValueError('CSV 인코딩 해석 실패')
+    lines = text.splitlines()
+    head = next(i for i, l in enumerate(lines) if l.startswith('"NO"'))
+    rows = list(_csv.DictReader(io.StringIO('\n'.join(lines[head:]))))
+    if cnt and abs(len(rows) - cnt) > max(50, cnt * 0.01):
+        raise ValueError(f'건수 불일치 (확인 {cnt} · 받음 {len(rows)})')
+    return rows
+
+
+def realty_stats(rows, prefix):
+    """해제된 거래를 뺀 거래금액(만원)의 건수·평균·중앙값"""
+    vals = []
+    for r in rows:
+        if not r.get('시군구', '').startswith(prefix):
+            continue
+        if (r.get('해제사유발생일') or '-').strip() not in ('-', ''):
+            continue                                                  # 계약 해제된 거래 제외
+        try:
+            vals.append(int(r['거래금액(만원)'].replace(',', '').strip()))
+        except (KeyError, ValueError):
+            pass
+    if not vals:
+        return None
+    vals.sort()
+    n = len(vals)
+    med = vals[n // 2] if n % 2 else (vals[n // 2 - 1] + vals[n // 2]) / 2
+    return {'n': n, 'mean': round(sum(vals) / n), 'median': round(med)}
+
+
+def build_realty():
+    old = load(REALTY)
+    years = dict(old.get('years') or {})
+    meta = dict(old.get('fetched') or {})
+    now = utc_now()
+    this_year = now.year
+    todo = []
+    for y in range(REALTY_FIRST_YEAR, this_year + 1):
+        ys = str(y)
+        last = meta.get(ys)
+        recent = y >= this_year - 1
+        stale = last is None or (recent and (now - datetime.datetime.fromisoformat(last)).days >= REALTY_REFRESH_DAYS)
+        if ys not in years or stale:
+            todo.append(y)
+    if not todo:
+        print('  realty.json: 최신 — 건너뜀')
+        return
+    for y in todo[:REALTY_MAX_DOWNLOADS]:
+        try:
+            rows = molit_apt_year(y)
+            s, g = realty_stats(rows, '서울특별시 '), realty_stats(rows, '서울특별시 강남구 ')
+            if not s:
+                raise ValueError('거래 없음')
+            years[str(y)] = {'seoul': s, 'gangnam': g}
+            meta[str(y)] = now.replace(microsecond=0).isoformat()
+            print(f"  실거래 {y}: 서울 {s['n']:,}건 평균 {s['mean']:,}만원 · 강남구 {g['n'] if g else 0:,}건 평균 {g['mean'] if g else 0:,}만원")
+        except Exception as e:
+            print(f'  실거래 {y} 실패(직전값 유지): {e}')
+    if len(todo) > REALTY_MAX_DOWNLOADS:
+        print(f'  실거래: 남은 연도 {len(todo) - REALTY_MAX_DOWNLOADS}개는 다음 실행에서 수집')
+    save_if_changed(REALTY, {'source': '국토교통부 실거래가 공개시스템 (아파트 매매, 계약일 기준, 해제 거래 제외)',
+                             'unit': '만원', 'years': dict(sorted(years.items())), 'fetched': dict(sorted(meta.items()))}, old)
+
+
 def main():
     os.makedirs(ROOT, exist_ok=True)
     old = load(MARKET)
@@ -567,6 +669,10 @@ def main():
         print('  feargreedchart 실패(직전값 유지):', e)
     save_if_changed(MARKET, market, old)
     build_muhan(market)
+    try:
+        build_realty()
+    except Exception as e:
+        print('  실거래가 데이터 실패(직전값 유지):', e)
     try:
         build_etfcagr()
     except Exception as e:
