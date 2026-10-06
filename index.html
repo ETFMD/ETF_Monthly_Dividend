@@ -1152,6 +1152,12 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     .ec-wrap { height:320px; }
     .ec-chip { font-size:11px; padding:4px 9px 4px 7px; }
   }
+  /* [FX-UNIT] 통화 변환 억·만 단위 버튼 */
+  .fx-side { position:relative; }
+  .fx-units { display:flex; gap:6px; margin-top:8px; }
+  .fx-unit { flex:1; font-family:var(--font); font-size:12px; color:var(--text2); background:var(--bg3); border:1px solid var(--card-border); border-radius:7px; padding:6px 4px; cursor:pointer; white-space:nowrap; transition:all .15s; }
+  .fx-unit:hover { border-color:rgba(49,130,246,0.35); }
+  .fx-unit.on { color:var(--accent); background:rgba(49,130,246,0.1); border-color:rgba(49,130,246,0.45); font-weight:600; }
   /* [FX-DXY] 환율 계산기 — 달러인덱스 */
   .dxy-card { margin:0 0 20px; }
   .dxy-top { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:14px; }
@@ -4408,13 +4414,19 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <span style="font-size:11px;color:var(--text3);margin-bottom:5px;display:block;">변환 결과</span>
 
         <!-- 입력/버튼/결과 행 -->
-        <input class="comma-input" id="fx-amount" type="text" inputmode="numeric"
-          value="10,000" style="width:100%;background:var(--bg3);border:1px solid var(--card-border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:var(--mono);font-size:14px;outline:none;box-sizing:border-box;"
-          oninput="fxConvert()" onblur="fxAmtBlur()">
+        <div class="fx-side">
+          <input class="comma-input" id="fx-amount" type="text" inputmode="decimal"
+            value="10,000" style="width:100%;background:var(--bg3);border:1px solid var(--card-border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:var(--mono);font-size:14px;outline:none;box-sizing:border-box;"
+            oninput="fxConvert()" onblur="fxAmtBlur()">
+          <div class="fx-units" id="fx-in-units" role="group" aria-label="입력 금액 단위"></div>
+        </div>
         <div style="display:flex;align-items:center;justify-content:center;">
           <button onclick="fxSwap()" style="background:var(--bg3);border:1px solid var(--card-border);border-radius:8px;padding:7px 8px;color:var(--accent);cursor:pointer;font-size:16px;line-height:1;transition:all 0.15s;width:36px;height:36px;display:flex;align-items:center;justify-content:center;" title="화폐 교환">⇄</button>
         </div>
-        <div style="width:100%;background:var(--bg3);border:1px solid rgba(49,130,246,0.3);border-radius:8px;padding:9px 12px;font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:500;box-sizing:border-box;min-height:40px;display:flex;align-items:center;" id="fx-result">—</div>
+        <div class="fx-side">
+          <div style="width:100%;background:var(--bg3);border:1px solid rgba(49,130,246,0.3);border-radius:8px;padding:9px 12px;font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:500;box-sizing:border-box;min-height:40px;display:flex;align-items:center;" id="fx-result">—</div>
+          <div class="fx-units" id="fx-out-units" role="group" aria-label="변환 결과 단위"></div>
+        </div>
 
         <!-- 통화 선택 라벨 -->
         <span style="font-size:11px;color:var(--text3);margin-bottom:5px;display:block;margin-top:8px;">출발 통화</span>
@@ -6708,7 +6720,8 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       var rg = /^(\d+)(d|mo)$/.exec(y.prm.range || '5d');
       if (!rg) return null;
       var n = rg[2] === 'mo' ? +rg[1] * 22 : +rg[1];
-      if (n > q.daily.length + 2) return null;
+      /* 1개월 이하 요청은 서버가 받아 둔 최근 30일이 전부이므로 일봉이 짧아도(야후가 1개만 준 통화쌍 등) 그대로 응답 */
+      if (n > 22 && n > q.daily.length + 2) return null;
       return chartResponse(y.sym, q, q.daily.slice(-n));
     }).catch(function () { return null; });
   }
@@ -10387,6 +10400,28 @@ const FX_CURRENCIES = [
   { code:'VND', name:'베트남 동',    flag:'🇻🇳', symbol:'₫'   },
 ];
 
+/* [FX-UNIT] 통화별 단위 이름 — 억·만 버튼 라벨 (예: 억달러·만달러·달러 / 억엔·만엔·엔) */
+const FX_UNIT_NAME = { KRW:'원', USD:'달러', EUR:'유로', JPY:'엔', CNY:'위안', GBP:'파운드', HKD:'홍콩달러',
+  SGD:'싱가포르달러', AUD:'호주달러', CAD:'캐나다달러', CHF:'프랑', THB:'바트', VND:'동' };
+const FX_UNITS = [ { m:1e8, p:'억' }, { m:1e4, p:'만' }, { m:1, p:'' } ];
+let _fxInUnit = 1, _fxOutUnit = 1;     /* 입력 금액 단위 · 결과 표시 단위 */
+function fxUnitLabel(code, m) { const u = FX_UNITS.find(x => x.m === m) || FX_UNITS[2]; return u.p + (FX_UNIT_NAME[code] || code); }
+function fxRenderUnits(fromCode, toCode) {
+  [['fx-in-units', fromCode, _fxInUnit, 'in'], ['fx-out-units', toCode, _fxOutUnit, 'out']].forEach(([id, code, cur, side]) => {
+    const box = document.getElementById(id);
+    if (!box) return;
+    box.innerHTML = FX_UNITS.map(u => '<button type="button" class="fx-unit' + (u.m === cur ? ' on' : '') + '" aria-pressed="' + (u.m === cur) + '" onclick="fxSetUnit(\'' + side + '\',' + u.m + ')">' + u.p + (FX_UNIT_NAME[code] || code) + '</button>').join('');
+  });
+}
+function fxSetUnit(side, m) { if (side === 'in') _fxInUnit = m; else _fxOutUnit = m; fxConvert(); }
+/* 단위로 나눈 값 표시: 1(기본)은 기존 형식, 만·억은 소수 4자리까지 + 단위 이름 */
+function fxFmtUnit(v, code, m) {
+  if (m === 1) return code === 'KRW' ? fxFmt(v, code) : fxFmt(v, code) + ' ' + (FX_UNIT_NAME[code] || code);
+  const x = v / m, ax = Math.abs(x);
+  const d = ax >= 1000 ? 2 : 4;
+  return x.toLocaleString('ko-KR', { maximumFractionDigits: d }) + fxUnitLabel(code, m);
+}
+
 /* 환율 캐시 (KRW 기준, 1 외화 = N원) */
 const _fxRates = {};
 let _fxFetching = false;
@@ -10548,7 +10583,9 @@ function fxConvert() {
 
   const fromCode = fromSel.value;
   const toCode   = toSel.value;
-  const rawAmt   = parseFloat(amtEl.value.replace(/,/g,'')) || 0;
+  const numAmt   = parseFloat(amtEl.value.replace(/,/g,'')) || 0;
+  const rawAmt   = numAmt * _fxInUnit;            /* [FX-UNIT] 억·만 단위 반영한 실제 금액 */
+  fxRenderUnits(fromCode, toCode);
 
   /* KRW 기준으로 변환 */
   function toKRW(amt, code) {
@@ -10567,13 +10604,16 @@ function fxConvert() {
 
   const resultEl    = document.getElementById('fx-result');
   const rateLabelEl = document.getElementById('fx-rate-label');
-  if (resultEl) resultEl.textContent = result !== null ? fxFmt(result, toCode) : '환율 정보 없음';
+  if (resultEl) resultEl.textContent = result !== null ? fxFmtUnit(result, toCode, _fxOutUnit) : '환율 정보 없음';
 
   /* 적용 환율 표시 */
   if (rateLabelEl) {
     if (result !== null && rawAmt > 0) {
       const r = result / rawAmt;
-      rateLabelEl.textContent = '적용 환율: 1 ' + fromCode + ' = ' + fxFmt(r * (rawAmt / rawAmt), toCode);
+      let t = '적용 환율: 1 ' + fromCode + ' = ' + fxFmt(r, toCode);
+      if (_fxInUnit !== 1 || _fxOutUnit !== 1)          /* 단위를 쓰면 실제 금액도 함께 */
+        t += ' · ' + rawAmt.toLocaleString('ko-KR', { maximumFractionDigits: 2 }) + ' ' + fromCode + ' → ' + result.toLocaleString('ko-KR', { maximumFractionDigits: 2 }) + ' ' + toCode;
+      rateLabelEl.textContent = t;
     } else {
       rateLabelEl.textContent = '환율 정보 없음';
     }
@@ -10587,7 +10627,7 @@ function renderFxMulti(amt, fromCode) {
   const grid  = document.getElementById('fx-multi-grid');
   const title = document.getElementById('fx-multi-title');
   if (!grid) return;
-  if (title) title.textContent = amt.toLocaleString() + ' ' + fromCode + ' 기준 주요 통화 환산';
+  if (title) title.textContent = (amt / _fxInUnit).toLocaleString('ko-KR', { maximumFractionDigits: 4 }) + fxUnitLabel(fromCode, _fxInUnit) + ' (' + fromCode + ') 기준 주요 통화 환산';
 
   function toKRW(a, code) { return code==='KRW'?a:(_fxRates[code]?a*_fxRates[code]:null); }
   function fromKRW(krw, code) { return code==='KRW'?krw:(_fxRates[code]?krw/_fxRates[code]:null); }
@@ -10626,6 +10666,7 @@ function fxSwap() {
   const tmp = from.value;
   from.value = to.value;
   to.value   = tmp;
+  const u = _fxInUnit; _fxInUnit = _fxOutUnit; _fxOutUnit = u;   /* 단위도 함께 교환 */
   fxConvert();
 }
 
