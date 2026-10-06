@@ -32,7 +32,12 @@ DESC_MAX = 80   # 네이버 서치어드바이저 권장: 설명문 80자 이내
 for _r in [CFG['home']] + CFG['routes']:
     if len(_r['desc']) > DESC_MAX:
         sys.exit(f"설명이 {DESC_MAX}자를 넘습니다 ({len(_r['desc'])}자): {_r.get('path') or 'home'} — scripts/routes.json 의 desc 를 줄여 주세요")
+    if 'en' in _r and len(_r['en']['desc']) > 160:
+        sys.exit(f"영어 설명이 160자를 넘습니다: {_r.get('path')}")
 BRAND = CFG['brand']
+BRAND_EN = CFG.get('brand_en', 'Decoding Capitalism')
+EN_FILE = os.path.join(ROOT, 'scripts', 'i18n', 'en.json')
+EN = json.load(open(EN_FILE, encoding='utf-8')) if os.path.exists(EN_FILE) else {'text': {}, 'guides': {}}
 HOME = dict(CFG['home'], path='')
 ROUTES = CFG['routes']
 ALL = [HOME] + ROUTES
@@ -63,43 +68,64 @@ def tab_title(r):
     return f"{BRAND} | {NAV_LABEL[r['tab']]}"
 
 
-def head_block(r):
-    url = SITE + (r['path'] + '/' if r['path'] else '')
-    title = tab_title(r)                                                      # <title> · 검색 결과 제목
-    share = r['title'] if not r['path'] else f"{r['title']} | {BRAND}"     # 공유 미리보기 제목 (설명형)
+def url_of(r, lang='ko'):
+    return SITE + ('en/' if lang == 'en' else '') + (r['path'] + '/' if r['path'] else '')
+
+
+def head_block(r, lang='ko'):
+    en = lang == 'en'
+    url = url_of(r, lang)
+    if en:
+        title = f"{BRAND_EN} | {r['en']['short']}"
+        share, desc = r['en']['title'], r['en']['desc']
+    else:
+        title = tab_title(r)                                                      # <title> · 검색 결과 제목
+        share = r['title'] if not r['path'] else f"{r['title']} | {BRAND}"     # 공유 미리보기 제목 (설명형)
+        desc = r['desc']
     ld = {
         '@context': 'https://schema.org',
         '@type': 'WebSite' if not r['path'] else 'WebApplication',
-        'name': BRAND if not r['path'] else r['short'],
-        'url': url, 'description': r['desc'], 'inLanguage': 'ko-KR',
+        'name': (BRAND_EN if en else BRAND) if not r['path'] else (r['en']['short'] if en else r['short']),
+        'url': url, 'description': desc, 'inLanguage': 'en' if en else 'ko-KR',
     }
     if r['path']:
         ld.update({'applicationCategory': 'FinanceApplication', 'operatingSystem': 'Web',
                    'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'KRW'},
-                   'isPartOf': {'@type': 'WebSite', 'name': BRAND, 'url': SITE}})
-    registry = [{'path': x['path'], 'tab': x['tab'], 'group': x['group'],
-                 'title': tab_title(x), 'share': x['title'] if not x['path'] else f"{x['title']} | {BRAND}", 'desc': x['desc']} for x in ALL]
+                   'isPartOf': {'@type': 'WebSite', 'name': BRAND_EN if en else BRAND, 'url': SITE}})
+    registry = []
+    for x in ALL:
+        e = {'path': x['path'], 'tab': x['tab'], 'group': x['group'],
+             'title': tab_title(x), 'share': x['title'] if not x['path'] else f"{x['title']} | {BRAND}", 'desc': x['desc']}
+        if 'en' in x:
+            e.update({'en': True, 'enTitle': f"{BRAND_EN} | {x['en']['short']}", 'enDesc': x['en']['desc']})
+        registry.append(e)
     lines = [
         BEGIN,
-        f'<base href="{"../" if r["path"] else "./"}">',
+        f'<base href="{("../../" if en else "../") if r["path"] else "./"}">',
         # 주소가 pushState 로 바뀌어도 data/ 등 상대 경로가 사이트 루트를 가리키도록 base 를 절대 주소로 고정
         '<script>(function(){var b=document.querySelector("base");if(b)b.setAttribute("href",b.href);})();</script>',
         f'<title>{esc(title)}</title>',
-        f'<meta name="description" content="{esc(r["desc"])}">',
+        f'<meta name="description" content="{esc(desc)}">',
         f'<link rel="canonical" href="{esc(url)}">',
+    ]
+    if 'en' in r:   # 한국어·영어 두 판이 있는 도구: 검색엔진에 서로의 언어판을 알려 줌
+        lines += [f'<link rel="alternate" hreflang="ko" href="{esc(url_of(r))}">',
+                  f'<link rel="alternate" hreflang="en" href="{esc(url_of(r, "en"))}">',
+                  f'<link rel="alternate" hreflang="x-default" href="{esc(url_of(r))}">']
+    lines += [
         f'<meta name="etfmd-route" content="{esc(r["path"])}">',
         '<meta property="og:type" content="website">',
-        f'<meta property="og:site_name" content="{esc(BRAND)}">',
-        '<meta property="og:locale" content="ko_KR">',
+        f'<meta property="og:site_name" content="{esc(BRAND_EN if en else BRAND)}">',
+        f'<meta property="og:locale" content="{"en_US" if en else "ko_KR"}">',
         f'<meta property="og:title" content="{esc(share)}">',
-        f'<meta property="og:description" content="{esc(r["desc"])}">',
+        f'<meta property="og:description" content="{esc(desc)}">',
         f'<meta property="og:url" content="{esc(url)}">',
         f'<meta property="og:image" content="{esc(og_image(r))}">',
         '<meta property="og:image:width" content="1200">',
         '<meta property="og:image:height" content="630">',
         '<meta name="twitter:card" content="summary_large_image">',
         f'<meta name="twitter:title" content="{esc(share)}">',
-        f'<meta name="twitter:description" content="{esc(r["desc"])}">',
+        f'<meta name="twitter:description" content="{esc(desc)}">',
         f'<meta name="twitter:image" content="{esc(og_image(r))}">',
         '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False) + '</script>',
         '<script id="etfmd-routes" type="application/json">' + json.dumps(registry, ensure_ascii=False).replace('</', '<\\/') + '</script>',
@@ -108,8 +134,8 @@ def head_block(r):
     return '\n'.join(lines)
 
 
-def with_head(src, r):
-    block = head_block(r)
+def with_head(src, r, lang='ko'):
+    block = head_block(r, lang)
     if BEGIN in src:
         return re.sub(re.escape(BEGIN) + r'.*?' + re.escape(END), lambda m: block, src, count=1, flags=re.S)
     # 처음 한 번: 기존 <title> 을 SEO 구간으로 바꿈
@@ -132,6 +158,67 @@ def activate(src, r):
     out, n = re.subn(rf'class="drop-item"(\s+)id="drop-{tab}"', rf'class="drop-item active"\1id="drop-{tab}"', out, count=1)
     if n != 1:
         sys.exit(f'drop-{tab} 버튼을 찾지 못했습니다')
+    return out
+
+
+# ───────────── 영어 페이지 (/en/<도구>/) ─────────────
+TOP_A, TOP_B = '<div class="wrap">', '<!-- ── 홈 (메인 화면) ── [HOME] ── -->'
+BOT_A = '<!-- ── 하단 후원/문의 배너 ── -->'
+KO = re.compile(r'[가-힣]')
+_missing = set()
+
+
+def tr_text(t):
+    core = t.strip()
+    if not core or not KO.search(core):
+        return t
+    if core in EN['text']:
+        i = t.index(core)
+        return t[:i] + EN['text'][core] + t[i + len(core):]
+    _missing.add(core)
+    return t
+
+
+def translate_html(frag):
+    """스크립트·스타일·주석을 뺀 나머지의 글자 덩어리와 일부 속성(title·aria-label·placeholder)만 바꿈"""
+    parts = re.split(r'(<script\b.*?</script>|<style\b.*?</style>|<!--.*?-->)', frag, flags=re.S)
+    for i in range(0, len(parts), 2):
+        seg = re.sub(r'>([^<>]+)<', lambda m: '>' + tr_text(m.group(1)) + '<', parts[i])
+        seg = re.sub(r'((?:title|aria-label|placeholder)=")([^"]*)(")', lambda m: m.group(1) + tr_text(m.group(2)) + m.group(3), seg)
+        parts[i] = seg
+    return ''.join(parts)
+
+
+def section_span(src, tab):
+    """page-<tab> 의 여는 태그부터 짝이 맞는 닫는 </div> 까지 (시작, 끝) 위치"""
+    m = re.search(r'<div class="app-page[^"]*" id="page-%s">' % tab, src)
+    if not m:
+        sys.exit(f'page-{tab} 을 찾지 못했습니다')
+    i, depth = m.end(), 1
+    for t in re.finditer(r'<div\b|</div>', src[i:]):
+        depth += 1 if t.group(0) == '<div' else -1
+        if depth == 0:
+            return m.start(), i + t.end()
+    sys.exit(f'page-{tab} 닫는 태그를 찾지 못했습니다')
+
+
+def english_page(html):
+    out = html.replace('<html lang="ko">', '<html lang="en">', 1)
+    # 영어판이 있는 도구 화면: 설명글은 영어판으로 통째로, 나머지 글자는 사전으로
+    for x in ROUTES:
+        if 'en' not in x:
+            continue
+        a, b = section_span(out, x['tab'])
+        sec = out[a:b]
+        g = EN['guides'].get(x['path'])
+        if g:
+            sec, n = re.subn(r'<!-- \[GUIDE:%s\].*?<!-- \[/GUIDE:%s\] -->\n' % (x['tab'], x['tab']), lambda m: g, sec, count=1, flags=re.S)
+        out = out[:a] + translate_html(sec) + out[b:]
+    # 상단(방문자 수·메뉴)과 하단(후원·푸터·드롭다운 메뉴)
+    a, b = out.index(TOP_A), out.index(TOP_B)
+    out = out[:a] + translate_html(out[a:b]) + out[b:]
+    a, b = out.index(BOT_A), out.index('</body>')
+    out = out[:a] + translate_html(out[a:b]) + out[b:]
     return out
 
 
@@ -159,6 +246,8 @@ def main():
             sys.exit(f"경로 오류: {r['path']}")
         paths.add(r['path'])
         write_if_changed(f"{r['path']}/index.html", activate(with_head(home, r), r))
+        if 'en' in r:
+            write_if_changed(f"en/{r['path']}/index.html", english_page(activate(with_head(home, r, 'en'), r)))
     # 예전 빌드에 있었으나 routes.json 에서 빠진 경로 정리
     marker = '<meta name="etfmd-route" content="'
     for d in sorted(os.listdir(ROOT)):
@@ -166,10 +255,24 @@ def main():
         if d not in paths and os.path.isfile(f) and marker in open(f, encoding='utf-8').read(8192 * 4):
             os.remove(f)
             print('  삭제', f'{d}/index.html')
+    en_paths = {r['path'] for r in ROUTES if 'en' in r}
+    if os.path.isdir(os.path.join(ROOT, 'en')):
+        for d in sorted(os.listdir(os.path.join(ROOT, 'en'))):
+            f = os.path.join(ROOT, 'en', d, 'index.html')
+            if d not in en_paths and os.path.isfile(f):
+                os.remove(f)
+                print('  삭제', f'en/{d}/index.html')
+    if _missing:
+        print(f'  ※ 영어 번역이 없는 문구 {len(_missing)}개 (자동 번역으로 보임 — scripts/i18n/make_en.py 에 추가):')
+        for t in sorted(_missing)[:40]:
+            print('     ·', t[:70])
     today = datetime.date.today().isoformat()
     urls = ''.join(f'  <url><loc>{esc(SITE + (r["path"] + "/" if r["path"] else ""))}</loc><lastmod>{today}</lastmod>'
                    f'<changefreq>{"daily" if not r["path"] else "weekly"}</changefreq><priority>{"1.0" if not r["path"] else "0.8"}</priority></url>\n'
                    for r in ALL)
+    for r in ROUTES:   # 영어판 페이지
+        if 'en' in r:
+            urls += f'  <url><loc>{esc(url_of(r, "en"))}</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>\n'
     # 탭이 아닌 독립 페이지(개인정보처리방침 등): 폴더에 index.html 이 있을 때만 sitemap 에 포함
     for extra in ('privacy',):
         if os.path.isfile(os.path.join(ROOT, extra, 'index.html')):
@@ -186,7 +289,7 @@ def main():
 <body style="font-family:sans-serif;background:#111;color:#ddd;text-align:center;padding:60px 16px;">
 <p>페이지를 찾을 수 없습니다. <a href="{esc(SITE)}" style="color:#3182f6;">{esc(BRAND)} 홈으로 이동</a></p></body></html>
 ''')
-    print(f'완료 — 주소 {len(ALL)}개 · {SITE}')
+    print(f'완료 — 주소 {len(ALL)}개 + 영어 {sum(1 for r in ROUTES if "en" in r)}개 · {SITE}')
 
 
 if __name__ == '__main__':

@@ -36,3 +36,13 @@ IP 원문은 저장하지 않고, 하루 단위로 바뀌는 해시만 중복 �
 4. GitHub 저장소 **Settings → Secrets and variables → Actions → New repository secret** 에
    `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` 두 개 등록.
 5. **Actions → 방문자 수 카운터 배포 → Run workflow**. 데이터베이스 생성·Worker 배포·`data/counter.json` 저장까지 자동으로 끝나면 몇 분 안에 사이트 맨 위에 방문자 수가 나타납니다.
+
+## 언어 선택 (한국어 · English · 日本語 · 简体中文 · 繁體中文)
+
+- 화면 오른쪽 위 언어 선택. 처음 방문하면 접속 국가로 기본 언어를 정함 (Worker `GET /geo` → KR 한국어, JP 일본어, CN·SG 간체, TW·HK·MO 번체, 그 밖 영어). 직접 고르면 그 선택을 기억 (`localStorage 'site-lang'`), 주소에 `?lang=ja` 를 붙여도 됨. 검색엔진 봇에는 항상 원문.
+- **직접 번역한 영어 페이지** `/en/<도구>/`: `scripts/routes.json` 에서 `en` 항목이 있는 도구 (S&P 500·나스닥·나스닥 100·다우·SOX·DJ 반도체·복리·CAGR·공포탐욕·ETF CAGR).
+  - 화면 글자 번역: `scripts/i18n/make_en.py` 의 `TEXT` (한국어 글자 덩어리 → 영어), 영어 설명글: 같은 파일의 `GUIDES`
+  - 수정 후: `python3 scripts/i18n/make_en.py && python3 scripts/build_pages.py` (빌드가 번역 없는 문구를 알려 줌)
+  - JS 가 만드는 글자는 `L('한국어', 'English')` 로 작성 (영어 페이지에서만 영어)
+  - 한국어·영어 페이지에 `hreflang` 이 들어가 검색엔진이 언어판을 구분, sitemap 에도 영어 주소 포함
+- 그 밖의 언어·화면은 Google 번역으로 자동 번역 (한국어일 때는 번역기를 불러오지 않음).

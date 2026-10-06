@@ -6,6 +6,8 @@
  *   GET  /     → 세지 않고 {today, total} 만 반환
  * · 허용된 사이트(ALLOWED_ORIGINS)에서 온 요청만 셉니다. 검색봇·크롤러는 세지 않습니다.
  *
+ * GET /geo  → {country} 접속 국가 코드 (기본 언어 선택용 · 기록하지 않음)
+ *
  * GET /fear → CNN 공포·탐욕 지수 (점수·과거값·7개 구성 지표·1년 추이)를 실시간에 가깝게 전달
  *   · CNN 은 브라우저에서 직접 부를 수 없어(CORS) 이 Worker 가 대신 받아 옵니다.
  *   · 5분 동안은 D1 에 저장한 값을 다시 씁니다 (workers.dev 에서는 Cache API 가 동작하지 않음).
@@ -127,6 +129,8 @@ export default {
         return json(await counts(env, day));
       }
       if (url.pathname === '/' && req.method === 'GET') return json(await counts(env, day));
+      /* GET /geo → 접속 국가 (Cloudflare 가 IP 로 판별한 ISO 국가 코드) — 사이트 기본 언어 선택용, 저장하지 않음 */
+      if (url.pathname === '/geo' && req.method === 'GET') return json({ country: (req.cf && req.cf.country) || null });
       if (url.pathname === '/status' && req.method === 'GET') {
         const row = await env.DB.prepare('SELECT t, v FROM cache WHERE k = ?').bind('dispatch').first();
         return json({ token: !!env.GH_TOKEN, lastDispatch: row ? { ...JSON.parse(row.v), at: new Date(row.t * 1000).toISOString() } : null });

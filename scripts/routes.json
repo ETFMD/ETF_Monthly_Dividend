@@ -64,7 +64,12 @@
       "group": "finance",
       "title": "복리 계산기 — 적립식 복리·세후 수익·실효 수익률",
       "short": "복리 계산기",
-      "desc": "원금·월 적립금·이율·기간으로 복리 최종 자산과 세후 수익, 적립식 실효 수익률을 연도별로 계산합니다."
+      "desc": "원금·월 적립금·이율·기간으로 복리 최종 자산과 세후 수익, 적립식 실효 수익률을 연도별로 계산합니다.",
+      "en": {
+        "short": "Compound Interest Calculator",
+        "title": "Compound Interest Calculator — Lump Sum, Monthly Contributions & Tax",
+        "desc": "Compound interest calculator with monthly contributions, compounding frequency and tax: final balance, earnings and effective annual return by year."
+      }
     },
     {
       "path": "cagr",
@@ -72,7 +77,12 @@
       "group": "finance",
       "title": "CAGR 계산기 — 연평균 성장률·목표 수익률 역산",
       "short": "CAGR 계산기",
-      "desc": "초기·최종 금액과 기간으로 연평균 성장률(CAGR), 2배·10배 도달 기간, 목표 수익률 역산을 계산합니다."
+      "desc": "초기·최종 금액과 기간으로 연평균 성장률(CAGR), 2배·10배 도달 기간, 목표 수익률 역산을 계산합니다.",
+      "en": {
+        "short": "CAGR Calculator",
+        "title": "CAGR Calculator — Compound Annual Growth Rate & Target Return",
+        "desc": "Calculate CAGR from starting and ending values or dates, years to double or 10×, and the ending value or time needed for a target growth rate."
+      }
     },
     {
       "path": "fx",
@@ -128,7 +138,12 @@
       "group": "etc",
       "title": "공포 탐욕 지수 — CNN Fear & Greed Index와 시장 지표",
       "short": "공포 & 탐욕 지수",
-      "desc": "CNN 공포 탐욕 지수(Fear & Greed Index)와 구성 지표, 주요 시장 심리·금융 지표를 한눈에 확인합니다."
+      "desc": "CNN 공포 탐욕 지수(Fear & Greed Index)와 구성 지표, 주요 시장 심리·금융 지표를 한눈에 확인합니다.",
+      "en": {
+        "short": "Fear & Greed Index",
+        "title": "Fear & Greed Index — CNN Market Sentiment and Its 7 Components",
+        "desc": "Live CNN Fear & Greed Index with its seven components, previous values and a 90-day trend, plus what each indicator means for market sentiment."
+      }
     },
     {
       "path": "moneyspeed",
@@ -152,7 +167,12 @@
       "group": "etc",
       "title": "ETF CAGR 비교 — QQQ·SPY·TQQQ·SOXL 등 레버리지 ETF",
       "short": "ETF CAGR 비교",
-      "desc": "QQQ·SPY·SOXX와 TQQQ·SOXL 등 레버리지 ETF 12종의 연평균 성장률(CAGR) 추이를 비교합니다."
+      "desc": "QQQ·SPY·SOXX와 TQQQ·SOXL 등 레버리지 ETF 12종의 연평균 성장률(CAGR) 추이를 비교합니다.",
+      "en": {
+        "short": "ETF CAGR Comparison",
+        "title": "ETF CAGR Comparison — QQQ, SPY, TQQQ, SOXL and Leveraged ETFs",
+        "desc": "Compare the CAGR of 12 U.S. index and leveraged ETFs (QQQ, SPY, TQQQ, SOXL and more) over time, by price or with distributions reinvested."
+      }
     },
     {
       "path": "kospi",
@@ -184,7 +204,12 @@
       "group": "overseas",
       "title": "나스닥 종합지수 연평균 성장률(CAGR) — 1971년 이후",
       "short": "나스닥 종합지수 성장률 분석",
-      "desc": "1971년 기준지수 100에서 출발한 나스닥 종합지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다."
+      "desc": "1971년 기준지수 100에서 출발한 나스닥 종합지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.",
+      "en": {
+        "short": "NASDAQ Composite Growth Rate",
+        "title": "NASDAQ Composite CAGR — Annual Growth Since 1971",
+        "desc": "NASDAQ Composite compound annual growth rate since its 1971 base of 100, plus the last 5–30 years, monthly and daily rates and a growth projection."
+      }
     },
     {
       "path": "nasdaq100",
@@ -192,7 +217,12 @@
       "group": "overseas",
       "title": "나스닥 100 연평균 성장률(CAGR) — 1985년 이후",
       "short": "나스닥 100 성장률 분석",
-      "desc": "1985년 기준지수 250에서 출발한 나스닥 100 지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다."
+      "desc": "1985년 기준지수 250에서 출발한 나스닥 100 지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.",
+      "en": {
+        "short": "Nasdaq-100 Growth Rate",
+        "title": "Nasdaq-100 CAGR — Annual Growth Since 1985 (QQQ index)",
+        "desc": "Nasdaq-100 compound annual growth rate since its 1985 base of 250, plus the last 5–30 years, monthly and daily rates — the index behind QQQ."
+      }
     },
     {
       "path": "dowjones",
@@ -200,7 +230,12 @@
       "group": "overseas",
       "title": "다우존스 산업평균지수 연평균 성장률(CAGR) — 1896년 이후",
       "short": "다우존스 성장률 분석",
-      "desc": "1896년 산출을 시작한 다우존스 산업평균지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다."
+      "desc": "1896년 산출을 시작한 다우존스 산업평균지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.",
+      "en": {
+        "short": "Dow Jones Growth Rate",
+        "title": "Dow Jones Industrial Average CAGR — Annual Growth Since 1896",
+        "desc": "Dow Jones Industrial Average compound annual growth rate since 1896, plus the last 5–30 years, monthly and daily rates and a growth projection."
+      }
     },
     {
       "path": "sp500",
@@ -208,7 +243,12 @@
       "group": "overseas",
       "title": "S&P 500 연평균 성장률(CAGR) — 1928년 이후",
       "short": "S&P 500 성장률 분석",
-      "desc": "1928년부터 산출된 S&P 500 지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다."
+      "desc": "1928년부터 산출된 S&P 500 지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.",
+      "en": {
+        "short": "S&P 500 Growth Rate",
+        "title": "S&P 500 CAGR Calculator — Annual Growth Since 1928",
+        "desc": "Calculate the S&P 500’s compound annual growth rate (CAGR) since 1928 or over the last 5–30 years, with monthly and daily rates and a growth projection."
+      }
     },
     {
       "path": "sox",
@@ -216,7 +256,12 @@
       "group": "overseas",
       "title": "필라델피아 반도체지수(SOX) 연평균 성장률 — 1993년 이후",
       "short": "필라델피아 반도체지수 성장률 분석",
-      "desc": "1993년 기준지수 200에서 출발한 필라델피아 반도체지수(SOX)의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다."
+      "desc": "1993년 기준지수 200에서 출발한 필라델피아 반도체지수(SOX)의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.",
+      "en": {
+        "short": "PHLX Semiconductor (SOX) Growth Rate",
+        "title": "PHLX Semiconductor Index (SOX) CAGR — Annual Growth Since 1993",
+        "desc": "Philadelphia Semiconductor Index (SOX) compound annual growth rate since its 1993 base of 200, plus the last 5–30 years and monthly and daily rates."
+      }
     },
     {
       "path": "djsemi",
@@ -224,7 +269,13 @@
       "group": "overseas",
       "title": "다우존스 미국 반도체 지수(DJUSSC) 연평균 성장률",
       "short": "다우존스 미국 반도체 지수 성장률 분석",
-      "desc": "다우존스 미국 반도체 지수(DJUSSC)의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다."
+      "desc": "다우존스 미국 반도체 지수(DJUSSC)의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.",
+      "en": {
+        "short": "DJ U.S. Semiconductors Growth Rate",
+        "title": "Dow Jones U.S. Semiconductors Index (DJUSSC) CAGR",
+        "desc": "Dow Jones U.S. Semiconductors Index (DJUSSC) compound annual growth rate since 2000 and over the last 5–20 years, with monthly and daily rates."
+      }
     }
-  ]
+  ],
+  "brand_en": "Decoding Capitalism"
 }

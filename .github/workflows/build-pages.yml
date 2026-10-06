@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['index.html', 'scripts/routes.json', 'scripts/build_pages.py', 'assets/**', 'CNAME', '.github/workflows/build-pages.yml']
+    paths: ['index.html', 'scripts/routes.json', 'scripts/build_pages.py', 'scripts/i18n/**', 'assets/**', 'CNAME', '.github/workflows/build-pages.yml']
 
 permissions:
   contents: write
