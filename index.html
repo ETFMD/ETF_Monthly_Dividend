@@ -1470,10 +1470,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
               <span class="slider-label">복리 주기</span>
               <div class="num-pill" style="padding:0;overflow:visible;background:transparent;border:none;">
                 <select id="cpd-freq" onchange="calcCompound()" style="background:var(--bg3);border:1px solid var(--card-border);border-radius:8px;padding:5px 10px;color:var(--text);font-family:var(--font);font-size:12px;outline:none;cursor:pointer;">
-                  <option value="1">연 1회</option>
+                  <option value="1" selected>연 1회</option>
                   <option value="2">반기 2회</option>
                   <option value="4">분기 4회</option>
-                  <option value="12" selected>월 12회</option>
+                  <option value="12">월 12회</option>
                   <option value="52">주 52회</option>
                   <option value="365">일 365회</option>
                 </select>
@@ -12084,7 +12084,7 @@ function calcCompound() {
   const ratePct   = parseFloat(document.getElementById('cpd-rate').value);
   const rateY     = ratePct / 100;
   const yearsRaw  = parseInt(document.getElementById('cpd-years').value, 10);
-  const freq      = parseInt(document.getElementById('cpd-freq').value, 10) || 12;
+  const freq      = parseInt(document.getElementById('cpd-freq').value, 10) || 1;
   const taxPct    = parseFloat(document.getElementById('cpd-tax-rate').value);
   const taxRate   = cpdTaxOn ? Math.min(Math.max(isNaN(taxPct) ? 0 : taxPct, 0), 100) / 100 : 0;
   const monthly   = cpdMode === 'dca' ? getCpdWon('monthly') : 0;
