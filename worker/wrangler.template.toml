@@ -13,4 +13,4 @@ database_name = "etfmd-visitors"
 database_id = "__D1_ID__"
 
 [triggers]
-crons = ["17 18 * * *"]   # 매일 03:17 (한국 시간) 오래된 해시 정리
+crons = ["*/15 * * * *"]  # 15분마다: 시세 수집 실행(GH_TOKEN 있을 때) · 매일 03시대 오래된 해시 정리

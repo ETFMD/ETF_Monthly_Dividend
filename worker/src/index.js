@@ -9,7 +9,13 @@
  * GET /fear → CNN 공포·탐욕 지수 (점수·과거값·7개 구성 지표·1년 추이)를 실시간에 가깝게 전달
  *   · CNN 은 브라우저에서 직접 부를 수 없어(CORS) 이 Worker 가 대신 받아 옵니다.
  *   · 5분 동안은 D1 에 저장한 값을 다시 씁니다 (workers.dev 에서는 Cache API 가 동작하지 않음).
+ *
+ * 15분마다(cron) GitHub Actions '시세 데이터 갱신'을 직접 실행시킴 (GitHub 자체 예약 실행은 자주 늦어지거나 누락됨)
+ *   · 한국장(평일 09~17시)·미국장(평일 22~07시, 한국 시간) 15분마다, 그 밖에는 3시간마다
+ *   · GH_TOKEN(저장소 1개·Actions 쓰기 권한만 있는 토큰) 비밀값이 있을 때만 동작 · GET /status 로 마지막 실행 결과 확인
  */
+const REPO = 'ETFMD/ETF_Monthly_Dividend';
+const WORKFLOW = 'update-market-data.yml';
 const BOT = /bot|crawl|spider|slurp|bingpreview|facebookexternalhit|kakaotalk-scrap|yeti|daum|headless|lighthouse|preview|python|curl|wget|java\/|go-http|axios|node-fetch/i;
 
 const CNN_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
@@ -51,6 +57,23 @@ async function fear(env) {
     if (row) return { ...JSON.parse(row.v), fetched: row.t, cached: true, stale: true };   // CNN 일시 오류 → 직전 값
     throw e;
   }
+}
+
+async function dispatch(env) {
+  let status = 0, detail = '';
+  try {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/dispatches`, {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + env.GH_TOKEN, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28',
+                 'User-Agent': 'etfmd-counter', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ref: 'main' }),
+    });
+    status = r.status;
+    if (status !== 204) detail = (await r.text()).slice(0, 200);
+  } catch (e) { detail = String(e && e.message || e).slice(0, 200); }
+  const now = Math.floor(Date.now() / 1000);
+  await env.DB.prepare('INSERT INTO cache (k, t, v) VALUES (?, ?, ?) ON CONFLICT(k) DO UPDATE SET t = excluded.t, v = excluded.v')
+    .bind('dispatch', now, JSON.stringify({ status, ok: status === 204, detail })).run();
 }
 
 function kstDay(ms) {
@@ -104,6 +127,10 @@ export default {
         return json(await counts(env, day));
       }
       if (url.pathname === '/' && req.method === 'GET') return json(await counts(env, day));
+      if (url.pathname === '/status' && req.method === 'GET') {
+        const row = await env.DB.prepare('SELECT t, v FROM cache WHERE k = ?').bind('dispatch').first();
+        return json({ token: !!env.GH_TOKEN, lastDispatch: row ? { ...JSON.parse(row.v), at: new Date(row.t * 1000).toISOString() } : null });
+      }
       if (url.pathname === '/fear' && req.method === 'GET') {
         try { return json(await fear(env)); } catch (e) { return json({ error: 'cnn', detail: String(e && e.message || e) }, 502); }
       }
@@ -112,9 +139,19 @@ export default {
       return json({ error: 'server' }, 500);
     }
   },
-  /* 매일 정리: 2일 지난 중복 확인용 해시 삭제 (일별 방문자 수는 계속 보관) */
-  async scheduled(event, env) {
-    const cut = kstDay(Date.now() - 2 * 86400e3);
-    await env.DB.prepare('DELETE FROM visits WHERE day < ?').bind(cut).run();
+  /* 15분마다: 시세 수집 실행 + 하루 한 번 오래된 방문 해시 정리 */
+  async scheduled(event, env, ctx) {
+    const t = new Date(event.scheduledTime || Date.now());
+    const k = new Date(t.getTime() + 9 * 3600e3);                       // 한국 시간
+    const h = k.getUTCHours(), m = k.getUTCMinutes(), dow = k.getUTCDay();   // 0=일
+    if (h === 3 && m < 15) {                                             // 매일 03:00~03:14 (한국 시간)
+      const cut = kstDay(Date.now() - 2 * 86400e3);
+      ctx.waitUntil(env.DB.prepare('DELETE FROM visits WHERE day < ?').bind(cut).run());
+    }
+    if (!env.GH_TOKEN) return;
+    const weekday = dow >= 1 && dow <= 5, usOpen = (h >= 22 && dow >= 1 && dow <= 5) || (h < 7 && dow >= 2 && dow <= 6);
+    const market = (weekday && h >= 9 && h < 17) || usOpen;
+    if (!market && !(h % 3 === 0 && m < 15)) return;                    // 장 밖에는 3시간마다
+    ctx.waitUntil(dispatch(env));
   },
 };
