@@ -44,6 +44,9 @@ jobs:
             sleep 20
           done
           echo "::notice::인증서 상태: $state · HTTPS 강제: $enf"
-          code=$(curl -s -o /dev/null -w '%{http_code}' "http://$D/" || true); echo "::notice::http://$D → $code"
+          echo "::notice::Pages 설정: $(gh api repos/$REPO/pages --jq '"cname=\(.cname) https_enforced=\(.https_enforced) cert=\(.https_certificate.state // "none")"')"
+          old="https://${REPO%%/*}.github.io/${REPO#*/}/loan/"; old=$(echo "$old" | tr 'A-Z' 'a-z' | sed "s#/etf_monthly_dividend/#/${REPO#*/}/#")
+          echo "::notice::옛 주소 $old → $(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' "$old" || true)"
+          code=$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' "http://$D/" || true); echo "::notice::http://$D → $code"
           code=$(curl -s -o /dev/null -w '%{http_code}' "https://$D/" || true); echo "::notice::https://$D → $code"
           gh api repos/$REPO/pages/health --jq '.domain | "health: dns_resolves=\(.dns_resolves) is_valid=\(.is_valid) https_error=\(.https_error // "") enforces_https=\(.enforces_https)"' 2>/dev/null | sed 's/^/::notice::/' || true
