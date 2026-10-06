@@ -5,11 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="naver-site-verification" content="d2783397f53380a104200dc7255c6254d5c6a680" />
 <script>
-/* [ANALYTICS] Google Analytics 4 · Microsoft Clarity — 실제 도메인(d-capitalism.com)에서만 동작 (로컬 파일·미리보기는 집계 안 함)
+/* [ANALYTICS] Google Analytics 4 · Microsoft Clarity · 네이버 애널리틱스 — 실제 도메인(d-capitalism.com)에서만 동작 (로컬 파일·미리보기는 집계 안 함)
    · 탭 이동은 [ROUTER] 가 제목을 먼저 바꾼 뒤 주소를 바꾸므로(pushState) GA4 '향상된 측정'이 탭별 페이지뷰를 정확한 제목으로 자동 집계
-   · CLARITY_ID 를 비워 두면 Clarity 는 설치되지 않음 */
+   · 네이버 애널리틱스는 주소 변경을 스스로 감지하지 못하므로 pushState·뒤로가기 때 wcs_do() 를 직접 호출
+     (이때 이전 주소를 referrer 로 넘겨, 탭 이동이 '외부 유입'으로 중복 집계되지 않게 함)
+   · ID 를 비워 두면 해당 도구는 설치되지 않음 */
 (function () {
-  var GA_ID = 'G-Z76QH8HLZ9', CLARITY_ID = 'ytm7hk3l3d';
+  var GA_ID = 'G-Z76QH8HLZ9', CLARITY_ID = 'ytm7hk3l3d', NAVER_ID = '1c5d67738faa0a0';
   if (!/(^|\.)d-capitalism\.com$/.test(location.hostname)) return;
   window.dataLayer = window.dataLayer || [];
   window.gtag = function () { window.dataLayer.push(arguments); };
@@ -23,6 +25,25 @@
     var c = document.createElement('script');
     c.async = true; c.src = 'https://www.clarity.ms/tag/' + CLARITY_ID;
     document.head.appendChild(c);
+  }
+  if (NAVER_ID) {
+    window.wcs_add = window.wcs_add || {};
+    window.wcs_add.wa = NAVER_ID;
+    var lastHref = location.href, ready = false;
+    var hit = function () { try { if (window.wcs_do) window.wcs_do(); } catch (e) {} };
+    var n = document.createElement('script');
+    n.async = true; n.src = 'https://wcs.naver.net/wcslog.js';
+    n.onload = function () { ready = true; hit(); };
+    document.head.appendChild(n);
+    var onNav = function () {
+      if (location.href.split('#')[0] === lastHref.split('#')[0]) return;
+      var prev = lastHref; lastHref = location.href;
+      try { Object.defineProperty(document, 'referrer', { configurable: true, get: function () { return prev; } }); } catch (e) {}
+      if (ready) setTimeout(hit, 0);
+    };
+    var ps = history.pushState;
+    history.pushState = function () { var r = ps.apply(this, arguments); onNav(); return r; };
+    window.addEventListener('popstate', onNav);
   }
 })();
 </script>
