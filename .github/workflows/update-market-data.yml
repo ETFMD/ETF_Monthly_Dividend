@@ -32,5 +32,10 @@ jobs:
           git add data/
           if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
           git commit -m "chore: 시세 데이터 갱신"
-          git pull --rebase --autostash
-          git push
+          # 그 사이 다른 실행이 data/ 를 먼저 올렸으면, 같은 파일은 방금 수집한 값(더 최신)으로 덮어 rebase
+          for i in 1 2 3; do
+            git pull --rebase -X theirs --autostash && git push && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep 5
+          done
+          exit 1
