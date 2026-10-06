@@ -173,19 +173,55 @@
       .then(function (g) { fin(byCountry(g && g.country) || byBrowser()); })
       .catch(function () { fin(byBrowser()); });
   }
-  function bindSelect(info) {
-    var sel = document.getElementById('lang-select');
-    if (!sel) return;
-    sel.value = window.siteLang || (EN_PAGE ? 'en' : 'ko');
-    sel.addEventListener('change', function () {
-      var l = valid(sel.value) || 'ko';
-      lsSet(KEY, l);
-      if (l === 'ko') { setTrans(null); if (EN_PAGE) location.href = koUrl(info); else location.reload(); return; }
-      if (l === 'en' && !EN_PAGE && info.hasEn) { setTrans(null); location.href = enUrl(info); return; }
-      setTrans(l);
-      if (EN_PAGE && l !== 'en') { location.href = koUrl(info); return; }
-      location.reload();
+  var NAMES = { ko: '한국어', en: 'English', ja: '日本語', 'zh-CN': '简体中文', 'zh-TW': '繁體中文' };
+  /* 사용자가 언어를 고름 → 기억하고 해당 주소로 이동하거나 새로고침 */
+  function choose(l, info) {
+    l = valid(l) || 'ko';
+    lsSet(KEY, l);
+    if (l === (window.siteLang || 'ko') && !(l === 'en' && !EN_PAGE && info.hasEn)) return;
+    if (l === 'ko') { setTrans(null); if (EN_PAGE) location.href = koUrl(info); else location.reload(); return; }
+    if (l === 'en' && !EN_PAGE && info.hasEn) { setTrans(null); location.href = enUrl(info); return; }
+    setTrans(l);
+    if (EN_PAGE && l !== 'en') { location.href = koUrl(info); return; }
+    location.reload();
+  }
+  /* 버튼 글자·선택 표시를 현재 언어로 */
+  function markCurrent() {
+    var cur = window.siteLang || (EN_PAGE ? 'en' : 'ko'), lb = document.getElementById('lang-cur');
+    if (lb) lb.textContent = NAMES[cur] || NAMES.ko;
+    var opts = document.querySelectorAll('#lang-menu .lang-opt');
+    for (var i = 0; i < opts.length; i++) {
+      var on = opts[i].getAttribute('data-lang') === cur;
+      opts[i].classList.toggle('active', on); opts[i].setAttribute('aria-selected', on ? 'true' : 'false');
+    }
+  }
+  /* 펼침 목록: 버튼으로 열고 닫기 · 바깥 클릭/Esc 로 닫기 · ↑↓ 로 이동 */
+  function bindMenu(info) {
+    var btn = document.getElementById('lang-btn'), menu = document.getElementById('lang-menu');
+    if (!btn || !menu || btn.getAttribute('data-bound')) return;
+    btn.setAttribute('data-bound', '1');
+    var opts = function () { return Array.prototype.slice.call(menu.querySelectorAll('.lang-opt')); };
+    var open = function (focus) {
+      menu.classList.add('open'); btn.setAttribute('aria-expanded', 'true');
+      if (focus) { var a = menu.querySelector('.lang-opt.active') || opts()[0]; if (a) a.focus(); }
+    };
+    var close = function (back) { menu.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); if (back) btn.focus(); };
+    btn.addEventListener('click', function (e) { e.stopPropagation(); menu.classList.contains('open') ? close() : open(e.detail === 0); });
+    btn.addEventListener('keydown', function (e) { if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); open(true); } });
+    menu.addEventListener('click', function (e) {
+      var o = e.target.closest && e.target.closest('.lang-opt'); if (!o) return;
+      e.stopPropagation(); close(); choose(o.getAttribute('data-lang'), info);
     });
+    menu.addEventListener('keydown', function (e) {
+      var list = opts(), i = list.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown') { e.preventDefault(); list[(i + 1) % list.length].focus(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); list[(i - 1 + list.length) % list.length].focus(); }
+      else if (e.key === 'Escape') { e.preventDefault(); close(true); }
+      else if (e.key === 'Tab') close();
+    });
+    document.addEventListener('click', function (e) { if (!e.target.closest || !e.target.closest('#lang-sw')) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && menu.classList.contains('open')) close(true); });
+    markCurrent();
   }
 
   var q = /[?&]lang=([\w-]+)/.exec(location.search), forced = q ? valid(q[1]) : null;
@@ -195,9 +231,10 @@
   var start = function (lang) {
     var moved = apply(lang, info);
     if (moved) return;
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { bindSelect(info); });
-    else bindSelect(info);
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', markCurrent); else markCurrent();
   };
+  /* 목록은 언어 판별을 기다리지 않고 바로 쓸 수 있게 */
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { bindMenu(info); }); else bindMenu(info);
   window.siteLang = manual || (EN_PAGE ? 'en' : 'ko');
   if (manual) start(manual);
   else if (EN_PAGE) start('en');                 /* 영어 주소로 들어오면 영어 그대로 */
@@ -1533,12 +1570,29 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   /* [I18N] 상단 줄: 방문자 수 · 언어 선택 (오른쪽 위) */
   .top-bar { display:flex; justify-content:flex-end; align-items:center; gap:12px; margin:-22px 0 8px; min-height:28px; }
   .visit-bar { display:flex; justify-content:flex-end; align-items:center; gap:6px; font-size:11px; color:var(--text3); min-height:16px; }
-  .lang-sw { position:relative; display:inline-flex; align-items:center; gap:6px; height:28px; padding:0 8px 0 9px; border:1px solid var(--card-border); border-radius:8px; background:var(--card); color:var(--text2); font-size:12px; cursor:pointer; flex-shrink:0; }
-  .lang-sw:hover, .lang-sw:focus-within { border-color:rgba(49,130,246,0.45); color:var(--text); }
-  .lang-sw svg { flex-shrink:0; opacity:.8; }
-  .lang-sw select { appearance:none; -webkit-appearance:none; background:transparent; border:none; outline:none; color:inherit; font:inherit; font-size:12px; padding:0 14px 0 0; cursor:pointer; }
-  .lang-sw select option { background:var(--bg2); color:var(--text); }
-  .lang-sw::after { content:''; position:absolute; right:9px; top:50%; width:5px; height:5px; border-right:1.5px solid currentColor; border-bottom:1.5px solid currentColor; transform:translateY(-70%) rotate(45deg); pointer-events:none; opacity:.7; }
+  .lang-sw { position:relative; flex-shrink:0; }
+  .lang-btn { display:inline-flex; align-items:center; gap:6px; height:28px; padding:0 10px 0 9px; border:1px solid var(--card-border); border-radius:8px;
+    background:var(--card); color:var(--text2); font-family:var(--font); font-size:12px; cursor:pointer; transition:border-color .15s, color .15s, background .15s; }
+  .lang-btn:hover, .lang-btn[aria-expanded="true"] { border-color:rgba(49,130,246,0.45); color:var(--text); }
+  .lang-btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .lang-btn svg { flex-shrink:0; opacity:.8; }
+  .lang-btn .lang-arrow { font-size:9px; opacity:.6; transition:transform .2s; display:inline-block; }
+  .lang-btn[aria-expanded="true"] .lang-arrow { transform:rotate(180deg); }
+  /* 펼침 목록: 메뉴 드롭다운(분배 시뮬레이터 등)과 같은 모양 */
+  .lang-menu { position:absolute; top:calc(100% + 6px); right:0; display:none; flex-direction:column; gap:3px; padding:6px; min-width:196px;
+    background:var(--bg2); border:1px solid rgba(var(--fg-rgb),0.12); border-radius:12px;
+    box-shadow:0 12px 40px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3); z-index:10000; animation:dropIn .15s ease; }
+  .lang-menu.open { display:flex; }
+  .lang-opt { display:flex; align-items:center; gap:9px; width:100%; padding:9px 12px; border:none; border-radius:8px; background:transparent;
+    color:var(--text2); font-family:var(--font); font-size:13px; text-align:left; cursor:pointer; white-space:nowrap; transition:background .12s, color .12s; }
+  .lang-opt:hover, .lang-opt:focus-visible { background:rgba(var(--fg-rgb),0.07); color:var(--text); outline:none; }
+  .lang-opt.active { background:var(--accent-dim); color:var(--accent); }
+  .lang-code { display:inline-flex; align-items:center; justify-content:center; min-width:26px; height:18px; padding:0 4px; border-radius:5px;
+    background:rgba(var(--fg-rgb),0.06); color:var(--text3); font-family:var(--mono); font-size:10px; font-weight:600; letter-spacing:.02em; }
+  .lang-opt.active .lang-code { background:rgba(49,130,246,0.18); color:var(--accent); }
+  .lang-name { flex:1; }
+  .lang-check { opacity:0; flex-shrink:0; }
+  .lang-opt.active .lang-check { opacity:1; }
   .lang-toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%); z-index:9999; background:var(--bg3); color:var(--text); border:1px solid var(--card-border); border-radius:10px; padding:10px 16px; font-size:12px; box-shadow:0 6px 24px rgba(0,0,0,.25); }
   /* 구글 자동 번역: 상단 배너·말풍선·하이라이트 숨김 (번역 결과만 보이게) */
   #google_translate_element, .goog-te-banner-frame, iframe.skiptranslate, #goog-gt-tt, .goog-te-balloon-frame, .goog-tooltip,
@@ -1602,12 +1656,19 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     <span class="visit-dot"></span><span>Today <b id="visit-today">—</b></span><span class="visit-sep">·</span><span>Total <b id="visit-total">—</b></span>
   </div>
   <!-- [I18N] 언어 선택 — 기본값은 접속 국가(한국 → 한국어, 일본 → 일본어 …), 고르면 그 선택을 기억 -->
-  <label class="lang-sw notranslate" translate="no" title="Language">
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 8h13M8 1.5c1.8 1.8 2.7 4 2.7 6.5S9.8 12.7 8 14.5M8 1.5C6.2 3.3 5.3 5.5 5.3 8s.9 4.7 2.7 6.5" stroke="currentColor" stroke-width="1.3"/></svg>
-    <select id="lang-select" aria-label="Language">
-      <option value="ko">한국어</option><option value="en">English</option><option value="ja">日本語</option><option value="zh-CN">简体中文</option><option value="zh-TW">繁體中文</option>
-    </select>
-  </label>
+  <div class="lang-sw notranslate" translate="no" id="lang-sw">
+    <button type="button" class="lang-btn" id="lang-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="lang-menu" title="Language">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 8h13M8 1.5c1.8 1.8 2.7 4 2.7 6.5S9.8 12.7 8 14.5M8 1.5C6.2 3.3 5.3 5.5 5.3 8s.9 4.7 2.7 6.5" stroke="currentColor" stroke-width="1.3"/></svg>
+      <span id="lang-cur">한국어</span><span class="lang-arrow">▼</span>
+    </button>
+    <div class="lang-menu" id="lang-menu" role="listbox" aria-label="Language">
+      <button type="button" class="lang-opt" role="option" data-lang="ko"><span class="lang-code">KO</span><span class="lang-name">한국어</span><svg class="lang-check" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="lang-opt" role="option" data-lang="en"><span class="lang-code">EN</span><span class="lang-name">English</span><svg class="lang-check" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="lang-opt" role="option" data-lang="ja"><span class="lang-code">JA</span><span class="lang-name">日本語</span><svg class="lang-check" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="lang-opt" role="option" data-lang="zh-CN"><span class="lang-code">简</span><span class="lang-name">简体中文</span><svg class="lang-check" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="lang-opt" role="option" data-lang="zh-TW"><span class="lang-code">繁</span><span class="lang-name">繁體中文</span><svg class="lang-check" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+  </div>
   </div>
   <div id="google_translate_element"></div>
   <!-- ── 상단 오픈카카오 배너 ── -->
