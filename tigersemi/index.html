@@ -1411,7 +1411,8 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .guide .g-p { font-size:13px; line-height:1.8; color:var(--text2); margin:10px 0 0; }
   .guide .g-tbl { width:100%; border-collapse:collapse; font-size:12.5px; margin:0 0 6px; }
   .guide .g-tbl th { text-align:left; font-weight:600; color:var(--text3); padding:7px 8px; border-bottom:1px solid var(--card-border); white-space:nowrap; }
-  .guide .g-tbl td { padding:7px 8px; border-bottom:1px solid var(--card-border); color:var(--text2); vertical-align:top; }
+  .guide .g-tbl td { padding:7px 8px; border-bottom:1px solid var(--card-border); color:var(--text2); vertical-align:top; white-space:normal; min-width:0; word-break:keep-all; overflow-wrap:break-word; }
+  .guide .g-tbl thead th { position:static; box-shadow:none; background:transparent; }
   .guide .g-tbl td:last-child { font-family:var(--mono); font-size:12px; color:var(--text); }
   .guide .g-tbl tr:last-child td { border-bottom:none; }
   .guide .g-cap { font-size:11.5px; line-height:1.7; color:var(--text3); margin:4px 0 14px; }
@@ -1424,7 +1425,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .guide .g-faq[open] summary::after { content:'−'; }
   .guide .g-faq summary:hover { color:var(--accent); }
   .guide .g-ans p { font-size:13px; line-height:1.85; color:var(--text2); margin:0 0 12px; }
-  @media (max-width:900px) { .guide .g-grid { grid-template-columns:1fr; } .guide h2 { font-size:18px; } .guide .g-card { padding:16px 14px; } .guide .g-tbl th, .guide .g-tbl td { white-space:nowrap; } }
+  @media (max-width:900px) { .guide .g-grid { grid-template-columns:1fr; } .guide h2 { font-size:18px; } .guide .g-card { padding:16px 14px; } .guide .g-tbl { min-width:0; } .guide .g-tbl td:first-child { min-width:96px; } }
   .site-footer { max-width:1280px; margin:-16px auto 0; padding:0 32px 36px; text-align:center; font-size:12px; color:var(--text3); }
   .site-footer .sf-in { border-top:1px solid var(--card-border); padding-top:18px; }
   @media (max-width:640px) { .site-footer { padding:0 16px 28px; } }
@@ -2864,6 +2865,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <p class="kcmp-note" id="kcmp-note">—</p>
     </div>
   </div>
+    <!-- [GUIDE:simulator] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
+    <section class="guide" aria-labelledby="g-simulator-h">
+      <h2 id="g-simulator-h">KODEX 200타겟위클리커버드콜 분배금은 이렇게 계산합니다</h2>
+      <p class="g-lead">KODEX 200타겟위클리커버드콜(498400)은 코스피 200 주식을 보유하면서 위클리 콜옵션을 팔아 생기는 프리미엄과 배당금으로 매달 분배금을 주는 ETF입니다. 이 시뮬레이터는 기본값으로 콜옵션 연 15% + 배당금 연 2% = 연 17% 분배율을 넣어 매달 분배금과 자산 변화를 계산합니다.</p>
+      <div class="g-grid">
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>월 분배금(세전)</b> = 그 달 잔고 × 연 분배율(17%) ÷ 12</li><li><b>세금</b>: 과세 구조를 켜면 분배금 중 배당 재원 비율(2% ÷ 17%)에만 15.4%를 매겨 실효세율은 <b>1.81%</b>입니다. 콜옵션 재원(15%)은 비과세로 계산합니다.</li><li><b>주가 변동</b>: 매달 잔고에 (1 + 연간 주가 변동률)<sup>1/12</sup>를 곱합니다.</li><li><b>분배금 처리</b>: 재투자는 세후 분배금을 바로 다시 사고, 수령은 받아서 쓰며, 일부 재투자는 정한 비율만 다시 삽니다.</li><li><b>적립식</b>: 켜면 매달 초에 적립금을 더한 뒤 그 달 분배금을 계산합니다.</li><li><b>연평균 자산 상승률</b>: 남은 자산 기준 연환산 수익률이며, 적립식이면 적립 시점을 반영한 내부수익률(IRR)입니다.</li><li><b>목표 월 분배금 역산</b>: 필요 원금 = 목표 월 분배금 × 12 ÷ 연 분배율 (세전)</li><li>운용보수는 ETF 순자산에서 매일 빠져 주가에 반영되므로 분배율에서 따로 빼지 않습니다.</li></ul></article>
+        <article class="g-card"><h3>계산 예시</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>1억원 · 5년 · 주가 연 +5%</th><th>분배금 재투자</th><th>분배금 수령</th></tr></thead><tbody><tr><td>1년차 연간 분배금 (세후)</td><td>18,452,016원</td><td>17,071,155원</td></tr><tr><td>5년차 연간 분배금 (세후)</td><td>43,528,382원</td><td>20,750,096원</td></tr><tr><td>5년간 누적 분배금 (세후)</td><td>1억 4,831만원</td><td>9,433만원</td></tr><tr><td>5년 뒤 남은 자산</td><td>2억 9,236만원</td><td>1억 2,763만원</td></tr></tbody></table></div><p class="g-cap">연 분배율 17% · 과세 구조 적용(실효세율 1.81%) · 적립 없음. 재투자는 분배금이 다시 분배금을 만들어 5년차 분배금이 수령의 약 2.1배가 됩니다.</p></article>
+      </div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>분배율 17%면 1억원을 넣었을 때 매년 1,700만원을 받나요?</summary><div class="g-ans"><p>세전 기준으로는 그 근처입니다. 다만 분배금은 <b>그 달의 잔고(주가)</b>에 분배율을 곱해 정해지므로 주가가 오르면 늘고 내리면 줄어듭니다. 위 예시(주가 연 +5%, 분배금 수령)에서는 1년차 세후 분배금이 17,071,155원입니다. 실제 분배율은 시장 상황에 따라 목표와 달라질 수 있습니다.</p></div></details><details class="g-faq"><summary>콜옵션에서 나온 분배금은 왜 세금이 없나요?</summary><div class="g-ans"><p>국내 주식형 ETF에서 코스피 200 옵션처럼 비과세되는 매매 이익을 재원으로 한 분배금은 배당소득세를 매기지 않고, 주식 배당금 등 과세 재원에서 나온 부분만 15.4%를 뗍니다. 그래서 기본값에서는 전체 분배금의 2/17에만 세금이 붙어 실효세율이 1.81%입니다. 실제 과세 비율은 달마다 다르니 운용사 공시를 확인하세요.</p></div></details><details class="g-faq"><summary>주가가 떨어지면 분배금은 어떻게 되나요?</summary><div class="g-ans"><p>분배금이 잔고에 비례하므로 같이 줄어듭니다. 주가를 연 −5%로 바꾸고 분배금을 수령하면 5년간 세후 분배금은 7,377만원, 남은 자산은 <b>7,738만원</b>으로 원금보다 줄어듭니다. 커버드콜은 주가 상승 이익 일부를 포기하는 대신 분배금을 받는 구조라 하락은 그대로 반영된다는 점을 함께 봐야 합니다.</p></div></details><details class="g-faq"><summary>분배금을 재투자하는 것과 받아 쓰는 것은 얼마나 차이 나나요?</summary><div class="g-ans"><p>위 예시에서 5년 뒤 남은 자산은 재투자 2억 9,236만원, 수령 1억 2,763만원입니다. 수령한 분배금 9,433만원을 더해도 재투자 쪽이 약 7,000만원 많습니다. 다만 재투자는 그만큼 현금을 쓰지 못하므로 생활비가 필요한지에 따라 '일부 재투자' 비율을 조절해 보세요.</p></div></details><details class="g-faq"><summary>운용보수는 왜 분배율에서 빼지 않나요?</summary><div class="g-ans"><p>ETF 운용보수는 펀드 순자산에서 매일 조금씩 빠져나가 <b>주가(순자산가치)에 이미 반영</b>되고, 분배금은 목표 분배율이나 지급 기준에 따라 따로 지급됩니다. 그래서 이 시뮬레이터는 분배율은 그대로 쓰고, 보수의 영향은 '연간 주가 변동률'에 들어 있다고 봅니다. 5개 시뮬레이터 모두 같은 방식입니다.</p></div></details></div>
+    </section>
+    <!-- [/GUIDE:simulator] -->
 </div><!-- /page-simulator -->
 
   <div class="app-page" id="page-sol">
@@ -3411,6 +3423,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <p class="kcmp-note" id="sol-kcmp-note">—</p>
     </div>
   </div>
+    <!-- [GUIDE:sol] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
+    <section class="guide" aria-labelledby="g-sol-h">
+      <h2 id="g-sol-h">SOL 200타겟위클리커버드콜 분배금은 이렇게 계산합니다</h2>
+      <p class="g-lead">SOL 200타겟위클리커버드콜(0167B0)은 코스피 200을 기초로 위클리 콜옵션을 매도해 매달 분배금을 지급하는 ETF입니다. 이 시뮬레이터는 기본값으로 콜옵션 연 13% + 배당금 연 2% = 연 15% 분배율을 넣어 계산하며, 투자 금액·기간·주가 변동률을 바꿔 결과를 비교할 수 있습니다.</p>
+      <div class="g-grid">
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>월 분배금(세전)</b> = 그 달 잔고 × 연 분배율(15%) ÷ 12</li><li><b>세금</b>: 과세 구조를 켜면 분배금 중 배당 재원 비율(2% ÷ 15%)에만 15.4%를 매겨 실효세율은 <b>2.05%</b>입니다. 콜옵션 재원(13%)은 비과세로 계산합니다.</li><li><b>주가 변동</b>: 매달 잔고에 (1 + 연간 주가 변동률)<sup>1/12</sup>를 곱합니다.</li><li><b>분배금 처리</b>: 재투자는 세후 분배금을 바로 다시 사고, 수령은 받아서 쓰며, 일부 재투자는 정한 비율만 다시 삽니다.</li><li><b>적립식</b>: 켜면 매달 초에 적립금을 더한 뒤 그 달 분배금을 계산합니다.</li><li><b>연평균 자산 상승률</b>: 남은 자산 기준 연환산 수익률이며, 적립식이면 적립 시점을 반영한 내부수익률(IRR)입니다.</li><li><b>목표 월 분배금 역산</b>: 필요 원금 = 목표 월 분배금 × 12 ÷ 연 분배율 (세전)</li><li>운용보수는 ETF 순자산에서 매일 빠져 주가에 반영되므로 분배율에서 따로 빼지 않습니다.</li></ul></article>
+        <article class="g-card"><h3>계산 예시</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>1억원 · 5년 · 주가 연 +5%</th><th>분배금 재투자</th><th>분배금 수령</th></tr></thead><tbody><tr><td>1년차 연간 분배금 (세후)</td><td>16,089,464원</td><td>15,025,726원</td></tr><tr><td>5년차 연간 분배금 (세후)</td><td>35,073,184원</td><td>18,263,864원</td></tr><tr><td>5년간 누적 분배금 (세후)</td><td>1억 2,333만원</td><td>8,303만원</td></tr><tr><td>5년 뒤 남은 자산</td><td>2억 6,488만원</td><td>1억 2,763만원</td></tr></tbody></table></div><p class="g-cap">연 분배율 15% · 과세 구조 적용(실효세율 2.05%) · 적립 없음.</p></article>
+      </div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>매달 500만원을 받으려면 얼마를 넣어야 하나요?</summary><div class="g-ans"><p>필요 원금 = 500만원 × 12 ÷ 15% = <b>4억원</b>입니다(세전 기준). 세후로 500만원을 받으려면 실효세율만큼 조금 더 필요하고, 주가가 내리면 분배금도 줄어드니 여유를 두는 것이 좋습니다. 계산기 아래 '월 분배금 목표 역산'에서 금액을 바꿔 바로 확인할 수 있습니다.</p></div></details><details class="g-faq"><summary>KODEX 200타겟위클리커버드콜과는 무엇이 다른가요?</summary><div class="g-ans"><p>둘 다 코스피 200 기반 위클리 커버드콜이지만 목표 분배율과 운용보수가 다릅니다. 이 사이트 기본값은 SOL 연 15%, KODEX 연 17%입니다. 같은 조건(1억원·5년·주가 +5%·재투자)에서 5년 누적 세후 분배금은 SOL 1억 2,333만원, KODEX 1억 4,831만원입니다. 분배율이 높을수록 분배금은 많지만 주가 상승에 참여하는 몫은 줄어드는 경향이 있습니다.</p></div></details><details class="g-faq"><summary>분배금이 많으면 금융소득종합과세 대상이 되나요?</summary><div class="g-ans"><p>이자·배당 등 과세되는 금융소득이 연 2,000만원을 넘으면 넘는 부분이 다른 소득과 합쳐 종합과세됩니다. 이 상품은 분배금 중 과세 재원(배당) 부분만 금융소득에 들어가므로 전체 분배금보다 기준이 되는 금액이 작습니다. 세금 설정의 '과세표준 계산'에서 종합과세를 골라 다른 소득과 함께 계산해 볼 수 있습니다.</p></div></details><details class="g-faq"><summary>아래쪽 코스피 비교 차트는 무엇을 보여 주나요?</summary><div class="g-ans"><p>실제 시세로 같은 기간 이 ETF와 코스피의 수익률을 비교합니다. '분배금 포함'을 고르면 분배금을 받은 날 다시 투자했다고 보고 계산한 총수익률을 보여 줍니다. 위 시뮬레이션은 가정값을 넣은 미래 계산이고, 이 차트는 지나간 실제 성과라는 점이 다릅니다.</p></div></details><details class="g-faq"><summary>운용보수는 왜 분배율에서 빼지 않나요?</summary><div class="g-ans"><p>ETF 운용보수는 펀드 순자산에서 매일 조금씩 빠져나가 <b>주가(순자산가치)에 이미 반영</b>되고, 분배금은 목표 분배율이나 지급 기준에 따라 따로 지급됩니다. 그래서 이 시뮬레이터는 분배율은 그대로 쓰고, 보수의 영향은 '연간 주가 변동률'에 들어 있다고 봅니다. 5개 시뮬레이터 모두 같은 방식입니다.</p></div></details></div>
+    </section>
+    <!-- [/GUIDE:sol] -->
 </div><!-- /page-sol -->
 
   <div class="app-page" id="page-tiger">
@@ -3958,6 +3981,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <p class="kcmp-note" id="tiger-kcmp-note">—</p>
     </div>
   </div>
+    <!-- [GUIDE:tiger] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
+    <section class="guide" aria-labelledby="g-tiger-h">
+      <h2 id="g-tiger-h">TIGER 200타겟위클리커버드콜 분배금은 이렇게 계산합니다</h2>
+      <p class="g-lead">TIGER 200타겟위클리커버드콜(0104N0)은 코스피 200 기반 위클리 커버드콜 ETF로, 매달 분배금을 지급합니다. 이 시뮬레이터는 기본값으로 콜옵션 연 5% + 배당금 연 2% = 연 7% 분배율을 넣어 매달 분배금과 남은 자산을 계산합니다.</p>
+      <div class="g-grid">
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>월 분배금(세전)</b> = 그 달 잔고 × 연 분배율(7%) ÷ 12</li><li><b>세금</b>: 과세 구조를 켜면 분배금 중 배당 재원 비율(2% ÷ 7%)에만 15.4%를 매겨 실효세율은 <b>4.40%</b>입니다. 콜옵션 재원(5%)은 비과세로 계산합니다.</li><li><b>주가 변동</b>: 매달 잔고에 (1 + 연간 주가 변동률)<sup>1/12</sup>를 곱합니다.</li><li><b>분배금 처리</b>: 재투자는 세후 분배금을 바로 다시 사고, 수령은 받아서 쓰며, 일부 재투자는 정한 비율만 다시 삽니다.</li><li><b>적립식</b>: 켜면 매달 초에 적립금을 더한 뒤 그 달 분배금을 계산합니다.</li><li><b>연평균 자산 상승률</b>: 남은 자산 기준 연환산 수익률이며, 적립식이면 적립 시점을 반영한 내부수익률(IRR)입니다.</li><li><b>목표 월 분배금 역산</b>: 필요 원금 = 목표 월 분배금 × 12 ÷ 연 분배율 (세전)</li><li>운용보수는 ETF 순자산에서 매일 빠져 주가에 반영되므로 분배율에서 따로 빼지 않습니다.</li></ul></article>
+        <article class="g-card"><h3>계산 예시</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>1억원 · 5년 · 주가 연 +5%</th><th>분배금 재투자</th><th>분배금 수령</th></tr></thead><tbody><tr><td>1년차 연간 분배금 (세후)</td><td>7,059,778원</td><td>6,844,007원</td></tr><tr><td>5년차 연간 분배금 (세후)</td><td>11,206,686원</td><td>8,318,934원</td></tr><tr><td>5년간 누적 분배금 (세후)</td><td>4,507만원</td><td>3,782만원</td></tr><tr><td>5년 뒤 남은 자산</td><td>1억 7,818만원</td><td>1억 2,763만원</td></tr></tbody></table></div><p class="g-cap">연 분배율 7% · 과세 구조 적용(실효세율 4.40%) · 적립 없음.</p></article>
+      </div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>실효세율이 다른 커버드콜 ETF보다 높은 이유는 무엇인가요?</summary><div class="g-ans"><p>세금은 분배금 중 배당 재원 비율에만 붙습니다. 기본값에서 배당 2%가 전체 7% 중 차지하는 비율(2/7)이 커서 실효세율이 15.4% × 2 ÷ 7 = <b>4.40%</b>가 됩니다. 분배율이 17%인 상품은 같은 배당 2%라도 비율이 2/17이라 1.81%입니다.</p></div></details><details class="g-faq"><summary>매달 500만원을 받으려면 얼마가 필요한가요?</summary><div class="g-ans"><p>500만원 × 12 ÷ 7% = 약 <b>8억 5,714만원</b>입니다(세전). 분배율이 낮은 상품은 같은 월 분배금을 받는 데 더 많은 원금이 필요하지만, 그만큼 주가 상승에 참여할 여지가 남아 있다는 점도 함께 보세요.</p></div></details><details class="g-faq"><summary>연간 주가 변동률에는 어떤 값을 넣어야 하나요?</summary><div class="g-ans"><p>분배금을 뺀 ETF 가격 자체가 1년에 얼마나 오를지에 대한 가정입니다. 과거 흐름을 참고하려면 아래 '코스피 대비 수익률 비교'에서 주가 기준 수익률을, 코스피 200의 장기 흐름은 코스피 200 성장률 페이지를 참고하세요. 보수적으로 0%나 마이너스를 넣어 하락 시나리오도 확인해 보는 것이 좋습니다.</p></div></details><details class="g-faq"><summary>분배 기준일과 지급일은 언제인가요?</summary><div class="g-ans"><p>월 분배 ETF는 보통 매달 정해진 기준일에 보유한 투자자에게 며칠 뒤 분배금을 지급합니다. 정확한 기준일·지급일과 매달 분배금 금액은 운용사 홈페이지와 한국거래소 공시에서 확인할 수 있습니다. 이 시뮬레이터는 계산을 위해 매달 같은 비율로 지급된다고 가정합니다.</p></div></details><details class="g-faq"><summary>운용보수는 왜 분배율에서 빼지 않나요?</summary><div class="g-ans"><p>ETF 운용보수는 펀드 순자산에서 매일 조금씩 빠져나가 <b>주가(순자산가치)에 이미 반영</b>되고, 분배금은 목표 분배율이나 지급 기준에 따라 따로 지급됩니다. 그래서 이 시뮬레이터는 분배율은 그대로 쓰고, 보수의 영향은 '연간 주가 변동률'에 들어 있다고 봅니다. 5개 시뮬레이터 모두 같은 방식입니다.</p></div></details></div>
+    </section>
+    <!-- [/GUIDE:tiger] -->
 </div><!-- /page-tiger -->
 
   <!-- ── 환율 계산기 페이지 ── -->
@@ -4506,7 +4540,18 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <p class="kcmp-note" id="tigerdiv-kcmp-note">—</p>
     </div>
   </div>
-</div><!-- /page-tiger -->
+    <!-- [GUIDE:tigerdiv] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
+    <section class="guide" aria-labelledby="g-tigerdiv-h">
+      <h2 id="g-tigerdiv-h">TIGER 배당커버드콜액티브 분배금은 이렇게 계산합니다</h2>
+      <p class="g-lead">TIGER 배당커버드콜액티브(472150)는 배당주에 투자하면서 콜옵션을 매도해 매달 분배금을 지급하는 ETF입니다. 이 시뮬레이터는 과거 지급 수준을 참고해 기본값으로 콜옵션 연 5% + 배당금 연 2% = 연 7%를 넣었고, 특별분배가 있던 시기에는 연 24% 수준까지 지급된 적이 있습니다.</p>
+      <div class="g-grid">
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>월 분배금(세전)</b> = 그 달 잔고 × 연 분배율(7%) ÷ 12</li><li><b>세금</b>: 과세 구조를 켜면 분배금 중 배당 재원 비율(2% ÷ 7%)에만 15.4%를 매겨 실효세율은 <b>4.40%</b>입니다. 콜옵션 재원(5%)은 비과세로 계산합니다.</li><li><b>주가 변동</b>: 매달 잔고에 (1 + 연간 주가 변동률)<sup>1/12</sup>를 곱합니다.</li><li><b>분배금 처리</b>: 재투자는 세후 분배금을 바로 다시 사고, 수령은 받아서 쓰며, 일부 재투자는 정한 비율만 다시 삽니다.</li><li><b>적립식</b>: 켜면 매달 초에 적립금을 더한 뒤 그 달 분배금을 계산합니다.</li><li><b>연평균 자산 상승률</b>: 남은 자산 기준 연환산 수익률이며, 적립식이면 적립 시점을 반영한 내부수익률(IRR)입니다.</li><li><b>목표 월 분배금 역산</b>: 필요 원금 = 목표 월 분배금 × 12 ÷ 연 분배율 (세전)</li><li>운용보수는 ETF 순자산에서 매일 빠져 주가에 반영되므로 분배율에서 따로 빼지 않습니다.</li></ul></article>
+        <article class="g-card"><h3>계산 예시</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>1억원 · 5년 · 주가 연 +5%</th><th>분배금 재투자</th><th>분배금 수령</th></tr></thead><tbody><tr><td>1년차 연간 분배금 (세후)</td><td>7,059,778원</td><td>6,844,007원</td></tr><tr><td>5년차 연간 분배금 (세후)</td><td>11,206,686원</td><td>8,318,934원</td></tr><tr><td>5년간 누적 분배금 (세후)</td><td>4,507만원</td><td>3,782만원</td></tr><tr><td>5년 뒤 남은 자산</td><td>1억 7,818만원</td><td>1억 2,763만원</td></tr></tbody></table></div><p class="g-cap">연 분배율 7% · 과세 구조 적용(실효세율 4.40%) · 적립 없음.</p><div class="table-scroll"><table class="g-tbl"><thead><tr><th>적립식 (재투자 + 매달 100만원)</th><th>결과</th></tr></thead><tbody><tr><td>총 투입액</td><td>1억 6,000만원</td></tr><tr><td>5년간 누적 분배금 (세후)</td><td>5,752만원</td></tr><tr><td>5년 뒤 남은 자산</td><td>2억 5,978만원</td></tr><tr><td>연평균 자산 상승률</td><td>+12.25% (적립 시점 반영)</td></tr></tbody></table></div><p class="g-cap">처음 1억원에 매달 초 100만원씩 더 넣은 경우입니다.</p></article>
+      </div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>특별분배는 어떻게 반영하나요?</summary><div class="g-ans"><p>시뮬레이터는 매달 같은 분배율로 지급된다고 가정합니다. 특별분배가 있는 해를 가정하려면 '예상 연간 분배율'을 올려서 계산해 보세요. 예를 들어 1년 중 특별분배로 평소보다 많이 받는다고 보면 그 해 평균 분배율을 넣으면 됩니다. 특별분배는 매년 반복된다는 보장이 없으므로 장기 계산에는 기본 분배율을 쓰는 것이 보수적입니다.</p></div></details><details class="g-faq"><summary>적립식으로 넣으면 연평균 자산 상승률은 어떻게 계산되나요?</summary><div class="g-ans"><p>매달 넣은 적립금을 '수익'으로 세지 않도록, 돈을 넣은 시점을 모두 반영한 연환산 내부수익률(IRR)로 계산합니다. 그래서 위 예시처럼 적립 여부와 관계없이 같은 조건이면 연 12.25%로 같게 나옵니다. 단순히 (최종 자산 ÷ 처음 금액)으로 계산하면 적립금 때문에 21%처럼 부풀려 보입니다.</p></div></details><details class="g-faq"><summary>배당커버드콜은 지수 커버드콜과 무엇이 다른가요?</summary><div class="g-ans"><p>지수 커버드콜은 코스피 200 같은 지수 전체를 보유하고, 배당커버드콜은 배당을 많이 주는 종목 위주로 보유하면서 콜옵션을 팝니다. 액티브 ETF는 운용사가 정한 범위 안에서 종목과 옵션 매도 비율을 조정합니다. 구성 종목과 옵션 비율은 운용사 공시에서 확인하세요.</p></div></details><details class="g-faq"><summary>실효세율 4.40%는 어떻게 나오나요?</summary><div class="g-ans"><p>분배금 중 과세되는 배당 재원 비율에만 15.4%를 매깁니다. 기본값 2% ÷ 7% 비율을 적용하면 15.4% × 2 ÷ 7 = 4.40%입니다. '과세 구조 설정'에서 콜옵션·배당 비율을 바꾸면 실효세율이 바로 다시 계산됩니다.</p></div></details><details class="g-faq"><summary>운용보수는 왜 분배율에서 빼지 않나요?</summary><div class="g-ans"><p>ETF 운용보수는 펀드 순자산에서 매일 조금씩 빠져나가 <b>주가(순자산가치)에 이미 반영</b>되고, 분배금은 목표 분배율이나 지급 기준에 따라 따로 지급됩니다. 그래서 이 시뮬레이터는 분배율은 그대로 쓰고, 보수의 영향은 '연간 주가 변동률'에 들어 있다고 봅니다. 5개 시뮬레이터 모두 같은 방식입니다.</p></div></details></div>
+    </section>
+    <!-- [/GUIDE:tigerdiv] -->
+</div><!-- /page-tigerdiv -->
 
   <!-- ── TIGER 반도체TOP10커버드콜액티브 페이지 ── -->
   <div class="app-page active" id="page-tigersemi">
@@ -5054,6 +5099,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <p class="kcmp-note" id="tigersemi-kcmp-note">—</p>
     </div>
   </div>
+    <!-- [GUIDE:tigersemi] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
+    <section class="guide" aria-labelledby="g-tigersemi-h">
+      <h2 id="g-tigersemi-h">TIGER 반도체TOP10커버드콜액티브 분배금은 이렇게 계산합니다</h2>
+      <p class="g-lead">TIGER 반도체TOP10커버드콜액티브(0177R0)는 국내 반도체 대표 종목에 투자하면서 콜옵션을 매도해 매달 분배금을 지급하는 ETF입니다. 이 시뮬레이터는 과거 지급 수준을 참고해 콜옵션 연 16% + 배당금 연 2% = 연 18%를 기본값으로 넣어 계산합니다.</p>
+      <div class="g-grid">
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>월 분배금(세전)</b> = 그 달 잔고 × 연 분배율(18%) ÷ 12</li><li><b>세금</b>: 과세 구조를 켜면 분배금 중 배당 재원 비율(2% ÷ 18%)에만 15.4%를 매겨 실효세율은 <b>1.71%</b>입니다. 콜옵션 재원(16%)은 비과세로 계산합니다.</li><li><b>주가 변동</b>: 매달 잔고에 (1 + 연간 주가 변동률)<sup>1/12</sup>를 곱합니다.</li><li><b>분배금 처리</b>: 재투자는 세후 분배금을 바로 다시 사고, 수령은 받아서 쓰며, 일부 재투자는 정한 비율만 다시 삽니다.</li><li><b>적립식</b>: 켜면 매달 초에 적립금을 더한 뒤 그 달 분배금을 계산합니다.</li><li><b>연평균 자산 상승률</b>: 남은 자산 기준 연환산 수익률이며, 적립식이면 적립 시점을 반영한 내부수익률(IRR)입니다.</li><li><b>목표 월 분배금 역산</b>: 필요 원금 = 목표 월 분배금 × 12 ÷ 연 분배율 (세전)</li><li>운용보수는 ETF 순자산에서 매일 빠져 주가에 반영되므로 분배율에서 따로 빼지 않습니다.</li></ul></article>
+        <article class="g-card"><h3>계산 예시</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>1억원 · 5년 · 주가 연 +5%</th><th>분배금 재투자</th><th>분배금 수령</th></tr></thead><tbody><tr><td>1년차 연간 분배금 (세후)</td><td>19,649,544원</td><td>18,093,870원</td></tr><tr><td>5년차 연간 분배금 (세후)</td><td>48,217,823원</td><td>21,993,212원</td></tr><tr><td>5년간 누적 분배금 (세후)</td><td>1억 6,177만원</td><td>9,998만원</td></tr><tr><td>5년 뒤 남은 자산</td><td>3억 713만원</td><td>1억 2,763만원</td></tr></tbody></table></div><p class="g-cap">연 분배율 18% · 과세 구조 적용(실효세율 1.71%) · 적립 없음.</p></article>
+      </div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>반도체 업종이라 주가 변동이 크면 결과가 얼마나 달라지나요?</summary><div class="g-ans"><p>분배금은 잔고에 비례하므로 주가 가정에 따라 크게 달라집니다. '연간 주가 변동률'을 −10%, 0%, +10%로 바꿔 가며 여러 시나리오를 비교해 보세요. 반도체는 업황에 따라 한 해에도 수십 % 오르내릴 수 있어 한 가지 가정만 보는 것은 위험합니다.</p></div></details><details class="g-faq"><summary>분배율 18%는 확정된 수치인가요?</summary><div class="g-ans"><p>아닙니다. 과거 지급 내역을 참고한 기본값이며, 실제 분배금은 옵션 프리미엄과 시장 상황에 따라 매달 달라집니다. 최근 분배금 내역은 운용사 홈페이지에서 확인하고 그 값을 '예상 연간 분배율'에 넣어 계산하면 됩니다.</p></div></details><details class="g-faq"><summary>매달 500만원을 받으려면 얼마가 필요한가요?</summary><div class="g-ans"><p>500만원 × 12 ÷ 18% = 약 <b>3억 3,333만원</b>입니다(세전). 분배율이 높을수록 필요한 원금은 줄지만, 분배금 재원이 부족한 달에는 원금(순자산)에서 지급될 수 있다는 점도 함께 보세요.</p></div></details><details class="g-faq"><summary>세금은 얼마나 떼나요?</summary><div class="g-ans"><p>기본값에서는 분배금 중 배당 재원(2/18)에만 15.4%를 매겨 실효세율이 1.71%입니다. 1억원·재투자 예시의 1년차 세금은 약 34만원 수준입니다. 실제 과세 비율은 매달 공시되는 분배금 구성에 따라 달라집니다.</p></div></details><details class="g-faq"><summary>운용보수는 왜 분배율에서 빼지 않나요?</summary><div class="g-ans"><p>ETF 운용보수는 펀드 순자산에서 매일 조금씩 빠져나가 <b>주가(순자산가치)에 이미 반영</b>되고, 분배금은 목표 분배율이나 지급 기준에 따라 따로 지급됩니다. 그래서 이 시뮬레이터는 분배율은 그대로 쓰고, 보수의 영향은 '연간 주가 변동률'에 들어 있다고 봅니다. 5개 시뮬레이터 모두 같은 방식입니다.</p></div></details></div>
+    </section>
+    <!-- [/GUIDE:tigersemi] -->
 </div><!-- /page-tigersemi -->
 
   <!-- ── 환율 계산기 페이지 ── -->
@@ -5977,6 +6033,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       </p>
     </div>
 
+    <!-- [GUIDE:kospi] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
+    <section class="guide" aria-labelledby="g-kospi-h">
+      <h2 id="g-kospi-h">코스피 연평균 성장률은 이렇게 계산합니다</h2>
+      <p class="g-lead">코스피는 1980년 1월 4일을 100으로 시작한 한국 대표 주가지수입니다. 이 페이지는 기준일부터, 또는 최근 5~30년 동안 지수가 해마다 평균 몇 %씩 올랐는지(CAGR)를 현재 지수로 계산합니다.</p>
+      <div class="g-grid">
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>연평균 성장률(CAGR)</b> = (현재 지수 ÷ 시작 지수)<sup>1/기간</sup> − 1 — 기간은 일수 ÷ 365.25</li><li><b>전체 기간</b>: 1980년 1월 4일 기준지수 100부터 현재까지</li><li><b>최근 N년</b>: 이 사이트가 보관한 주간 종가 중 N년 전 같은 날짜에 가장 가까운 값부터 현재까지</li><li><b>월평균·일평균 성장률</b> = (1 + CAGR)<sup>1/12</sup> − 1, (1 + CAGR)<sup>1/365.25</sup> − 1</li><li><b>1억 투자 시뮬레이션</b> = 1억원 × (1 + CAGR)<sup>년수</sup> — 선택한 기간의 CAGR이 앞으로도 이어진다고 가정</li><li>코스피는 가격지수라 배당은 포함하지 않습니다.</li></ul></article>
+        <article class="g-card"><h3>계산 예시</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>항목</th><th>값</th></tr></thead><tbody><tr><td>기준 (1980.1.4)</td><td>100</td></tr><tr><td>2024.12.27 종가</td><td>2,404.77 (약 24배)</td></tr><tr><td>기간</td><td>44.98년</td></tr><tr><td><b>연평균 성장률 (CAGR)</b></td><td><b>7.33%</b></td></tr><tr><td>같은 날 기준 최근 10년 CAGR</td><td>2.13% (2014.12.26 1,948.16 →)</td></tr><tr><td>자산 2배 걸리는 기간 (7.33%)</td><td>약 9.8년</td></tr></tbody></table></div><p class="g-cap">이 사이트가 보관한 주간 종가로 계산한 예시입니다. 현재 값은 위 카드에서 실시간으로 확인하세요.</p></article>
+      </div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>같은 코스피인데 기간마다 성장률이 왜 이렇게 다른가요?</summary><div class="g-ans"><p>CAGR은 시작 시점의 지수에 크게 좌우됩니다. 위 예시처럼 1980년부터 보면 연 7.33%지만, 2014년 말부터 10년만 보면 연 2.13%에 그칩니다. 시작점이 고점이었는지 저점이었는지에 따라 달라지므로 여러 기간을 함께 보는 것이 좋습니다.</p></div></details><details class="g-faq"><summary>코스피와 코스피 200은 무엇이 다른가요?</summary><div class="g-ans"><p>코스피는 유가증권시장 전체 보통주로, 코스피 200은 그중 시가총액·거래량 등을 기준으로 고른 대형주 200종목으로 계산합니다. 코스피 200은 1990년 1월 3일 100에서 시작해 기준 시점이 다르므로 두 지수의 숫자를 직접 비교하면 안 되고, 성장률로 비교해야 합니다.</p></div></details><details class="g-faq"><summary>배당금도 포함된 성장률인가요?</summary><div class="g-ans"><p>아닙니다. 코스피는 주가만으로 계산하는 <b>가격지수</b>라 배당은 들어 있지 않습니다. 배당을 받아 다시 투자했다고 보는 총수익률은 이보다 높습니다.</p></div></details><details class="g-faq"><summary>1억 투자 시뮬레이션 결과를 믿어도 되나요?</summary><div class="g-ans"><p>과거 기간의 연평균 성장률이 앞으로도 똑같이 이어진다는 단순 가정입니다. 실제로는 해마다 수익률이 크게 다르고, 세금·수수료·환율도 빠져 있습니다. 여러 기간 버튼을 눌러 결과가 얼마나 달라지는지 함께 보는 것이 좋습니다.</p></div></details><details class="g-faq"><summary>지수 값은 어디서 가져오나요?</summary><div class="g-ans"><p>현재 지수는 Yahoo Finance 시세를 받아 오고, 최근 N년 계산에 쓰는 과거 값은 이 사이트가 GitHub Actions로 주기적으로 모아 둔 주간 데이터(data/history.json)를 씁니다. '지수 갱신' 버튼으로 현재 값을 다시 불러올 수 있습니다.</p></div></details></div>
+    </section>
+    <!-- [/GUIDE:kospi] -->
   </div><!-- /page-kospi -->
 
   <!-- ── KOSPI 200 페이지 ── -->
@@ -6073,6 +6140,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       </p>
     </div>
 
+    <!-- [GUIDE:kospi200] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
+    <section class="guide" aria-labelledby="g-kospi200-h">
+      <h2 id="g-kospi200-h">코스피 200 연평균 성장률은 이렇게 계산합니다</h2>
+      <p class="g-lead">코스피 200은 1990년 1월 3일을 100으로 시작한 대형주 200종목 지수로, KODEX 200·TIGER 200 등 많은 ETF와 선물·옵션의 기초자산입니다. 이 페이지는 기준일 또는 최근 N년 동안의 연평균 성장률을 현재 지수로 계산합니다.</p>
+      <div class="g-grid">
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>연평균 성장률(CAGR)</b> = (현재 지수 ÷ 시작 지수)<sup>1/기간</sup> − 1 — 기간은 일수 ÷ 365.25</li><li><b>전체 기간</b>: 1990년 1월 3일 기준지수 100부터 현재까지</li><li><b>최근 N년</b>: 이 사이트가 보관한 주간 종가 중 N년 전 같은 날짜에 가장 가까운 값부터 현재까지</li><li><b>월평균·일평균 성장률</b> = (1 + CAGR)<sup>1/12</sup> − 1, (1 + CAGR)<sup>1/365.25</sup> − 1</li><li><b>1억 투자 시뮬레이션</b> = 1억원 × (1 + CAGR)<sup>년수</sup> — 선택한 기간의 CAGR이 앞으로도 이어진다고 가정</li><li>코스피 200는 가격지수라 배당은 포함하지 않습니다.</li></ul></article>
+        <article class="g-card"><h3>계산 예시</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>항목</th><th>값</th></tr></thead><tbody><tr><td>기준 (1990.1.3)</td><td>100</td></tr><tr><td>2024.12.27 종가</td><td>319.03 (약 3.2배)</td></tr><tr><td>기간</td><td>34.98년</td></tr><tr><td><b>연평균 성장률 (CAGR)</b></td><td><b>3.37%</b></td></tr><tr><td>같은 날 기준 최근 10년 CAGR</td><td>2.47% (2014.12.26 250.05 →)</td></tr><tr><td>1억원 × (1 + 3.37%)<sup>30</sup></td><td>약 2억 7,045만원</td></tr></tbody></table></div><p class="g-cap">이 사이트가 보관한 주간 종가로 계산한 예시입니다. 현재 값은 위 카드에서 실시간으로 확인하세요.</p></article>
+      </div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>코스피보다 코스피 200의 성장률이 낮게 나오는 이유는 무엇인가요?</summary><div class="g-ans"><p>두 지수는 기준 시점이 다릅니다. 코스피는 1980년(100)부터, 코스피 200은 코스피가 이미 크게 오른 뒤인 1990년(100)부터 계산하므로 같은 '전체 기간'이라도 출발점이 달라 성장률이 다르게 나옵니다. 같은 기간 버튼(예: 최근 10년)으로 비교하는 것이 공정합니다.</p></div></details><details class="g-faq"><summary>코스피 200 ETF에 투자하면 이 성장률만큼 벌 수 있나요?</summary><div class="g-ans"><p>ETF는 코스피 200을 따라가도록 운용되지만 운용보수와 추적오차가 있고, 대신 배당을 분배금으로 받습니다. 그래서 실제 투자 성과는 이 가격지수 성장률과 조금 다릅니다. 커버드콜 ETF처럼 옵션을 함께 쓰는 상품은 차이가 더 커집니다.</p></div></details><details class="g-faq"><summary>배당금도 포함된 성장률인가요?</summary><div class="g-ans"><p>아닙니다. 코스피 200는 주가만으로 계산하는 <b>가격지수</b>라 배당은 들어 있지 않습니다. 배당을 받아 다시 투자했다고 보는 총수익률은 이보다 높습니다. 배당을 다시 투자했다고 보고 계산하는 코스피 200 총수익지수(코스피 200 TR)가 따로 있습니다.</p></div></details><details class="g-faq"><summary>1억 투자 시뮬레이션 결과를 믿어도 되나요?</summary><div class="g-ans"><p>과거 기간의 연평균 성장률이 앞으로도 똑같이 이어진다는 단순 가정입니다. 실제로는 해마다 수익률이 크게 다르고, 세금·수수료·환율도 빠져 있습니다. 여러 기간 버튼을 눌러 결과가 얼마나 달라지는지 함께 보는 것이 좋습니다.</p></div></details><details class="g-faq"><summary>지수 값은 어디서 가져오나요?</summary><div class="g-ans"><p>현재 지수는 Yahoo Finance 시세를 받아 오고, 최근 N년 계산에 쓰는 과거 값은 이 사이트가 GitHub Actions로 주기적으로 모아 둔 주간 데이터(data/history.json)를 씁니다. '지수 갱신' 버튼으로 현재 값을 다시 불러올 수 있습니다.</p></div></details></div>
+    </section>
+    <!-- [/GUIDE:kospi200] -->
   </div><!-- /page-kospi200 -->
 
   <!-- ── KOSDAQ 페이지 ── -->
@@ -6167,6 +6245,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       </p>
     </div>
 
+    <!-- [GUIDE:kosdaq] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
+    <section class="guide" aria-labelledby="g-kosdaq-h">
+      <h2 id="g-kosdaq-h">코스닥 연평균 성장률은 이렇게 계산합니다</h2>
+      <p class="g-lead">코스닥은 1996년 7월 1일을 기준으로 시작한 중소·벤처 기업 중심 지수입니다. 처음에는 기준지수가 100이었지만 2004년 1월에 1000으로 바꿔(10배) 지금의 숫자 단위가 되었고, 이 페이지는 1000을 기준으로 연평균 성장률을 계산합니다.</p>
+      <div class="g-grid">
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>연평균 성장률(CAGR)</b> = (현재 지수 ÷ 시작 지수)<sup>1/기간</sup> − 1 — 기간은 일수 ÷ 365.25</li><li><b>전체 기간</b>: 1996년 7월 1일 기준지수 1000부터 현재까지</li><li><b>최근 N년</b>: 이 사이트가 보관한 주간 종가 중 N년 전 같은 날짜에 가장 가까운 값부터 현재까지</li><li><b>월평균·일평균 성장률</b> = (1 + CAGR)<sup>1/12</sup> − 1, (1 + CAGR)<sup>1/365.25</sup> − 1</li><li><b>1억 투자 시뮬레이션</b> = 1억원 × (1 + CAGR)<sup>년수</sup> — 선택한 기간의 CAGR이 앞으로도 이어진다고 가정</li><li>코스닥는 가격지수라 배당은 포함하지 않습니다.</li></ul></article>
+        <article class="g-card"><h3>계산 예시</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>항목</th><th>값</th></tr></thead><tbody><tr><td>기준 (1996.7.1)</td><td>1,000</td></tr><tr><td>2024.12.27 종가</td><td>665.97 (기준의 0.67배)</td></tr><tr><td>기간</td><td>28.49년</td></tr><tr><td><b>연평균 성장률 (CAGR)</b></td><td><b>−1.42%</b></td></tr><tr><td>같은 날 기준 최근 10년 CAGR</td><td>2.21% (2014.12.26 535.17 →)</td></tr></tbody></table></div><p class="g-cap">이 사이트가 보관한 주간 종가로 계산한 예시입니다. 현재 값은 위 카드에서 실시간으로 확인하세요.</p></article>
+      </div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>코스닥 성장률이 마이너스로 나오는 이유는 무엇인가요?</summary><div class="g-ans"><p>코스닥은 2000년 IT 버블 때 지금 기준으로 2,800선까지 올랐다가 크게 떨어졌고, 그 뒤 오랫동안 기준값 1,000 아래에 머물렀습니다. 그래서 1996년부터 계산한 전체 기간 CAGR은 마이너스가 될 수 있습니다. 같은 지수라도 시작 시점을 바꾸면 결과가 크게 달라집니다.</p></div></details><details class="g-faq"><summary>기준지수가 왜 100이 아니라 1000인가요?</summary><div class="g-ans"><p>지수 숫자가 너무 작아 변동이 잘 드러나지 않는 문제를 줄이려고 2004년 1월 26일 기준지수를 100에서 1000으로 10배 바꿨습니다. 과거 지수도 같은 비율로 환산되어 있으므로 성장률 계산에는 영향이 없습니다.</p></div></details><details class="g-faq"><summary>배당금도 포함된 성장률인가요?</summary><div class="g-ans"><p>아닙니다. 코스닥는 주가만으로 계산하는 <b>가격지수</b>라 배당은 들어 있지 않습니다. 배당을 받아 다시 투자했다고 보는 총수익률은 이보다 높습니다.</p></div></details><details class="g-faq"><summary>1억 투자 시뮬레이션 결과를 믿어도 되나요?</summary><div class="g-ans"><p>과거 기간의 연평균 성장률이 앞으로도 똑같이 이어진다는 단순 가정입니다. 실제로는 해마다 수익률이 크게 다르고, 세금·수수료·환율도 빠져 있습니다. 여러 기간 버튼을 눌러 결과가 얼마나 달라지는지 함께 보는 것이 좋습니다.</p></div></details><details class="g-faq"><summary>지수 값은 어디서 가져오나요?</summary><div class="g-ans"><p>현재 지수는 Yahoo Finance 시세를 받아 오고, 최근 N년 계산에 쓰는 과거 값은 이 사이트가 GitHub Actions로 주기적으로 모아 둔 주간 데이터(data/history.json)를 씁니다. '지수 갱신' 버튼으로 현재 값을 다시 불러올 수 있습니다.</p></div></details></div>
+    </section>
+    <!-- [/GUIDE:kosdaq] -->
   </div><!-- /page-kosdaq -->
 
 
@@ -6236,6 +6325,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       </div>
       <p style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.7;">※ 과거 성장률이 미래를 보장하지 않습니다.</p>
     </div>
+    <!-- [GUIDE:nasdaq] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
+    <section class="guide" aria-labelledby="g-nasdaq-h">
+      <h2 id="g-nasdaq-h">나스닥 종합지수 연평균 성장률은 이렇게 계산합니다</h2>
+      <p class="g-lead">나스닥 종합지수는 나스닥 거래소에 상장된 모든 보통주로 계산하는 지수로, 1971년 2월 기준지수 100에서 시작했습니다. 이 페이지는 기준일 또는 최근 N년 동안 지수가 해마다 평균 몇 % 올랐는지를 현재 지수로 계산합니다.</p>
+      <div class="g-grid">
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>연평균 성장률(CAGR)</b> = (현재 지수 ÷ 시작 지수)<sup>1/기간</sup> − 1 — 기간은 일수 ÷ 365.25</li><li><b>전체 기간</b>: 1971년 2월 8일 기준지수 100부터 현재까지</li><li><b>최근 N년</b>: 보관한 주간 종가에서 N년 전 값부터 현재까지 (데이터가 없으면 연초 기준 내장값 사용)</li><li><b>월평균·일평균 성장률</b> = (1 + CAGR)<sup>1/12</sup> − 1, (1 + CAGR)<sup>1/365.25</sup> − 1</li><li><b>1억 투자 시뮬레이션</b> = 1억원 × (1 + CAGR)<sup>년수</sup> — 선택한 기간의 CAGR이 앞으로도 이어진다고 가정</li><li>나스닥 종합지수는 가격지수라 배당은 포함하지 않습니다.</li></ul></article>
+        <article class="g-card"><h3>계산 예시</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>항목</th><th>값</th></tr></thead><tbody><tr><td>기준 (1971.2.8)</td><td>100</td></tr><tr><td>2024.12.27 종가</td><td>19,722.03 (약 197배)</td></tr><tr><td>기간</td><td>53.88년</td></tr><tr><td><b>연평균 성장률 (CAGR)</b></td><td><b>10.30%</b></td></tr><tr><td>같은 날 기준 최근 10년 CAGR</td><td>15.16% (2014.12.26 4,806.86 →)</td></tr><tr><td>자산 2배 걸리는 기간 (10.30%)</td><td>약 7.1년</td></tr></tbody></table></div><p class="g-cap">이 사이트가 보관한 주간 종가(달러 기준)로 계산한 예시입니다.</p></article>
+      </div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>나스닥 종합지수와 나스닥 100은 무엇이 다른가요?</summary><div class="g-ans"><p>나스닥 종합지수는 나스닥에 상장된 수천 개 종목 전체를, 나스닥 100은 그중 금융주를 뺀 시가총액 상위 100개 기업을 담습니다. QQQ 같은 대표 ETF는 나스닥 100을 따라가므로, ETF 성과와 비교하려면 나스닥 100 성장률 페이지를 함께 보세요.</p></div></details><details class="g-faq"><summary>원화로 투자하면 성장률이 달라지나요?</summary><div class="g-ans"><p>이 페이지의 성장률은 달러 기준입니다. 원화로 투자하면 원/달러 환율 변화가 더해져, 환율이 오르면(원화 약세) 원화 수익률이 더 커지고 내리면 줄어듭니다. 환율 흐름은 환율 계산기에서 확인할 수 있습니다.</p></div></details><details class="g-faq"><summary>배당금도 포함된 성장률인가요?</summary><div class="g-ans"><p>아닙니다. 나스닥 종합지수는 주가만으로 계산하는 <b>가격지수</b>라 배당은 들어 있지 않습니다. 배당을 받아 다시 투자했다고 보는 총수익률은 이보다 높습니다.</p></div></details><details class="g-faq"><summary>1억 투자 시뮬레이션 결과를 믿어도 되나요?</summary><div class="g-ans"><p>과거 기간의 연평균 성장률이 앞으로도 똑같이 이어진다는 단순 가정입니다. 실제로는 해마다 수익률이 크게 다르고, 세금·수수료·환율도 빠져 있습니다. 여러 기간 버튼을 눌러 결과가 얼마나 달라지는지 함께 보는 것이 좋습니다.</p></div></details><details class="g-faq"><summary>지수 값은 어디서 가져오나요?</summary><div class="g-ans"><p>현재 지수는 Yahoo Finance 시세를 받아 오고, 최근 N년 계산에 쓰는 과거 값은 이 사이트가 GitHub Actions로 주기적으로 모아 둔 주간 데이터(data/history.json)를 씁니다. '지수 갱신' 버튼으로 현재 값을 다시 불러올 수 있습니다.</p></div></details></div>
+    </section>
+    <!-- [/GUIDE:nasdaq] -->
   </div><!-- /page-nasdaq -->
 
   <!-- ── 나스닥 100 페이지 ── -->
@@ -6304,6 +6404,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       </div>
       <p style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.7;">※ 과거 성장률이 미래를 보장하지 않습니다.</p>
     </div>
+    <!-- [GUIDE:nasdaq100] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
+    <section class="guide" aria-labelledby="g-nasdaq100-h">
+      <h2 id="g-nasdaq100-h">나스닥 100 연평균 성장률은 이렇게 계산합니다</h2>
+      <p class="g-lead">나스닥 100은 나스닥에 상장된 비금융 기업 중 시가총액 상위 100개로 구성된 지수로, 1985년 1월 31일 기준지수 250에서 시작했습니다. QQQ·TQQQ 등 많은 ETF의 기초지수이며, 이 페이지는 그 연평균 성장률을 계산합니다.</p>
+      <div class="g-grid">
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>연평균 성장률(CAGR)</b> = (현재 지수 ÷ 시작 지수)<sup>1/기간</sup> − 1 — 기간은 일수 ÷ 365.25</li><li><b>전체 기간</b>: 1985년 1월 31일 기준지수 250부터 현재까지</li><li><b>최근 N년</b>: 보관한 주간 종가에서 N년 전 값부터 현재까지 (데이터가 없으면 연초 기준 내장값 사용)</li><li><b>월평균·일평균 성장률</b> = (1 + CAGR)<sup>1/12</sup> − 1, (1 + CAGR)<sup>1/365.25</sup> − 1</li><li><b>1억 투자 시뮬레이션</b> = 1억원 × (1 + CAGR)<sup>년수</sup> — 선택한 기간의 CAGR이 앞으로도 이어진다고 가정</li><li>나스닥 100는 가격지수라 배당은 포함하지 않습니다.</li></ul></article>
+        <article class="g-card"><h3>계산 예시</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>항목</th><th>값</th></tr></thead><tbody><tr><td>기준 (1985.1.31)</td><td>250</td></tr><tr><td>2024.12.27 종가</td><td>21,473.02 (약 86배)</td></tr><tr><td>기간</td><td>39.90년</td></tr><tr><td><b>연평균 성장률 (CAGR)</b></td><td><b>11.81%</b></td></tr><tr><td>같은 날 기준 최근 10년 CAGR</td><td>17.40% (2014.12.26 4,314.09 →)</td></tr><tr><td>자산 2배 걸리는 기간 (11.81%)</td><td>약 6.2년</td></tr></tbody></table></div><p class="g-cap">이 사이트가 보관한 주간 종가(달러 기준)로 계산한 예시입니다.</p></article>
+      </div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>TQQQ 같은 3배 레버리지 ETF는 성장률도 3배인가요?</summary><div class="g-ans"><p>아닙니다. 레버리지 ETF는 <b>하루</b> 수익률의 3배를 목표로 하므로 기간이 길어지면 변동성 때문에 단순 3배와 크게 달라집니다. 오르내림이 심한 구간에서는 지수가 제자리여도 레버리지 ETF는 손실이 날 수 있습니다. 실제 결과는 ETF CAGR 비교 페이지에서 QQQ와 TQQQ를 함께 비교해 보세요.</p></div></details><details class="g-faq"><summary>원화로 투자하면 성장률이 달라지나요?</summary><div class="g-ans"><p>이 페이지의 성장률은 달러 기준입니다. 원화로 투자하면 원/달러 환율 변화가 더해집니다. 환율이 오르면(원화 약세) 원화 기준 수익률이 높아지고, 환율이 내리면 낮아집니다.</p></div></details><details class="g-faq"><summary>배당금도 포함된 성장률인가요?</summary><div class="g-ans"><p>아닙니다. 나스닥 100는 주가만으로 계산하는 <b>가격지수</b>라 배당은 들어 있지 않습니다. 배당을 받아 다시 투자했다고 보는 총수익률은 이보다 높습니다.</p></div></details><details class="g-faq"><summary>1억 투자 시뮬레이션 결과를 믿어도 되나요?</summary><div class="g-ans"><p>과거 기간의 연평균 성장률이 앞으로도 똑같이 이어진다는 단순 가정입니다. 실제로는 해마다 수익률이 크게 다르고, 세금·수수료·환율도 빠져 있습니다. 여러 기간 버튼을 눌러 결과가 얼마나 달라지는지 함께 보는 것이 좋습니다.</p></div></details><details class="g-faq"><summary>지수 값은 어디서 가져오나요?</summary><div class="g-ans"><p>현재 지수는 Yahoo Finance 시세를 받아 오고, 최근 N년 계산에 쓰는 과거 값은 이 사이트가 GitHub Actions로 주기적으로 모아 둔 주간 데이터(data/history.json)를 씁니다. '지수 갱신' 버튼으로 현재 값을 다시 불러올 수 있습니다.</p></div></details></div>
+    </section>
+    <!-- [/GUIDE:nasdaq100] -->
   </div><!-- /page-nasdaq100 -->
 
   <!-- ── 다우존스 산업평균지수 페이지 ── -->
@@ -6372,6 +6483,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       </div>
       <p style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.7;">※ 과거 성장률이 미래를 보장하지 않습니다.</p>
     </div>
+    <!-- [GUIDE:dowjones] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
+    <section class="guide" aria-labelledby="g-dowjones-h">
+      <h2 id="g-dowjones-h">다우존스 산업평균지수 연평균 성장률은 이렇게 계산합니다</h2>
+      <p class="g-lead">다우존스 산업평균지수는 1896년 5월 26일 40.94로 시작한 가장 오래된 미국 주가지수 중 하나로, 대표 우량 기업 30개의 주가로 계산합니다. 이 페이지는 120년이 넘는 기간 또는 최근 N년의 연평균 성장률을 현재 지수로 계산합니다.</p>
+      <div class="g-grid">
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>연평균 성장률(CAGR)</b> = (현재 지수 ÷ 시작 지수)<sup>1/기간</sup> − 1 — 기간은 일수 ÷ 365.25</li><li><b>전체 기간</b>: 1896년 5월 26일 40.94부터 현재까지</li><li><b>최근 N년</b>: 보관한 주간 종가에서 N년 전 값부터 현재까지 (데이터가 없으면 연초 기준 내장값 사용)</li><li><b>월평균·일평균 성장률</b> = (1 + CAGR)<sup>1/12</sup> − 1, (1 + CAGR)<sup>1/365.25</sup> − 1</li><li><b>1억 투자 시뮬레이션</b> = 1억원 × (1 + CAGR)<sup>년수</sup> — 선택한 기간의 CAGR이 앞으로도 이어진다고 가정</li><li>다우존스 산업평균지수는 가격지수라 배당은 포함하지 않습니다.</li></ul></article>
+        <article class="g-card"><h3>계산 예시</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>항목</th><th>값</th></tr></thead><tbody><tr><td>기준 (1896.5.26)</td><td>40.94</td></tr><tr><td>2024.12.27 종가</td><td>42,992.21 (약 1,050배)</td></tr><tr><td>기간</td><td>128.59년</td></tr><tr><td><b>연평균 성장률 (CAGR)</b></td><td><b>5.56%</b></td></tr><tr><td>같은 날 기준 최근 10년 CAGR</td><td>9.06% (2014.12.26 18,053.71 →)</td></tr><tr><td>자산 2배 걸리는 기간 (5.56%)</td><td>약 12.8년</td></tr></tbody></table></div><p class="g-cap">이 사이트가 보관한 주간 종가(달러 기준)로 계산한 예시입니다.</p></article>
+      </div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>다우존스는 S&P 500과 계산 방식이 어떻게 다른가요?</summary><div class="g-ans"><p>다우존스는 30개 종목의 <b>주가</b>를 더해 나누는 가격가중 방식이라 주가가 높은 종목의 영향이 큽니다. S&amp;P 500은 500개 종목의 <b>시가총액</b>으로 계산합니다. 종목 수와 방식이 달라 장기 성장률도 다르게 나옵니다.</p></div></details><details class="g-faq"><summary>120년 넘는 기간의 연 5.56%는 큰 수익률인가요?</summary><div class="g-ans"><p>배당을 빼고도 128년 동안 약 1,050배가 된 숫자입니다. 연 5.56%를 128년간 복리로 굴리면 이 정도 차이가 납니다. 같은 기간 배당을 재투자했다면 결과는 훨씬 커집니다. 다만 그 사이 대공황처럼 수십 년 회복이 걸린 하락도 있었습니다.</p></div></details><details class="g-faq"><summary>배당금도 포함된 성장률인가요?</summary><div class="g-ans"><p>아닙니다. 다우존스 산업평균지수는 주가만으로 계산하는 <b>가격지수</b>라 배당은 들어 있지 않습니다. 배당을 받아 다시 투자했다고 보는 총수익률은 이보다 높습니다.</p></div></details><details class="g-faq"><summary>1억 투자 시뮬레이션 결과를 믿어도 되나요?</summary><div class="g-ans"><p>과거 기간의 연평균 성장률이 앞으로도 똑같이 이어진다는 단순 가정입니다. 실제로는 해마다 수익률이 크게 다르고, 세금·수수료·환율도 빠져 있습니다. 여러 기간 버튼을 눌러 결과가 얼마나 달라지는지 함께 보는 것이 좋습니다.</p></div></details><details class="g-faq"><summary>지수 값은 어디서 가져오나요?</summary><div class="g-ans"><p>현재 지수는 Yahoo Finance 시세를 받아 오고, 최근 N년 계산에 쓰는 과거 값은 이 사이트가 GitHub Actions로 주기적으로 모아 둔 주간 데이터(data/history.json)를 씁니다. '지수 갱신' 버튼으로 현재 값을 다시 불러올 수 있습니다.</p></div></details></div>
+    </section>
+    <!-- [/GUIDE:dowjones] -->
   </div><!-- /page-dowjones -->
 
   <!-- ── S&P 500 페이지 ── -->
@@ -6440,6 +6562,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       </div>
       <p style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.7;">※ 과거 성장률이 미래를 보장하지 않습니다.</p>
     </div>
+    <!-- [GUIDE:sp500] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
+    <section class="guide" aria-labelledby="g-sp500-h">
+      <h2 id="g-sp500-h">S&amp;P 500 연평균 성장률은 이렇게 계산합니다</h2>
+      <p class="g-lead">S&amp;P 500은 미국 대형주 500개의 시가총액으로 계산하는 대표 지수입니다. 이 페이지는 데이터가 시작되는 1928년 1월 3일(17.66)부터, 또는 최근 N년 동안의 연평균 성장률을 현재 지수로 계산합니다.</p>
+      <div class="g-grid">
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>연평균 성장률(CAGR)</b> = (현재 지수 ÷ 시작 지수)<sup>1/기간</sup> − 1 — 기간은 일수 ÷ 365.25</li><li><b>전체 기간</b>: 1928년 1월 3일 17.66부터 현재까지</li><li><b>최근 N년</b>: 보관한 주간 종가에서 N년 전 값부터 현재까지 (데이터가 없으면 연초 기준 내장값 사용)</li><li><b>월평균·일평균 성장률</b> = (1 + CAGR)<sup>1/12</sup> − 1, (1 + CAGR)<sup>1/365.25</sup> − 1</li><li><b>1억 투자 시뮬레이션</b> = 1억원 × (1 + CAGR)<sup>년수</sup> — 선택한 기간의 CAGR이 앞으로도 이어진다고 가정</li><li>S&amp;P 500는 가격지수라 배당은 포함하지 않습니다.</li></ul></article>
+        <article class="g-card"><h3>계산 예시</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>항목</th><th>값</th></tr></thead><tbody><tr><td>기준 (1928.1.3)</td><td>17.66</td></tr><tr><td>2024.12.27 종가</td><td>5,970.84 (약 338배)</td></tr><tr><td>기간</td><td>96.98년</td></tr><tr><td><b>연평균 성장률 (CAGR)</b></td><td><b>6.19%</b></td></tr><tr><td>같은 날 기준 최근 10년 CAGR</td><td>11.07% (2014.12.26 2,088.77 →)</td></tr><tr><td>자산 2배 걸리는 기간 (6.19%)</td><td>약 11.5년</td></tr></tbody></table></div><p class="g-cap">이 사이트가 보관한 주간 종가(달러 기준)로 계산한 예시입니다.</p></article>
+      </div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>S&amp;P 500은 1928년부터 500개 종목이었나요?</summary><div class="g-ans"><p>아닙니다. 지금처럼 500개 종목으로 확대된 것은 1957년이고, 그 전 기간은 더 적은 종목으로 계산한 전신 지수의 값입니다. 장기 데이터로는 이어서 쓰는 것이 일반적이지만, 이런 차이가 있다는 점은 알아 두면 좋습니다.</p></div></details><details class="g-faq"><summary>S&amp;P 500 지수에 투자하는 가장 쉬운 방법은 무엇인가요?</summary><div class="g-ans"><p>S&amp;P 500을 따라가는 ETF(미국 상장 SPY·VOO·IVV, 국내 상장 S&amp;P 500 ETF 등)를 사는 방법이 일반적입니다. 상품마다 운용보수·환헤지 여부·세금이 다르므로 비교해 보고 고르세요. ETF CAGR 비교 페이지에서 SPY의 실제 성과도 볼 수 있습니다.</p></div></details><details class="g-faq"><summary>배당금도 포함된 성장률인가요?</summary><div class="g-ans"><p>아닙니다. S&amp;P 500는 주가만으로 계산하는 <b>가격지수</b>라 배당은 들어 있지 않습니다. 배당을 받아 다시 투자했다고 보는 총수익률은 이보다 높습니다. S&amp;P 500은 배당 비중이 꽤 커서 배당 재투자 여부에 따라 장기 결과 차이가 큽니다.</p></div></details><details class="g-faq"><summary>1억 투자 시뮬레이션 결과를 믿어도 되나요?</summary><div class="g-ans"><p>과거 기간의 연평균 성장률이 앞으로도 똑같이 이어진다는 단순 가정입니다. 실제로는 해마다 수익률이 크게 다르고, 세금·수수료·환율도 빠져 있습니다. 여러 기간 버튼을 눌러 결과가 얼마나 달라지는지 함께 보는 것이 좋습니다.</p></div></details><details class="g-faq"><summary>지수 값은 어디서 가져오나요?</summary><div class="g-ans"><p>현재 지수는 Yahoo Finance 시세를 받아 오고, 최근 N년 계산에 쓰는 과거 값은 이 사이트가 GitHub Actions로 주기적으로 모아 둔 주간 데이터(data/history.json)를 씁니다. '지수 갱신' 버튼으로 현재 값을 다시 불러올 수 있습니다.</p></div></details></div>
+    </section>
+    <!-- [/GUIDE:sp500] -->
   </div><!-- /page-sp500 -->
 
   <!-- ── 필라델피아 반도체지수 페이지 ── -->
@@ -6508,6 +6641,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       </div>
       <p style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.7;">※ 과거 성장률이 미래를 보장하지 않습니다.</p>
     </div>
+    <!-- [GUIDE:sox] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
+    <section class="guide" aria-labelledby="g-sox-h">
+      <h2 id="g-sox-h">필라델피아 반도체지수 연평균 성장률은 이렇게 계산합니다</h2>
+      <p class="g-lead">필라델피아 반도체지수(SOX)는 미국 상장 반도체 기업 30곳으로 구성된 지수로, 1993년 12월 1일 기준지수 200에서 시작했습니다. 반도체 업황에 따라 등락이 커서 기간에 따른 성장률 차이를 함께 보는 것이 중요합니다.</p>
+      <div class="g-grid">
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>연평균 성장률(CAGR)</b> = (현재 지수 ÷ 시작 지수)<sup>1/기간</sup> − 1 — 기간은 일수 ÷ 365.25</li><li><b>전체 기간</b>: 1993년 12월 1일 기준지수 200부터 현재까지</li><li><b>최근 N년</b>: 보관한 주간 종가에서 N년 전 값부터 현재까지</li><li><b>월평균·일평균 성장률</b> = (1 + CAGR)<sup>1/12</sup> − 1, (1 + CAGR)<sup>1/365.25</sup> − 1</li><li><b>1억 투자 시뮬레이션</b> = 1억원 × (1 + CAGR)<sup>년수</sup> — 선택한 기간의 CAGR이 앞으로도 이어진다고 가정</li><li>필라델피아 반도체지수는 가격지수라 배당은 포함하지 않습니다.</li></ul></article>
+        <article class="g-card"><h3>계산 예시</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>항목</th><th>값</th></tr></thead><tbody><tr><td>기준 (1993.12.1)</td><td>200</td></tr><tr><td>2024.12.27 종가</td><td>5,122.97 (약 26배)</td></tr><tr><td>기간</td><td>31.07년</td></tr><tr><td><b>연평균 성장률 (CAGR)</b></td><td><b>11.00%</b></td></tr><tr><td>같은 날 기준 최근 10년 CAGR</td><td>22.07% (2014.12.26 697.00 →)</td></tr><tr><td>자산 2배 걸리는 기간 (11.00%)</td><td>약 6.6년</td></tr></tbody></table></div><p class="g-cap">이 사이트가 보관한 주간 종가(달러 기준)로 계산한 예시입니다.</p></article>
+      </div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>최근 10년 성장률이 전체 기간보다 훨씬 높은 이유는 무엇인가요?</summary><div class="g-ans"><p>2000년 IT 버블 붕괴와 2008년 금융위기 때 반도체 지수가 크게 떨어졌다가, 최근 10년은 데이터센터·인공지능 수요로 크게 올랐기 때문입니다. 위 예시에서 전체 기간은 연 11.00%, 최근 10년은 연 22.07%입니다. 업황 사이클이 뚜렷한 업종이라 시작 시점에 특히 민감합니다.</p></div></details><details class="g-faq"><summary>SOX와 다우존스 미국 반도체 지수는 무엇이 다른가요?</summary><div class="g-ans"><p>둘 다 미국 반도체 기업 지수지만 산출 기관, 편입 기준, 종목 수가 다릅니다. SOX는 나스닥이 30개 종목으로 산출하고, 다우존스 미국 반도체 지수는 S&amp;P 다우존스 인디시즈가 산출합니다. 반도체 ETF마다 따라가는 지수가 다르므로 투자 전에 기초지수를 확인하세요.</p></div></details><details class="g-faq"><summary>배당금도 포함된 성장률인가요?</summary><div class="g-ans"><p>아닙니다. 필라델피아 반도체지수는 주가만으로 계산하는 <b>가격지수</b>라 배당은 들어 있지 않습니다. 배당을 받아 다시 투자했다고 보는 총수익률은 이보다 높습니다.</p></div></details><details class="g-faq"><summary>1억 투자 시뮬레이션 결과를 믿어도 되나요?</summary><div class="g-ans"><p>과거 기간의 연평균 성장률이 앞으로도 똑같이 이어진다는 단순 가정입니다. 실제로는 해마다 수익률이 크게 다르고, 세금·수수료·환율도 빠져 있습니다. 여러 기간 버튼을 눌러 결과가 얼마나 달라지는지 함께 보는 것이 좋습니다.</p></div></details><details class="g-faq"><summary>지수 값은 어디서 가져오나요?</summary><div class="g-ans"><p>현재 지수는 Yahoo Finance 시세를 받아 오고, 최근 N년 계산에 쓰는 과거 값은 이 사이트가 GitHub Actions로 주기적으로 모아 둔 주간 데이터(data/history.json)를 씁니다. '지수 갱신' 버튼으로 현재 값을 다시 불러올 수 있습니다.</p></div></details></div>
+    </section>
+    <!-- [/GUIDE:sox] -->
   </div><!-- /page-sox -->
 
   <!-- ── 다우존스 미국 반도체 지수 페이지 ── -->
@@ -6576,6 +6720,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       </div>
       <p style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.7;">※ 과거 성장률이 미래를 보장하지 않습니다.</p>
     </div>
+    <!-- [GUIDE:djsemi] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
+    <section class="guide" aria-labelledby="g-djsemi-h">
+      <h2 id="g-djsemi-h">다우존스 미국 반도체 지수 연평균 성장률은 이렇게 계산합니다</h2>
+      <p class="g-lead">다우존스 미국 반도체 지수(DJUSSC)는 미국 상장 반도체 기업들의 주가로 계산하는 업종 지수입니다. 공개된 기준일·기준값을 확인할 수 없어, 이 페이지의 '전체 기간'은 사이트가 보유한 과거 데이터의 첫 날짜(2000년 2월)부터 계산합니다.</p>
+      <div class="g-grid">
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>연평균 성장률(CAGR)</b> = (현재 지수 ÷ 시작 지수)<sup>1/기간</sup> − 1 — 기간은 일수 ÷ 365.25</li><li><b>전체 기간</b>: 보유 데이터의 첫 날짜(2000.2.13, 2,838.2)부터 현재까지</li><li><b>최근 N년</b>: 보관한 주간 데이터에서 N년 전 값부터 현재까지 (과거 값은 CNBC 주간 데이터)</li><li><b>월평균·일평균 성장률</b> = (1 + CAGR)<sup>1/12</sup> − 1, (1 + CAGR)<sup>1/365.25</sup> − 1</li><li><b>1억 투자 시뮬레이션</b> = 1억원 × (1 + CAGR)<sup>년수</sup> — 선택한 기간의 CAGR이 앞으로도 이어진다고 가정</li><li>다우존스 미국 반도체 지수는 가격지수라 배당은 포함하지 않습니다.</li></ul></article>
+        <article class="g-card"><h3>계산 예시</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>항목</th><th>값</th></tr></thead><tbody><tr><td>시작 (2000.2.13 주간)</td><td>2,838.2</td></tr><tr><td>2024.12.27 종가</td><td>20,216.88 (약 7.1배)</td></tr><tr><td>기간</td><td>24.87년</td></tr><tr><td><b>연평균 성장률 (CAGR)</b></td><td><b>8.21%</b></td></tr><tr><td>같은 날 기준 최근 10년 CAGR</td><td>26.19% (2014.12 1,972.91 →)</td></tr><tr><td>자산 2배 걸리는 기간 (8.21%)</td><td>약 8.8년</td></tr></tbody></table></div><p class="g-cap">이 사이트가 보관한 주간 데이터(달러 기준)로 계산한 예시입니다. 2000년 초는 IT 버블 고점 근처라 전체 기간 성장률이 낮게 나옵니다.</p></article>
+      </div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>전체 기간이 왜 2000년부터인가요?</summary><div class="g-ans"><p>이 지수는 공개된 기준일·기준값을 확인하기 어렵고, 무료로 받을 수 있는 과거 데이터가 2000년 2월부터입니다. 그래서 확인된 첫 데이터부터 계산합니다. 시작점이 IT 버블 고점 근처라 전체 기간 CAGR(8.21%)이 최근 10년(26.19%)보다 크게 낮습니다.</p></div></details><details class="g-faq"><summary>반도체 레버리지 ETF는 이 성장률의 2배·3배인가요?</summary><div class="g-ans"><p>아닙니다. 레버리지 ETF는 하루 수익률의 2배·3배를 목표로 하므로 장기 수익률은 변동성에 따라 단순 2배보다 낮거나 높을 수 있습니다. 실제 성과는 ETF CAGR 비교 페이지에서 확인할 수 있습니다.</p></div></details><details class="g-faq"><summary>배당금도 포함된 성장률인가요?</summary><div class="g-ans"><p>아닙니다. 다우존스 미국 반도체 지수는 주가만으로 계산하는 <b>가격지수</b>라 배당은 들어 있지 않습니다. 배당을 받아 다시 투자했다고 보는 총수익률은 이보다 높습니다.</p></div></details><details class="g-faq"><summary>1억 투자 시뮬레이션 결과를 믿어도 되나요?</summary><div class="g-ans"><p>과거 기간의 연평균 성장률이 앞으로도 똑같이 이어진다는 단순 가정입니다. 실제로는 해마다 수익률이 크게 다르고, 세금·수수료·환율도 빠져 있습니다. 여러 기간 버튼을 눌러 결과가 얼마나 달라지는지 함께 보는 것이 좋습니다.</p></div></details><details class="g-faq"><summary>지수 값은 어디서 가져오나요?</summary><div class="g-ans"><p>현재 지수는 Yahoo Finance 시세를, 과거 값은 Yahoo가 제공하지 않아 CNBC 주간 데이터를 GitHub Actions로 모아 둔 값(data/history.json)을 씁니다.</p></div></details></div>
+    </section>
+    <!-- [/GUIDE:djsemi] -->
   </div><!-- /page-djsemi -->
 
   <!-- ── 공포 & 탐욕 지수 페이지 ── -->
@@ -7291,7 +7446,19 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
   <!-- ───────────────────────────────────────────── page-muhan ── -->
   <!-- [MUHAN] 무한매수법 기록 — 화면은 JS가 #mh-root 에 그림 -->
-  <div class="app-page" id="page-muhan"><div id="mh-root"></div></div><!-- /page-muhan -->
+  <div class="app-page" id="page-muhan"><div id="mh-root"></div>
+    <!-- [GUIDE:muhan] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
+    <section class="guide" aria-labelledby="g-muhan-h">
+      <h2 id="g-muhan-h">무한매수법 4.0 주문표는 이렇게 계산합니다</h2>
+      <p class="g-lead">무한매수법은 TQQQ·SOXL 같은 레버리지 ETF를 정해진 횟수(분할)로 나눠 매일 조금씩 사고, 평균 단가보다 일정 % 오르면 나눠 파는 분할 매매 방법입니다. 이 페이지는 기록한 거래로 T값·평단가·별지점을 계산해 오늘 넣을 주문표를 만들어 줍니다.</p>
+      <div class="g-grid">
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>1회 매수금</b> = 남은 현금 ÷ (분할 수 − T값)</li><li><b>T값</b>: 1회분 매수 +1, 절반 매수 +0.5, 쿼터 매도 ×0.75, 목표가 매도 ×0.25 — 지금까지 몇 회분을 샀는지 나타냅니다.</li><li><b>별%</b> = 목표 수익률 − 목표 수익률 × 2 ÷ 분할 수 × T값 (목표 기본값 TQQQ 15%, SOXL 20%)</li><li><b>별지점</b> = 평단가 × (1 + 별%) — 매수는 별지점보다 1틱 낮게, 쿼터 매도는 별지점에 LOC로 넣습니다.</li><li><b>전반전</b>(T값 &lt; 분할 수의 절반): 1회 매수금의 절반은 별지점, 절반은 평단가에 LOC 매수 · <b>후반전</b>: 전부 별지점에 매수</li><li><b>매도</b>: 보유 수량의 1/4은 별지점 LOC, 나머지 3/4은 평단가 × (1 + 목표%) 지정가</li><li><b>소진·리버스 모드</b>: T값이 분할 수 − 1을 넘으면 현금을 다 쓴 것으로 보고 리버스 모드 주문표로 바뀝니다.</li></ul></article>
+        <article class="g-card"><h3>계산 예시</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>항목</th><th>값</th></tr></thead><tbody><tr><td>설정</td><td>TQQQ · 원금 $10,000 · 20분할 · 목표 15%</td></tr><tr><td>기록</td><td>$50에 10주씩 5번 매수 (T값 5)</td></tr><tr><td>평단가 · 남은 현금</td><td>$50.00 · $7,500</td></tr><tr><td>1회 매수금</td><td>$7,500 ÷ (20 − 5) = $500</td></tr><tr><td>별% · 별지점</td><td>15 − 15 × 2 ÷ 20 × 5 = 7.5% · $53.75</td></tr><tr><td>오늘 매수 (전반전)</td><td>별지점 LOC $53.74 × 4주 + 평단 LOC $50.00 × 6주</td></tr><tr><td>오늘 매도</td><td>쿼터 LOC $53.75 × 12주 + 15% 지정가 $57.50 × 38주</td></tr></tbody></table></div><p class="g-cap">매수 아래쪽에는 $45.45, $41.66 … 처럼 1회 매수금 ÷ (수량 + 1, + 2 …) 가격의 하방 LOC 주문이 이어집니다. 처음 매수할 때는 직전 종가 × 1.12(큰수) 가격에 LOC로 1회 매수금만큼 삽니다.</p></article>
+      </div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>LOC 주문이 무엇인가요?</summary><div class="g-ans"><p>LOC(Limit On Close)는 장 마감 때 <b>종가가 내가 정한 가격 이하(매수)·이상(매도)이면</b> 종가로 체결되는 주문입니다. 무한매수법은 하루 한 번 종가 기준으로 거래하므로 미국 증권사의 LOC 주문을 주로 씁니다.</p></div></details><details class="g-faq"><summary>T값은 왜 소수로 나오나요?</summary><div class="g-ans"><p>1회 매수금의 절반만 체결되면 T값이 0.5만 늘고, 쿼터 매도를 하면 T값에 0.75를 곱하기 때문입니다. T값이 작을수록 별%가 높아져 매수·매도 기준 가격이 올라가고, T값이 클수록(많이 샀을수록) 별%가 낮아져 더 싸게 사고 더 빨리 팔도록 바뀝니다.</p></div></details><details class="g-faq"><summary>기록은 어디에 저장되나요?</summary><div class="g-ans"><p>로그인 없이 쓰도록 거래 기록은 <b>지금 쓰는 브라우저 안</b>(localStorage)에만 저장되고 서버로 보내지 않습니다. 다른 기기에서 이어 쓰려면 '데이터 코드 내보내기'로 코드를 복사해 그 기기에서 불러오면 됩니다. 브라우저 데이터를 지우면 기록도 사라지니 코드를 따로 보관해 두세요.</p></div></details><details class="g-faq"><summary>시세는 언제 갱신되나요?</summary><div class="g-ans"><p>TQQQ·SOXL 종가와 RSI·VIX 참고 지표는 GitHub Actions가 주기적으로 모아 둔 데이터를 먼저 쓰고, 없으면 실시간 시세를 불러옵니다. 주문표는 직전 종가를 기준으로 큰수 가격을 계산합니다.</p></div></details><details class="g-faq"><summary>무한매수법은 손실이 나지 않나요?</summary><div class="g-ans"><p>아닙니다. TQQQ·SOXL은 하루 수익률의 3배를 따라가는 레버리지 ETF라 하락장이 길어지면 원금이 크게 줄 수 있고, 분할을 다 써도 회복하지 못하면 손실이 확정될 수 있습니다. 이 페이지는 방법에 따른 주문 계산과 기록을 돕는 도구이며, 투자 판단과 책임은 이용자에게 있습니다.</p></div></details></div>
+    </section>
+    <!-- [/GUIDE:muhan] -->
+</div><!-- /page-muhan -->
 
   <!-- ── ETF CAGR 비교 페이지 ── [ETF-CAGR] ── -->
   <div class="app-page" id="page-etfcagr">
@@ -8212,6 +8379,22 @@ function fmtRate(n) {
   return parseFloat(n.toFixed(4)).toString();
 }
 
+/* 분배 시뮬레이터 공통: 연평균 자산 상승률
+   · 월초 적립이 있으면 적립금을 '상승'으로 세지 않도록 납입 시점을 반영한 연환산 내부수익률(IRR)
+     초기금 × (1+i)^n + Σ 적립금 × (1+i)^(n−k) = 최종 자산 (k = 0..n−1, 월초 납입) 을 만족하는 월 수익률 i → (1+i)^12 − 1
+   · 적립이 없으면 (최종 ÷ 초기)^(1/년) − 1 과 같음 · 계산할 수 없으면 null */
+function simAssetCagr(amount, monthly, years, finalPort) {
+  amount = Math.max(0, amount || 0); monthly = Math.max(0, monthly || 0);
+  const n = Math.round(years * 12);
+  if (!(n > 0) || !(finalPort >= 0) || (amount <= 0 && monthly <= 0)) return null;
+  if (monthly <= 0) return Math.pow(finalPort / amount, 1 / years) - 1;
+  const fv = i => { const g = 1 + i; let v = amount * Math.pow(g, n); for (let k = 0; k < n; k++) v += monthly * Math.pow(g, n - k); return v; };
+  let lo = -0.99, hi = 1;
+  if (fv(lo) > finalPort || fv(hi) < finalPort) return null;
+  for (let it = 0; it < 200; it++) { const mid = (lo + hi) / 2; if (fv(mid) < finalPort) lo = mid; else hi = mid; }
+  return Math.pow(1 + (lo + hi) / 2, 12) - 1;
+}
+
 /* ── 포맷 ── */
 function fmt(n, short) {
   if (!isFinite(n) || isNaN(n)) return '—';
@@ -8402,8 +8585,7 @@ function update() {
   document.getElementById('s-port-sub').textContent   = '총 투입 ' + fmt(totalInvest) + ' 대비';
 
   /* 연평균 자산 상승률 CAGR */
-  const _cagr = yrs > 0 && amount > 0
-    ? Math.pow(finalPort / amount, 1 / yrs) - 1 : 0;
+  const _cagr = simAssetCagr(amount, monthly, yrs, finalPort) || 0;   /* 적립 시 납입 시점 반영(IRR) */
   const _cagrMon = Math.pow(1 + _cagr, 1/12) - 1;
   const _cagrEl  = document.getElementById('s-cagr');
   _cagrEl.textContent = (_cagr >= 0 ? '+' : '') + (_cagr * 100).toFixed(2) + '%';
@@ -9397,9 +9579,9 @@ window.chartZoom = (function () {
     solUpdate();
   };
   window.solUpdate = function() {
-    const FEE  = 0.003;
     const rate0  = ((!isNaN(getV('ni-rate')) && getV('ni-rate') !== null) ? getV('ni-rate') : 15) / 100;
-    const rate   = Math.max(0, rate0 - FEE);
+    /* 운용보수는 ETF 순자산에서 매일 빠져 주가(연간 주가 변동률)에 반영되므로 분배율에서 따로 빼지 않음 — 5개 시뮬레이터 공통 */
+    const rate   = Math.max(0, rate0);
         const amount = getVWon('ni-amount');
     const _monthlyCheck = S.dcaOn ? getVWon('ni-monthly') : 0;
     if (amount === 0 && _monthlyCheck === 0) {
@@ -9496,21 +9678,26 @@ window.chartZoom = (function () {
     }
 
     const r1=rows[0]||{}, rN=rows[rows.length-1]||{};
-    const cagr = rN.port>0 ? (Math.pow(rN.port/amount,1/years)-1)*100 : 0;
+    const cagr = (simAssetCagr(amount, monthly, years, rN.port) || 0) * 100;   /* 적립 시 납입 시점 반영(IRR) — 5개 시뮬레이터 공통 */
     const cagrMon = Math.pow(1+cagr/100, 1/12) - 1;
     function setT(id,v){ const el=$id(id); if(el) el.textContent=v; }
+    /* 요약 바 라벨: KODEX 페이지와 같이 세금 적용 시 (세후) 표시 */
+    { const _sl = id => { const v=$id(id); return v && v.parentElement ? v.parentElement.querySelector('.sum-cell-label') : null; };
+      const _sumLbl1=_sl('s-annual'), _sumLbl3=_sl('s-total');
+      if (_sumLbl1) _sumLbl1.textContent='1년차 연간 분배금'+(S.taxOn?' (세후)':'');
+      if (_sumLbl3) _sumLbl3.textContent='누적 수령 분배금'+(S.taxOn?' (세후)':''); }
 
     // ── 요약바 ─────────────────────────────
-    setT('s-annual',     fmt(r1.div));
-    setT('s-weekly',     '월간 ' + fmt(r1.mDivs ? r1.mDivs[11] : r1.m1st));
+    setT('s-annual',     fmt(r1.div)+'원');
+    setT('s-weekly',     '월간 ' + fmt(r1.mDivs ? r1.mDivs[11] : r1.m1st)+'원');
     setT('s-label2',     years + '년차 연간 분배금' + (S.taxOn?' (세후)':''));
-    setT('s-final',      fmt(rN.div));
-    setT('s-final-sub',  '월간 ' + fmt(rN.mDivs ? rN.mDivs[11] : rN.m1st));
-    setT('s-total',      fmt(totDiv));
+    setT('s-final',      fmt(rN.div)+'원');
+    setT('s-final-sub',  '월간 ' + fmt(rN.mDivs ? rN.mDivs[11] : rN.m1st)+'원');
+    setT('s-total',      fmt(totDiv)+'원');
     setT('s-total-sub',  '수익률 ' + ((totDiv/totInvest)*100).toFixed(1) + '%');
     setT('s-port-label', years + '년차 종료 자산');
-    setT('s-port',       fmt(rN.port));
-    setT('s-port-sub',   '총 투입 ' + fmt(totInvest) + ' 대비');
+    setT('s-port',       fmt(rN.port)+'원');
+    setT('s-port-sub',   '총 투입 ' + fmt(totInvest)+'원' + ' 대비');
     const cagrEl = $id('s-cagr');
     if (cagrEl) { cagrEl.textContent = (cagr>=0?'+':'') + cagr.toFixed(2) + '%'; cagrEl.className = 'sum-cell-val'; }
     setT('s-cagr-sub',   '월 평균 ' + (cagrMon>=0?'+':'') + (cagrMon*100).toFixed(3) + '%');
@@ -9518,17 +9705,17 @@ window.chartZoom = (function () {
     // ── 역산 ───────────────────────────────
     const targetV = getVWon('ni-target');
     if (targetV > 0) {
-      setT('target-result', fmt((targetV * 12) / rate));
+      setT('target-result', fmt((targetV * 12) / rate)+'원');
       setT('target-sub',    '분배율 ' + (rate0*100).toFixed(1) + '% 기준');
     }
 
     // ── DCA 연간 레이블 ──────────────────────
-    setT('dca-annual-label', fmt(getVWon('ni-monthly')*12) + ' / 년');
+    setT('dca-annual-label', fmt(getVWon('ni-monthly')*12)+'원' + ' / 년');
 
     // ── 세금 요약 ───────────────────────────
     if (S.taxOn) {
-      setT('tax-first-label', fmt(rows[0].tax));
-      setT('tax-total-label', fmt(Math.round(totTax)));
+      setT('tax-first-label', fmt(rows[0].tax)+'원');
+      setT('tax-total-label', fmt(Math.round(totTax))+'원');
     }
 
     // ── KODEX 과세구조 실효세율 표시 ──────────
@@ -9537,7 +9724,7 @@ window.chartZoom = (function () {
       const effPct = tp > 0 ? (effTax * 100).toFixed(2) : '0.00';
       setT('kodex-eff-rate',     effPct + '%');
       setT('kodex-total-rate',   tp.toFixed(1) + '%');
-      setT('kodex-taxbase-label', fmt(Math.round(rows[0].taxBase)));
+      setT('kodex-taxbase-label', fmt(Math.round(rows[0].taxBase))+'원');
     }
 
     // ── 연간 테이블 헤더 ─────────────────────
@@ -9909,9 +10096,9 @@ window.chartZoom = (function () {
     tigerUpdate();
   };
   window.tigerUpdate = function() {
-    const FEE  = 0.0025;
     const rate0  = ((!isNaN(getV('ni-rate')) && getV('ni-rate') !== null) ? getV('ni-rate') : 7) / 100;
-    const rate   = Math.max(0, rate0 - FEE);
+    /* 운용보수는 ETF 순자산에서 매일 빠져 주가(연간 주가 변동률)에 반영되므로 분배율에서 따로 빼지 않음 — 5개 시뮬레이터 공통 */
+    const rate   = Math.max(0, rate0);
         const amount = getVWon('ni-amount');
     const _monthlyCheck = S.dcaOn ? getVWon('ni-monthly') : 0;
     if (amount === 0 && _monthlyCheck === 0) {
@@ -9973,27 +10160,32 @@ window.chartZoom = (function () {
     }
 
     const r1=rows[0]||{}, rN=rows[rows.length-1]||{};
-    const cagr = rN.port>0 ? (Math.pow(rN.port/amount,1/years)-1)*100 : 0;
+    const cagr = (simAssetCagr(amount, monthly, years, rN.port) || 0) * 100;   /* 적립 시 납입 시점 반영(IRR) — 5개 시뮬레이터 공통 */
     const cagrMon = Math.pow(1+cagr/100, 1/12) - 1;
     function setT(id,v){ const el=$id(id); if(el) el.textContent=v; }
+    /* 요약 바 라벨: KODEX 페이지와 같이 세금 적용 시 (세후) 표시 */
+    { const _sl = id => { const v=$id(id); return v && v.parentElement ? v.parentElement.querySelector('.sum-cell-label') : null; };
+      const _sumLbl1=_sl('s-annual'), _sumLbl3=_sl('s-total');
+      if (_sumLbl1) _sumLbl1.textContent='1년차 연간 분배금'+(S.taxOn?' (세후)':'');
+      if (_sumLbl3) _sumLbl3.textContent='누적 수령 분배금'+(S.taxOn?' (세후)':''); }
 
-    setT('s-annual',     fmt(r1.div));
-    setT('s-weekly',     '월간 ' + fmt(r1.mDivs ? r1.mDivs[11] : r1.m1st));
+    setT('s-annual',     fmt(r1.div)+'원');
+    setT('s-weekly',     '월간 ' + fmt(r1.mDivs ? r1.mDivs[11] : r1.m1st)+'원');
     setT('s-label2',     years + '년차 연간 분배금' + (S.taxOn?' (세후)':''));
-    setT('s-final',      fmt(rN.div));
-    setT('s-final-sub',  '월간 ' + fmt(rN.mDivs ? rN.mDivs[11] : rN.m1st));
-    setT('s-total',      fmt(totDiv));
+    setT('s-final',      fmt(rN.div)+'원');
+    setT('s-final-sub',  '월간 ' + fmt(rN.mDivs ? rN.mDivs[11] : rN.m1st)+'원');
+    setT('s-total',      fmt(totDiv)+'원');
     setT('s-total-sub',  '수익률 ' + ((totDiv/totInvest)*100).toFixed(1) + '%');
     setT('s-port-label', years + '년차 종료 자산');
-    setT('s-port',       fmt(rN.port));
-    setT('s-port-sub',   '총 투입 ' + fmt(totInvest) + ' 대비');
+    setT('s-port',       fmt(rN.port)+'원');
+    setT('s-port-sub',   '총 투입 ' + fmt(totInvest)+'원' + ' 대비');
     const cagrEl = $id('s-cagr');
     if (cagrEl) { cagrEl.textContent=(cagr>=0?'+':'')+cagr.toFixed(2)+'%'; cagrEl.className = 'sum-cell-val'; }
     setT('s-cagr-sub',   '월 평균 '+(cagrMon>=0?'+':'')+(cagrMon*100).toFixed(3)+'%');
     const targetV = getVWon('ni-target');
-    if (targetV > 0) { setT('target-result', fmt((targetV*12)/rate)); setT('target-sub','분배율 '+(rate0*100).toFixed(1)+'% 기준'); }
-    setT('dca-annual-label', fmt(getVWon('ni-monthly')*12) + ' / 년');
-    if (S.taxOn) { setT('tax-first-label', fmt(rows[0].tax)); setT('tax-total-label', fmt(Math.round(totTax))); }
+    if (targetV > 0) { setT('target-result', fmt((targetV*12)/rate)+'원'); setT('target-sub','분배율 '+(rate0*100).toFixed(1)+'% 기준'); }
+    setT('dca-annual-label', fmt(getVWon('ni-monthly')*12)+'원' + ' / 년');
+    if (S.taxOn) { setT('tax-first-label', fmt(rows[0].tax)+'원'); setT('tax-total-label', fmt(Math.round(totTax))+'원'); }
     if (S.kodexOn) { const tp=cpPct+dpPct; setT('kodex-eff-rate',(tp>0?(effTax*100).toFixed(2):'0.00')+'%'); setT('kodex-total-rate',tp.toFixed(1)+'%'); setT('kodex-taxbase-label',fmt(Math.round(rows[0].taxBase))); }
 
     const thTaxbase=$id('th-taxbase'), thTax=$id('th-tax'), thDeposit=$id('th-deposit');
@@ -10269,9 +10461,9 @@ window.chartZoom = (function () {
     tigerdivUpdate();
   };
   window.tigerdivUpdate = function() {
-    const FEE  = 0.005;
     const rate0  = ((!isNaN(getV('ni-rate')) && getV('ni-rate') !== null) ? getV('ni-rate') : 7) / 100;
-    const rate   = Math.max(0, rate0 - FEE);
+    /* 운용보수는 ETF 순자산에서 매일 빠져 주가(연간 주가 변동률)에 반영되므로 분배율에서 따로 빼지 않음 — 5개 시뮬레이터 공통 */
+    const rate   = Math.max(0, rate0);
         const amount = getVWon('ni-amount');
     const _monthlyCheck = S.dcaOn ? getVWon('ni-monthly') : 0;
     if (amount === 0 && _monthlyCheck === 0) {
@@ -10333,27 +10525,32 @@ window.chartZoom = (function () {
     }
 
     const r1=rows[0]||{}, rN=rows[rows.length-1]||{};
-    const cagr = rN.port>0 ? (Math.pow(rN.port/amount,1/years)-1)*100 : 0;
+    const cagr = (simAssetCagr(amount, monthly, years, rN.port) || 0) * 100;   /* 적립 시 납입 시점 반영(IRR) — 5개 시뮬레이터 공통 */
     const cagrMon = Math.pow(1+cagr/100, 1/12) - 1;
     function setT(id,v){ const el=$id(id); if(el) el.textContent=v; }
+    /* 요약 바 라벨: KODEX 페이지와 같이 세금 적용 시 (세후) 표시 */
+    { const _sl = id => { const v=$id(id); return v && v.parentElement ? v.parentElement.querySelector('.sum-cell-label') : null; };
+      const _sumLbl1=_sl('s-annual'), _sumLbl3=_sl('s-total');
+      if (_sumLbl1) _sumLbl1.textContent='1년차 연간 분배금'+(S.taxOn?' (세후)':'');
+      if (_sumLbl3) _sumLbl3.textContent='누적 수령 분배금'+(S.taxOn?' (세후)':''); }
 
-    setT('s-annual',     fmt(r1.div));
-    setT('s-weekly',     '월간 ' + fmt(r1.mDivs ? r1.mDivs[11] : r1.m1st));
+    setT('s-annual',     fmt(r1.div)+'원');
+    setT('s-weekly',     '월간 ' + fmt(r1.mDivs ? r1.mDivs[11] : r1.m1st)+'원');
     setT('s-label2',     years + '년차 연간 분배금' + (S.taxOn?' (세후)':''));
-    setT('s-final',      fmt(rN.div));
-    setT('s-final-sub',  '월간 ' + fmt(rN.mDivs ? rN.mDivs[11] : rN.m1st));
-    setT('s-total',      fmt(totDiv));
+    setT('s-final',      fmt(rN.div)+'원');
+    setT('s-final-sub',  '월간 ' + fmt(rN.mDivs ? rN.mDivs[11] : rN.m1st)+'원');
+    setT('s-total',      fmt(totDiv)+'원');
     setT('s-total-sub',  '수익률 ' + ((totDiv/totInvest)*100).toFixed(1) + '%');
     setT('s-port-label', years + '년차 종료 자산');
-    setT('s-port',       fmt(rN.port));
-    setT('s-port-sub',   '총 투입 ' + fmt(totInvest) + ' 대비');
+    setT('s-port',       fmt(rN.port)+'원');
+    setT('s-port-sub',   '총 투입 ' + fmt(totInvest)+'원' + ' 대비');
     const cagrEl = $id('s-cagr');
     if (cagrEl) { cagrEl.textContent=(cagr>=0?'+':'')+cagr.toFixed(2)+'%'; cagrEl.className = 'sum-cell-val'; }
     setT('s-cagr-sub',   '월 평균 '+(cagrMon>=0?'+':'')+(cagrMon*100).toFixed(3)+'%');
     const targetV=getVWon('ni-target');
-    if (targetV > 0) { setT('target-result', fmt((targetV*12)/rate)); setT('target-sub','분배율 '+(rate0*100).toFixed(1)+'% 기준'); }
-    setT('dca-annual-label', fmt(getVWon('ni-monthly')*12) + ' / 년');
-    if (S.taxOn) { setT('tax-first-label', fmt(rows[0].tax)); setT('tax-total-label', fmt(Math.round(totTax))); }
+    if (targetV > 0) { setT('target-result', fmt((targetV*12)/rate)+'원'); setT('target-sub','분배율 '+(rate0*100).toFixed(1)+'% 기준'); }
+    setT('dca-annual-label', fmt(getVWon('ni-monthly')*12)+'원' + ' / 년');
+    if (S.taxOn) { setT('tax-first-label', fmt(rows[0].tax)+'원'); setT('tax-total-label', fmt(Math.round(totTax))+'원'); }
     if (S.kodexOn) { const tp=cpPct+dpPct; setT('kodex-eff-rate',(tp>0?(effTax*100).toFixed(2):'0.00')+'%'); setT('kodex-total-rate',tp.toFixed(1)+'%'); setT('kodex-taxbase-label',fmt(Math.round(rows[0].taxBase))); }
 
     const thTaxbase=$id('th-taxbase'), thTax=$id('th-tax'), thDeposit=$id('th-deposit');
@@ -10649,9 +10846,9 @@ window.chartZoom = (function () {
     tigersemiUpdate();
   };
   window.tigersemiUpdate = function() {
-    const FEE  = 0.0045;
     const rate0  = ((!isNaN(getV('ni-rate')) && getV('ni-rate') !== null) ? getV('ni-rate') : 18) / 100;
-    const rate   = Math.max(0, rate0 - FEE);
+    /* 운용보수는 ETF 순자산에서 매일 빠져 주가(연간 주가 변동률)에 반영되므로 분배율에서 따로 빼지 않음 — 5개 시뮬레이터 공통 */
+    const rate   = Math.max(0, rate0);
         const amount = getVWon('ni-amount');
     const _monthlyCheck = S.dcaOn ? getVWon('ni-monthly') : 0;
     if (amount === 0 && _monthlyCheck === 0) {
@@ -10713,27 +10910,32 @@ window.chartZoom = (function () {
     }
 
     const r1=rows[0]||{}, rN=rows[rows.length-1]||{};
-    const cagr = rN.port>0 ? (Math.pow(rN.port/amount,1/years)-1)*100 : 0;
+    const cagr = (simAssetCagr(amount, monthly, years, rN.port) || 0) * 100;   /* 적립 시 납입 시점 반영(IRR) — 5개 시뮬레이터 공통 */
     const cagrMon = Math.pow(1+cagr/100, 1/12) - 1;
     function setT(id,v){ const el=$id(id); if(el) el.textContent=v; }
+    /* 요약 바 라벨: KODEX 페이지와 같이 세금 적용 시 (세후) 표시 */
+    { const _sl = id => { const v=$id(id); return v && v.parentElement ? v.parentElement.querySelector('.sum-cell-label') : null; };
+      const _sumLbl1=_sl('s-annual'), _sumLbl3=_sl('s-total');
+      if (_sumLbl1) _sumLbl1.textContent='1년차 연간 분배금'+(S.taxOn?' (세후)':'');
+      if (_sumLbl3) _sumLbl3.textContent='누적 수령 분배금'+(S.taxOn?' (세후)':''); }
 
-    setT('s-annual',     fmt(r1.div));
-    setT('s-weekly',     '월간 ' + fmt(r1.mDivs ? r1.mDivs[11] : r1.m1st));
+    setT('s-annual',     fmt(r1.div)+'원');
+    setT('s-weekly',     '월간 ' + fmt(r1.mDivs ? r1.mDivs[11] : r1.m1st)+'원');
     setT('s-label2',     years + '년차 연간 분배금' + (S.taxOn?' (세후)':''));
-    setT('s-final',      fmt(rN.div));
-    setT('s-final-sub',  '월간 ' + fmt(rN.mDivs ? rN.mDivs[11] : rN.m1st));
-    setT('s-total',      fmt(totDiv));
+    setT('s-final',      fmt(rN.div)+'원');
+    setT('s-final-sub',  '월간 ' + fmt(rN.mDivs ? rN.mDivs[11] : rN.m1st)+'원');
+    setT('s-total',      fmt(totDiv)+'원');
     setT('s-total-sub',  '수익률 ' + ((totDiv/totInvest)*100).toFixed(1) + '%');
     setT('s-port-label', years + '년차 종료 자산');
-    setT('s-port',       fmt(rN.port));
-    setT('s-port-sub',   '총 투입 ' + fmt(totInvest) + ' 대비');
+    setT('s-port',       fmt(rN.port)+'원');
+    setT('s-port-sub',   '총 투입 ' + fmt(totInvest)+'원' + ' 대비');
     const cagrEl = $id('s-cagr');
     if (cagrEl) { cagrEl.textContent=(cagr>=0?'+':'')+cagr.toFixed(2)+'%'; cagrEl.className = 'sum-cell-val'; }
     setT('s-cagr-sub',   '월 평균 '+(cagrMon>=0?'+':'')+(cagrMon*100).toFixed(3)+'%');
     const targetV=getVWon('ni-target');
-    if (targetV > 0) { setT('target-result', fmt((targetV*12)/rate)); setT('target-sub','분배율 '+(rate0*100).toFixed(1)+'% 기준'); }
-    setT('dca-annual-label', fmt(getVWon('ni-monthly')*12) + ' / 년');
-    if (S.taxOn) { setT('tax-first-label', fmt(rows[0].tax)); setT('tax-total-label', fmt(Math.round(totTax))); }
+    if (targetV > 0) { setT('target-result', fmt((targetV*12)/rate)+'원'); setT('target-sub','분배율 '+(rate0*100).toFixed(1)+'% 기준'); }
+    setT('dca-annual-label', fmt(getVWon('ni-monthly')*12)+'원' + ' / 년');
+    if (S.taxOn) { setT('tax-first-label', fmt(rows[0].tax)+'원'); setT('tax-total-label', fmt(Math.round(totTax))+'원'); }
     if (S.kodexOn) { const tp=cpPct+dpPct; setT('kodex-eff-rate',(tp>0?(effTax*100).toFixed(2):'0.00')+'%'); setT('kodex-total-rate',tp.toFixed(1)+'%'); setT('kodex-taxbase-label',fmt(Math.round(rows[0].taxBase))); }
 
     const thTaxbase=$id('th-taxbase'), thTax=$id('th-tax'), thDeposit=$id('th-deposit');
