@@ -1276,7 +1276,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
               <span class="slider-label">대출 금액</span>
               <div style="display:flex;align-items:center;gap:4px;">
                 <div class="num-pill" style="flex-shrink:0;">
-                  <input class="num-input comma-input" id="loan-amount" type="text" inputmode="numeric" value="300,000,000" style="padding-right:8px;width:120px;" oninput="onLoanInput('amount')" onblur="onLoanBlur('amount')">
+                  <input class="num-input comma-input" id="loan-amount" type="text" inputmode="decimal" value="300,000,000" style="padding-right:8px;width:120px;" oninput="onLoanInput('amount')" onblur="onLoanBlur('amount')">
                 </div>
                 <div class="unit-tabs">
                   <button class="unit-btn" data-field="loan-amount" data-unit="eok" onclick="setLoanUnit('amount','eok',this)">억원</button>
@@ -1442,7 +1442,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
             <div class="slider-header">
               <span class="slider-label">초기 투자금액</span>
               <div style="display:flex;align-items:center;gap:4px;">
-                <div class="num-pill"><input class="num-input comma-input" id="cpd-principal" type="text" inputmode="numeric" value="100,000,000" style="padding-right:8px;width:120px;" oninput="onCpdInput('principal')" onblur="onCpdBlur('principal')"></div>
+                <div class="num-pill"><input class="num-input comma-input" id="cpd-principal" type="text" inputmode="decimal" value="100,000,000" style="padding-right:8px;width:120px;" oninput="onCpdInput('principal')" onblur="onCpdBlur('principal')"></div>
                 <div class="unit-tabs">
                   <button class="unit-btn" data-field="cpd-principal" data-unit="eok" onclick="setCpdUnit('principal','eok',this)">억원</button>
                   <button class="unit-btn" data-field="cpd-principal" data-unit="man" onclick="setCpdUnit('principal','man',this)">만원</button>
@@ -1493,7 +1493,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
               <div class="slider-header">
                 <span class="slider-label">월 적립금</span>
                 <div style="display:flex;align-items:center;gap:4px;">
-                  <div class="num-pill"><input class="num-input comma-input" id="cpd-monthly" type="text" inputmode="numeric" value="1,000,000" style="padding-right:8px;width:110px;" oninput="onCpdInput('monthly')" onblur="onCpdBlur('monthly')"></div>
+                  <div class="num-pill"><input class="num-input comma-input" id="cpd-monthly" type="text" inputmode="decimal" value="1,000,000" style="padding-right:8px;width:110px;" oninput="onCpdInput('monthly')" onblur="onCpdBlur('monthly')"></div>
                   <div class="unit-tabs">
                     <button class="unit-btn" data-field="cpd-monthly" data-unit="eok" onclick="setCpdUnit('monthly','eok',this)">억원</button>
                     <button class="unit-btn" data-field="cpd-monthly" data-unit="man" onclick="setCpdUnit('monthly','man',this)">만원</button>
@@ -4944,7 +4944,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
             <span class="slider-label">초기 금액</span>
             <div style="display:flex;align-items:center;gap:4px;">
               <div class="num-pill" style="flex-shrink:0;">
-                <input class="num-input comma-input" id="cagr-start" type="text" inputmode="numeric" value="100,000,000"
+                <input class="num-input comma-input" id="cagr-start" type="text" inputmode="decimal" value="100,000,000"
                        style="padding-right:8px;width:120px;color:var(--accent);"
                        oninput="onCagrAmtInput('start')" onblur="onCagrAmtBlur('start')">
               </div>
@@ -4962,7 +4962,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
             <span class="slider-label">최종 금액</span>
             <div style="display:flex;align-items:center;gap:4px;">
               <div class="num-pill" style="flex-shrink:0;">
-                <input class="num-input comma-input" id="cagr-end" type="text" inputmode="numeric" value="180,000,000"
+                <input class="num-input comma-input" id="cagr-end" type="text" inputmode="decimal" value="180,000,000"
                        style="padding-right:8px;width:120px;color:var(--accent2);"
                        oninput="onCagrAmtInput('end')" onblur="onCagrAmtBlur('end')">
               </div>
@@ -5040,7 +5040,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
         <!-- 역산: 필요 기간 -->
         <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid rgba(49,130,246,0.15);">
-          <p style="font-size:11px;color:var(--text3);margin-bottom:10px;">목표 CAGR 달성까지 필요 기간</p>
+          <p style="font-size:11px;color:var(--text3);margin-bottom:10px;">목표 CAGR로 최종 금액에 도달하는 데 필요한 기간</p>
           <div style="display:flex;justify-content:space-between;align-items:baseline;">
             <span style="font-size:11px;color:var(--text3);">필요 기간</span>
             <span style="font-family:var(--mono);font-size:15px;font-weight:500;color:var(--accent);" id="cagr-rev-years">—</span>
@@ -7378,6 +7378,16 @@ function setFancyUnit(field, unit, btn) {
 /* KODEX(page-simulator) 계산부 호환: 만원 단위 반환 */
 function getFancyWan(id) { return simReadWon('page-simulator', id) / 10000; }
 
+/* 입력 중인 문자열 → 콤마 포맷 (억·만 단위에서 1.5 처럼 소수점 입력 허용, 소수 4자리까지) */
+function typingNumFmt(ov) {
+  let t = String(ov || '').replace(/[^0-9.]/g, '');
+  const dot = t.indexOf('.');
+  if (dot >= 0) t = t.slice(0, dot + 1) + t.slice(dot + 1).replace(/\./g, '').slice(0, 4);
+  if (!t) return '';
+  const parts = t.split('.');
+  const ip = parts[0] ? parseInt(parts[0], 10).toLocaleString('ko-KR') : '0';
+  return parts.length > 1 ? ip + '.' + parts[1] : ip;
+}
 /* 숫자 → 콤마 문자열 (소수점 허용) */
 function commaFmt(n) {
   if (n === '' || n === null || n === undefined) return '';
@@ -11994,8 +12004,7 @@ function setCpdUnit(id, unit, btn) {
 function onCpdInput(id) {
   const el = document.getElementById('cpd-' + id);
   const cv = el.selectionStart; const ov = el.value;
-  const ns = ov.replace(/[^0-9.]/g, '');
-  const fmt = ns ? parseInt(ns, 10).toLocaleString('ko-KR') : '';
+  const fmt = typingNumFmt(ov);
   el.value = fmt;
   try { el.setSelectionRange(Math.max(0, cv + fmt.length - ov.length), Math.max(0, cv + fmt.length - ov.length)); } catch {}
   calcCompound();
@@ -12044,69 +12053,110 @@ function setCpdChartTab(tab, btn) {
   calcCompound();
 }
 
+/* 결과 화면을 비움 (입력이 잘못됐을 때 이전 결과가 남지 않도록) */
+function cpdClear(msg) {
+  ['cpd-s-final','cpd-s-profit','cpd-s-cagr'].forEach(id => { const e = document.getElementById(id); if (e) e.textContent = '—'; });
+  const f = document.getElementById('cpd-s-final-sub'); if (f) f.textContent = msg || '입력값을 확인하세요';
+  const pr = document.getElementById('cpd-s-profit-sub'); if (pr) pr.textContent = '수익률 —';
+  const cg = document.getElementById('cpd-s-cagr-sub'); if (cg) cg.textContent = '월평균 —';
+  const tb = document.getElementById('cpdTableBody'); if (tb) tb.innerHTML = '';
+  if (cpdChart) { cpdChart.destroy(); cpdChart = null; }
+}
+
+/* 적립식 실효 수익률(IRR): 0개월에 원금, 매월 말 적립, 마지막 달 말 평가액 → 월 IRR 을 연율로 */
+function cpdIRR(principal, monthly, months, final) {
+  const npv = i => {
+    let v = -principal, d = 1;
+    for (let m = 1; m <= months; m++) { d /= (1 + i); v -= monthly * d; }
+    return v + final * d;
+  };
+  let lo = -0.99, hi = 1;
+  if (npv(lo) * npv(hi) > 0) return null;
+  for (let k = 0; k < 200; k++) {
+    const mid = (lo + hi) / 2;
+    if (npv(lo) * npv(mid) <= 0) hi = mid; else lo = mid;
+  }
+  return (lo + hi) / 2;
+}
+
 function calcCompound() {
   const principal = getCpdWon('principal');
-  const rateY     = parseFloat(document.getElementById('cpd-rate').value) / 100;
-  const years     = parseInt(document.getElementById('cpd-years').value) || 1;
-  const freq      = parseInt(document.getElementById('cpd-freq').value) || 12;
-  const taxRate   = cpdTaxOn ? (parseFloat(document.getElementById('cpd-tax-rate').value) || 0) / 100 : 0;
+  const ratePct   = parseFloat(document.getElementById('cpd-rate').value);
+  const rateY     = ratePct / 100;
+  const yearsRaw  = parseInt(document.getElementById('cpd-years').value, 10);
+  const freq      = parseInt(document.getElementById('cpd-freq').value, 10) || 12;
+  const taxPct    = parseFloat(document.getElementById('cpd-tax-rate').value);
+  const taxRate   = cpdTaxOn ? Math.min(Math.max(isNaN(taxPct) ? 0 : taxPct, 0), 100) / 100 : 0;
   const monthly   = cpdMode === 'dca' ? getCpdWon('monthly') : 0;
 
-  if (isNaN(principal) || isNaN(rateY) || principal <= 0 || rateY <= 0) return;
-
   // 슬라이더 동기화
-  document.getElementById('cpd-rate-sl').value  = Math.min(rateY * 100, 30);
-  document.getElementById('cpd-years-sl').value = Math.min(years, 50);
+  if (!isNaN(ratePct)) document.getElementById('cpd-rate-sl').value = Math.min(Math.max(ratePct, 0.1), 30);
+  if (!isNaN(yearsRaw)) document.getElementById('cpd-years-sl').value = Math.min(Math.max(yearsRaw, 1), 50);
+  const dep = document.getElementById('cpd-annual-dep');
+  if (dep) dep.textContent = fmt(monthly * 12) + ' / 년';
 
-  if (monthly > 0) {
-    const annDep = fmt(monthly * 12);
-    document.getElementById('cpd-annual-dep').textContent = annDep + ' / 년';
+  if (isNaN(rateY) || rateY <= -1) { cpdClear('연 이율을 확인하세요'); return; }
+  if (isNaN(yearsRaw) || yearsRaw < 1) { cpdClear('투자 기간은 1년 이상이어야 합니다'); return; }
+  if (principal < 0 || monthly < 0 || (principal <= 0 && monthly <= 0)) {
+    cpdClear(cpdMode === 'dca' ? '초기 투자금 또는 월 적립금을 입력하세요' : '초기 투자금액을 입력하세요'); return;
   }
+  const years = Math.min(yearsRaw, 100);
 
-  // 월 단위 시뮬레이션 (가장 정확)
-  const rateM       = rateY / freq; // 주기별 이율
-  const periodsPerY = freq;
-  const totalPeriods = years * freq;
-  const contribPerPeriod = monthly * 12 / freq; // 적립금 주기별 분배
-
-  let balance      = principal;
-  let totalInvest  = principal;
-  let totalInterest = 0;
-  const yearRows   = [];
-
-  // 연도별 계산
-  for (let y = 1; y <= years; y++) {
-    let yInterestGross = 0;
-    for (let p = 0; p < periodsPerY; p++) {
-      const interest = balance * rateM;
-      yInterestGross += interest;
-      const netInterest = interest * (1 - taxRate);
-      balance = balance + netInterest + contribPerPeriod;
-      totalInvest += contribPerPeriod;
+  /* 시뮬레이션
+     · 적립: 매월 말 납입 (그 달 이자는 붙지 않음)
+     · 복리 주기 ≤ 월(연·반기·분기·월): 매달 잔액 × 연이율/12 를 쌓아 두었다가 주기마다 원금에 더함 (주기 안은 단리)
+     · 복리 주기 > 월(주·일): 주기마다 잔액 × 연이율/주기수 를 바로 더하고, 달이 바뀌는 시점에 적립
+     · 세금: 이자가 원금에 붙을 때마다 그 이자에만 적용 */
+  let balance = principal, totalInvest = principal, totalInterest = 0;
+  const yearRows = [];
+  const pushYear = y => yearRows.push({
+    y, balance: Math.round(balance), totalInvest: Math.round(totalInvest),
+    totalDeposit: Math.round(totalInvest - principal), totalInterest: Math.round(totalInterest),
+    ret: totalInvest > 0 ? (balance / totalInvest - 1) * 100 : 0,
+  });
+  if (freq <= 12) {
+    const step = 12 / freq;                 // 이자가 붙는 간격(개월) — 1·2·4·12회는 나누어떨어짐
+    let accrued = 0;
+    for (let m = 1; m <= years * 12; m++) {
+      accrued += balance * rateY / 12;
+      balance += monthly; totalInvest += monthly;
+      if (m % step === 0) {
+        const net = accrued * (1 - taxRate);
+        balance += net; totalInterest += net; accrued = 0;
+      }
+      if (m % 12 === 0) pushYear(m / 12);
     }
-    totalInterest += yInterestGross * (1 - taxRate);
-    yearRows.push({
-      y, balance: Math.round(balance),
-      totalInvest: Math.round(totalInvest),
-      totalDeposit: Math.round(totalInvest - principal),
-      totalInterest: Math.round(totalInterest),
-      ret: (balance / totalInvest - 1) * 100,
-    });
+  } else {
+    for (let p = 1; p <= years * freq; p++) {
+      const net = balance * rateY / freq * (1 - taxRate);
+      balance += net; totalInterest += net;
+      const n = Math.floor(p * 12 / freq) - Math.floor((p - 1) * 12 / freq);   // 이번 주기 안에 끝난 달 수
+      if (n > 0) { balance += monthly * n; totalInvest += monthly * n; }
+      if (p % freq === 0) pushYear(p / freq);
+    }
   }
 
-  const final    = yearRows[years - 1].balance;
-  const profit   = final - totalInvest;
-  const retPct   = (final / totalInvest - 1) * 100;
-  const cagr     = Math.pow(final / principal, 1 / years) - 1;
-  const cagrMon  = Math.pow(1 + cagr, 1/12) - 1;
+  const final   = yearRows[years - 1].balance;
+  const profit  = final - totalInvest;
+  const retPct  = totalInvest > 0 ? (final / totalInvest - 1) * 100 : 0;
+  /* 실효 CAGR: 일반 복리는 (최종/원금)^(1/년)−1, 적립식은 납입 시점을 반영한 연환산 IRR */
+  let cagrMon = null, cagr = null;
+  if (monthly > 0) {
+    cagrMon = cpdIRR(principal, monthly, years * 12, final);
+    if (cagrMon !== null) { if (Math.abs(cagrMon) < 1e-10) cagrMon = 0; cagr = Math.pow(1 + cagrMon, 12) - 1; }
+  } else {
+    cagr = Math.pow(final / principal, 1 / years) - 1;
+    cagrMon = Math.pow(1 + cagr, 1 / 12) - 1;
+  }
 
   // 요약 카드
   document.getElementById('cpd-s-final').textContent = fmt(final);
   document.getElementById('cpd-s-final-sub').textContent = '총 투입 ' + fmt(Math.round(totalInvest));
   document.getElementById('cpd-s-profit').textContent = (profit >= 0 ? '+' : '') + fmt(Math.round(profit));
-  document.getElementById('cpd-s-profit-sub').textContent = '수익률 ' + retPct.toFixed(2) + '%';
-  document.getElementById('cpd-s-cagr').textContent = (cagr >= 0 ? '+' : '') + (cagr * 100).toFixed(2) + '%';
-  document.getElementById('cpd-s-cagr-sub').textContent = '월평균 ' + (cagrMon >= 0 ? '+' : '') + (cagrMon * 100).toFixed(3) + '%';
+  document.getElementById('cpd-s-profit-sub').textContent = '수익률 ' + (retPct >= 0 ? '+' : '') + retPct.toFixed(2) + '%';
+  document.getElementById('cpd-s-cagr').textContent = cagr === null ? '—' : (cagr >= 0 ? '+' : '') + (cagr * 100).toFixed(2) + '%';
+  document.getElementById('cpd-s-cagr-sub').textContent = cagr === null ? '월평균 —'
+    : '월평균 ' + (cagrMon >= 0 ? '+' : '') + (cagrMon * 100).toFixed(3) + '%' + (monthly > 0 ? ' · 적립 시점 반영(IRR)' : '');
 
   // 테이블
   const tbody = document.getElementById('cpdTableBody');
@@ -12215,7 +12265,7 @@ function setLoanUnit(id,unit,btn) {
 }
 function onLoanInput(id) {
   const el=document.getElementById('loan-'+id), cv=el.selectionStart, ov=el.value;
-  const ns=ov.replace(/[^0-9.]/g,''), f2=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';
+  const f2=typingNumFmt(ov);
   el.value=f2; try{el.setSelectionRange(Math.max(0,cv+f2.length-ov.length),Math.max(0,cv+f2.length-ov.length));}catch{}
   calcLoan();
 }
@@ -12281,67 +12331,92 @@ const BOK_API_KEY = 'RVTLLDCO3IW1YUKQSSPJ';
    3순위: allorigins 경유
    통계표 722Y001 / 항목 0101000 (기준금리) */
 
+/* 결과 화면을 비움 (입력이 잘못됐을 때 이전 결과가 남지 않도록) */
+function loanClear(msg) {
+  const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+  set('loan-s-monthly', '—'); set('loan-s-monthly-sub', msg || '입력값을 확인하세요');
+  set('loan-s-interest', '—'); set('loan-s-interest-sub', '이자율 —');
+  set('loan-s-total', '—'); set('loan-s-total-sub', '대출금 대비 —배');
+  ['loan-g-first','loan-g-last','loan-g-step','loan-g-rate'].forEach(id => set(id, '—'));
+  const tb = document.getElementById('loanTableBody'); if (tb) tb.innerHTML = '';
+  window._loanSchedule = []; window._loanTotalYears = 0;
+  const mb = document.getElementById('loanMonthlyBody'); if (mb) mb.innerHTML = '';
+}
+
 function calcLoan() {
-  const principal=getLoanWon('amount');
-  const rateY=parseFloat(document.getElementById('loan-rate').value)/100;
-  const years=parseInt(document.getElementById('loan-years').value)||1;
-  document.getElementById('loan-rate-sl').value=Math.min(rateY*100,20);
-  document.getElementById('loan-years-sl').value=Math.min(years,50);
+  const principal=Math.round(getLoanWon('amount'));
+  const ratePct=parseFloat(document.getElementById('loan-rate').value);
+  const rateY=ratePct/100;
+  const yearsIn=parseInt(document.getElementById('loan-years').value,10);
+  if(!isNaN(ratePct)) document.getElementById('loan-rate-sl').value=Math.min(Math.max(ratePct,0.1),20);
+  if(!isNaN(yearsIn)) document.getElementById('loan-years-sl').value=Math.min(Math.max(yearsIn,1),50);
   /* 거치기간 슬라이더 동기화 */
   const graceEl=document.getElementById('loan-grace');
   const graceSlEl=document.getElementById('loan-grace-sl');
-  if(graceEl&&graceSlEl) graceSlEl.value=Math.min(parseInt(graceEl.value)||0,60);
-  if(!principal||!rateY||principal<=0)return;
+  if(graceEl&&graceSlEl) graceSlEl.value=Math.min(Math.max(parseInt(graceEl.value,10)||0,0),60);
+  if(!(principal>0)) { loanClear('대출금액을 입력하세요'); return; }
+  if(isNaN(rateY)||rateY<0) { loanClear('연 금리를 확인하세요 (0% 이상)'); return; }
+  if(isNaN(yearsIn)||yearsIn<1) { loanClear('대출 기간은 1년 이상이어야 합니다'); return; }
+  const years=Math.min(yearsIn,100);
   const rateM=rateY/12, months=years*12;
   let schedule=[];
+  /* 모든 회차는 원 단위 정수로 계산: 이자 = 반올림(잔액 × 월이율), 원금 = 납입금 − 이자,
+     마지막 회차는 남은 원금을 전부 갚아 잔액이 정확히 0 이 되도록 맞춤 */
   if(loanMethod==='equal'){
-    const pmt=principal*rateM*Math.pow(1+rateM,months)/(Math.pow(1+rateM,months)-1);
+    const pmtExact = rateM>0 ? principal*rateM*Math.pow(1+rateM,months)/(Math.pow(1+rateM,months)-1) : principal/months;
+    const pmt=Math.round(pmtExact);
     let bal=principal;
     for(let i=1;i<=months;i++){
-      const ip=bal*rateM, pp=pmt-ip; bal-=pp;
-      schedule.push({payment:Math.round(pmt),principal:Math.round(pp),interest:Math.round(ip),balance:Math.max(0,Math.round(bal))});
+      const ip=Math.round(bal*rateM);
+      const pp=i<months?Math.min(pmt-ip,bal):bal;
+      bal-=pp;
+      schedule.push({payment:pp+ip,principal:pp,interest:ip,balance:bal});
     }
     document.getElementById('loan-s-label1').textContent='월 납입금 (균등)';
-    document.getElementById('loan-s-monthly').textContent=fmt(Math.round(pmt));
-    document.getElementById('loan-s-monthly-sub').textContent='매월 동일';
+    document.getElementById('loan-s-monthly').textContent=fmt(pmt);
+    const lastPay=schedule[months-1].payment;
+    document.getElementById('loan-s-monthly-sub').textContent=lastPay===pmt?'매월 동일':'매월 동일 · 마지막 회차 '+fmt(lastPay);
   } else if(loanMethod==='principal'){
-    const pp=principal/months; let bal=principal, first=0;
+    const ppBase=Math.round(principal/months); let bal=principal;
     for(let i=1;i<=months;i++){
-      const ip=bal*rateM, pay=pp+ip; if(i===1)first=pay; bal-=pp;
-      schedule.push({payment:Math.round(pay),principal:Math.round(pp),interest:Math.round(ip),balance:Math.max(0,Math.round(bal))});
+      const ip=Math.round(bal*rateM);
+      const pp=i<months?Math.min(ppBase,bal):bal;
+      bal-=pp;
+      schedule.push({payment:pp+ip,principal:pp,interest:ip,balance:bal});
     }
     document.getElementById('loan-s-label1').textContent='첫달 납입금';
-    document.getElementById('loan-s-monthly').textContent=fmt(Math.round(first));
-    document.getElementById('loan-s-monthly-sub').textContent='→ '+fmt(Math.round(schedule[months-1].payment))+'로 감소';
+    document.getElementById('loan-s-monthly').textContent=fmt(schedule[0].payment);
+    document.getElementById('loan-s-monthly-sub').textContent='→ '+fmt(schedule[months-1].payment)+'로 감소';
   } else if(loanMethod==='bullet') {
-    const ip=principal*rateM;
+    const ip=Math.round(principal*rateM);
     for(let i=1;i<=months;i++){
-      const pay=i<months?ip:ip+principal;
-      schedule.push({payment:Math.round(pay),principal:i<months?0:Math.round(principal),interest:Math.round(ip),balance:i<months?Math.round(principal):0});
+      const pp=i<months?0:principal;
+      schedule.push({payment:ip+pp,principal:pp,interest:ip,balance:i<months?principal:0});
     }
     document.getElementById('loan-s-label1').textContent='월 이자 납입금';
-    document.getElementById('loan-s-monthly').textContent=fmt(Math.round(ip));
-    document.getElementById('loan-s-monthly-sub').textContent='만기 원금 '+fmt(Math.round(principal))+' 일시상환';
+    document.getElementById('loan-s-monthly').textContent=fmt(ip);
+    document.getElementById('loan-s-monthly-sub').textContent='만기 원금 '+fmt(principal)+' 일시상환';
   } else {
     /* ─────────────────────────────────────────────────────────
        체증식원리금상환 — 단순 현가합산법 (부동산계산기 방식)
        ▸ 이자 = 잔액 × (연금리 / 12)
        ▸ A(초회납입금) = 첫 상환달 이자  → 원금 0으로 시작
        ▸ D(월체증금)   = (P - A×Ann) / Bnn  (현가합산 역산)
-             Ann = (1-(1+r)^-n) / r
-             Bnn = ((1-(1+r)^-n)/r - n×(1+r)^-n) / r
+             Ann = (1-(1+r)^-n) / r            (r=0 이면 n)
+             Bnn = ((1-(1+r)^-n)/r - n×(1+r)^-n) / r   (r=0 이면 n(n-1)/2)
        ▸ m회차 PMT = A + (m-1)×D
-       ▸ 원금 음수 방지: PMT = max(PMT, 이자)
+       ▸ 원금 음수 방지: PMT = max(PMT, 이자) · 원금은 잔액을 넘지 않음
        ▸ 마지막 회차: 잔여원금 전액 + 이자
        ▸ 거치기간: 이자만 납부, 이후 잔액 기준으로 재계산
     ──────────────────────────────────────────────────────────── */
 
-    const graceMo_g = parseInt(document.getElementById('loan-grace')?.value)||0;
+    const graceMo_g = Math.max(parseInt(document.getElementById('loan-grace')?.value,10)||0,0);
     const repayMo_g = months - graceMo_g;
-    if (repayMo_g <= 0) return;
+    if (repayMo_g < 1) { loanClear('거치기간이 대출 기간보다 짧아야 합니다'); return; }
 
     /* ── 현가합산 계수 ── */
     function calcAnnBnn(n_mo, r) {
+      if (r <= 0) return { Ann: n_mo, Bnn: n_mo * (n_mo - 1) / 2 };
       const v   = Math.pow(1+r, -n_mo);
       const Ann = (1 - v) / r;
       const Bnn = (Ann - n_mo * v) / r;
@@ -12352,7 +12427,7 @@ function calcLoan() {
     let balG = principal;
     for (let m = 0; m < graceMo_g; m++) {
       const ig = Math.round(balG * rateM);
-      schedule.push({ payment:ig, principal:0, interest:ig, balance:Math.round(balG), grace:true });
+      schedule.push({ payment:ig, principal:0, interest:ig, balance:balG, grace:true });
     }
 
     /* ── A, D 계산 ── */
@@ -12366,28 +12441,28 @@ function calcLoan() {
       const isLast = (m === repayMo_g);
       let pmt_g, pp_g;
       if (isLast) {
-        pp_g  = Math.round(balG);
+        pp_g  = balG;
         pmt_g = pp_g + ig;
       } else {
         const raw = Math.round(A_g + (m-1) * D_g);
-        pmt_g = Math.max(raw, ig);
-        pp_g  = pmt_g - ig;
+        pp_g  = Math.min(Math.max(raw, ig) - ig, balG);
+        pmt_g = pp_g + ig;
       }
-      balG = Math.max(0, balG - pp_g);
+      balG -= pp_g;
       schedule.push({ payment:pmt_g, principal:pp_g, interest:ig,
-                      balance:Math.round(balG), grace:false });
+                      balance:balG, grace:false });
     }
 
     /* ── 요약 ── */
     const firstPayG = schedule.find(r => !r.grace)?.payment || 0;
     const lastPayG  = schedule[schedule.length-1].payment;
     const D_ann_g   = Math.round(D_g * 12);
-    const chRate_g  = A_g > 0 ? (D_g / A_g * 100).toFixed(4) + '%' : '0%';
+    const chRate_g  = A_g > 0 ? (D_g / A_g * 100).toFixed(4) + '%' : '—';
 
-    document.getElementById('loan-s-label1').textContent = '1회차 납입금 (원금 0)';
+    document.getElementById('loan-s-label1').textContent = '1회차 납입금' + (A_g > 0 ? ' (원금 0)' : '');
     document.getElementById('loan-s-monthly').textContent = fmt(firstPayG);
     document.getElementById('loan-s-monthly-sub').textContent =
-      '→ ' + fmt(lastPayG) + ' (마지막) · 연 +' + fmt(D_ann_g) + ' 체증';
+      '→ ' + fmt(lastPayG) + ' (마지막) · 매월 +' + fmt(Math.round(D_g)) + ' (연 +' + fmt(D_ann_g) + ') 체증';
 
     const gs = document.getElementById('loan-grad-summary');
     if (gs) gs.style.display = '';
@@ -12880,8 +12955,7 @@ function onCagrAmtInput(id) {
   const el = document.getElementById('cagr-' + id);
   const cv = el.selectionStart;
   const ov = el.value;
-  const ns = ov.replace(/[^0-9.]/g,'');
-  const fmt = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '';
+  const fmt = typingNumFmt(ov);
   el.value = fmt;
   try { el.setSelectionRange(Math.max(0, cv + fmt.length - ov.length), Math.max(0, cv + fmt.length - ov.length)); } catch{}
   calcCAGR();
@@ -12915,11 +12989,12 @@ function setCagrPeriodMode(mode, btn) {
 function calcCAGRFromDates() {
   const s = document.getElementById('cagr-date-start').value;
   const e = document.getElementById('cagr-date-end').value;
-  if (!s || !e) return;
+  const lbl = document.getElementById('cagr-date-period-label');
+  if (!s || !e) { if (lbl) lbl.textContent = '기간: 시작일과 종료일을 입력하세요'; cagrClear('기간을 확인하세요'); return; }
   const ms   = new Date(e) - new Date(s);
   const yrs  = ms / (1000 * 60 * 60 * 24 * 365.25);
-  if (yrs <= 0) return;
-  document.getElementById('cagr-years').value = yrs.toFixed(2);
+  if (!(yrs > 0)) { if (lbl) lbl.textContent = '기간: 종료일은 시작일보다 뒤여야 합니다'; cagrClear('기간을 확인하세요'); const re = document.getElementById('cagr-rev-end'); if (re) re.textContent = '—'; return; }
+  document.getElementById('cagr-years').value = parseFloat(yrs.toFixed(4));   /* 계산 정밀도 유지 (표시는 소수 2자리) */
   document.getElementById('cagr-years-sl').value = Math.min(Math.round(yrs), 50);
   document.getElementById('cagr-date-period-label').textContent =
     '기간: ' + yrs.toFixed(2) + '년 (' + Math.round(ms/(1000*60*60*24)) + '일)';
@@ -12933,14 +13008,28 @@ function setCagrChartTab(tab, btn) {
   if (_cagrCache) renderCagrChart(_cagrCache);
 }
 
+/* 결과 화면을 비움 (입력이 잘못됐을 때 이전 결과가 남지 않도록) */
+function cagrClear(msg) {
+  ['cagr-result','cagr-monthly-rate','cagr-daily-rate','cagr-total-return','cagr-total-profit','cagr-double','cagr-ten'].forEach(id => {
+    const e = document.getElementById(id); if (e) { e.textContent = '—'; e.style.color = ''; }
+  });
+  const sub = document.getElementById('cagr-result-sub'); if (sub) sub.textContent = msg || '입력값을 확인하세요';
+  const tb = document.getElementById('cagrTableBody'); if (tb) tb.innerHTML = '';
+  _cagrCache = null;
+  if (cagrChart2) { cagrChart2.destroy(); cagrChart2 = null; }
+}
+
 function calcCAGR() {
   const start = getCagrWon('start');
   const end   = getCagrWon('end');
   const years  = parseFloat(document.getElementById('cagr-years').value);
   /* 슬라이더 동기화 */
-  if (cagrPeriodMode === 'years') document.getElementById('cagr-years-sl').value = Math.min(Math.round(years),50);
+  if (cagrPeriodMode === 'years' && !isNaN(years)) document.getElementById('cagr-years-sl').value = Math.min(Math.max(Math.round(years), 1), 50);
 
-  if ([start, end, years].some(isNaN) || start <= 0 || end <= 0 || years <= 0) return;
+  if (!(start > 0)) { cagrClear('초기 금액을 입력하세요'); calcCAGRReverse(); return; }
+  if (!(end > 0))   { cagrClear('최종 금액을 입력하세요'); calcCAGRReverse(); return; }
+  if (!(years > 0)) { cagrClear('투자 기간을 확인하세요 (0보다 커야 함)'); calcCAGRReverse(); return; }
+  if (years > 200)  { cagrClear('투자 기간은 200년 이하로 입력하세요'); calcCAGRReverse(); return; }
 
   const startWan = start / 10000;
   const endWan   = end   / 10000;
@@ -12986,19 +13075,22 @@ function calcCAGR() {
   tbody.innerHTML = '';
   const rows = [];
   let prev = start;
-  for (let y = 1; y <= Math.ceil(years); y++) {
-    const val      = y <= years ? start * Math.pow(1 + cagr, y) : end;
+  const nRows = Math.max(1, Math.ceil(years - 0.01));      /* 날짜 모드의 몇 일 남짓한 끝자투리는 마지막 해에 합침 */
+  for (let y = 1; y <= nRows; y++) {
+    const last     = y === nRows;
+    const t        = last ? years : y;                       /* 기간이 소수면 마지막 행은 종료 시점(예: 2.5년) */
+    const val      = last ? end : start * Math.pow(1 + cagr, y);
     const profit   = val - prev;
     const cumProfit = val - start;
     const cumRet   = (val / start - 1) * 100;
-    rows.push({ y, val, profit, cumProfit, cumRet });
+    rows.push({ y, t, label: Math.abs(t - Math.round(t)) < 0.005 ? Math.round(t) + '년차' : t.toFixed(2) + '년 (종료)', val, profit, cumProfit, cumRet });
     prev = val;
   }
   rows.forEach((r, i) => {
     const tr = document.createElement('tr');
     if (i === rows.length - 1) tr.classList.add('cagr-highlight');
     tr.innerHTML = `
-      <td>${r.y}년차</td>
+      <td>${r.label}</td>
       <td>${fmt(Math.round(r.val))}</td>
       <td class="${r.profit>=0?'pos':'neg'}">${r.profit>=0?'+':''}${fmt(Math.round(r.profit))}</td>
       <td class="${r.cumProfit>=0?'pos':'neg'}">${r.cumProfit>=0?'+':''}${fmt(Math.round(r.cumProfit))}</td>
@@ -13011,21 +13103,30 @@ function calcCAGR() {
   calcCAGRReverse();
 }
 
+/* 역산
+   · 필요 최종금액 = 초기 금액 × (1 + 목표 CAGR)^기간
+   · 필요 기간     = ln(최종 금액 / 초기 금액) / ln(1 + 목표 CAGR)  — 입력한 최종 금액에 목표 CAGR 로 닿는 기간 */
 function calcCAGRReverse() {
   const start      = getCagrWon('start');
+  const end        = getCagrWon('end');
   const years      = parseFloat(document.getElementById('cagr-years').value);
   const targetRate = parseFloat(document.getElementById('cagr-target-rate').value);
-  if ([start, years, targetRate].some(isNaN) || start <= 0) return;
-  const cagrR    = targetRate / 100;
-  const endVal   = start * Math.pow(1 + cagrR, years);
-  const needYrs  = targetRate > 0 ? Math.log(endVal / start) / Math.log(1 + cagrR) : Infinity;
-  document.getElementById('cagr-rev-end').textContent   = fmtC(Math.round(endVal));
-  document.getElementById('cagr-rev-years').textContent = isFinite(needYrs) ? needYrs.toFixed(1) + '년' : '—';
+  const endEl = document.getElementById('cagr-rev-end'), yrEl = document.getElementById('cagr-rev-years');
+  if (isNaN(targetRate) || targetRate <= -100 || !(start > 0)) { endEl.textContent = '—'; yrEl.textContent = '—'; return; }
+  const cagrR = targetRate / 100;
+  endEl.textContent = years > 0 ? fmtC(Math.round(start * Math.pow(1 + cagrR, years))) : '—';
+  if (!(end > 0)) { yrEl.textContent = '—'; return; }
+  const g = Math.log(end / start), r = Math.log(1 + cagrR);
+  let txt;
+  if (Math.abs(g) < 1e-12) txt = '0년 (이미 도달)';
+  else if (r === 0 || g / r < 0) txt = '도달 불가';                 /* 목표 CAGR 0% 이거나 방향이 반대 */
+  else txt = (g / r).toFixed(1) + '년';
+  yrEl.textContent = txt;
 }
 
 function renderCagrChart(cache) {
   const { start, end, years, cagr, rows } = cache;
-  const labels   = ['0년차', ...rows.map(r => r.y + '년차')];
+  const labels   = ['0년차', ...rows.map(r => r.label)];
   const valData  = [start,   ...rows.map(r => Math.round(r.val))];
   const retData  = [0,       ...rows.map(r => parseFloat((r.cumRet).toFixed(2)))];
 
@@ -13072,7 +13173,7 @@ function renderCagrChart(cache) {
             const v = ctx.parsed.y;
             return cagrChartTab2 === 'value'
               ? ' ' + fmtC(Math.round(v))
-              : ' +' + v.toFixed(2) + '%';
+              : ' ' + (v >= 0 ? '+' : '') + v.toFixed(2) + '%';
           }
         }
       }
