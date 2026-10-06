@@ -1152,6 +1152,22 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     .ec-wrap { height:320px; }
     .ec-chip { font-size:11px; padding:4px 9px 4px 7px; }
   }
+  /* [FX-DXY] 환율 계산기 — 달러인덱스 */
+  .dxy-card { margin:0 0 20px; }
+  .dxy-top { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:14px; }
+  .dxy-sym { font-family:var(--mono); font-size:11px; color:var(--text3); border:1px solid var(--card-border); border-radius:5px; padding:1px 6px; margin-left:4px; }
+  .dxy-now { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .dxy-price { font-family:var(--mono); font-size:28px; font-weight:700; color:var(--text); }
+  .dxy-chg { font-family:var(--mono); font-size:13px; font-weight:600; }
+  .dxy-sub { margin:6px 0 0; font-size:11px; color:var(--text3); }
+  .dxy-stats { display:grid; grid-template-columns:repeat(3, auto); gap:4px 18px; font-size:11px; color:var(--text3); }
+  .dxy-stats b { display:block; font-family:var(--mono); font-size:13px; font-weight:600; color:var(--text); }
+  .dxy-wrap { height:300px; }
+  @media (max-width: 768px) {
+    .dxy-price { font-size:24px; }
+    .dxy-wrap { height:230px; }
+    .dxy-stats { gap:4px 14px; }
+  }
   /* [CHART-ZOOM] 확대 상태에서 처음 범위로 돌아가는 버튼 */
   .zp-reset { position:absolute; top:4px; left:4px; z-index:2; font-family:var(--font); font-size:11px; font-weight:600; color:var(--accent); background:var(--card); border:1px solid rgba(49,130,246,0.35); border-radius:6px; padding:3px 9px; cursor:pointer; }
   .zp-hint { color:var(--text3); opacity:.85; }
@@ -4330,6 +4346,36 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       </button>
     </div>
 
+    <!-- ── 달러인덱스 (DXY) ── [FX-DXY] ── -->
+    <div class="card kcmp-card dxy-card">
+      <div class="dxy-top">
+        <div>
+          <p class="card-title" style="margin:0 0 6px;">달러인덱스 <span class="dxy-sym">DXY</span></p>
+          <div class="dxy-now">
+            <span class="dxy-price" id="dxy-price">—</span>
+            <span class="dxy-chg" id="dxy-chg"></span>
+          </div>
+          <p class="dxy-sub" id="dxy-sub">유로·엔·파운드 등 주요 6개 통화 대비 미국 달러 가치 (1973년 3월 = 100)</p>
+        </div>
+        <div class="dxy-stats" id="dxy-stats"></div>
+      </div>
+      <div class="kcmp-wrap dxy-wrap">
+        <canvas id="dxy-chart" role="img" aria-label="달러인덱스 차트"></canvas>
+        <p class="kcmp-status" id="dxy-status">달러인덱스를 불러오는 중…</p>
+      </div>
+      <div class="chart-tabs kcmp-tabs" id="dxy-tabs">
+        <button class="chart-tab" data-per="1M" onclick="dxySetPeriod('1M')">1M</button>
+        <button class="chart-tab" data-per="3M" onclick="dxySetPeriod('3M')">3M</button>
+        <button class="chart-tab" data-per="6M" onclick="dxySetPeriod('6M')">6M</button>
+        <button class="chart-tab active" data-per="1Y" onclick="dxySetPeriod('1Y')">1Y</button>
+        <button class="chart-tab" data-per="3Y" onclick="dxySetPeriod('3Y')">3Y</button>
+        <button class="chart-tab" data-per="5Y" onclick="dxySetPeriod('5Y')">5Y</button>
+        <button class="chart-tab" data-per="10Y" onclick="dxySetPeriod('10Y')">10Y</button>
+        <button class="chart-tab" data-per="MAX" onclick="dxySetPeriod('MAX')">MAX</button>
+      </div>
+      <p class="kcmp-note" id="dxy-note"></p>
+    </div>
+
     <!-- 환율 상태 배너 -->
     <div style="background:var(--bg3);border:1px solid var(--card-border);border-radius:12px;padding:12px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
       <span style="font-size:12px;color:var(--text3);" id="fx-status-label">↺ 갱신 버튼으로 최신 환율 조회</span>
@@ -6577,8 +6623,8 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     return Promise.race([p, new Promise(function (_, rej) { setTimeout(function () { rej(new Error('timeout')); }, ms); })]);
   }
   /* 파일별 갱신 주기(신선도)와 다운로드 제한 시간 — 큰 파일을 불필요하게 두 번 받지 않도록 */
-  var FRESH_MS = { 'etfcagr.json': 7 * 3600e3, 'history.json': 22 * 3600e3 };   /* 기본 40분 */
-  var BIG = { 'etfcagr.json': 1, 'history.json': 1, 'compare.json': 1, 'muhan.json': 1 };
+  var FRESH_MS = { 'etfcagr.json': 7 * 3600e3, 'history.json': 22 * 3600e3, 'dxy.json': 7 * 3600e3 };   /* 기본 40분 */
+  var BIG = { 'dxy.json': 1, 'etfcagr.json': 1, 'history.json': 1, 'compare.json': 1, 'muhan.json': 1 };
   function getJSON(url, ms) {
     return timeout(nativeFetch(url, { cache: 'no-cache' }), ms || 6000)
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
@@ -6721,6 +6767,7 @@ function applySiteTheme() {
   if (mp && mp.classList.contains('active') && window.MHdebug) window.MHdebug.render();
   if (window.kcmpRender) window.kcmpRender();   /* 비교 차트 색(빨강·파랑·글자)을 새 테마로 */
   if (window.ecRender) window.ecRender();       /* ETF CAGR 비교 차트 글자·격자 색 */
+  if (window.dxyRender) window.dxyRender();     /* 환율 계산기 달러인덱스 차트 */
 }
 function setSiteTheme(m) {
   localStorage.setItem('site-theme', m);
@@ -10116,6 +10163,178 @@ window.chartZoom = (function () {
 /* ── TIGERSEMI END ── */
 
 /* ════════════════════════════════════════
+   [FX-DXY] 환율 계산기 — 달러인덱스 (DX-Y.NYB)
+   데이터: data/dxy.json (Actions: 야후 일봉 전체, 6시간마다) + data/market.json 시세(15분마다)로 최근값 이어 붙임
+           → 둘 다 없으면 Yahoo 직접(프록시)
+   기간: 1M·3M·6M·1Y·3Y·5Y·10Y·MAX — 기간 변화율은 시작일 이전 마지막 거래일 종가 기준
+════════════════════════════════════════ */
+(function () {
+  var SYM = 'DX-Y.NYB', MONTHS = { '1M': 1, '3M': 3, '6M': 6, '1Y': 12, '3Y': 36, '5Y': 60, '10Y': 120 };
+  var S = { pts: null, quote: null, src: '', period: '1Y', chart: null, loading: null };
+  function $(id) { return document.getElementById(id); }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function dayStr(d, sep) { var t = new Date(d * 86400000); sep = sep || '-'; return t.getUTCFullYear() + sep + pad(t.getUTCMonth() + 1) + sep + pad(t.getUTCDate()); }
+  var NYF = null;
+  function nyDay(sec) {   /* 미국 동부(뉴욕) 날짜 → 일수 (서버 dxy.json 과 같은 기준) */
+    try {
+      NYF = NYF || new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' });
+      var p = NYF.formatToParts(new Date(sec * 1000)), o = {};
+      p.forEach(function (x) { o[x.type] = x.value; });
+      return Math.floor(Date.UTC(+o.year, +o.month - 1, +o.day) / 86400000);
+    } catch (e) { return Math.floor((sec - 5 * 3600) / 86400); }
+  }
+  function addMonths(day, n) {
+    var t = new Date(day * 86400000), y = t.getUTCFullYear(), m = t.getUTCMonth() + n;
+    var last = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+    return Math.floor(Date.UTC(y, m, Math.min(t.getUTCDate(), last)) / 86400000);
+  }
+  function cssVar(n, f) { var v = getComputedStyle(document.documentElement).getPropertyValue(n).trim(); return v || f; }
+  function sgn(v, d) { return (v >= 0 ? '+' : '') + v.toFixed(d); }
+  function status(msg) { var s = $('dxy-status'); if (s) { s.textContent = msg || ''; s.style.display = msg ? 'flex' : 'none'; } }
+  function merge(base, add) {   /* [일수, 값] 배열 — add 가 같은 날을 덮어씀 */
+    var m = {}; base.concat(add).forEach(function (p) { m[p[0]] = p[1]; });
+    return Object.keys(m).map(Number).sort(function (a, b) { return a - b; }).map(function (d) { return [d, m[d]]; });
+  }
+
+  function load() {
+    if (S.loading) return S.loading;
+    S.loading = (async function () {
+      var pts = [], q = null, srcs = [];
+      try {
+        var j = window.mdLoad ? await window.mdLoad('dxy.json') : null;
+        if (j && j.c && j.c.length > 100) {
+          var d = j.d0; pts.push([d, j.c[0]]);
+          for (var i = 1; i < j.c.length; i++) { d += j.dd[i - 1]; pts.push([d, j.c[i]]); }
+          srcs.push('Yahoo Finance 일봉' + (j.updated ? ' (' + j.updated.slice(0, 10) + ' 갱신)' : ''));
+        }
+      } catch (e) {}
+      try {
+        var m = window.mdLoad ? await window.mdLoad('market.json') : null;
+        q = m && m.quotes && m.quotes[SYM];
+        if (q && q.daily && q.daily.length) pts = merge(pts, q.daily.map(function (p) { return [nyDay(p[0]), p[1]]; }));
+      } catch (e) {}
+      if (pts.length < 100) {                        /* 대체: Yahoo 직접 */
+        try {
+          var r = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(SYM) + '?period1=31536000&period2=' + Math.floor(Date.now() / 1000) + '&interval=1d');
+          var res = (await r.json()).chart.result[0], ts = res.timestamp || [], cl = (res.indicators.quote[0] || {}).close || [], yp = [];
+          ts.forEach(function (t, i) { if (cl[i] > 20 && cl[i] < 300) yp.push([nyDay(t), +cl[i].toFixed(3)]); });
+          if (yp.length > pts.length) { pts = merge(pts, yp); srcs = ['Yahoo Finance']; }
+          if (!q && res.meta) q = { price: res.meta.regularMarketPrice, prev: res.meta.chartPreviousClose, time: res.meta.regularMarketTime };
+        } catch (e) {}
+      }
+      if (pts.length < 2) { S.loading = null; return false; }
+      /* 시세 현재가가 마지막 일봉보다 새것이면 오늘 값으로 반영 */
+      if (q && q.price > 0 && q.time) {
+        var qd = nyDay(q.time);
+        if (qd >= pts[pts.length - 1][0]) pts = merge(pts, [[qd, +(+q.price).toFixed(3)]]);
+      }
+      S.pts = pts; S.quote = q; S.src = srcs.join(' · ') || 'Yahoo Finance';
+      return true;
+    })();
+    return S.loading;
+  }
+
+  function header() {
+    var pts = S.pts, last = pts[pts.length - 1], prev = pts.length > 1 ? pts[pts.length - 2][1] : null, q = S.quote;
+    var price = last[1], base = prev;
+    if (q && q.price > 0 && q.prev > 0 && Math.abs(q.price - price) < 1e-6) base = q.prev;   /* 시세가 마지막 값이면 시세의 전일 종가 */
+    var el = $('dxy-price'); if (el) el.textContent = price.toFixed(2);
+    var c = $('dxy-chg');
+    if (c) {
+      if (base) {
+        var ch = price - base, up = ch >= 0;
+        c.textContent = (up ? '▲ ' : '▼ ') + Math.abs(ch).toFixed(2) + ' (' + sgn(ch / base * 100, 2) + '%)';
+        c.style.color = ch === 0 ? 'var(--text3)' : (up ? 'var(--accent2)' : 'var(--accent)');
+      } else c.textContent = '';
+    }
+    var sub = $('dxy-sub');
+    if (sub) {
+      var t = q && q.time && Math.abs(q.price - price) < 1e-6 ? new Date(q.time * 1000) : null;
+      sub.textContent = '유로·엔·파운드 등 주요 6개 통화 대비 미국 달러 가치 (1973년 3월 = 100) · '
+        + (t ? t.getFullYear() + '-' + pad(t.getMonth() + 1) + '-' + pad(t.getDate()) + ' ' + pad(t.getHours()) + ':' + pad(t.getMinutes()) + ' 기준 (한국 시간)' : dayStr(last[0]) + ' 종가');
+    }
+  }
+
+  function render() {
+    var page = $('page-fx');
+    if (!S.pts || !page || !page.classList.contains('active') || !window.Chart) return;
+    var canvas = $('dxy-chart'); if (!canvas) return;
+    header();
+    var pts = S.pts, lastD = pts[pts.length - 1][0], startD = MONTHS[S.period] ? addMonths(lastD, -MONTHS[S.period]) : pts[0][0];
+    var s = 0;
+    for (var i = 0; i < pts.length && pts[i][0] <= startD; i++) s = i;   /* 시작일 이전 마지막 거래일 */
+    var seg = pts.slice(s);
+    if (seg.length < 2) { status('선택한 기간의 자료가 부족합니다.'); return; }
+    status('');
+    var data = seg.map(function (p) { return { x: p[0], y: p[1] }; });
+    var v0 = seg[0][1], v1 = seg[seg.length - 1][1], hi = seg[0], lo = seg[0];
+    seg.forEach(function (p) { if (p[1] > hi[1]) hi = p; if (p[1] < lo[1]) lo = p; });
+    var chg = (v1 / v0 - 1) * 100, up = chg >= 0;
+    var red = cssVar('--accent2', '#f04452'), blue = cssVar('--accent', '#3182f6'), col = up ? red : blue, tick = cssVar('--text3', '#888');
+    var st = $('dxy-stats');
+    if (st) st.innerHTML = '<div>기간 변화<b style="color:' + col + '">' + sgn(chg, 2) + '%</b></div>'
+      + '<div>기간 최고<b>' + hi[1].toFixed(2) + '</b>' + dayStr(hi[0], '.') + '</div>'
+      + '<div>기간 최저<b>' + lo[1].toFixed(2) + '</b>' + dayStr(lo[0], '.') + '</div>';
+    var narrow = (canvas.parentNode.clientWidth || 700) < 520, xmin = data[0].x, xmax = data[data.length - 1].x;
+    if (S.chart) { S.chart.destroy(); S.chart = null; }
+    S.chart = new Chart(canvas, {
+      type: 'line',
+      data: { datasets: [{ label: '달러인덱스', data: data, borderColor: col, backgroundColor: col, borderWidth: 1.2,
+                           pointRadius: 0, pointHoverRadius: 3, tension: 0, fill: false, parsing: false }] },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false, parsing: false, normalized: true,
+        interaction: { mode: 'nearest', axis: 'x', intersect: false },
+        plugins: {
+          legend: { display: false },
+          decimation: { enabled: true, algorithm: 'lttb', samples: narrow ? 300 : 700 },
+          tooltip: { callbacks: { title: function (it) { return it.length ? dayStr(it[0].parsed.x, '/') : ''; },
+                                  label: function (c) { return ' 달러인덱스  ' + c.parsed.y.toFixed(2) + '  (' + sgn((c.parsed.y / v0 - 1) * 100, 2) + '%)'; } } }
+        },
+        scales: {
+          x: { type: 'linear', min: xmin, max: xmax, grid: { display: false }, border: { color: fgA(0.25) },
+               afterBuildTicks: function (ax) {   /* 1년 넘는 기간은 1월 1일(1·2·5·10년 간격), 짧은 기간은 매월 1일, 한 달 이하는 매주 월요일 */
+                 var lo2 = ax.min, hi2 = ax.max, lim = narrow ? 4 : 7, a = new Date(lo2 * 86400000), z = new Date(hi2 * 86400000), out = [], y, m, stp;
+                 var months = (z.getUTCFullYear() - a.getUTCFullYear()) * 12 + z.getUTCMonth() - a.getUTCMonth();
+                 if (months > 24) {
+                   stp = [1, 2, 5, 10].find(function (k) { return months / 12 / k <= lim; }) || 10;
+                   for (y = a.getUTCFullYear() + 1; y <= z.getUTCFullYear(); y++) if (y % stp === 0) out.push({ value: Date.UTC(y, 0, 1) / 86400000 });
+                 } else {
+                   stp = [1, 2, 3, 6].find(function (k) { return months / k <= lim; }) || 6;
+                   for (m = 1; m <= months; m++) { var d = new Date(Date.UTC(a.getUTCFullYear(), a.getUTCMonth() + m, 1)); if (d.getUTCMonth() % stp === 0) out.push({ value: d.getTime() / 86400000 }); }
+                 }
+                 if (months <= 1) { for (var dd = Math.ceil(lo2); dd <= hi2; dd++) if (new Date(dd * 86400000).getUTCDay() === 1) out.push({ value: dd }); }
+                 ax.ticks = out.filter(function (t) { return t.value >= lo2 && t.value <= hi2; });
+               },
+               ticks: { color: tick, maxRotation: 0, autoSkip: false, font: { size: narrow ? 10 : 11 },
+                        callback: function (v) { var x = dayStr(v, '/'); return x.slice(5) === '01/01' ? x.slice(0, 4) : (x.slice(8) === '01' ? x.slice(0, 7) : x.slice(5)); } } },
+          y: { position: 'right', border: { display: false }, grid: { color: fgA(0.07) },
+               ticks: { color: tick, maxTicksLimit: 7, font: { size: narrow ? 10 : 11 } } }
+        }
+      }
+    });
+    window.chartZoom.attach(canvas, S.chart, { min: xmin, max: xmax, minSpan: 7 });
+    var note = $('dxy-note');
+    if (note) note.innerHTML = '<span class="zp-hint">그래프 위에서 마우스 휠로 확대·축소, 드래그로 이동, 더블클릭으로 전체 보기</span><br>'
+      + '기간 ' + dayStr(seg[0][0], '/') + ' ~ ' + dayStr(lastD, '/') + ' · 변화율은 ' + dayStr(seg[0][0], '/') + ' 종가 ' + v0.toFixed(2) + ' 기준'
+      + ' · 오르면 달러 강세(빨강), 내리면 달러 약세(파랑) · 출처: ' + S.src;
+  }
+
+  window.dxyRender = function () {
+    var page = $('page-fx'); if (!page || !page.classList.contains('active')) return;
+    if (S.pts) { render(); return; }
+    status('달러인덱스를 불러오는 중…');
+    load().then(function (ok) { if (ok) render(); else status('달러인덱스 자료를 불러오지 못했습니다. 잠시 후 다시 열어 주세요.'); });
+  };
+  window.dxySetPeriod = function (p) {
+    S.period = p;
+    var tabs = $('dxy-tabs'); if (tabs) tabs.querySelectorAll('.chart-tab').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-per') === p); });
+    render();
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(window.dxyRender, 0); });
+  else setTimeout(window.dxyRender, 0);
+})();
+
+/* ════════════════════════════════════════
    [FX] 환율 계산기
    데이터: [MARKET-DATA] 시세 계층 (data/*.json)
    2순위: exchangerate-api 공개 엔드포인트
@@ -11623,7 +11842,7 @@ function switchSubTab(tab, grpId, btn) {
   if (tab === 'loan')      calcLoan();
   if (tab === 'compound')  { setCpdMode('simple', document.getElementById('cpd-mode-simple')); calcCompound(); }
   if (tab === 'cagr')      calcCAGR();
-  if (tab === 'fx')        fetchFxRates();
+  if (tab === 'fx')        { fetchFxRates(); if (window.dxyRender) window.dxyRender(); }
   if (tab === 'health')    calcHealth();
   if (tab === 'kospi') {
     fetchKospi().then(() => {

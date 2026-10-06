@@ -27,7 +27,8 @@ METAL   = ['GC=F', 'SI=F']
 FX      = ['USDKRW=X', 'EURKRW=X', 'JPYKRW=X', 'CNYKRW=X', 'GBPKRW=X', 'HKDKRW=X',
            'SGDKRW=X', 'AUDKRW=X', 'CADKRW=X', 'CHFKRW=X', 'THBKRW=X', 'USDVND=X']
 US_ETF  = ['TQQQ', 'SOXL']                                              # 무한매수법
-QUOTES  = ETF + INDEX + METAL + FX + US_ETF
+DXY_SYM = 'DX-Y.NYB'                                                    # 달러인덱스 (ICE)
+QUOTES  = ETF + INDEX + METAL + FX + US_ETF + [DXY_SYM]
 HIST    = INDEX + METAL + ['USDKRW=X']
 HIST_YEARS, HIST_MAX_AGE_H = 31, 20
 HIST_VERSION = 4   # 형식·출처가 바뀌면 올려서 즉시 다시 수집
@@ -55,6 +56,11 @@ REALTY_FIRST_YEAR = 2006            # 실거래가 공개 시작
 REALTY_REFRESH_DAYS = 7             # 최근 2개 연도만 주 1회 다시 받음 (지난 연도는 확정값 재사용)
 REALTY_MAX_DOWNLOADS = 8
 REALTY_BUDGET_SEC = 420            # 한 번 실행에서 받을 최대 연도 수 (사이트 일일 한도 100회 · 실행 시간 고려)
+
+# 환율 계산기 '달러인덱스' 차트 (data/dxy.json): 야후 DX-Y.NYB 일봉 전체 (1971~)
+DXY = os.path.join(ROOT, 'dxy.json')
+DXY_MAX_AGE_H = 6
+DXY_PERIOD = 'period1=31536000&period2={now}&interval=1d'                 # 1971-01-01 ~ 현재 (range=max 는 월봉이 됨)
 
 ETF_CAGR = ['QQQ', 'SPY', 'SOXX', 'SSO', 'ROM', 'USD', 'QLD', 'TQQQ', 'TECL', 'SOXL', 'SPXL', 'UPRO']
 ETFCAGR = os.path.join(ROOT, 'etfcagr.json')
@@ -502,6 +508,34 @@ def build_compare():
                               'series': series, 'divs': divs}, old)
 
 
+def build_dxy():
+    """달러인덱스 일봉 종가 전체 → data/dxy.json  형식: {d0: 첫 거래일(일수), dd: 거래일 간격 배열, c: 종가 배열}
+    최근 30일은 market.json 의 시세(15분마다)가 화면에서 이어 붙임"""
+    old = load(DXY)
+    age_h = 1e9
+    if old.get('updated'):
+        age_h = (utc_now() - datetime.datetime.fromisoformat(old['updated'][:-1])).total_seconds() / 3600
+    if age_h < DXY_MAX_AGE_H and old.get('c') and '--dxy' not in sys.argv:
+        print(f'  dxy.json: 최근 갱신({age_h:.1f}시간 전) — 건너뜀')
+        return
+    res = yahoo_chart(DXY_SYM, DXY_PERIOD.format(now=int(time.time())))
+    pts = {}
+    for t, cl in zip(res.get('timestamp') or [], ((res.get('indicators') or {}).get('quote') or [{}])[0].get('close') or []):
+        if cl is not None and 20 < cl < 300:                      # 달러인덱스 범위 밖 값(오류) 제외
+            pts[datetime.datetime.fromtimestamp(t, NY).date().toordinal() - 719163] = round(float(cl), 3)
+    days = sorted(pts)
+    if len(days) < 2500:
+        raise ValueError(f'일봉 부족 ({len(days)}개)')
+    recent = [b - a for a, b in zip(days[-500:], days[-499:])]
+    if sorted(recent)[len(recent) // 2] > 4:                       # 최근 구간이 일봉이 아니면(주봉·월봉) 저장 안 함
+        raise ValueError('일봉이 아님')
+    if old.get('c') and len(days) < len(old['c']) * 0.9:          # 갑자기 짧아지면(야후 일시 오류) 직전값 유지
+        raise ValueError(f'자료가 짧아짐 ({len(old["c"])} → {len(days)})')
+    gaps = [b - a for a, b in zip(days, days[1:])]
+    print(f'  달러인덱스 {len(days)}일 (시작 {datetime.date.fromordinal(719163 + days[0])} · 마지막 {datetime.date.fromordinal(719163 + days[-1])} {pts[days[-1]]}) · 최대 간격 {max(gaps)}일')
+    save_if_changed(DXY, {'unit': 'day', 'sym': DXY_SYM, 'd0': days[0], 'dd': gaps, 'c': [pts[d] for d in days]}, old)
+
+
 def build_etfcagr():
     """ETF CAGR 비교용 상장 이후 일봉 (분할 반영 종가) + 분배금 → data/etfcagr.json
     형식: series[T] = {d0: 첫 거래일(일수), dd: 거래일 간격 배열, c: 종가 배열, div: [[일수, 분배금]]}"""
@@ -686,6 +720,10 @@ def main():
         print('  feargreedchart 실패(직전값 유지):', e)
     save_if_changed(MARKET, market, old)
     build_muhan(market)
+    try:
+        build_dxy()
+    except Exception as e:
+        print('  달러인덱스 데이터 실패(직전값 유지):', e)
     try:
         build_etfcagr()
     except Exception as e:
