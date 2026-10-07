@@ -1,35 +1,79 @@
-===== krx
-ERR <HTTPError 400: 'Bad Request'>
-===== kind
-4699
-rows 7
- | | 
+===== 20260928000287
+22353
+[('discls', '')]
++ pIsurCd;
+	window.open(url, "_blank", "top=100,left=200,scrollbars=yes");
+}
+</script>
+</head>
+<body class="pop">
+
+<!--
+2018.03.13 다운로드 기능 개선 
+파일 다운로드(PDF, EXCEL)에 사용되는 정보 저장
+method, acpNo, docNo, fileName 추가
+-->
+<form name="docdownloadform" id="docdownloadform" action="#">
+	<input type="hidden" name="method"		id="method"		value=""/>
+	<input type="hidden" name="acptNo"		id="acptNo"		value="20260928000287" />
+	<input type="hidden" name="docNo"		id="docNo"		value="" />
+	<input type
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
+<title>창 닫기</title>
+<script type="text/javascript" src="../js/jquery/jquery.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		location.href = '/common/blank.html';
+	});
+</script>
+</head>
+<body>
+</body>
+</html>
 []
- | | 6 | | 2026-09-28 15:12 | | | 신한펀드파트너스 | | | | ETF이익금분배신고(분배금안내)(일괄공시) | | | 신한펀드파트너스 | | | | 
-['20260928000287']
- | | 5 | | 2026-09-28 15:11 | | | 하나펀드서비스 | | | | ETF이익금분배신고(분배금안내)(일괄공시) | | | 하나펀드서비스 | | | | 
-['20260928000270']
- | | 4 | | 2026-09-28 13:58 | | | 한국펀드파트너스 | | | | ETF이익금분배신고(분배금안내)(일괄공시) | | | 한국펀드파트너스 | | | | 
-['20260928000183']
- | | 3 | | 2026-09-28 13:58 | | | 케이비펀드파트너스 | | | | ETF이익금분배신고(분배금안내)(일괄공시) | | | 케이비펀드파트너스 | | | | 
-['20260928000179']
- | | 2 | | 2026-09-28 11:36 | | | 우리펀드서비스 | | | | ETF이익금분배신고(분배금안내)(일괄공시) | | | 우리펀드서비스 | | | | 
-['20260928000137']
- | | 1 | | 2026-09-21 17:10 | | | 신한펀드파트너스 | | | | ETF이익금분배신고(분배금안내)(일괄공시) | | | 신한펀드파트너스 | | | | 
-['20260921000089']
-===== kind_today
-rows 101
- | | 
- | | 20:30 | | | | | 자기주식매매 신청내역(유가증권시장) | | | 유가증권시장본부 | | | | 
- | | 20:30 | | | | | 대량매매내역(유가증권시장) | | | 유가증권시장본부 | | | | 
- | | 20:30 | | | | | 일일 회전율 상위 20종목-ELW제외(유가증권시장) | | | 유가증권시장본부 | | | | 
- | | 20:29 | | | | | 일일 회전율 상위 20종목-ELW포함(유가증권시장) | | | 유가증권시장본부 | | | | 
+ERR IndexError('list index out of range')
+===== 20260928000137
+22345
+[('discls', '')]
++ pIsurCd;
+	window.open(url, "_blank", "top=100,left=200,scrollbars=yes");
+}
+</script>
+</head>
+<body class="pop">
+
+<!--
+2018.03.13 다운로드 기능 개선 
+파일 다운로드(PDF, EXCEL)에 사용되는 정보 저장
+method, acpNo, docNo, fileName 추가
+-->
+<form name="docdownloadform" id="docdownloadform" action="#">
+	<input type="hidden" name="method"		id="method"		value=""/>
+	<input type="hidden" name="acptNo"		id="acptNo"		value="20260928000137" />
+	<input type="hidden" name="docNo"		id="docNo"		value="" />
+	<input type
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
+<title>창 닫기</title>
+<script type="text/javascript" src="../js/jquery/jquery.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		location.href = '/common/blank.html';
+	});
+</script>
+</head>
+<body>
+</body>
+</html>
 []
-===== naver
-https://m.stock.naver.com/api/stock/498400/integration 9564 {"stockEndType":"etf","itemCode":"498400","reutersCode":"498400","stockName":"KODEX 200타겟위클리커버드콜","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"20,670"},{"code":"openPrice","key":"시가","value":"20,480","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"}},{"code":"highPrice","key":"고가","value":"20,800","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"}},{"code":"lowPrice","key":"저가","value":"20,270","compareToPrev
-https://m.stock.naver.com/api/etf/498400/basic 6650 {"stockEndType":"etf","itemCode":"498400","reutersCode":"498400","stockName":"KODEX 200타겟위클리커버드콜","sosok":"0","closePrice":"20,285","compareToPreviousClosePrice":"-385","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-1.86","marketStatus":"CLOSE","marketStatusDetailType":"close","localTradedAt":"2026-10-07T20:20:20+09:00","tradeStopType":{"code":"1","text":"운영.Trading","name":"TRADING"},"tradableStatus":"tradable","tradableStatusC
-https://api.stock.naver.com/etf/498400/basic ERR HTTP Error 409: Conflict
-https://m.stock.naver.com/api/stock/498400/dividend ERR HTTP Error 404: 404
-https://stock.naver.com/api/domestic/etf/498400/dividend ERR HTTP Error 404: Not Found
-===== seibro
-1048
+ERR IndexError('list index out of range')
+===== naver etf list
+1171
+{'itemcode': '069500', 'etfTabCode': 1, 'itemname': 'KODEX 200', 'nowVal': 108550, 'risefall': '5', 'changeVal': -2195, 'changeRate': -1.98, 'nav': 108555.0, 'threeMonthEarnRate': -14.7221, 'quant': 17544467, 'amonut': 1928468, 'marketSum': 252162}
