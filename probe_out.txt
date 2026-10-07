@@ -1,0 +1,23 @@
+===== ACE https://www.aceetf.co.kr/ 102064 
+ links []
+  JS etf.co.kr/_next/static/chunks/pages/_app-dbbe0ebed46e03ad.js 540267 ['/api/funds/{id}/dividend', '/api/funds/{id}/dividend/down']
+===== SOL https://www.soletf.com/ko/main?selectedLanguage=ko 878006 
+ links ['/fund/etf/210942/dividend', '/fund/etf/211077/dividend']
+  JS https://www.soletf.com/static/pc/js/ko/etf_pds.js 17521 ['/api/etf/pds/dividend/', '/api/etf/pds/down/dividend/']
+===== PLUS https://www.plusetf.co.kr/ 181695 
+ links ['/product/f-divid', '/product/k-divid', 'javascript:closeWin_dividend();']
+===== HANARO https://www.hanaroetf.com/ 139806 
+ links []
+===== KIWOOM(noverify) https://www.kiwoometf.com/ 126396 
+ links []
+===== RISE https://www.riseetf.co.kr/ 39 ERR URLError(TimeoutError('timed out'))
+===== TIGER https://www.tigeretf.com/ 32 ERR <HTTPError 403: 'Forbidden'>
+===== KoAct https://www.koactetf.com/ 55 ERR URLError(gaierror(-2, 'Name or service not known'))
+===== 1Q https://www.hanaam.com/qetf/main 165895 
+ links []
+===== WON https://www.wooriam.kr/ 180585 
+ links []
+===== DAISHIN https://www.daishinam.co.kr/ 55 ERR URLError(gaierror(-2, 'Name or service not known'))
+===== FOCUS https://www.vi-am.co.kr/ 55 ERR URLError(gaierror(-2, 'Name or service not known'))
+===== TIME https://timeetf.co.kr/ 48454 
+ links []
