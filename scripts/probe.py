@@ -1,32 +1,24 @@
-import urllib.request, re, json, time, concurrent.futures as cf, collections
-UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36'
-def get(u, h=None):
-    return urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':UA,**(h or {})}),timeout=25).read()
-print(get('https://www.samsungfund.com/api/v1/kodex/divid-info.do?id=2ETFV8',{'Referer':'https://www.samsungfund.com/etf/product/distribution.do'})[:3000].decode('utf-8','replace'))
-L=json.loads(get('https://finance.naver.com/api/sise/etfItemList.nhn?etfType=0').decode('euc-kr','replace'))['result']['etfItemList']
-print(len(L))
-t=time.time(); out={}
-def basic(c):
-    for i in range(3):
-        try:
-            d=json.loads(get('https://m.stock.naver.com/api/etf/%s/basic'%c)); return c,(d.get('dividendMonthsThisYear'),d.get('dividendYieldTtm'),d.get('issuerName'))
-        except Exception as e: err=e; time.sleep(1)
-    return c,('ERR',str(err))
-with cf.ThreadPoolExecutor(8) as ex:
-    for c,v in ex.map(basic,[x['itemcode'] for x in L]): out[c]=v
-print('time',time.time()-t, 'errs', sum(1 for v in out.values() if v[0]=='ERR'))
-cnt=collections.Counter()
-mon=[]
-for c,v in out.items():
-    m=v[0]
-    if m and m!='ERR':
-        ms=[int(x) for x in m.split(',') if x.strip().isdigit()]
-        cnt[len(ms)]+=1
-        if len(ms)>=3 and ms[-1]>=8 and all(ms[i+1]-ms[i]==1 for i in range(len(ms)-1)): mon.append(c)
-print(sorted(cnt.items())); print('monthly-ish',len(mon))
-names={x['itemcode']:x['itemname'] for x in L}
-print([names[c] for c in mon[:40]])
-iss=collections.Counter(out[c][2] for c in mon); print(iss.most_common(30))
-# weird patterns: months with gaps but many
-odd=[(names[c],out[c][0]) for c,v in out.items() if v[0] and v[0]!='ERR' and len(v[0].split(','))>=4 and c not in mon]; print(len(odd), odd[:30])
-h=json.loads(get('https://m.stock.naver.com/api/etf/0177R0/dividend/history?page=1&pageSize=3&firstPageSize=3')); print(h)
+import subprocess, json, os, collections
+env=dict(os.environ, ETFDIV_FULL='1')
+r=subprocess.run(['python3','scripts/update_etfdiv.py'],capture_output=True,text=True,env=env); print(r.stdout[-3000:]); print(r.stderr[-3000:])
+d=json.load(open('data/etfdiv.json'))
+print({k:(len(v) if isinstance(v,(list,dict)) else v) for k,v in d.items()})
+E=d['etfs']; print(collections.Counter((e.get('n') or '').split(' ')[0] for e in E.values()).most_common(40))
+print([ (c,e['n'],e.get('p'),e.get('ttm'),e['h'][:2]) for c,e in list(E.items())[:5]])
+ev=d['events']; print(len(ev)); print(collections.Counter(e['rec'] for e in ev).most_common(20))
+print(ev[:3]); print([e for e in ev if e.get('tax') is not None][:3])
+print('exSrc', collections.Counter(e['exSrc'] for e in ev))
+# monthly ETFs with no event in last 40 days
+import datetime
+today=datetime.date.today()
+noev=[ (c,E[c]['n'],E[c]['h'][0][0]) for c in E if not any(e['t']==c for e in ev)]
+print('no KIND event', len(noev), noev[:60])
+# compare calc ex vs naver ex
+mis=[]
+for e in ev:
+    h=E.get(e['t'],{}).get('h',[])
+    nx=[x[0] for x in h if 0<(datetime.date.fromisoformat(e['rec'])-datetime.date.fromisoformat(x[0])).days<=7]
+    if nx and nx[0]!=e['ex']: mis.append((e['n'],e['rec'],e['ex'],e['exSrc'],nx[0]))
+print('ex mismatch', len(mis), mis[:20])
+print(sorted(d['exMap'].items())[:5])
+r=subprocess.run(['python3','scripts/update_etfdiv.py'],capture_output=True,text=True); print('2nd', r.stdout[-500:], r.stderr[-500:])
