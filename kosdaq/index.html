@@ -1433,6 +1433,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .dv-hsum { font-family:var(--font); font-size:12px; color:var(--text2); }
   .dv-empty { text-align:center !important; color:var(--text3); padding:28px 10px !important; font-family:var(--font) !important; }
   .dv-note { margin:12px 0 0; font-size:11px; color:var(--text3); line-height:1.7; }
+  .dv-pager { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:6px; margin-top:16px; }
+  .dv-pager[hidden] { display:none; }
+  .dv-pg { min-width:34px; height:34px; padding:0 8px; font-family:var(--mono); font-size:13px; color:var(--text2); background:rgba(var(--fg-rgb),0.04); border:1px solid rgba(var(--fg-rgb),0.08); border-radius:9px; cursor:pointer; }
+  .dv-pg:hover:not(:disabled) { border-color:rgba(49,130,246,0.4); color:var(--text); }
+  .dv-pg.active { background:var(--accent-dim); border-color:rgba(49,130,246,0.5); color:var(--accent); font-weight:700; }
+  .dv-pg:disabled { opacity:.35; cursor:default; }
+  .dv-pg-gap { color:var(--text3); padding:0 2px; }
+  .dv-pg-info { width:100%; text-align:center; font-size:11px; color:var(--text3); margin-top:2px; }
   html[data-theme="light"] .dv-st.ok, html[data-theme="light"] .dv-y { color:#15803d; }
   @media (max-width: 860px) {
     .dv-kpis { grid-template-columns:1fr 1fr; }
@@ -9212,6 +9220,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <tbody id="dv-body"><tr><td colspan="12" class="dv-empty">데이터를 불러오는 중…</td></tr></tbody>
         </table>
       </div>
+      <nav class="dv-pager" id="dv-pager" aria-label="페이지" hidden></nav>
       <p class="dv-note" id="dv-note"></p>
     </div>
 
@@ -14525,7 +14534,8 @@ var TAX = (function () {
    · 탭이 열려 있는 동안 5분마다 새 공시를 다시 받아 옴
 ════════════════════════════════════════ */
 (function () {
-  var S = { data: null, rows: [], month: null, day: null, q: '', brand: 'all', sort: 'date', open: {}, timer: null, loading: null };
+  var S = { data: null, rows: [], month: null, day: null, q: '', brand: 'all', sort: 'date', open: {}, timer: null, loading: null, page: 1 };
+  var PER = 50;   /* 표 한 페이지에 보일 종목 수 */
   var BRANDS = ['KODEX', 'TIGER', 'RISE', 'ACE', 'SOL', 'PLUS', 'KIWOOM', 'HANARO', 'KoAct', '1Q', 'WON', 'TIME', 'FOCUS', 'DAISHIN', 'BNK', 'TIMEFOLIO', 'KCGI', 'UNICORN', 'ITF', 'VITA', 'HK'];
   function $(id) { return document.getElementById(id); }
   function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -14655,7 +14665,9 @@ var TAX = (function () {
       h.map(function (z) { return '<div class="dv-hb" title="' + esc(z[0]) + ' · ' + num(z[1]) + '원 · ' + (z[2] != null ? z[2] + '%' : '') + '"><b>' + num(z[1]) + '</b><i style="height:' + Math.max(4, z[1] / mx * 60).toFixed(1) + 'px"></i><small>' + (+z[0].slice(5, 7)) + '/' + (+z[0].slice(8)) + '</small></div>'; }).join('') + '</div></td></tr>';
   }
   function table() {
-    var rows = rowsNow();
+    var all = rowsNow(), pages = Math.max(1, Math.ceil(all.length / PER));
+    if (S.page > pages) S.page = pages;
+    var rows = all.slice((S.page - 1) * PER, S.page * PER);
     $('dv-body').innerHTML = rows.length ? rows.map(function (r) {
       var y = r.y != null ? '<span class="dv-y">' + r.y.toFixed(2) + '%</span>' + (r.yCalc ? '<span class="dv-calc" title="현재가로 계산한 예상 분배율">*</span>' : '') : '<span class="dv-dim">—</span>';
       var tr = '<tr class="dv-row" data-t="' + esc(r.t) + '" tabindex="0" aria-expanded="' + (S.open[r.t] ? 'true' : 'false') + '">' +
@@ -14673,8 +14685,9 @@ var TAX = (function () {
         '<td class="dv-c-ttm" data-l="연 분배율">' + (r.ttm != null ? r.ttm.toFixed(2) + '%' : '—') + '</td></tr>';
       return tr + (S.open[r.t] ? histRow(r) : '');
     }).join('') : '<tr><td colspan="12" class="dv-empty">조건에 맞는 종목이 없습니다</td></tr>';
+    pager(all.length, pages);
     var f = $('dv-filter');
-    if (S.day) { f.hidden = false; f.innerHTML = '<span><b>' + md(S.day, true) + '</b> 일정 ' + rows.length + '건 (공시·분배락·기준일·지급 중 하나라도 해당)</span><button type="button" id="dv-clear">전체 보기 ✕</button>'; }
+    if (S.day) { f.hidden = false; f.innerHTML = '<span><b>' + md(S.day, true) + '</b> 일정 ' + all.length + '건 (공시·분배락·기준일·지급 중 하나라도 해당)</span><button type="button" id="dv-clear">전체 보기 ✕</button>'; }
     else { f.hidden = true; f.innerHTML = ''; }
   }
   function note() {
@@ -14682,6 +14695,22 @@ var TAX = (function () {
     var t = up ? up.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }) : '—';
     $('dv-note').innerHTML = '자료: 한국거래소 KIND 분배금 공시(확정 일정·분배금) · 네이버 금융(월분배 종목·분배 이력·현재가) · 삼성자산운용(KODEX 과세표준) — 마지막 갱신 ' + esc(t) +
       '<br>분배락일은 거래소 \'분배락 기준가격 안내\'가 나오면 그 날짜, 그 전에는 기준일 전 영업일로 계산합니다 · 분배율 * 는 아직 분배락 전이라 현재가로 계산한 값 · 행을 누르면 최근 분배 이력이 보입니다 · 투자 판단의 책임은 이용자에게 있습니다.';
+  }
+  /* 페이지 번호: 1 … 4 5 [6] 7 8 … 12 처럼 현재 앞뒤 2쪽과 처음·끝만 */
+  function pager(total, pages) {
+    var el = $('dv-pager');
+    if (pages <= 1) { el.hidden = true; el.innerHTML = ''; return; }
+    var cur = S.page, list = [];
+    for (var i = 1; i <= pages; i++) if (i === 1 || i === pages || Math.abs(i - cur) <= 2) list.push(i);
+    var h = '<button type="button" class="dv-pg" data-pg="' + (cur - 1) + '"' + (cur === 1 ? ' disabled' : '') + ' aria-label="이전 페이지">‹</button>', prev = 0;
+    list.forEach(function (i) {
+      if (i - prev > 1) h += '<span class="dv-pg-gap">…</span>';
+      h += '<button type="button" class="dv-pg' + (i === cur ? ' active' : '') + '" data-pg="' + i + '"' + (i === cur ? ' aria-current="page"' : '') + '>' + i + '</button>';
+      prev = i;
+    });
+    h += '<button type="button" class="dv-pg" data-pg="' + (cur + 1) + '"' + (cur === pages ? ' disabled' : '') + ' aria-label="다음 페이지">›</button>';
+    h += '<span class="dv-pg-info">' + ((cur - 1) * PER + 1) + '–' + Math.min(cur * PER, total) + ' / ' + total + '종목</span>';
+    el.hidden = false; el.innerHTML = h;
   }
   function render() {
     if (!S.data) return;
@@ -14707,19 +14736,20 @@ var TAX = (function () {
   document.addEventListener('click', function (e) {
     var t = e.target; if (!t.closest || !t.closest('#page-etfdiv')) return;
     var b;
-    if ((b = t.closest('.dv-day'))) { var ds = b.getAttribute('data-day'); S.day = S.day === ds ? null : ds; cal(); table(); if (S.day) $('dv-filter').scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
-    if (t.closest('#dv-clear')) { S.day = null; cal(); table(); return; }
+    if ((b = t.closest('.dv-day'))) { var ds = b.getAttribute('data-day'); S.day = S.day === ds ? null : ds; S.page = 1; cal(); table(); if (S.day) $('dv-filter').scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
+    if (t.closest('#dv-clear')) { S.day = null; S.page = 1; cal(); table(); return; }
     if (t.closest('#dv-prev') || t.closest('#dv-next')) { var m = S.month[1] + (t.closest('#dv-prev') ? -1 : 1), y = S.month[0]; if (m < 1) { m = 12; y--; } if (m > 12) { m = 1; y++; } S.month = [y, m]; cal(); return; }
     if (t.closest('#dv-today')) { var td = todayStr(); S.month = [+td.slice(0, 4), +td.slice(5, 7)]; cal(); return; }
-    if ((b = t.closest('.dv-chip'))) { S.brand = b.getAttribute('data-brand'); chips(); table(); return; }
-    if ((b = t.closest('.dv-sort .chart-tab'))) { S.sort = b.getAttribute('data-sort'); render(); return; }
+    if ((b = t.closest('.dv-chip'))) { S.brand = b.getAttribute('data-brand'); S.page = 1; chips(); table(); return; }
+    if ((b = t.closest('.dv-sort .chart-tab'))) { S.sort = b.getAttribute('data-sort'); S.page = 1; render(); return; }
+    if ((b = t.closest('.dv-pg'))) { if (b.disabled) return; S.page = +b.getAttribute('data-pg'); table(); var top = document.querySelector('#page-etfdiv .dv-tools'); if (top) top.scrollIntoView({ block: 'start', behavior: 'smooth' }); return; }
     if ((b = t.closest('tr.dv-row'))) { var k = b.getAttribute('data-t'); S.open[k] = !S.open[k]; table(); }
   });
   document.addEventListener('keydown', function (e) {
     var r = e.target && e.target.closest && e.target.closest('tr.dv-row');
     if (r && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); var k = r.getAttribute('data-t'); S.open[k] = !S.open[k]; table(); var n = document.querySelector('tr.dv-row[data-t="' + k + '"]'); if (n) n.focus(); }
   });
-  document.addEventListener('input', function (e) { if (e.target && e.target.id === 'dv-search') { S.q = e.target.value; if (S.data) table(); } });
+  document.addEventListener('input', function (e) { if (e.target && e.target.id === 'dv-search') { S.q = e.target.value; S.page = 1; if (S.data) table(); } });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', window.dvRender); else window.dvRender();
 })();
 
