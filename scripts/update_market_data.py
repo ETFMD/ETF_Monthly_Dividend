@@ -30,7 +30,8 @@ ASIA_INDEX = ['^N225', '^TOPX', '000001.SS', '000300.SS', '399001.SZ', '399006.S
 INDEX  += ASIA_INDEX
 INDEX_CUR = {'^N225': 'JPY', '^TOPX': 'JPY', '000001.SS': 'CNY', '000300.SS': 'CNY', '399001.SZ': 'CNY', '399006.SZ': 'CNY',
              '000688.SS': 'CNY', '^HSI': 'HKD', '^HSCE': 'HKD', 'HSTECH.HK': 'HKD', '^TWII': 'TWD'}
-NO_YAHOO = {'^TOPX'}   # 야후에 종목 자체가 없음 → 요청하지 않음
+NO_YAHOO = {'^TOPX'}
+SRC_NAME = {'네이버': '네이버 금융', '야후': 'Yahoo Finance', 'EastMoney': 'EastMoney', 'CNBC': 'CNBC', '트레이딩뷰': 'TradingView', '구글': 'Google Finance'}   # 야후에 종목 자체가 없음 → 요청하지 않음
 METAL   = ['GC=F', 'SI=F']
 FX      = ['USDKRW=X', 'EURKRW=X', 'JPYKRW=X', 'CNYKRW=X', 'GBPKRW=X', 'HKDKRW=X',
            'SGDKRW=X', 'AUDKRW=X', 'CADKRW=X', 'CHFKRW=X', 'THBKRW=X', 'USDVND=X']
@@ -47,12 +48,15 @@ NAVER_INDEX = {'^KS11': 'KOSPI', '^KS200': 'KPI200', '^KQ11': 'KOSDAQ'}
 # 야후가 비거나 오래된 값을 줄 때 쓰는 보조 시세 — 현재가: CNBC → 트레이딩뷰 → 구글 / 과거: CNBC 주봉
 # (^DJUSSC: 야후는 현재가 1개만 주고 과거가 없음 · 트레이딩뷰 과거는 유료 권한 · WSJ·stooq 는 봇 차단 — Actions 에서 확인)
 # 아시아 지수: 야후 주봉이 짧거나(상해종합·대만 1997~) 없으면(CSI300·창업판·과창판50·항셍테크) 동방재부(EastMoney) → CNBC 주봉으로 앞부분을 채움
-#  (Actions 에서 확인: EastMoney 는 TOPIX 미제공 · CNBC 는 CSI300·창업판 현재가 미제공)
+#  (Actions 에서 확인: EastMoney 는 TOPIX 미제공, 과거(push2his) 서버가 러너에 따라 연결을 끊음 → 중국 본토는 시나(Sina) 주봉도 사용
+#   · CNBC 는 CSI300·창업판 현재가 미제공)
 ALT_QUOTE = {'^DJUSSC': {'cnbc': '.DJUSSC', 'tv': 'DJ:DJUSSC', 'google': 'DJUSSC:INDEXDJX'},
              '^N225': {'em': '100.N225', 'cnbc': '.N225'},          '^TOPX': {'cnbc': '.TOPX'},
-             '000001.SS': {'em': '1.000001', 'cnbc': '.SSEC'},     '000300.SS': {'em': '1.000300', 'cnbc': '.CSI300'},
-             '399001.SZ': {'em': '0.399001', 'cnbc': '.SZI'},      '399006.SZ': {'em': '0.399006'},
-             '000688.SS': {'em': '1.000688', 'cnbc': '.STAR50'},   '^HSI': {'em': '100.HSI', 'cnbc': '.HSI'},
+             '000001.SS': {'em': '1.000001', 'sina': 'sh000001', 'cnbc': '.SSEC'},
+             '000300.SS': {'em': '1.000300', 'sina': 'sh000300', 'cnbc': '.CSI300'},
+             '399001.SZ': {'em': '0.399001', 'sina': 'sz399001', 'cnbc': '.SZI'},
+             '399006.SZ': {'em': '0.399006', 'sina': 'sz399006'},
+             '000688.SS': {'em': '1.000688', 'sina': 'sh000688', 'cnbc': '.STAR50'},   '^HSI': {'em': '100.HSI', 'cnbc': '.HSI'},
              '^HSCE': {'em': '100.HSCEI', 'cnbc': '.HSCE'},        'HSTECH.HK': {'em': '124.HSTECH', 'cnbc': '.HSTECH'},
              '^TWII': {'em': '100.TWII', 'cnbc': '.TWII'}}
 
@@ -277,7 +281,7 @@ def cnbc_history(symbol, resolution='1W'):
 def em_history(secid):
     """동방재부(EastMoney) 주봉 → [[일수, 종가], ...]  예: em_history('1.000300') (CSI300, 2005년~)"""
     d = get_json(f'https://push2his.eastmoney.com/api/qt/stock/kline/get?secid={secid}&fields1=f1,f2,f3'
-                 f'&fields2=f51,f53&klt=102&fqt=0&beg=19900101&end=20500101&lmt=100000')
+                 f'&fields2=f51,f53&klt=102&fqt=0&beg=19900101&end=20500101&lmt=100000', tries=2)
     out = []
     for k in ((d.get('data') or {}).get('klines') or []):
         try:
@@ -286,6 +290,21 @@ def em_history(secid):
             if c > 0:
                 out.append([(datetime.date.fromisoformat(day) - datetime.date(1970, 1, 1)).days, round(c, 2)])
         except ValueError:
+            pass
+    return out
+
+
+def sina_history(symbol):
+    """시나 재경 주봉(scale=1200) → [[일수, 종가], ...]  예: sina_history('sz399006') (중국 본토 지수, 상장 이후 전체)"""
+    rows = json.loads(get_text('https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData'
+                               f'?symbol={symbol}&scale=1200&ma=no&datalen=3000', tries=2) or 'null') or []
+    out = []
+    for b in rows:
+        try:
+            c = float(b.get('close') or 0)
+            if c > 0:
+                out.append([(datetime.date.fromisoformat(b['day']) - datetime.date(1970, 1, 1)).days, round(c, 2)])
+        except (ValueError, TypeError, KeyError):
             pass
     return out
 
@@ -872,7 +891,7 @@ def main():
                 q = fn()
                 if not fresh_enough(q):
                     raise ValueError(f'시세가 오래됨 ({utc_date(q["time"]).date()})')
-                quotes[sym] = q
+                quotes[sym] = dict(q, src=SRC_NAME.get(name, name))   # 화면에 '출처'로 표시
                 if name != '야후' or errs: print(f'  {sym} ← {name} {q["price"]}' + (f'  (앞선 실패: {"; ".join(errs)})' if errs else ''))
                 ok = True
                 break
@@ -911,6 +930,7 @@ def main():
         age_h = (utc_now() - datetime.datetime.fromisoformat(oldh['updated'][:-1])).total_seconds() / 3600
     if age_h >= HIST_MAX_AGE_H or oldh.get('v') != HIST_VERSION or set(HIST) - set((oldh.get('series') or {})) or '--history' in sys.argv:
         series, p1 = dict(oldh.get('series') or {}), int(time.time() - HIST_YEARS * 365.25 * 86400)
+        hsrc, oldsrc = {}, (oldh.get('src') or {}) if oldh.get('v') == HIST_VERSION else {}
         for sym in HIST:
             ypts = []
             try:
@@ -926,7 +946,9 @@ def main():
                     print(f'  {sym} 네이버 히스토리 실패: {e}')
             # 야후 과거 데이터가 없거나(^DJUSSC·CSI300 등) 31년 앞부분이 비면(상해종합·대만 1997~) 보조 주봉으로 채움
             alt, d1 = ALT_QUOTE.get(sym) or {}, p1 // 86400
+            used = ['Yahoo'] if len(ypts) > 50 else []          # 화면에 '과거 값 출처'로 표시
             hist_alts = ([('EastMoney', lambda: em_history(alt['em']))] if 'em' in alt else []) + \
+                        ([('Sina', lambda: sina_history(alt['sina']))] if 'sina' in alt else []) + \
                         ([('CNBC', lambda: cnbc_history(alt['cnbc'], '1W'))] if 'cnbc' in alt else [])
             for name, fn in hist_alts:
                 if len(ypts) > 50 and ypts[0][0] <= d1 + 60:
@@ -938,8 +960,19 @@ def main():
                     continue
                 print(f'  {sym} 야후 히스토리 {len(ypts)}개 → {name} {len(got)}개로 보충')
                 if len(got) > 50:
-                    ypts = merge_older(ypts, got) if len(ypts) > 50 else got
+                    if len(ypts) > 50 and got[0][0] < ypts[0][0] - 3:
+                        ypts, used = merge_older(ypts, got), used + [name]
+                    elif len(ypts) <= 50:
+                        ypts, used = got, [name]
             merged = merge_older(npts, ypts) if npts else ypts   # 국내 지수는 네이버 우선 · [일수, 종가]
+            if npts:
+                used = ['네이버'] + used
+            # 보조 출처가 이번에만 실패해 앞부분이 짧아졌으면, 직전에 모아 둔 더 오래된 구간을 유지 (형식이 같은 버전일 때만)
+            old = [p for p in ((oldh.get('series') or {}).get(sym) or []) if p[0] >= d1] if oldh.get('v') == HIST_VERSION else []
+            if merged and old and old[0][0] < merged[0][0] - 60:
+                print(f'  {sym} 이번 수집이 {datetime.date.fromordinal(719163 + merged[0][0])}부터라 직전 자료의 앞부분 유지')
+                merged = merge_older(merged, old)
+                used += [x for x in (oldsrc.get(sym) or '').split('·') if x and x not in used]
             if sym in HIST_RANGE:
                 lo, hi = HIST_RANGE[sym]
                 n0 = len(merged)
@@ -948,12 +981,15 @@ def main():
                     print(f'  {sym} 범위({lo}~{hi}) 밖 값 {n0 - len(merged)}개 제외')
             if len(merged) > 50:
                 series[sym] = merged
+                hsrc[sym] = '·'.join(used) or oldsrc.get(sym) or 'Yahoo'
                 start_d = datetime.date.fromordinal(719163 + merged[0][0])
                 warn = '' if (datetime.date.today() - start_d).days > 15.2 * 365 else '  ⚠ 15년치 부족'
                 print(f'  {sym} 히스토리 {len(merged)}개 (시작 {start_d}){warn}')
             else:
                 print(f'  {sym} 히스토리 부족(직전값 유지)')
-        save_if_changed(HISTORY, {'unit': 'day', 'v': HIST_VERSION, 'series': series}, oldh)
+                if sym in oldsrc:
+                    hsrc[sym] = oldsrc[sym]
+        save_if_changed(HISTORY, {'unit': 'day', 'v': HIST_VERSION, 'series': series, 'src': hsrc}, oldh)
     try:
         build_realty()
     except Exception as e:
