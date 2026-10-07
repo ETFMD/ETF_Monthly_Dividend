@@ -6,7 +6,7 @@ def req(url, data=None, h=None):
     r=urllib.request.Request(url, data=data, headers={'User-Agent':UA,'Accept':'*/*', **(h or {})})
     return op.open(r, timeout=40).read()
 def search(kw, f, t, page=1, size=100):
-    s=req('https://kind.krx.co.kr/disclosure/details.do', {'method':'searchDetailsSub','currentPageSize':str(size),'pageIndex':str(page),'orderMode':'1','orderStat':'D','forward':'details_sub','reportNm':kw,'fromDate':f,'toDate':t,'chose':'S','todayFlag':'N'}, {'Referer':'https://kind.krx.co.kr/disclosure/details.do?method=searchDetailsMain'}).decode('utf-8','replace')
+    s=req('https://kind.krx.co.kr/disclosure/details.do', {'method':'searchDetailsSub','currentPageSize':str(size),'pageIndex':str(page),'orderMode':'1','orderStat':'D','forward':'details_sub','reportNm':kw,'fromDate':f,'toDate':t,'marketType':'','searchMode':'','searchCodeType':'','chose':'S','todayFlag':'N','repIsuSrtCd':''}, {'Referer':'https://kind.krx.co.kr/disclosure/details.do?method=searchDetailsMain'}).decode('utf-8','replace')
     out=[]
     for r in re.findall(r'<tr.*?</tr>', s, re.S):
         a=re.findall(r"openDisclsViewer\('(\d+)'",r)
@@ -15,7 +15,7 @@ def search(kw, f, t, page=1, size=100):
         out.append((a[0],cells))
     tot=re.search(r'총\s*<em>?\s*([\d,]+)', s) ; 
     return out, s
-for kw in ['분배','과세표준','과표']:
+for kw in ['분배금','이익금분배','과세표준','분배']:
     res, s = search(kw,'2026-07-01','2026-10-07')
     print('=====',kw,len(res)); m=re.search(r'class="info[^"]*".*?</', s, re.S); 
     i=s.find('건'); print(re.sub(r'\s+',' ',re.sub('<[^>]+>',' ',s[max(0,i-300):i+50])))
