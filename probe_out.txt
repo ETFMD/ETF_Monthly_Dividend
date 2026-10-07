@@ -1,39 +1,14 @@
-100
-[('20260928000573', ['146', '2026-09-28 18:08', 'SOL 미국S&amp;P500엔화노출(H)', 'ETF 분배락 기준가격 안내', '유가증권시장본부', '공시차트 주가차트']), ('20260928000572', ['145', '2026-09-28 18:08', 'TIGER CD금리플러스액티브(합성)', 'ETF 분배락 기준가격 안내', '유가증권시장본부', '공시차트 주가차트']), ('20260928000584', ['144', '2026-09-28 18:07', 'TIGER 코리아밸류업', 'ETF 분배락 기준가격 안내', '유가증권시장본부', '공시차트 주가차트'])]
-6
-['1. 종목명', 'SOL 미국S&amp;P500엔화노출(H)']
-['2. 기준가격(원)', '10,685']
-['3. 사유', '분배락']
-['4. 적용일', '2026-09-29']
-['5. 근거규정', '유가증권시장업무규정시행세칙 제30조']
-['6. 기타', '-']
-6
-18
-['설정/환매 청구접수 중지사유', '투자신탁분배금 지급대상 수익자 명부확정과 관련하여 수익자 명부의 이중계상을 방지하기 위하여 설정/환매 청구접수를 일시 중지함']
-['기타', '설정/환매 청구접수 중지기간동안 한국거래소 시장을 통한 매매는 가능함']
-['해당 종목', '하단참조']
-['종목코드', '종목약명', '구분', '청구접수 중지기간']
-['시작일', '종료일']
-['KR7490600004', 'RISE 미국배당100데일리고정커버드콜', '설정 ㆍ 환매', '2026-10-12', '2026-10-13']
-['KR7498860006', 'RISE 코리아금융고배당', '설정 ㆍ 환매', '2026-10-12', '2026-10-13']
-['KR7495050007', 'RISE 코리아밸류업', '설정 ㆍ 환매', '2026-10-12', '2026-10-13']
-=== naver etf basic keys
-['stockEndType', 'itemCode', 'reutersCode', 'stockName', 'sosok', 'closePrice', 'compareToPreviousClosePrice', 'compareToPreviousPrice', 'fluctuationsRatio', 'marketStatus', 'marketStatusDetailType', 'localTradedAt', 'tradeStopType', 'tradableStatus', 'tradableStatusCode', 'tradableStatusUpdatedAt', 'stockExchangeType', 'stockExchangeName', 'imageChartUrlInfo', 'scriptChartTypes', 'delayTime', 'delayTimeName', 'endUrl', 'newPcUrl', 'chartIqEndUrl', 'newlyListed', 'nationType', 'nationName', 'lastClosePrice', 'openPrice', 'highPrice', 'lowPrice', 'accumulatedTradingVolume', 'accumulatedTradingValue', 'marketValue', 'marketValue1yAgo', 'foreignRate', 'highPriceOf52Weeks', 'highPriceOf52WeeksAdjusted', 'lowPriceOf52Weeks', 'lowPriceOf52WeeksAdjusted', 'etfBaseIndex', 'etfSummary', 'nav', 'dividendYieldTtm', 'dividendPerShareTtm', 'dividendMonthsThisYear', 'issuerName', 'deviationSign', 'deviationRate', 'totalFee', 'totalNav', 'returnRate1m', 'returnRate3m', 'returnRate1y', 'constituentList', 'themeInfoList', 'iNav', 'marketSessionType']
-compareToPreviousPrice {"code": "5", "text": "하락", "name": "FALLING"}
-tradeStopType {"code": "1", "text": "운영.Trading", "name": "TRADING"}
-stockExchangeType {"code": "KS", "zoneId": "Asia/Seoul", "nationType": "KOR", "delayTime": 0, "startTime": "0900", "endTime": "1530", "closePriceSendTime": "1630", "nameKor": "코스피", "nameEng": "KOSPI", "stockType": "domestic", "nationCode": "KOR", "nationName": "대한민국", "name": "KOSPI"}
-imageChartUrlInfo {"line": {"day": "https://financial-vn.pstatic.net/chart/mobile/day/krx/498400_end.png", "month3": "https://financial-vn.pstatic.net/chart/mobile/area/month3/498400_end.png", "year": "https://financial-vn.pstatic.net/chart/mobile/area/year/498400_end.png", "year3": "https://financial-vn.pstatic.net/chart/mobile/area/year3/498400_end.png", "year5": "https://financial-vn.pstatic.net/chart/mobile/are
-scriptChartTypes ["candleMinuteFive", "candleDay", "candleWeek", "candleMonth", "day", "areaMonthThree", "areaYear", "areaYearThree", "areaYearTen"]
-constituentList [{"itemCode": "005930", "itemName": "삼성전자", "constituentWeight": 29.22, "cuUnitQuantity": 2219.0, "cuUnit": "주", "endUrl": "https://m.stock.naver.com/domestic/stock/005930", "newPcUrl": "https://stock.naver.com/domestic/stock/005930"}, {"itemCode": "000660", "itemName": "SK하이닉스", "constituentWeight": 23.18, "cuUnitQuantity": 270.0, "cuUnit": "주", "endUrl": "https://m.stock.naver.com/domestic/stock
-themeInfoList [{"themeId": 1, "themeLargeCode": "0101", "themeMiddleCode": "0101001"}, {"themeId": 58, "themeLargeCode": "0201", "themeMiddleCode": "0201001"}, {"themeId": 89, "themeLargeCode": "0301", "themeMiddleCode": "0301001"}, {"themeId": 115, "themeLargeCode": "0501", "themeMiddleCode": "0501002"}, {"themeId": 168, "themeLargeCode": "0606", "themeMiddleCode": "0606008"}, {"themeId": 189, "themeLargeCode"
-['stockEndType', 'itemCode', 'reutersCode', 'stockName', 'totalInfos', 'iconInfos', 'description', 'etfKeyIndicator', 'dealTrendInfos', 'researches', 'industryCode', 'industryCompareInfo', 'consensusInfo', 'shareholdersMeetingInfo', 'irScheduleInfo']
-totalInfos [{"code": "lastClosePrice", "key": "전일", "value": "20,670"}, {"code": "openPrice", "key": "시가", "value": "20,480", "compareToPreviousPrice": {"code": "5", "text": "하락", "name": "FALLING"}}, {"code": "highPrice", "key": "고가", "value": "20,800", "compareToPreviousPrice": {"code": "2", "text": "상승", "name": "RISING"}}, {"code": "lowPrice", "key": "저가", "value": "20,270", "compareToPreviousPrice": {"code": "5", "text": "하락", "name": "FALLING"}}, {"code": "accumulatedTradingVolume", "key": "거래량", "value": "7,293,616"}, {"code": "accumulatedTradingValue", "key": "대금", "value": "1,493억"}, {"code": "h
-iconInfos [{"code": "isDividend", "value": "Y"}]
-etfKeyIndicator {"issuerName": "삼성자산운용(ETF)", "marketValue": "5조 9,232억", "dividendYieldTtm": 15.12, "totalNav": "6조 297억", "nav": "20,649.69", "deviationSign": "+", "deviationRate": 0.1, "totalFee": 0.39, "returnRate1m": 4.48, "returnRate3m": -14.31, "returnRate1y": 102.53, "marketValueRaw": "5923220000000"}
-dealTrendInfos [{"itemCode": "498400", "bizdate": "20261007", "foreignerPureBuyQuant": "-65,647", "foreignerHoldRatio": "0.15%", "organPureBuyQuant": "-2,751,521", "individualPureBuyQuant": "+2,787,258", "closePrice": "20,285", "compareToPreviousClosePrice": "-385", "compareToPreviousPrice": {"code": "5", "text": "하락", "name": "FALLING"}, "accumulatedTradingVolume": "7,293,616"}, {"itemCode": "498400", "bizdate": "20261006", "foreignerPureBuyQuant": "+24,147", "foreignerHoldRatio": "0.17%", "organPureBuyQuant": "-2,295,382", "individualPureBuyQuant": "+2,261,986", "closePrice": "20,670", "compareToPreviousCl
-researches []
-industryCompareInfo [{"stockType": "domestic", "stockEndType": "stock", "itemCode": "069500", "reutersCode": "069500", "stockName": "KODEX 200", "sosok": "0", "closePrice": "108,550", "compareToPreviousClosePrice": "-2,195", "compareToPreviousPrice": {"code": "5", "text": "하락", "name": "FALLING"}, "fluctuationsRatio": "-1.98", "accumulatedTradingVolume": "-", "accumulatedTradingValue": "-", "marketValue": "25,216,165", "nav": "0", "threeMonthEarningRate": "0", "stockExchangeType": {"code": "KS", "zoneId": "Asia/Seoul", "nationType": "KOR", "delayTime": 0, "startTime": "0900", "endTime": "1530", "closePriceSendTim
-https://m.stock.naver.com/api/etf/498400/dividend ERR HTTP Error 404: 404
-https://m.stock.naver.com/api/etf/498400/dividend/history ERR HTTP Error 400: 400
-https://m.stock.naver.com/api/stock/498400/dividend/history?pageSize=10 ERR HTTP Error 404: 404
-https://m.stock.naver.com/front-api/etf/dividend?itemCode=498400 ERR HTTP Error 404: Not Found
+{'dividendYieldTtm': 15.12, 'dividendPerShareTtm': 3126, 'dividendMonthsThisYear': '1,2,3,4,5,6,7,8,9', 'issuerName': '삼성자산운용(ETF)', 'closePrice': '20,285', 'nav': '20,649.69', 'localTradedAt': '2026-10-07T20:20:20+09:00'}
+472150 TIGER 배당커버드콜액티브 1,2,3,4,5,6,7,8,9 4561 22.49
+0104N0 TIGER 200타겟위클리커버드콜 1,2,3,4,5,6,7,8,9 1230 5.78
+069500 KODEX 200 1,4,7 849 0.77
+0177R0 TIGER 반도체TOP10커버드콜액티브 5,6,7,8,9 918 7.51
+https://m.stock.naver.com/api/etf/498400/dividend/history?page=1&pageSize=20 ERR HTTP Error 400: 400 b''
+https://m.stock.naver.com/api/etf/498400/dividend/history?pageSize=20 ERR HTTP Error 400: 400 b''
+https://m.stock.naver.com/api/etf/498400/dividend/history?startIdx=0&pageSize=20 ERR HTTP Error 400: 400 b''
+https://m.stock.naver.com/api/etf/498400/dividend/history?page=1&pageSize=20&firstPageSize=20 {"totalCount":21,"result":[{"dividendAmount":300,"exDividendAt":"2026.09.14","dividendYield":1.45},{"dividendAmount":270,"exDividendAt":"2026.08.13","dividendYield":1.28},{"dividendAmount":323,"exDividendAt":"2026.07.14","dividendYield":1.69},{"dividendAmount":350,"exDividendAt":"2026.06.12","dividendYield":1.50},{"dividendAmount":348,"exDividendAt":"2026.05.14","dividendYield":1.43},{"dividendAmount":262,"exDividendAt":"2026.04.14","dividendYield":1.08},{"dividendAmount":252,"exDividendAt":"2026.03.12","dividendYield":1.37},{"dividendAmount":244,"exDividendAt":"2026.02.12","dividendYield":1.39},{"dividendAmount":213,"exDividendAt":"2026.01.14","dividendYield":1.26},{"dividendAmount":196,"exDividendAt":"2025.12.12","dividendYield":1.30},{"dividendAmount":196,"exDividendAt":"2025.11.13","dividendYield":1.44},{"dividendAmount":172,"exDividendAt":"2025.10.14","dividendYield":1.25},{"dividendAmount":161,"exDividendAt":"2025.09.12","dividendYield":1.30},{"dividendAmount":163,"exDividendAt":"2025.08.13","dividendYield":1.44},{"dividendAmount":161,"exDividendAt":"2025.07.14","dividendYield":1.42},{"dividendAmount":150,"exDividendAt":"2025.06.12","dividendYield":1.42},{"dividendAmount":139,"exDividendAt":"2025.05.14","dividendYield":1.42},{"dividendAmount":132,"exDividendAt":"2025.04.14","dividendYield":1.44},{"dividendAmount":140,"exDividendAt":"2025.03.13","dividendYield":1.43},{"dividendAmount":142,"exDividendAt":"2025.02.13","dividendYield":1.44}]}
+stop notices 9
+2026-09-28 16:53 신한펀드파트너스 [['KR7468630009', 'KODEX iShares미국투자등급회사채액티브', '설정 ㆍ 환매', '2026-09-23', '2026-09-28'], ['KR7468380001', 'KODEX iShares미국하이일드액티브', '설정 ㆍ 환매', '2026-09-23', '2026-09-28'], ['KR7468370002', 'KODEX iShares미국인플레이션국채액티브', '설정 ㆍ 환매', '2026-09-23', '2026-09-28'], ['KR7484790001', 'KODEX 미국30년국채액티브(H)', '설정 ㆍ 환매', '2026-09-23', '2026-09-28']]
+2026-09-28 14:52 신한펀드파트너스 [['KR70176P0003', 'FOCUS AI반도체위클리고정커버드콜', '설정 ㆍ 환매', '2026-09-23', '2026-09-28'], ['KR70073X0007', 'FOCUS 알리바바미국채커버드콜혼합', '설정 ㆍ 환매', '2026-09-23', '2026-09-28']]
+2026-09-28 14:52 한국펀드파트너스 [['KR7453850000', 'ACE 미국30년국채액티브(H)', '설정 ㆍ 환매', '2026-09-23', '2026-09-28'], ['KR7455660001', 'ACE 미국하이일드액티브(H)', '설정 ㆍ 환매', '2026-09-23', '2026-09-28'], ['KR7476760004', 'ACE 미국30년국채액티브', '설정 ㆍ 환매', '2026-09-23', '2026-09-28'], ['KR7476750005', 'ACE 미국30년국채엔화노출액티브(H)', '설정 ㆍ 환매', '2026-09-23', '2026-09-28']]
+rak 100 [('2026-09-28 18:08', 'SOL 미국S&amp;P500엔화노출(H)'), ('2026-09-28 18:08', 'TIGER CD금리플러스액티브(합성)'), ('2026-09-28 18:07', 'TIGER 코리아밸류업')]
