@@ -1,23 +1,23 @@
-import urllib.request, urllib.parse, json, re, http.cookiejar
+import urllib.request, urllib.parse, json, re, http.cookiejar, collections
 UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36'
 cj=http.cookiejar.CookieJar(); op=urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
 def req(url, data=None, h=None):
     if isinstance(data, dict): data=urllib.parse.urlencode(data).encode()
     r=urllib.request.Request(url, data=data, headers={'User-Agent':UA,'Accept':'*/*', **(h or {})})
-    return op.open(r, timeout=30).read()
-def dec(b):
-    m=re.search(rb'charset=["\']?([\w-]+)', b[:3000]); enc=(m.group(1).decode() if m else 'utf-8')
-    return b.decode(enc,'replace')
-for acpt in ['20260928000287','20260928000137','20260928000183']:
-    v=req('https://kind.krx.co.kr/common/disclsviewer.do?method=search&acptno='+acpt).decode('utf-8','replace')
-    doc=re.search(r"<option value='(\d+)\|[YN]'", v).group(1); print('=====',acpt,doc)
-    c=dec(req('https://kind.krx.co.kr/common/disclsviewer.do?method=searchContents&docNo='+doc)); print(c[:1500])
-    paths=re.findall(r"""['"]((?:https?://[^'"]+)?/external/[^'"]+\.htm)['"]""", c); print(paths)
-    if not paths: continue
-    p=paths[0] if paths[0].startswith('http') else 'https://kind.krx.co.kr'+paths[0]
-    h=dec(req(p)); print('len',len(h))
-    tables=re.findall(r'<table.*?</table>',h,re.S|re.I); print('tables',len(tables))
-    for tb in tables[:4]:
-        rows=re.findall(r'<tr.*?</tr>',tb,re.S|re.I); print('rows',len(rows))
-        for r in rows[:8]: print([re.sub(r'\s+',' ',re.sub('<[^>]+>','',x)).strip() for x in re.findall(r'<t[dh][^>]*>(.*?)</t[dh]>',r,re.S|re.I)])
-    print(re.sub(r'\s+',' ',re.sub(r'<[^>]+>',' ',h))[:2500])
+    return op.open(r, timeout=40).read()
+def search(kw, f, t, page=1, size=100):
+    s=req('https://kind.krx.co.kr/disclosure/details.do', {'method':'searchDetailsSub','currentPageSize':str(size),'pageIndex':str(page),'orderMode':'1','orderStat':'D','forward':'details_sub','reportNm':kw,'fromDate':f,'toDate':t,'chose':'S','todayFlag':'N'}, {'Referer':'https://kind.krx.co.kr/disclosure/details.do?method=searchDetailsMain'}).decode('utf-8','replace')
+    out=[]
+    for r in re.findall(r'<tr.*?</tr>', s, re.S):
+        a=re.findall(r"openDisclsViewer\('(\d+)'",r)
+        if not a: continue
+        cells=[re.sub(r'\s+',' ',re.sub('<[^>]+>','',x)).strip() for x in re.findall(r'<td[^>]*>(.*?)</td>',r,re.S)]
+        out.append((a[0],cells))
+    tot=re.search(r'총\s*<em>?\s*([\d,]+)', s) ; 
+    return out, s
+for kw in ['분배','과세표준','과표']:
+    res, s = search(kw,'2026-07-01','2026-10-07')
+    print('=====',kw,len(res)); m=re.search(r'class="info[^"]*".*?</', s, re.S); 
+    i=s.find('건'); print(re.sub(r'\s+',' ',re.sub('<[^>]+>',' ',s[max(0,i-300):i+50])))
+    c=collections.Counter(x[1][3] if len(x[1])>3 else str(x[1]) for x in res); print(c.most_common(30))
+    for x in res[:6]: print(x)
