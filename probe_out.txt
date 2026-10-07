@@ -1,16 +1,85 @@
-['\r\n\tvar lang\t\t\t= "ko";\r\n\tvar langUri         = "";\r\n\tvar resourceDomain\t= "/assets";\r\n', '', '', "\r\n\tconst sns = new Sns('6e34a757331dff5182c5ac77ed6ececc');\r\n", '', '', "\r\n  window.dataLayer = window.dataLayer || [];\r\n  function gtag(){dataLayer.push(arguments);}\r\n  gtag('js', new Date());\r\n  gtag('config', 'UA-253039467-1');\r\n", '', " \r\n\twindow.dataLayer = window.dataLayer || []; \r\n\tfunction gtag(){dataLayer.push(arguments);} \r\n\tgtag('js', new Date()); \r\n\tgtag('config', 'G-68VHBRK6MB'); \r\n", "(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\r\nnew Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],\r\nj=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=\r\n'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);\r\n})(window,document,'script','dataLayer','GTM-5P473C5');"]
-['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
-['/api/v1/banner/searchBannerInfo.do', '/api/v1/fund/main/product-set.do', '/api/v1/fund/main/product-user.do', '/api/v1/fund/main/product.do', '/api/v1/fund/now/product.do', '/api/v1/fund/theme.do', '/api/v1/kodex/dateTime.do', '/api/v1/kodex/main/product-recommend.do', '/api/v1/kodex/main/product-set.do', '/api/v1/kodex/main/product-user.do', '/api/v1/kodex/main/product.do', '/api/v1/kodex/now/data/', '/api/v1/kodex/now/gijun.do', '/api/v1/kodex/now/product.do', '/api/v1/kodex/product-combo.do', '/api/v1/kodex/product-common-chart.do', '/api/v1/kodex/product-common.do', '/api/v1/kodex/product-overview.do', '/api/v1/kodex/product-theme.do', '/api/v1/kodex/product.do', '/api/v1/kodex/theme-category.do', '/api/v1/redirect-url.do', '/api/v1/user/product-del.do', '/api/v1/user/product.do']
-distribution 2
-Distribution 1
-분배금 현황 0
-dvdn 0
-DVDN 0
-alloc 20
-  :: ue(new Uint8Array(value));         } catch (err) {           _onFinish(err);           throw err;         }       },       cancel(reason) {         _onFinish(reason);         return iterator.return();       },     },     {       highWaterMark: 2,     }   ); };  ;// CONCATENATED MODULE: ./node_modules/axios/lib/helpers/estimateDataURLDecodedBytes.js /**  * Estimate data: URL byte lengths *without* allocating large buffers.  * - Fetch percent-decodes a base64 body before decoding it.  * - Node's Buffer.from(body, 'base64') sizes its backing allocation from the  *   raw body, including ignored characters and content after padding.  * - Non-base64 data is percent-decoded and then encoded as UTF-8.  */ const isHexDigit = (charCode) =>   (charCode >= 48 && charCode <= 57) ||   (charCode >= 65 &&
-  ::    _onFinish(reason);         return iterator.return();       },     },     {       highWaterMark: 2,     }   ); };  ;// CONCATENATED MODULE: ./node_modules/axios/lib/helpers/estimateDataURLDecodedBytes.js /**  * Estimate data: URL byte lengths *without* allocating large buffers.  * - Fetch percent-decodes a base64 body before decoding it.  * - Node's Buffer.from(body, 'base64') sizes its backing allocation from the  *   raw body, including ignored characters and content after padding.  * - Non-base64 data is percent-decoded and then encoded as UTF-8.  */ const isHexDigit = (charCode) =>   (charCode >= 48 && charCode <= 57) ||   (charCode >= 65 && charCode <= 70) ||   (charCode >= 97 && charCode <= 102);  const isPercentEncodedByte = (str, i, len) =>   i + 2 < len && isHexDigit(str.charCod
-Alloc 5
-  ::  processing a data: URL.   const fragmentIndex = typeof url === 'string' ? url.indexOf('#') : -1;    return estimateDataURLBytes(     fragmentIndex === -1 ? url : url.slice(0, fragmentIndex),     estimatePercentDecodedBase64Bytes   ); }  /**  * Estimate the Buffer backing allocation used by Node's raw base64 decoder.  *  * @param {string} url  * @returns {number}  */ function estimateDataURLBufferAllocation(url) {   return estimateDataURLBytes(url, estimateBase64BufferAllocation); }  ;// CONCATENATED MODULE: ./node_modules/axios/lib/env/data.js const VERSION = "1.20.0"; ;// CONCATENATED MODULE: ./node_modules/axios/lib/adapters/fetch.js              const DEFAULT_CHUNK_SIZE = 64 * 1024;  const DEFAULT_REQUEST_OPTIONS = {   cache: 'default',   redirect: 'follow',   referrer: 'about:client',
-  :: ? url.indexOf('#') : -1;    return estimateDataURLBytes(     fragmentIndex === -1 ? url : url.slice(0, fragmentIndex),     estimatePercentDecodedBase64Bytes   ); }  /**  * Estimate the Buffer backing allocation used by Node's raw base64 decoder.  *  * @param {string} url  * @returns {number}  */ function estimateDataURLBufferAllocation(url) {   return estimateDataURLBytes(url, estimateBase64BufferAllocation); }  ;// CONCATENATED MODULE: ./node_modules/axios/lib/env/data.js const VERSION = "1.20.0"; ;// CONCATENATED MODULE: ./node_modules/axios/lib/adapters/fetch.js              const DEFAULT_CHUNK_SIZE = 64 * 1024;  const DEFAULT_REQUEST_OPTIONS = {   cache: 'default',   redirect: 'follow',   referrer: 'about:client',   referrerPolicy: '',   mode: 'cors',   integrity: '',   keepalive: fals
-bunbae 0
-BUNBAE 0
+['/assets/sns/kakao.min.js', '/assets/sns/sns.js?v=20261006093731', '/assets/log/tracking.js', 'https://www.googletagmanager.com/gtag/js?id=UA-253039467-1', 'https://www.googletagmanager.com/gtag/js?id=G-68VHBRK6MB', 'https://bizmessage.kakao.com/chat/includeScript', '//t1.daumcdn.net/kas/static/kp.js', '/assets/js/vendors.js', '/assets/js/product.js?v=20261006093731']
+https://www.samsungfund.com/assets/sns/sns.js?v=20261006093731 2935
+https://www.samsungfund.com/assets/log/tracking.js 1802
+https://www.samsungfund.com/assets/js/vendors.js 902478
+https://www.samsungfund.com/assets/js/product.js?v=20261006093731 5808163
+    /api/v1/banner/searchBannerInfo.do
+    /api/v1/etf/product/library/aplp-ajax.do
+    /api/v1/fund/main/product-user.do?graphTerm=w&orderBy=DESC&orderByType=SUIK_RT0&pageRows=10
+    /api/v1/fund/main/product.do?graphTerm=w&orderBy=DESC&orderByType=INQR_CNT&pageNo=1&pageRows=10
+    /api/v1/fund/main/product.do?graphTerm=w&orderBy=DESC&orderByType=SEOLJ_YMD&pageNo=1&pageRows=10
+    /api/v1/fund/main/product.do?graphTerm=w&orderBy=DESC&orderByType=SUIK_RT0&pageNo=1&pageRows=10
+    /api/v1/fund/now/product.do?graphTerm=w&orderBy=DESC&orderByType=LATELY
+    /api/v1/fund/product-calculate/
+    /api/v1/fund/product-combo.do
+    /api/v1/fund/product-compare.do?fundCd=
+    /api/v1/fund/product-earning/
+    /api/v1/fund/product-global-category.do
+    /api/v1/fund/product-global.do?graphTerm=
+    /api/v1/fund/product-quick/
+    /api/v1/fund/product-rep-kv/
+    /api/v1/fund/product-rep/
+    /api/v1/fund/product-risk/
+    /api/v1/fund/product-theme-category.do
+    /api/v1/fund/product-theme.do?graphTerm=
+    /api/v1/fund/product.do?graphTerm=
+    /api/v1/fund/product/detail.do
+    /api/v1/fund/product/fund-seller-ajax.do?&pageNo=
+    /api/v1/fund/product/fund-seller-ajax.do?cmpType=
+    /api/v1/fund/product/fund-seller-ajax.do?pageNo=
+    /api/v1/fund/product/fund-seller-ajax.do?pageNo=1&searchText=
+    /api/v1/fund/product/fund-seller-fund-ajax.do?cmpCode=
+    /api/v1/fund/product/fund-seller-type-ajax.do
+    /api/v1/fund/product/fund-seller-type-ajax.do?searchText=
+    /api/v1/fund/theme.do
+    /api/v1/kodex/annual-distribution-top.do?year=
+    /api/v1/kodex/dateTime.do
+    /api/v1/kodex/distribution.do?pageNo=
+    /api/v1/kodex/divid-info.do?id=
+    /api/v1/kodex/etfper-compare.do?fIds=
+    /api/v1/kodex/etfper.do?ordrColm=
+    /api/v1/kodex/lately-annual-distribution.do?pageNo=
+    /api/v1/kodex/main/product-recommend.do?srchTerm=w&ordrSort=DESC&callType=search&fIds=
+    /api/v1/kodex/main/product-user.do?ordrColm=YIELD_WEEK&ordrSort=DESC&pageRows=10&srchTerm=w
+    /api/v1/kodex/main/product.do?ordrColm=LIST_D&ordrSort=DESC&pageNo=1&srchTerm=w&pageRows=10
+    /api/v1/kodex/main/product.do?ordrColm=VIEW_CNT&ordrSort=DESC&pageNo=1&srchTerm=w&pageRows=10
+    /api/v1/kodex/main/product.do?ordrColm=YIELD_WEEK&ordrSort=DESC&pageNo=1&srchTerm=w&pageRows=10
+    /api/v1/kodex/now/data/
+    /api/v1/kodex/now/gijun.do
+    /api/v1/kodex/now/product.do?ordrColm=YIELD_WEEK&ordrSort=DESC&srchTerm=w
+    /api/v1/kodex/product-buffer-chart.do
+    /api/v1/kodex/product-calculate/
+    /api/v1/kodex/product-combo.do
+    /api/v1/kodex/product-common-chart.do?fIds=2ETF01
+    /api/v1/kodex/product-common.do?fIds=2ETF01
+    /api/v1/kodex/product-compare.do?fId=
+    /api/v1/kodex/product-document.do?
+    /api/v1/kodex/product-document.do?pageNo=1&srchLcd=
+    /api/v1/kodex/product-earning/
+    /api/v1/kodex/product-overview.do?nationCd=
+    /api/v1/kodex/product-pdf-top10/
+    /api/v1/kodex/product-pdf/
+    /api/v1/kodex/product-pension-invest/search.do?category=
+    /api/v1/kodex/product-pension-invest/sub-category.do?category=
+    /api/v1/kodex/product-price/
+    /api/v1/kodex/product-quick/
+    /api/v1/kodex/product-risk/
+    /api/v1/kodex/product-theme.do
+    /api/v1/kodex/product.do?ordrColm=NAV&ordrSort=DESC&pageNo=
+    /api/v1/kodex/product.do?ordrColm=YIELD_WEEK&ordrSort=DESC&pageNo=
+    /api/v1/kodex/product.do?ordrColm=YIELD_WEEK&ordrSort=DESC&pageNo=1&srchTerm=w&themeCd=
+    /api/v1/kodex/product.do?ordrColm=YIELD_WEEK&ordrSort=DESC&pageNo=1&srchTerm=w&typeLcd=
+    /api/v1/kodex/product/
+    /api/v1/kodex/product/asset-list/
+    /api/v1/kodex/rank/
+    /api/v1/kodex/theme-category.do
+    /api/v1/kodex/ytm.do
+    /api/v1/redirect-url.do?redirectUrl=
+    /api/v1/user/product-del.do
+    /api/v1/user/product.do
+  :: 일부 해외 ETF의 기초지수 성과는 오전 시간대에 노출되지 않을 수 있습니다.","rate_noti-table-4":"3년 이후 수익률의 경우, 직전주 기준으로 수익률이 노출되고 있어 그래프와 다를 수 있습니다.","rate_noti-table-5":"수익률 표는 상장일 이후로 조회 가능합니다.","rate_noti1":"This rate of return graph in based on the performance, assuming that distributions are reinvested, regardless of product type (The graph can be generated for all dates past the inception date)","rate_noti2":"The yield table represents pre-tax yield assuming that distributions are reinvested.","rate_noti3":"Index perfo
+  :: return graph in based on the performance, assuming that distributions are reinvested, regardless of product type (The graph can be generated for all dates past the inception date)","rate_noti2":"The yield table represents pre-tax yield assuming that distributions are reinvested.","rate_noti3":"Index performances of some foreign ETF may not be shown during morning hours.","rate_noti4":"Performance after 3 years may differ from the graph because the performance is exposed based on the previous wee
+  :: xis', 'item'],   axisComponents: [{     axisType: 'xAxis',     AxisComp: XAxis   }, {     axisType: 'yAxis',     AxisComp: YAxis   }],   formatAxisMap: CartesianUtils_formatAxisMap }); ;// CONCATENATED MODULE: ./src/main/webapp/scripts/react/product/distribution/popup/distributionCharts.tsx       var makeValueLabe = function makeValueLabe(fmt) {   return function (props) {     var x = props.x,       y = props.y,       width = props.width,       height = props.height,       value = props.value;  
+  :: isComponents: [{     axisType: 'xAxis',     AxisComp: XAxis   }, {     axisType: 'yAxis',     AxisComp: YAxis   }],   formatAxisMap: CartesianUtils_formatAxisMap }); ;// CONCATENATED MODULE: ./src/main/webapp/scripts/react/product/distribution/popup/distributionCharts.tsx       var makeValueLabe = function makeValueLabe(fmt) {   return function (props) {     var x = props.x,       y = props.y,       width = props.width,       height = props.height,       value = props.value;     var v = Number(v
+  :: (v)) return null;     var cx = x + width / 2;     var isNeg = v < 0;     var labelY = isNeg ? y + height + 12 : y - 12;     return /*#__PURE__*/(0,jsx_runtime.jsx)("text", {       x: cx,       y: labelY,       textAnchor: "middle",       className: "distribution-chart__value-label",       children: fmt(v)     });   }; }; var YearTick = function YearTick(_ref) {   var x = _ref.x,     y = _ref.y,     payload = _ref.payload;   return /*#__PURE__*/(0,jsx_runtime.jsx)("text", {     x: x,     y: y + 2
+  ::      return Number(d[valueKey]) || 0;   })));   var headroom = maxValue * 0.15;   var domain = [0, maxValue + headroom];   return /*#__PURE__*/(0,jsx_runtime.jsx)("div", {     style: {       width: "100%",       height: height     },     className: "distribution-chart",     children: /*#__PURE__*/(0,jsx_runtime.jsx)(ResponsiveContainer, {       width: "100%",       height: "100%",       children: /*#__PURE__*/(0,jsx_runtime.jsxs)(BarChart, {         data: data,         margin: {           top: 2
