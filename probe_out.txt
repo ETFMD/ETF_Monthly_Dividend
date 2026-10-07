@@ -1,0 +1,40 @@
+== companiesmarketcap csv
+11346
+Rank,Name,Symbol,marketcap,price (USD),country
+1,NVIDIA,NVDA,5776928145408,239.24,United States
+2,Apple,AAPL,4869056364544,333.63,United States
+3,Alphabet (Google),GOOG,4214313189376,344.59,United States
+4,Microsoft,MSFT,3930341244928,529.3,United States
+5,Amazon,AMZN,2764424347648,256.29,United States
+6,TSMC,TSM,2501436243968,482.3,Taiwan
+7,SpaceX,SPCX,2264906334208,171.92,United States
+8,Meta Platforms (Facebook),META,1882301399040,738.88,United States
+9,Broadcom,AVGO,1793977876480,375.81,United States
+10,Saudi Aramco,2222.SR,1661349264891,6.86771,Saudi Arabia
+11,Tesla,TSLA,1503513673728,380.68,United States
+...
+95,CATL,300750.SZ,201251797413,43.4927,China
+96,QUALCOMM,QCOM,193310982144,181.03,United States
+97,Toronto Dominion Bank,TD,192989921280,118.18,Canada
+98,Verizon,VZ,191036571648,45.98,United States
+99,Advantest,6857.T,188293135763,260.811,Japan
+100,Inditex,ITX.MC,188107625447,60.3875,Spain
+101,TotalEnergies,TTE,185383731200,83.98,France
+102,Salesforce,CRM,185166774272,224.99,United States
+103,Deere &amp; Company (John Deere),DE,184097521664,682.79,United States
+104,Seagate Technology,STX,183194632192,805.63,Ireland
+== companiesmarketcap html page 1 (for change %)
+171186
+<tbody>
+<tr><td class="fav"><img alt="favorite icon" src="/img/fav.svg?v2" data-type="company"  data-id="29"></td><td class="rank-td td-right" data-sort="1">1</td><td class="name-td"><div class="logo-container"><img loading="lazy" class="company-logo" alt="NVIDIA logo" src="/img/company-logos/64/NVDA.png" ></div><div class="name-div"><a href="/nvidia/marketcap/"><div class="company-name">NVIDIA</div><div class="company-code"><span class="rank d-none"></span>NVDA</div></a></div></td><td class="td-right" data-sort="5776928145408"><span class="currency-symbol-left">$</span>5.776 T</td><td class="td-right" data-sort="23924">$239.24</td><td data-sort="14" class="rh-sm"><span class="percentage-green"><svg class="a" viewBox="0 0 12 12"><path d="M10 8H2l4-4 4 4z"></path></svg>0.14%</span></td><td class="p-0 sparkline-td green"><svg><path d="M0,37 L5,41 L10,17 L15,31 L20,27 L25,31 L30,22 L35,17 L40,14 L45,14 L50,20 L55,23 L60,30 L65,30 L70,39 L75,38 L80,36 L85,29 L90,25 L95,18 L100,16 L105,21 L110,22 L115,21 L120,16 L125,18 L130,17 L135,14 L140,10 L145,3 L150,3 L155,3" /></svg></td><td><img class="flag" src="/img/flags/us.png"> <span class="responsive-hidden">USA</span></td></tr><tr><td class="fav"><img alt="favorite icon" src="/img/fav.svg?v2" data-type="company"  data-id="2"></td><td class="rank-td td-right" data-sort="2">2</td><td class="name-td"><div class="logo-container"><img loading="lazy" class="company-logo" alt="Apple logo" src="/img/company-logos/64/AAPL.png" data-img-path="/img/company-logos/64/AAPL.png" data-img-dark-path="/img/company-logos/64/AAPL.D.png"></div><div class="name-div"><a href="/apple/marketcap/"><div class="company-name">Apple</div><div class="company-code"><span class="rank d-none"></span>AAPL</div></a></div></td><td class="td-right" data-sort="4869056364544"><span class="currency-symbol-left">$</span>4.869 T</td><td class="td-right" data-sort="33363">$333.63</td><td data-sort="22" class="rh-sm"><span class="percentage-green"><svg class="a" viewBox="0 0 12 12"><path d="M10 8H2l4-4 4 4z"></path></svg>0.22%</span></td><td class="p-0 sparkline-td green"><svg><path d="M0,41 L5,37 L10,35 L15,29 L20,33 L25,22 L30,23 L35,19 L40,29 L45,29 L50,33 L55,34 L60,21 L65,14 L70,13 L75,15 L80,14 L85,8 L90,9 L95,6 L100,5 L105,8 L110,9 L115,3 L120,6 L125,17 L130,13 L135,16 L140,12 L145,13 L150,12 L155,12" /></svg></td><td><img class="flag" src="/img/flags/us.png"> <span class="responsive-hidden">USA</span></td></tr><tr><td class="fav"><img alt="favorite icon" src="/img/fav.svg?v2" data-type="company"  data-id="4"></td><td class="rank-td td-right" data-sort="3">3</td><td class="name-td"><div class="logo-container"><img loading="lazy" class="company-logo" alt="Alphabet (Google) logo" src="/img/company-logos/64/GOOG.png" ></div><div class="name-div"><a href="/alphabet-google/marketcap/"><div class="company-name">Alphabet (Google)</div><div class="company-code"><span class="rank d-none"></span>GOOG</div></a></div></td><td class="td-right" data-sort
+== yahoo crumb
+fc HTTP Error 404: Not Found on Accelerator
+crumb ylvEau4oTk.
+AAPL Apple Inc. USD 4869056364544 333.63 0.222293 1791316801
+2222.SR Saudi Arabian Oil Co. SAR 6236372729856 25.78 -0.07751376 1791372774
+005930.KS SamsungElec KRW 1763122192842752 268500.0 -1.2867647 1791354622
+TSM Taiwan Semiconductor Manufactur USD 2501436243968 482.3 -0.720461 1791316803
+2330.TW TAIWAN SEMICONDUCTOR MANUFACTUR TWD 67035174273024 2585.0 0.0 1791351010
+0700.HK TENCENT HKD 3788022743040 420.6 -1.7748728 1791360530
+BRK-B Berkshire Hathaway Inc. New USD 1082214449152 505.54 0.253837 1791316908
+ASML.AS ASML HOLDING EUR 612716314624 1595.2 -2.5177262 1791372766
