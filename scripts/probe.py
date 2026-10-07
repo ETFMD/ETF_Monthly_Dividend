@@ -25,21 +25,20 @@ def rows(h):
     for tb in re.findall(r'<table.*?</table>',h,re.S|re.I):
         for r in re.findall(r'<tr.*?</tr>',tb,re.S|re.I): out.append([re.sub(r'\s+',' ',re.sub('<[^>]+>','',x)).strip() for x in re.findall(r'<t[dh][^>]*>(.*?)</t[dh]>',r,re.S|re.I)])
     return out
-res=search('분배락 기준가격','2026-09-25','2026-10-07')
-print(len(res)); print(res[:3])
-if res:
-    rr=rows(content(res[0][0])); print(len(rr)); [print(x) for x in rr[:12]]
-res=search('설정/환매접수 일시중지','2026-10-01','2026-10-07')
-print(len(res));
-if res:
-    rr=rows(content(res[0][0])); print(len(rr)); [print(x) for x in rr[:8]]
-print('=== naver etf basic keys')
-d=json.loads(req('https://m.stock.naver.com/api/etf/498400/basic')); print(list(d.keys()))
-for k,v in d.items():
-    if isinstance(v,(dict,list)): print(k, json.dumps(v,ensure_ascii=False)[:400])
-d=json.loads(req('https://m.stock.naver.com/api/stock/498400/integration')); print(list(d.keys()))
-for k,v in d.items():
-    if isinstance(v,(dict,list)): print(k, json.dumps(v,ensure_ascii=False)[:600])
-for u in ['https://m.stock.naver.com/api/etf/498400/dividend','https://m.stock.naver.com/api/etf/498400/dividend/history','https://m.stock.naver.com/api/stock/498400/dividend/history?pageSize=10','https://m.stock.naver.com/front-api/etf/dividend?itemCode=498400']:
-    try: print(u, req(u)[:600].decode('utf-8','replace'))
-    except Exception as e: print(u,'ERR',e)
+
+d=json.loads(req('https://m.stock.naver.com/api/etf/498400/basic'))
+print({k:d[k] for k in ['dividendYieldTtm','dividendPerShareTtm','dividendMonthsThisYear','issuerName','closePrice','nav','localTradedAt']})
+for c in ['472150','0104N0','069500','0177R0']:
+    try:
+        d=json.loads(req('https://m.stock.naver.com/api/etf/%s/basic'%c)); print(c, d['stockName'], d.get('dividendMonthsThisYear'), d.get('dividendPerShareTtm'), d.get('dividendYieldTtm'))
+    except Exception as e: print(c,'ERR',e)
+for u in ['https://m.stock.naver.com/api/etf/498400/dividend/history?page=1&pageSize=20','https://m.stock.naver.com/api/etf/498400/dividend/history?pageSize=20','https://m.stock.naver.com/api/etf/498400/dividend/history?startIdx=0&pageSize=20','https://m.stock.naver.com/api/etf/498400/dividend/history?page=1&pageSize=20&firstPageSize=20']:
+    try: print(u, req(u)[:1500].decode('utf-8','replace'))
+    except urllib.error.HTTPError as e: print(u,'ERR',e, e.read()[:300])
+# 일시중지 for 9/30 record
+res=search('설정/환매접수 일시중지','2026-09-20','2026-09-30')
+print('stop notices', len(res))
+seen=0
+for a,c in res[:3]:
+    rr=rows(content(a)); print(c[1], c[2], [x for x in rr if x and x[0].startswith('KR')][:4])
+res=search('분배락 기준가격','2026-09-28','2026-09-29'); print('rak', len(res), [ (c[1],c[2]) for a,c in res[:3]])
