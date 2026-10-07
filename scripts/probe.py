@@ -1,14 +1,6 @@
-import urllib.request, urllib.parse, re, json, http.cookiejar
+import urllib.request, re
 UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36'
-cj=http.cookiejar.CookieJar(); op=urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
-def get(u, data=None, h=None):
-    if isinstance(data, dict): data=urllib.parse.urlencode(data).encode()
+for u in ['https://www.samsungfund.com/etf/main.do','https://www.samsungfund.com/','https://www.riseetf.co.kr/','https://www.aceetf.co.kr/','https://www.soletf.com/','https://www.plusetf.co.kr/','https://www.kiwoometf.com/','https://www.tigeretf.com/','https://seibro.or.kr/','https://data.krx.co.kr/','https://www.hanaroetf.com/','https://www.koact.co.kr/']:
     try:
-        b=op.open(urllib.request.Request(u,data=data,headers={'User-Agent':UA,'Accept':'*/*',**(h or {})}),timeout=30).read()
-        m=re.search(rb'charset=["\']?([\w-]+)', b[:3000]); return b.decode(m.group(1).decode() if m else 'utf-8','replace')
-    except Exception as e: return 'ERR '+repr(e)
-t=get('https://investments.miraeasset.com/tigeretf/ko/distribution/overall/list.do'); print(t[:300]); t2=get('https://www.tigeretf.com/ko/distribution/overall/list.do'); print('tigeretf.com', t2[:300]); t = t if not t.startswith('ERR') else t2
-print(len(t)); txt=re.sub(r'\s+',' ',re.sub(r'<script.*?</script>|<style.*?</style>','',t,flags=re.S)); txt=re.sub(r'<[^>]+>',' | ',txt); txt=re.sub(r'(\s*\|\s*)+',' | ',txt)
-i=txt.find('과세'); print(txt[max(0,i-3000):i+3000] if i>=0 else txt[:5000])
-for m in re.finditer(r'(?:url|action)\s*[:=]\s*["\']([^"\']+\.(?:do|json|ajax)[^"\']*)', t): print('URL', m.group(1))
-for m in re.finditer(r'<form[^>]*>', t): print('FORM', m.group(0)[:200])
+        r=urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':UA,'Accept':'text/html'}),timeout=20); b=r.read(); print(u, r.status, len(b))
+    except Exception as e: print(u, 'ERR', repr(e)[:120])
