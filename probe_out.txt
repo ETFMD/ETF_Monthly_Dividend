@@ -1,0 +1,35 @@
+===== krx
+ERR <HTTPError 400: 'Bad Request'>
+===== kind
+4699
+rows 7
+ | | 
+[]
+ | | 6 | | 2026-09-28 15:12 | | | 신한펀드파트너스 | | | | ETF이익금분배신고(분배금안내)(일괄공시) | | | 신한펀드파트너스 | | | | 
+['20260928000287']
+ | | 5 | | 2026-09-28 15:11 | | | 하나펀드서비스 | | | | ETF이익금분배신고(분배금안내)(일괄공시) | | | 하나펀드서비스 | | | | 
+['20260928000270']
+ | | 4 | | 2026-09-28 13:58 | | | 한국펀드파트너스 | | | | ETF이익금분배신고(분배금안내)(일괄공시) | | | 한국펀드파트너스 | | | | 
+['20260928000183']
+ | | 3 | | 2026-09-28 13:58 | | | 케이비펀드파트너스 | | | | ETF이익금분배신고(분배금안내)(일괄공시) | | | 케이비펀드파트너스 | | | | 
+['20260928000179']
+ | | 2 | | 2026-09-28 11:36 | | | 우리펀드서비스 | | | | ETF이익금분배신고(분배금안내)(일괄공시) | | | 우리펀드서비스 | | | | 
+['20260928000137']
+ | | 1 | | 2026-09-21 17:10 | | | 신한펀드파트너스 | | | | ETF이익금분배신고(분배금안내)(일괄공시) | | | 신한펀드파트너스 | | | | 
+['20260921000089']
+===== kind_today
+rows 101
+ | | 
+ | | 20:30 | | | | | 자기주식매매 신청내역(유가증권시장) | | | 유가증권시장본부 | | | | 
+ | | 20:30 | | | | | 대량매매내역(유가증권시장) | | | 유가증권시장본부 | | | | 
+ | | 20:30 | | | | | 일일 회전율 상위 20종목-ELW제외(유가증권시장) | | | 유가증권시장본부 | | | | 
+ | | 20:29 | | | | | 일일 회전율 상위 20종목-ELW포함(유가증권시장) | | | 유가증권시장본부 | | | | 
+[]
+===== naver
+https://m.stock.naver.com/api/stock/498400/integration 9564 {"stockEndType":"etf","itemCode":"498400","reutersCode":"498400","stockName":"KODEX 200타겟위클리커버드콜","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"20,670"},{"code":"openPrice","key":"시가","value":"20,480","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"}},{"code":"highPrice","key":"고가","value":"20,800","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"}},{"code":"lowPrice","key":"저가","value":"20,270","compareToPrev
+https://m.stock.naver.com/api/etf/498400/basic 6650 {"stockEndType":"etf","itemCode":"498400","reutersCode":"498400","stockName":"KODEX 200타겟위클리커버드콜","sosok":"0","closePrice":"20,285","compareToPreviousClosePrice":"-385","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-1.86","marketStatus":"CLOSE","marketStatusDetailType":"close","localTradedAt":"2026-10-07T20:20:20+09:00","tradeStopType":{"code":"1","text":"운영.Trading","name":"TRADING"},"tradableStatus":"tradable","tradableStatusC
+https://api.stock.naver.com/etf/498400/basic ERR HTTP Error 409: Conflict
+https://m.stock.naver.com/api/stock/498400/dividend ERR HTTP Error 404: 404
+https://stock.naver.com/api/domestic/etf/498400/dividend ERR HTTP Error 404: Not Found
+===== seibro
+1048
