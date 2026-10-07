@@ -51,6 +51,14 @@
       "desc": "TIGER 반도체TOP10커버드콜액티브(0177R0)의 월 분배금·세후 수령액을 계산하고 코스피와 비교합니다."
     },
     {
+      "path": "dividend-calendar",
+      "tab": "etfdiv",
+      "group": "etfdiv",
+      "title": "ETF 월분배 및 배당 달력 — 분배락일·지급일·분배금 실시간 공시",
+      "short": "ETF 월분배 및 배당 달력",
+      "desc": "국내 월분배·월배당 ETF 전 종목의 분배금 공시일·분배락일·기준일·지급일·분배율을 거래소 공시로 바로 확인합니다."
+    },
+    {
       "path": "loan",
       "tab": "loan",
       "group": "finance",

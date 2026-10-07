@@ -2,13 +2,13 @@ name: 시세 데이터 갱신
 
 on:
   schedule:
-    - cron: '*/15 0-7 * * 1-5'    # 한국장  (KST 09:00~16:59)
+    - cron: '*/15 0-10 * * 1-5'   # 한국장·분배금 공시 시간 (KST 09:00~19:59)
     - cron: '*/15 13-21 * * 1-5'  # 미국장  (KST 22:00~06:59)
     - cron: '7 */3 * * *'         # 그 외 3시간마다 (환율·공포탐욕·주말)
   workflow_dispatch:              # Actions 탭에서 수동 실행
   push:                           # 수집 스크립트·워크플로가 바뀌면 바로 한 번 실행
     branches: [main]
-    paths: ['scripts/update_market_data.py', '.github/workflows/update-market-data.yml']
+    paths: ['scripts/update_market_data.py', 'scripts/update_etfdiv.py', '.github/workflows/update-market-data.yml']
 
 permissions:
   contents: write
@@ -25,6 +25,8 @@ jobs:
       - uses: actions/checkout@v5
       - name: 시세 수집
         run: python3 scripts/update_market_data.py
+      - name: ETF 월분배 달력 (거래소 분배금 공시 확인)
+        run: python3 scripts/update_etfdiv.py || echo "::warning::ETF 분배 달력 갱신 실패 — 직전 자료 유지"
       - name: 변경된 경우에만 커밋
         run: |
           git config user.name  'github-actions[bot]'

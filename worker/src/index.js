@@ -13,7 +13,7 @@
  *   · 5분 동안은 D1 에 저장한 값을 다시 씁니다 (workers.dev 에서는 Cache API 가 동작하지 않음).
  *
  * 15분마다(cron) GitHub Actions '시세 데이터 갱신'을 직접 실행시킴 (GitHub 자체 예약 실행은 자주 늦어지거나 누락됨)
- *   · 한국장(평일 09~17시)·미국장(평일 22~07시, 한국 시간) 15분마다, 그 밖에는 3시간마다
+ *   · 한국장과 공시 시간(평일 09~20시)·미국장(평일 22~07시, 한국 시간) 15분마다, 그 밖에는 3시간마다
  *   · GH_TOKEN(저장소 1개·Actions 쓰기 권한만 있는 토큰) 비밀값이 있을 때만 동작 · GET /status 로 마지막 실행 결과 확인
  */
 const REPO = 'ETFMD/d-capitalism';
@@ -161,7 +161,7 @@ export default {
     }
     if (!env.GH_TOKEN) return;
     const weekday = dow >= 1 && dow <= 5, usOpen = (h >= 22 && dow >= 1 && dow <= 5) || (h < 7 && dow >= 2 && dow <= 6);
-    const market = (weekday && h >= 9 && h < 17) || usOpen;
+    const market = (weekday && h >= 9 && h < 20) || usOpen;           // 09~20시: 한국장 + 장 마감 뒤 ETF 분배금 공시 시간
     if (!market && !(h % 3 === 0 && m < 15)) return;                    // 장 밖에는 3시간마다
     ctx.waitUntil(dispatch(env));
   },

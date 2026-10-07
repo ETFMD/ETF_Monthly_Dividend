@@ -5,7 +5,7 @@ const fs = require('fs'), path = require('path');
 const { chromium } = require(process.env.PW_CORE || 'playwright-core');
 const ROOT = path.join(__dirname, '..');
 const cfg = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/routes.json'), 'utf8'));
-const GROUP = { simulator: '분배 시뮬레이터', finance: '금융 계산기', etc: '기타 금융 자료', index: '지수 성장률', tax: '세금 계산기' };
+const GROUP = { simulator: '분배 시뮬레이터', finance: '금융 계산기', etc: '기타 금융 자료', index: '지수 성장률', tax: '세금 계산기', etfdiv: 'ETF 분배 달력' };
 const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 function page(r, home) {
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
