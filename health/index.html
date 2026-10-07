@@ -1699,7 +1699,8 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   /* [CHART-ZOOM] 확대 상태에서 처음 범위로 돌아가는 버튼 */
   .zp-reset { position:absolute; top:4px; left:4px; z-index:2; font-family:var(--font); font-size:11px; font-weight:600; color:var(--accent); background:var(--card); border:1px solid rgba(49,130,246,0.35); border-radius:6px; padding:3px 9px; cursor:pointer; }
   .zp-hint { color:var(--text3); opacity:.85; }
-  @media (hover: none) { .zp-hint { display:none; } }
+  .zp-hint.zp-touch { display:none; }
+  @media (hover: none) and (pointer: coarse) { .zp-hint.zp-mouse { display:none; } .zp-hint.zp-touch { display:inline; } }
 </style>
 </head>
 <body>
@@ -9179,9 +9180,16 @@ update();
    [CHART-ZOOM] 그래프 확대·축소·이동 (ETF CAGR 비교 · 코스피 대비 수익률 비교 공용)
    · 마우스 휠: 그래프 위에서만 확대/축소 (커서 위치 기준, 페이지 스크롤 막음)
    · 왼쪽 버튼 드래그: 확대된 상태에서 좌우 이동 · 더블클릭 / [전체 보기]: 처음 범위로
+   · 터치(모바일): 두 손가락 벌리기·오므리기로 확대/축소(두 손가락 가운데 기준), 한 손가락 좌우 드래그로 이동, 두 번 탭하면 전체 보기
+     한 손가락을 위아래로 움직이면 평소처럼 페이지가 스크롤됨 (touch-action: pan-y)
    · 확대 구간에 보이는 값으로 세로축 범위를 다시 맞춤 (선이 납작해지지 않도록)
    · 가로축이 숫자(linear)인 차트와 날짜 라벨(category)인 차트 모두 지원
 ════════════════════════════════════════ */
+/* 그래프 아래 사용법 안내: 마우스 기기와 터치 기기에 맞는 문장을 각각 보여 줌 (CSS 가 하나만 표시) */
+function zpHint() {
+  return '<span class="zp-hint zp-mouse">' + L('그래프 위에서 마우스 휠로 확대·축소, 드래그로 이동, 더블클릭으로 전체 보기', 'Scroll to zoom, drag to pan, double-click to reset') + '</span>'
+    + '<span class="zp-hint zp-touch">' + L('두 손가락으로 확대·축소, 한 손가락 좌우 드래그로 이동, 두 번 탭하면 전체 보기', 'Pinch to zoom, drag sideways to pan, double-tap to reset') + '</span>';
+}
 window.chartZoom = (function () {
   function isFull(st) { return st.min <= st.fullMin + 1e-9 && st.max >= st.fullMax - 1e-9; }
   function yRange(st) {
@@ -9224,7 +9232,7 @@ window.chartZoom = (function () {
     if (canvas._zp) return canvas._zp;
     var st = canvas._zp = { canvas: canvas, raf: 0 };
     var btn = st.btn = document.createElement('button');
-    btn.type = 'button'; btn.className = 'zp-reset'; btn.textContent = '전체 보기'; btn.style.display = 'none';
+    btn.type = 'button'; btn.className = 'zp-reset'; btn.textContent = L('전체 보기', 'Reset zoom'); btn.style.display = 'none';
     btn.addEventListener('click', function () { reset(st); });
     canvas.parentNode.appendChild(btn);
     canvas.addEventListener('wheel', function (e) {
@@ -9252,6 +9260,64 @@ window.chartZoom = (function () {
     });
     window.addEventListener('mouseup', function () { if (st.drag) { st.drag = null; canvas.style.cursor = isFull(st) ? '' : 'grab'; } });
     canvas.addEventListener('dblclick', function () { reset(st); });
+
+    /* ── 터치: 두 손가락 확대·축소 · 한 손가락 좌우 이동 · 두 번 탭 전체 보기 ── */
+    canvas.style.touchAction = 'pan-y';                  /* 세로 스크롤은 브라우저, 가로 이동·핀치는 그래프가 처리 */
+    var tch = null, lastTap = 0;
+    function schedule() { if (!st.raf) st.raf = requestAnimationFrame(function () { st.raf = 0; apply(st); }); }
+    function fracAt(clientX) {                           /* 화면 x → 그래프 영역 안 비율 (0~1) */
+      var a = st.chart.chartArea, r = canvas.getBoundingClientRect(), w = (a.right - a.left) || 1;
+      return (Math.min(Math.max(clientX - r.left, a.left), a.right) - a.left) / w;
+    }
+    function pinchStart(t) {
+      var cx = (t[0].clientX + t[1].clientX) / 2, f = fracAt(cx);
+      tch = { mode: 'pinch', d0: Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY) || 1,
+              span0: st.max - st.min, anchor: st.min + f * (st.max - st.min) };
+    }
+    canvas.addEventListener('touchstart', function (e) {
+      if (!st.chart) return;
+      var t = e.touches;
+      if (t.length === 2) { pinchStart(t); e.preventDefault(); }
+      else if (t.length === 1) tch = { mode: 'wait', x: t[0].clientX, y: t[0].clientY, min: st.min, max: st.max };
+      else tch = null;
+    }, { passive: false });
+    canvas.addEventListener('touchmove', function (e) {
+      if (!tch || !st.chart) return;
+      var t = e.touches, a = st.chart.chartArea, w = (a.right - a.left) || 1;
+      if (tch.mode === 'pinch') {
+        if (t.length !== 2) return;
+        e.preventDefault();
+        var d = Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY) || 1, full = st.fullMax - st.fullMin;
+        var span = Math.max(Math.min(st.minSpan, full), Math.min(full, tch.span0 * tch.d0 / d));
+        clampShift(st, tch.anchor - fracAt((t[0].clientX + t[1].clientX) / 2) * span, span);   /* 처음 잡은 지점이 두 손가락 가운데에 머물도록 */
+        return schedule();
+      }
+      if (t.length !== 1) return;
+      var dx = t[0].clientX - tch.x, dy = t[0].clientY - tch.y;
+      if (tch.mode === 'wait') {
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        if (Math.abs(dx) > Math.abs(dy) && !isFull(st)) tch.mode = 'pan'; else { tch = null; return; }   /* 세로로 움직이면 페이지 스크롤 */
+      }
+      e.preventDefault();
+      var sp = tch.max - tch.min;
+      clampShift(st, tch.min - dx * sp / w, sp);
+      schedule();
+    }, { passive: false });
+    canvas.addEventListener('touchend', function (e) {
+      if (!st.chart) return;
+      if (tch && tch.mode === 'pinch') {                 /* 한 손가락을 떼면 남은 손가락으로 이어서 이동 */
+        tch = e.touches.length === 1 ? { mode: 'pan', x: e.touches[0].clientX, y: e.touches[0].clientY, min: st.min, max: st.max } : null;
+        if (st.btn) st.btn.style.display = isFull(st) ? 'none' : '';
+        return;
+      }
+      if (e.touches.length) return;
+      var tap = tch && tch.mode === 'wait'; tch = null;
+      if (!tap) return;
+      var now = Date.now();
+      if (now - lastTap < 320) { lastTap = 0; if (!isFull(st)) { e.preventDefault(); reset(st); } }   /* 두 번 탭: 전체 보기 */
+      else lastTap = now;
+    }, { passive: false });
+    canvas.addEventListener('touchcancel', function () { tch = null; });
     return st;
   }
   /* 차트를 새로 만들 때마다 호출: cfg = { min, max, minSpan, category } */
@@ -9460,9 +9526,9 @@ window.chartZoom = (function () {
     window.chartZoom.attach(canvas, S.chart, { min: xmin, max: xmax, minSpan: 30 });
     var note = $('ec-note');
     if (note) note.innerHTML = SITE_EN
-      ? '<span class="zp-hint">Scroll to zoom, drag to pan, double-click to reset</span><br>' + (S.period === 'MAX' ? 'From each ETF’s first trading data (just after listing) ' : 'From the last trading day before ' + dayStr(w[0], '/') + ' ') + 'to ' + dayStr(w[1], '/') + ' · drawn after ' + minDays + ' days<br>'
+      ? zpHint() + '<br>' + (S.period === 'MAX' ? 'From each ETF’s first trading data (just after listing) ' : 'From the last trading day before ' + dayStr(w[0], '/') + ' ') + 'to ' + dayStr(w[1], '/') + ' · drawn after ' + minDays + ' days<br>'
         + (S.total ? 'Total return with distributions reinvested' : 'Price only (excluding distributions)') + ' · the number next to each ETF is the CAGR at the end of the period · Source: ' + (S.srcEn || S.src || 'Yahoo Finance')
-      : '<span class="zp-hint">그래프 위에서 마우스 휠로 확대·축소, 드래그로 이동, 더블클릭으로 전체 보기</span><br>' + (S.period === 'MAX' ? '각 종목 첫 거래 데이터(상장 직후)부터 ' : '기간 ' + dayStr(w[0], '/') + ' 직전 거래일부터 ') + dayStr(w[1], '/') + '까지 · 시작 후 ' + minDays + '일 경과 시점부터 표시<br>'
+      : zpHint() + '<br>' + (S.period === 'MAX' ? '각 종목 첫 거래 데이터(상장 직후)부터 ' : '기간 ' + dayStr(w[0], '/') + ' 직전 거래일부터 ') + dayStr(w[1], '/') + '까지 · 시작 후 ' + minDays + '일 경과 시점부터 표시<br>'
       + (S.total ? '분배금 포함(재투자 가정) 총수익 기준' : '주가 기준(분배금 제외)') + ' · 종목 옆 숫자는 기간 끝 시점의 CAGR · 출처: ' + (S.src || 'Yahoo Finance');
   }
   function setActive(per) { var tabs = $('ec-tabs'); if (tabs) tabs.querySelectorAll('.chart-tab').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-per') === per); }); }
@@ -9661,7 +9727,7 @@ window.chartZoom = (function () {
       C.chart = new Chart(canvas, { type: 'line', data: { labels: labels, datasets: ds }, options: opts });
       window.chartZoom.attach(canvas, C.chart, { min: 0, max: labels.length - 1, minSpan: Math.min(10, labels.length - 1), category: true });
       var note = $('note');
-      if (note) note.innerHTML = '<span class="zp-hint">그래프 위에서 마우스 휠로 확대·축소, 드래그로 이동, 더블클릭으로 전체 보기</span><br>기간 ' + labels[0] + ' ~ ' + labels[labels.length - 1] + ' (' + labels[0] + ' 종가 = 0%)<br>'
+      if (note) note.innerHTML = zpHint() + '<br>기간 ' + labels[0] + ' ~ ' + labels[labels.length - 1] + ' (' + labels[0] + ' 종가 = 0%)<br>'
         + (C.total ? '분배금 포함: 분배락일 종가로 분배금을 재투자했다고 가정한 총수익률' : '주가 수익률 (분배금 제외)')
         + ' · 코스피는 지수 수익률 · 출처: ' + C.src;
     }
@@ -12387,7 +12453,7 @@ var FC = (function () {
     });
     window.chartZoom.attach(canvas, S.chart, { min: xmin, max: xmax, minSpan: 7 });
     var note = $('dxy-note');
-    if (note) note.innerHTML = '<span class="zp-hint">그래프 위에서 마우스 휠로 확대·축소, 드래그로 이동, 더블클릭으로 전체 보기</span><br>'
+    if (note) note.innerHTML = zpHint() + '<br>'
       + '기간 ' + dayStr(seg[0][0], '/') + ' ~ ' + dayStr(lastD, '/') + ' · 변화율은 ' + dayStr(seg[0][0], '/') + ' 종가 ' + v0.toFixed(2) + ' 기준'
       + ' · 오르면 달러 강세(빨강), 내리면 달러 약세(파랑) · 출처: ' + S.src;
   }
