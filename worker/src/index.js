@@ -2,8 +2,8 @@
  * · 같은 IP는 하루(한국 시간 기준) 1번만 셉니다.
  * · IP 원문은 저장하지 않습니다: SHA-256(SALT + 날짜 + IP) 해시만 그날 하루 중복 확인용으로 보관하고,
  *   매일 새벽 정리 작업이 2일 지난 해시를 지웁니다. 날짜마다 해시가 달라 다른 날과 연결할 수도 없습니다.
- * · POST /hit  → 오늘 처음 온 IP면 1 증가 후 {today, total} 반환
- *   GET  /     → 세지 않고 {today, total} 만 반환
+ * · POST /hit  → 오늘 처음 온 IP면 1 증가 후 {today, yesterday, max, maxDay, total} 반환
+ *   GET  /     → 세지 않고 같은 값만 반환
  * · 허용된 사이트(ALLOWED_ORIGINS)에서 온 요청만 셉니다. 검색봇·크롤러는 세지 않습니다.
  *
  * GET /geo  → {country} 접속 국가 코드 (기본 언어 선택용 · 기록하지 않음)
@@ -100,9 +100,16 @@ function corsHeaders(env, origin) {
   };
 }
 async function counts(env, day) {
-  const t = await env.DB.prepare('SELECT n FROM daily WHERE day = ?').bind(day).first();
-  const s = await env.DB.prepare('SELECT COALESCE(SUM(n), 0) AS n FROM daily').first();
-  return { day, today: t ? t.n : 0, total: s ? s.n : 0 };
+  const yday = kstDay(Date.parse(day + 'T00:00:00+09:00') - 86400e3);
+  const [t, y, s, m] = await env.DB.batch([
+    env.DB.prepare('SELECT n FROM daily WHERE day = ?').bind(day),
+    env.DB.prepare('SELECT n FROM daily WHERE day = ?').bind(yday),
+    env.DB.prepare('SELECT COALESCE(SUM(n), 0) AS n FROM daily'),
+    env.DB.prepare('SELECT day, n FROM daily ORDER BY n DESC, day DESC LIMIT 1'),   // 하루 최대 방문자 (같으면 최근 날)
+  ]);
+  const one = (r) => (r && r.results && r.results[0]) || null;
+  const T = one(t), Y = one(y), S = one(s), M = one(m);
+  return { day, today: T ? T.n : 0, yesterday: Y ? Y.n : 0, total: S ? S.n : 0, max: M ? M.n : 0, maxDay: M ? M.day : null };
 }
 
 export default {

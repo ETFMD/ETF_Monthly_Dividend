@@ -1739,7 +1739,21 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .site-footer .sf-note { margin:8px 0 0; font-size:11px; line-height:1.5; opacity:.85; }
   .visit-bar b { font-family:var(--mono); font-weight:600; color:var(--text2); }
   .visit-dot { width:6px; height:6px; border-radius:50%; background:#22c55e; box-shadow:0 0 0 3px rgba(34,197,94,0.15); }
-  .visit-sep { opacity:.5; }
+  /* 평소엔 전체 방문자 수만 · 마우스를 올리거나(휴대폰은 누르면) 오늘·어제·최대·전체 */
+  .visit-bar { position:relative; }
+  .visit-btn { display:inline-flex; align-items:center; gap:6px; height:28px; padding:0 4px; border:none; background:transparent; color:inherit; font:inherit; cursor:default; border-radius:8px; }
+  .visit-btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .visit-pop { position:absolute; top:calc(100% + 6px); right:0; display:none; min-width:172px; padding:8px; z-index:10000;
+    background:var(--bg2); border:1px solid rgba(var(--fg-rgb),0.12); border-radius:12px;
+    box-shadow:0 12px 40px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3); animation:dropIn .15s ease; }
+  .visit-bar.open .visit-pop { display:block; }
+  @media (hover:hover) { .visit-bar:hover .visit-pop { display:block; } }   /* 터치 화면은 누르면 열고 다시 누르면 닫힘 (hover 가 남지 않게) */
+  .visit-pop::before { content:''; position:absolute; left:0; right:0; top:-8px; height:8px; }   /* 버튼→목록 사이 틈에서 닫히지 않게 */
+  .visit-row { display:flex; justify-content:space-between; align-items:baseline; gap:16px; padding:6px 8px; font-size:12px; color:var(--text3); white-space:nowrap; }
+  .visit-row b { font-size:12px; }
+  .visit-row small { font-size:10px; opacity:.75; margin-right:6px; font-family:var(--mono); }
+  .visit-row-total { margin-top:4px; padding-top:8px; border-top:1px solid var(--card-border); }
+  .visit-row-total span:first-child { color:var(--text2); }
   @media (max-width: 600px) { .top-bar { margin:-8px 0 8px; gap:8px; } }
   /* [CHART-ZOOM] 확대 상태에서 처음 범위로 돌아가는 버튼 */
   .zp-reset { position:absolute; top:4px; left:4px; z-index:2; font-family:var(--font); font-size:11px; font-weight:600; color:var(--accent); background:var(--card); border:1px solid rgba(49,130,246,0.35); border-radius:6px; padding:3px 9px; cursor:pointer; }
@@ -1766,8 +1780,16 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <button type="button" class="lang-opt theme-opt" role="option" data-theme-opt="auto"><span class="lang-code">⌬</span><span class="lang-name">Auto <small class="theme-sub">(follow device)</small></span><svg class="lang-check" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </div>
   </div>
-  <div class="visit-bar" id="visit-bar" hidden aria-label="Visitors">
-    <span class="visit-dot"></span><span>Today <b id="visit-today">—</b></span><span class="visit-sep">·</span><span>Total <b id="visit-total">—</b></span>
+  <div class="visit-bar" id="visit-bar" hidden>
+    <button type="button" class="visit-btn" id="visit-btn" aria-expanded="false" aria-controls="visit-pop" aria-label="Visitors">
+      <span class="visit-dot"></span><span>Total <b id="visit-total">—</b></span>
+    </button>
+    <div class="visit-pop" id="visit-pop" role="tooltip">
+      <div class="visit-row"><span>Today</span><span><b id="visit-today">—</b></span></div>
+      <div class="visit-row"><span>Yesterday</span><span><b id="visit-yday">—</b></span></div>
+      <div class="visit-row"><span>Peak day</span><span><small id="visit-maxday"></small><b id="visit-max">—</b></span></div>
+      <div class="visit-row visit-row-total"><span>Total</span><span><b id="visit-total2">—</b></span></div>
+    </div>
   </div>
   <!-- [I18N] 언어 선택 — 기본값은 접속 국가(한국 → 한국어, 일본 → 일본어 …), 고르면 그 선택을 기억 -->
   <div class="lang-sw notranslate" translate="no" id="lang-sw">
@@ -14153,8 +14175,10 @@ var TAX = (function () {
   function kstDay() { return new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10); }
   function show(d) {
     if (!d || typeof d.today !== 'number') return;
-    document.getElementById('visit-today').textContent = d.today.toLocaleString('ko-KR');
-    document.getElementById('visit-total').textContent = d.total.toLocaleString('ko-KR');
+    var f = function (v) { return typeof v === 'number' ? v.toLocaleString('ko-KR') : '—'; }, set = function (id, v) { document.getElementById(id).textContent = v; };
+    set('visit-total', f(d.total)); set('visit-total2', f(d.total)); set('visit-today', f(d.today));
+    set('visit-yday', f(d.yesterday)); set('visit-max', f(d.max));
+    set('visit-maxday', /^\d{4}-\d\d-\d\d$/.test(d.maxDay || '') ? (+d.maxDay.slice(5, 7)) + '/' + (+d.maxDay.slice(8)) : '');   /* 최대였던 날 (월/일) */
     document.getElementById('visit-bar').hidden = false;
   }
   async function run() {
@@ -14171,7 +14195,16 @@ var TAX = (function () {
       if (!seen) { try { localStorage.setItem('etfmd-visit-day', day); } catch (e) {} }
     } catch (e) {}
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
+  /* 휴대폰(마우스 없음)·키보드: 누르면 열고 닫기, 바깥 누르거나 Esc 면 닫기 */
+  function bindPop() {
+    var bar = document.getElementById('visit-bar'), btn = document.getElementById('visit-btn');
+    if (!bar || !btn) return;
+    var setOpen = function (on) { bar.classList.toggle('open', on); btn.setAttribute('aria-expanded', on ? 'true' : 'false'); };
+    btn.addEventListener('click', function () { setOpen(!bar.classList.contains('open')); });
+    document.addEventListener('click', function (e) { if (!bar.contains(e.target)) setOpen(false); }, true);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setOpen(false); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { bindPop(); run(); }); else { bindPop(); run(); }
 })();
 
 /* ════════════════════════════════════════
