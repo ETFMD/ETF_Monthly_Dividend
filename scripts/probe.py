@@ -1,24 +1,24 @@
-import urllib.request, re, json
+import urllib.request, re, concurrent.futures as cf
 UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36'
-def get(u, h=None, data=None):
-    try:
-        r=urllib.request.urlopen(urllib.request.Request(u,data=data,headers={'User-Agent':UA,'Accept':'application/json, text/html, */*',**(h or {})}),timeout=25); return r.status, r.read().decode('utf-8','replace')
-    except urllib.error.HTTPError as e: return e.code, e.read()[:300].decode('utf-8','replace')
-    except Exception as e: return 0, repr(e)[:200]
-def show(lbl,u,n=1500,h=None):
-    s,t=get(u,h); print('=====',lbl,s,u,len(t)); print(re.sub(r'\s+',' ',t)[:n])
-    return t
-# ACE
-s,h=get('https://www.aceetf.co.kr/'); js=[x for x in re.findall(r'src="([^"]+_app[^"]+\.js)"',h)]
-s,app=get('https://www.aceetf.co.kr'+js[0]) if js else (0,'')
-print('ACE api paths', sorted(set(re.findall(r'["`](/api/[A-Za-z0-9_/{}$.-]+)', app)))[:80])
-for m in list(re.finditer(r'/dividend', app))[:3]: print('ctx', app[max(0,m.start()-400):m.start()+200].replace('\n',' '))
-show('ACE try ticker','https://www.aceetf.co.kr/api/funds/0139P0/dividend')
-show('ACE try code','https://www.aceetf.co.kr/api/funds/K55101D69599/dividend')
-# SOL
-show('SOL page','https://www.soletf.com/fund/etf/210942/dividend',3000)
-show('SOL api','https://www.soletf.com/api/etf/pds/dividend/210942')
-s,js=get('https://www.soletf.com/static/pc/js/ko/etf_pds.js'); i=js.find('/api/etf/pds/dividend/'); print('SOL js ctx', js[max(0,i-1500):i+1500])
-# PLUS
-t=show('PLUS k-divid','https://www.plusetf.co.kr/product/k-divid',4000)
-for m in sorted(set(re.findall(r'["\'](/[A-Za-z0-9_/.-]*(?:divid|Divid|ajax|api)[A-Za-z0-9_/.?=&-]*)["\']', t)))[:40]: print('PLUS url', m)
+def get(u):
+    try: return urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':UA}),timeout=25).read().decode('utf-8','replace')
+    except Exception as e: return ''
+paths=set()
+for u in ['https://seibro.or.kr/IPORTAL/user/common/wframe/common/side.xml','https://seibro.or.kr/IPORTAL/user/common/wframe/common/top.xml']:
+    t=get(u); print(u,len(t)); paths|=set(re.findall(r'(/IPORTAL/user/[\w/]+\.xml)',t))
+    for m in re.findall(r'menuNo[^0-9]{0,5}(\d+)',t)[:5]: pass
+# also menu js
+t=get('https://seibro.or.kr/IPORTAL/common/js/menu.js'); print('menu.js',len(t)); paths|=set(re.findall(r'(/IPORTAL/user/[\w/]+\.xml)',t))
+print(len(paths))
+cands=sorted(p for p in paths if '/etf/' in p or '/fund/' in p)
+print(cands)
+# brute force etf folder
+cands=set(cands)|{'/IPORTAL/user/etf/BIP_CNTS060%02dV.xml'%i for i in range(0,60)}|{'/IPORTAL/user/etf/BIP_CNTS060%02dP.xml'%i for i in range(0,60)}
+def chk(p):
+    t=get('https://seibro.or.kr'+p)
+    if len(t)<300: return None
+    title=re.search(r'<title>(.*?)</title>',t)
+    return p, (title.group(1) if title else ''), ('과세' in t, 'TAX' in t), sorted(set(re.findall(r"callTask\('(\w+)'\s*,\s*'([\w.]+)'",t)))[:6], sorted(set(re.findall(r'id="(\w*TAX\w*)"',t)))
+with cf.ThreadPoolExecutor(12) as ex:
+    for r in ex.map(chk, sorted(cands)):
+        if r: print(r)
