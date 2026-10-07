@@ -1064,6 +1064,7 @@
 
     /* 숫자 입력 너비 조정 */
     .num-input { max-width: 100px; }
+    .num-input.comma-input { max-width: 112px; }   /* 1억 단위(100,000,000)가 잘리지 않게 */
 
     /* 차트 */
     .chart-wrap { height: 180px !important; }
@@ -1139,68 +1140,75 @@
     .idx-rate-num { font-size: 26px !important; }
   }
 
-  /* ── 아코디언 ── */
-  .acc-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    user-select: none;
-    padding: 13px 10px;
-    border-radius: 8px;
-    margin-bottom: 0;
-    transition: background 0.15s;
+  /* ── 아코디언 (사이트 공통) ──
+     접힘: 카드형 행 + 파란 세로 막대 + 둥근 ▼ 버튼
+     펼침: 테두리 컨테이너 + 헤더 구분선 + 얇은 ˄ 쉐브론 + 내용 여백
+     .acc-header/.acc-body(toggleAcc) 와 종합소득세 <details class="inc-sec"> 가 같은 규칙을 공유 */
+  .acc-header, .inc-sec > summary {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    cursor: pointer; user-select: none;
+    padding: 14px 14px 14px 16px;
+    border-radius: 12px;
     background: rgba(var(--fg-rgb),0.03);
-    border: 1px solid rgba(var(--fg-rgb),0.06);
-    margin-top: 6px;
+    border: 1px solid rgba(var(--fg-rgb),0.07);
+    margin: 8px 0 0;
+    transition: background 0.15s, border-color 0.15s;
   }
-  .acc-header:hover {
-    background: rgba(49,130,246,0.06);
-    border-color: rgba(49,130,246,0.18);
+  .acc-header:hover, .inc-sec > summary:hover { background: rgba(49,130,246,0.06); border-color: rgba(49,130,246,0.2); }
+  .acc-title, .inc-sec-t {
+    font-size: 14px; font-weight: 600; letter-spacing: 0.01em; color: var(--text);
+    text-transform: none; display: flex; align-items: center; word-break: keep-all;
   }
-  .acc-title {
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.01em;
-    color: var(--text);
-    text-transform: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .acc-title::before {
-    content: '';
-    display: inline-block;
-    width: 3px;
-    height: 14px;
-    background: var(--accent);
-    border-radius: 2px;
-    opacity: 0.7;
-    flex-shrink: 0;
+  .acc-title::before, .inc-sec-t::before {
+    content: ''; display: inline-block; flex-shrink: 0;
+    width: 3px; height: 15px; margin-right: 9px;
+    background: var(--accent); border-radius: 2px;
+    transition: width 0.2s, margin 0.2s, opacity 0.2s;
   }
   .acc-arrow {
-    width: 20px; height: 20px;
+    width: 26px; height: 26px; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
-    color: var(--text3);
-    font-size: 11px;
-    transition: transform 0.22s ease;
-    background: rgba(var(--fg-rgb),0.05);
-    border-radius: 50%;
+    color: var(--text2); font-size: 10px; line-height: 1;
+    background: rgba(var(--fg-rgb),0.08); border-radius: 50%;
+    transition: background 0.15s;
   }
-  .acc-arrow.open { transform: rotate(180deg); }
+  /* 펼침 상태 */
+  .acc-header.acc-open, .inc-sec[open] > summary {
+    border-color: var(--card-border);
+    border-radius: 12px 12px 0 0;
+    background: rgba(var(--fg-rgb),0.02);
+  }
+  .acc-header.acc-open:hover, .inc-sec[open] > summary:hover { background: rgba(49,130,246,0.04); }
+  .acc-header.acc-open .acc-title::before, .inc-sec[open] .inc-sec-t::before { width: 0; margin-right: 0; opacity: 0; }
+  .acc-header.acc-open .acc-arrow, .inc-sec[open] > summary .acc-arrow { background: transparent; font-size: 0; }
+  .acc-header.acc-open .acc-arrow::before, .inc-sec[open] > summary .acc-arrow::before {
+    content: ''; width: 7px; height: 7px;
+    border-left: 1.5px solid var(--text3); border-top: 1.5px solid var(--text3);
+    transform: translateY(2px) rotate(45deg);
+  }
   .acc-body {            /* 닫힘: 완전히 제거 (높이 제한·틈 노출 없음) */
     display: none;
     overflow: hidden;
     padding: 0;
   }
-  .acc-body.open {
+  .acc-body.open, .acc-body.default-open {
     display: block;
-    padding: 16px 10px 10px;
+    padding: 18px 16px 12px;
+    border: 1px solid var(--card-border); border-top: none;
+    border-radius: 0 0 12px 12px;
+    background: rgba(var(--fg-rgb),0.02);
   }
-  /* 첫 번째 아코디언: 기본으로 열려 있음 */
-  .acc-body.default-open {
-    display: block;
-    padding: 16px 10px 10px;
+  /* 카드 자체가 컨테이너인 아코디언(차트·지표 카드): 테두리는 카드가 맡고, 펼치면 헤더 아래 구분선만 */
+  .acc-header.acc-flat, .acc-header.acc-flat:hover, .acc-header.acc-flat.acc-open {
+    border: none; border-radius: 0; background: transparent; margin: 0;
+  }
+  .acc-header.acc-flat.acc-open { border-bottom: 1px solid var(--card-border); }
+  .acc-flat + .acc-body.open, .acc-flat + .acc-body.default-open {
+    border: none; border-radius: 0; background: transparent;
+  }
+  @media (max-width: 720px) {   /* 휴대폰: 좌우 여백을 줄여 입력칸 폭 확보 */
+    .acc-header, .inc-sec > summary { padding-left: 14px; padding-right: 12px; }
+    .acc-body.open, .acc-body.default-open { padding-left: 12px; padding-right: 12px; }
   }
 
   /* 월간 테이블 연차 아코디언 헤더 */
@@ -1590,18 +1598,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .ost-add { font-size:12px; color:var(--accent); background:var(--accent-dim); border:1px dashed rgba(49,130,246,.45); border-radius:9px; padding:7px 12px; cursor:pointer; margin-bottom:6px; }
   .fc-hero-sub b, .fc-notice b { font-weight:600; }
   /* [TAX] 종합소득세 — 소득 종류별 접이식 입력 */
-  .inc-sec { border:1px solid var(--card-border); border-radius:12px; margin-bottom:10px; background:rgba(var(--fg-rgb),0.02); }
-  .inc-sec > summary { list-style:none; display:flex; align-items:center; gap:10px; padding:12px 14px; cursor:pointer; user-select:none; }
+  /* 종합소득세 입력 섹션 — 모양은 공통 아코디언(.acc-header/.acc-body) 규칙을 공유 */
+  .inc-sec { margin:0 0 8px; }
+  .inc-sec > summary { list-style:none; margin:0; }
   .inc-sec > summary::-webkit-details-marker { display:none; }
-  .inc-sec-t { font-size:13px; font-weight:600; color:var(--text); flex-shrink:0; }
-  .inc-sec-t small { font-weight:400; color:var(--text3); font-size:11px; margin-left:4px; }
-  .inc-sec-v { flex:1; min-width:0; text-align:right; font-family:var(--mono); font-size:12px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .inc-sec-t { flex:0 1 auto; min-width:0; white-space:nowrap; }
+  .inc-sec-t small { font-weight:400; color:var(--text3); font-size:11px; margin-left:6px; min-width:0; overflow:hidden; text-overflow:ellipsis; }   /* 공간이 모자라면 부제가 먼저 줄어듦 → 금액 요약은 항상 온전히 */
+  .inc-sec-v { flex:1 0 auto; max-width:100%; text-align:right; font-size:12px; font-weight:500; font-variant-numeric:tabular-nums; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .inc-sec-v.on { color:var(--accent); }
   .inc-sec.has-v:not([open]) .inc-sec-t small { display:none; }
-  .inc-chev { flex-shrink:0; color:var(--text3); transition:transform .2s; }
-  .inc-sec[open] > summary .inc-chev { transform:rotate(180deg); }
-  .inc-sec[open] > summary { border-bottom:1px solid var(--card-border); }
-  .inc-sec-in { padding:14px 14px 4px; }
+  .inc-sec-in { padding:18px 16px 8px; border:1px solid var(--card-border); border-top:none; border-radius:0 0 12px 12px; background:rgba(var(--fg-rgb),0.02); }
+  @media (max-width: 720px) { .inc-sec-in { padding-left:12px; padding-right:12px; } }
   @media (max-width: 700px) {
     .fc-hero { padding:18px; }
     .fc-hero-val { font-size:30px; }
@@ -2270,7 +2277,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     <div class="layout">
       <div class="card fc-in">
 <p class="fc-note" style="margin:0 0 10px;">소득 종류를 눌러 펼치고 금액을 넣으세요. 다 넣은 항목은 접어 두면 입력한 금액만 요약해 보여 줍니다.</p>
-<details class="inc-sec" data-sec="biz" open><summary><span class="inc-sec-t">사업소득 <small>프리랜서·개인사업자</small></span><span class="inc-sec-v" id="inc-sum-biz">입력 없음</span><svg class="inc-chev" width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 4.5 6 7.5l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="inc-sec-in"><label class="fc-field"><span>수입금액 (1년 매출·용역 대가 합계)</span><small class="fc-hint">3.3% 떼기 전 금액</small><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-rev" value="5,000" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-rev" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-rev" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-rev" data-unit="won">원</button></span></span></label>
+<details class="inc-sec" data-sec="biz" open><summary><span class="inc-sec-t">사업소득 <small>프리랜서·개인사업자</small></span><span class="inc-sec-v" id="inc-sum-biz">입력 없음</span><span class="acc-arrow" aria-hidden="true">▼</span></summary><div class="inc-sec-in"><label class="fc-field"><span>수입금액 (1년 매출·용역 대가 합계)</span><small class="fc-hint">3.3% 떼기 전 금액</small><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-rev" value="5,000" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-rev" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-rev" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-rev" data-unit="won">원</button></span></span></label>
 <div class="fc-field"><span>필요경비 계산 방법</span><div class="mode-toggle fc-seg" data-name="inc-exp-mode"><button type="button" class="mode-btn active" data-v="book">장부 (실제 경비)</button><button type="button" class="mode-btn" data-v="rate">단순경비율</button><button type="button" class="mode-btn" data-v="std">기준경비율</button></div></div>
 <label class="fc-field" id="inc-exp-f"><span>필요경비 (장부·증빙으로 확인되는 비용)</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-exp" value="1,000" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-exp" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-exp" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-exp" data-unit="won">원</button></span></span></label>
 <div id="inc-std-f" style="display:none;">
@@ -2281,34 +2288,34 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 </div>
 <label class="fc-field" id="inc-rate-f"><span id="inc-rate-l">업종별 단순경비율</span><small class="fc-hint">직전 연도 수입금액이 업종별 기준(6천만·3,600만·2,400만원) 미만인 사업자만 적용</small><span class="fc-input"><input type="text" inputmode="decimal" id="inc-rate" value="60" data-fc="inc"><em>%</em></span></label>
 <label class="fc-check" style="margin-bottom:12px;"><input type="checkbox" id="inc-wh3" data-fc="inc" checked> 3.3%를 떼고 받은 프리랜서 소득 (소득세 3% 이미 냄)</label><label class="fc-check" style="margin-bottom:12px;"><input type="checkbox" id="inc-rental" data-fc="inc"> 비주거용 부동산임대업 (상가·사무실 등 — 결손금은 임대소득에서만 공제)</label><p class="fc-note" style="margin:0 0 12px;">필요경비가 수입금액보다 크면 결손금이 생겨 근로·연금·기타·금융소득에서 순서대로 빼 줍니다 (장부로 신고할 때만).</p></div></details>
-<details class="inc-sec" data-sec="wage"><summary><span class="inc-sec-t">근로소득 <small>직장</small></span><span class="inc-sec-v" id="inc-sum-wage">입력 없음</span><svg class="inc-chev" width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 4.5 6 7.5l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="inc-sec-in"><label class="fc-field"><span>총급여 (비과세 소득 뺀 연봉)</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-sal" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-sal" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-sal" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-sal" data-unit="won">원</button></span></span></label>
+<details class="inc-sec" data-sec="wage"><summary><span class="inc-sec-t">근로소득 <small>직장</small></span><span class="inc-sec-v" id="inc-sum-wage">입력 없음</span><span class="acc-arrow" aria-hidden="true">▼</span></summary><div class="inc-sec-in"><label class="fc-field"><span>총급여 (비과세 소득 뺀 연봉)</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-sal" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-sal" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-sal" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-sal" data-unit="won">원</button></span></span></label>
 <label class="fc-field"><span>건강·고용보험료 (본인 부담분)</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-ins" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-ins" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-ins" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-ins" data-unit="won">원</button></span></span></label>
 <label class="fc-field"><span>특별세액공제 합계 (보험·의료·교육·기부금)</span><small class="fc-hint">13만원보다 적으면 표준세액공제 13만원 적용</small><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-special" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-special" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-special" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-special" data-unit="won">원</button></span></span></label>
 <label class="fc-field"><span>연말정산 결정세액 (이미 낸 근로소득세)</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-wagetax" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-wagetax" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-wagetax" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-wagetax" data-unit="won">원</button></span></span></label></div></details>
-<details class="inc-sec" data-sec="fin"><summary><span class="inc-sec-t">금융소득 <small>이자·배당</small></span><span class="inc-sec-v" id="inc-sum-fin">입력 없음</span><svg class="inc-chev" width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 4.5 6 7.5l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="inc-sec-in"><p class="fc-note" style="margin:0 0 10px;">1년 동안 받은 세전 금액 — 합계 2천만원 이하면 15.4% 원천징수로 끝(분리과세), 넘으면 종합과세됩니다.</p>
+<details class="inc-sec" data-sec="fin"><summary><span class="inc-sec-t">금융소득 <small>이자·배당</small></span><span class="inc-sec-v" id="inc-sum-fin">입력 없음</span><span class="acc-arrow" aria-hidden="true">▼</span></summary><div class="inc-sec-in"><p class="fc-note" style="margin:0 0 10px;">1년 동안 받은 세전 금액 — 합계 2천만원 이하면 15.4% 원천징수로 끝(분리과세), 넘으면 종합과세됩니다.</p>
 <label class="fc-field"><span>이자소득 (예금·적금·채권)</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-fint" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-fint" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-fint" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-fint" data-unit="won">원</button></span></span></label>
 <label class="fc-field"><span>국내 상장주식 배당 (배당세액공제 대상)</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-fgu" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-fgu" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-fgu" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-fgu" data-unit="won">원</button></span></span></label>
 <label class="fc-field"><span>그 밖의 배당 (국내 ETF·펀드·리츠 분배금, 해외주식 배당)</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-fnon" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-fnon" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-fnon" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-fnon" data-unit="won">원</button></span></span></label></div></details>
-<details class="inc-sec" data-sec="pen"><summary><span class="inc-sec-t">연금소득 <small>공적·사적연금</small></span><span class="inc-sec-v" id="inc-sum-pen">입력 없음</span><svg class="inc-chev" width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 4.5 6 7.5l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="inc-sec-in"><label class="fc-field"><span>공적연금 총연금액 (국민·공무원연금 등 과세분)</span><small class="fc-hint">연금 지급기관의 연금소득 원천징수영수증 &lsquo;총연금액&rsquo;</small><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-pub" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-pub" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-pub" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-pub" data-unit="won">원</button></span></span></label>
+<details class="inc-sec" data-sec="pen"><summary><span class="inc-sec-t">연금소득 <small>공적·사적연금</small></span><span class="inc-sec-v" id="inc-sum-pen">입력 없음</span><span class="acc-arrow" aria-hidden="true">▼</span></summary><div class="inc-sec-in"><label class="fc-field"><span>공적연금 총연금액 (국민·공무원연금 등 과세분)</span><small class="fc-hint">연금 지급기관의 연금소득 원천징수영수증 &lsquo;총연금액&rsquo;</small><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-pub" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-pub" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-pub" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-pub" data-unit="won">원</button></span></span></label>
 <label class="fc-field"><span>공적연금 연말정산 결정세액</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-pubtax" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-pubtax" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-pubtax" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-pubtax" data-unit="won">원</button></span></span></label>
 <label class="fc-field"><span>사적연금 수령액 (연금저축·IRP 과세분)</span><small class="fc-hint">연 1,500만원 이하면 3.3~5.5% 원천징수로 끝(분리과세) — 넘으면 종합과세와 15% 분리과세 중 유리한 쪽</small><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-priv" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-priv" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-priv" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-priv" data-unit="won">원</button></span></span></label>
 <label class="fc-field"><span>사적연금에서 원천징수된 소득세</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-privtax" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-privtax" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-privtax" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-privtax" data-unit="won">원</button></span></span></label></div></details>
-<details class="inc-sec" data-sec="oth"><summary><span class="inc-sec-t">기타소득 <small>강연료·원고료 등</small></span><span class="inc-sec-v" id="inc-sum-oth">입력 없음</span><svg class="inc-chev" width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 4.5 6 7.5l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="inc-sec-in"><label class="fc-field"><span>기타소득금액 (필요경비 뺀 금액)</span><small class="fc-hint">연 300만원 이하면 분리과세(원천징수로 끝)를 고를 수 있음</small><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-oth" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-oth" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-oth" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-oth" data-unit="won">원</button></span></span></label>
+<details class="inc-sec" data-sec="oth"><summary><span class="inc-sec-t">기타소득 <small>강연료·원고료 등</small></span><span class="inc-sec-v" id="inc-sum-oth">입력 없음</span><span class="acc-arrow" aria-hidden="true">▼</span></summary><div class="inc-sec-in"><label class="fc-field"><span>기타소득금액 (필요경비 뺀 금액)</span><small class="fc-hint">연 300만원 이하면 분리과세(원천징수로 끝)를 고를 수 있음</small><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-oth" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-oth" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-oth" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-oth" data-unit="won">원</button></span></span></label>
 <label class="fc-field"><span>기타소득에서 원천징수된 소득세</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-othtax" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-othtax" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-othtax" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-othtax" data-unit="won">원</button></span></span></label></div></details>
-<details class="inc-sec" data-sec="loss"><summary><span class="inc-sec-t">이월결손금 <small>지난해까지 남은 사업 손실</small></span><span class="inc-sec-v" id="inc-sum-loss">입력 없음</span><svg class="inc-chev" width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 4.5 6 7.5l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="inc-sec-in"><label class="fc-field"><span>지난해까지 남은 이월결손금 (사업 손실)</span><small class="fc-hint">최근 15년 안에 생긴 결손금 중 아직 공제받지 못한 금액 — 지난 신고서의 &lsquo;이월결손금 명세서&rsquo; 참고. 장부로 신고할 때만 공제(단순·기준경비율 추계신고는 불가)</small><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-carry" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-carry" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-carry" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-carry" data-unit="won">원</button></span></span></label></div></details><details class="inc-sec" data-sec="ded"><summary><span class="inc-sec-t">소득공제</span><span class="inc-sec-v" id="inc-sum-ded">입력 없음</span><svg class="inc-chev" width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 4.5 6 7.5l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="inc-sec-in"><label class="fc-field"><span>기본공제 인원 (본인 포함)</span><select id="inc-people" data-fc="inc"><option value="1" selected>1명</option><option value="2">2명</option><option value="3">3명</option><option value="4">4명</option><option value="5">5명</option><option value="6">6명</option><option value="7">7명</option><option value="8">8명</option></select></label>
+<details class="inc-sec" data-sec="loss"><summary><span class="inc-sec-t">이월결손금 <small>지난해까지 남은 사업 손실</small></span><span class="inc-sec-v" id="inc-sum-loss">입력 없음</span><span class="acc-arrow" aria-hidden="true">▼</span></summary><div class="inc-sec-in"><label class="fc-field"><span>지난해까지 남은 이월결손금 (사업 손실)</span><small class="fc-hint">최근 15년 안에 생긴 결손금 중 아직 공제받지 못한 금액 — 지난 신고서의 &lsquo;이월결손금 명세서&rsquo; 참고. 장부로 신고할 때만 공제(단순·기준경비율 추계신고는 불가)</small><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-carry" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-carry" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-carry" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-carry" data-unit="won">원</button></span></span></label></div></details><details class="inc-sec" data-sec="ded"><summary><span class="inc-sec-t">소득공제</span><span class="inc-sec-v" id="inc-sum-ded">입력 없음</span><span class="acc-arrow" aria-hidden="true">▼</span></summary><div class="inc-sec-in"><label class="fc-field"><span>기본공제 인원 (본인 포함)</span><select id="inc-people" data-fc="inc"><option value="1" selected>1명</option><option value="2">2명</option><option value="3">3명</option><option value="4">4명</option><option value="5">5명</option><option value="6">6명</option><option value="7">7명</option><option value="8">8명</option></select></label>
 <div class="fc-row2"><label class="fc-field"><span>그중 70세 이상</span><select id="inc-elders" data-fc="inc"><option value="0" selected>0명</option><option value="1">1명</option><option value="2">2명</option><option value="3">3명</option><option value="4">4명</option></select></label><label class="fc-field"><span>그중 장애인</span><select id="inc-dis" data-fc="inc"><option value="0" selected>0명</option><option value="1">1명</option><option value="2">2명</option><option value="3">3명</option><option value="4">4명</option></select></label></div>
 <label class="fc-check" style="margin-bottom:12px;"><input type="checkbox" id="inc-woman" data-fc="inc"> 부녀자공제 (종합소득금액 3천만원 이하 여성)</label>
 <label class="fc-check" style="margin-bottom:12px;"><input type="checkbox" id="inc-single" data-fc="inc"> 한부모공제 (배우자 없이 자녀 부양)</label>
 <label class="fc-field"><span>국민연금 보험료 (본인 납부액)</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-pension" value="200" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-pension" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-pension" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-pension" data-unit="won">원</button></span></span></label>
 <label class="fc-field"><span>노란우산공제 납입액</span><small class="fc-hint">사업소득금액 4천만원 이하 600만원 · 6천만원 이하 500만원 · 1억원 이하 400만원 · 초과 200만원 한도</small><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-noyu" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-noyu" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-noyu" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-noyu" data-unit="won">원</button></span></span></label>
 <label class="fc-field"><span>그 밖의 소득공제 (신용카드 등, 근로자)</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-otherded" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-otherded" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-otherded" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-otherded" data-unit="won">원</button></span></span></label></div></details>
-<details class="inc-sec" data-sec="cr"><summary><span class="inc-sec-t">세액공제</span><span class="inc-sec-v" id="inc-sum-cr">입력 없음</span><svg class="inc-chev" width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 4.5 6 7.5l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="inc-sec-in"><div class="fc-row2"><label class="fc-field"><span>8세 이상 자녀 수</span><select id="inc-kids" data-fc="inc"><option value="0" selected>0명</option><option value="1">1명</option><option value="2">2명</option><option value="3">3명</option><option value="4">4명</option><option value="5">5명</option><option value="6">6명</option></select></label><label class="fc-field"><span>올해 출산·입양</span><select id="inc-birth" data-fc="inc"><option value="0" selected>없음</option><option value="1">첫째</option><option value="2">둘째</option><option value="3">셋째 이상</option></select></label></div>
+<details class="inc-sec" data-sec="cr"><summary><span class="inc-sec-t">세액공제</span><span class="inc-sec-v" id="inc-sum-cr">입력 없음</span><span class="acc-arrow" aria-hidden="true">▼</span></summary><div class="inc-sec-in"><div class="fc-row2"><label class="fc-field"><span>8세 이상 자녀 수</span><select id="inc-kids" data-fc="inc"><option value="0" selected>0명</option><option value="1">1명</option><option value="2">2명</option><option value="3">3명</option><option value="4">4명</option><option value="5">5명</option><option value="6">6명</option></select></label><label class="fc-field"><span>올해 출산·입양</span><select id="inc-birth" data-fc="inc"><option value="0" selected>없음</option><option value="1">첫째</option><option value="2">둘째</option><option value="3">셋째 이상</option></select></label></div>
 <div class="fc-row2"><label class="fc-field"><span>연금저축 납입액</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-ps" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-ps" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-ps" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-ps" data-unit="won">원</button></span></span></label><label class="fc-field"><span>IRP 납입액</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-irp" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-irp" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-irp" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-irp" data-unit="won">원</button></span></span></label></div>
 <label class="fc-check" style="margin-bottom:12px;"><input type="checkbox" id="inc-book" data-fc="inc"> 기장세액공제 — 간편장부대상자가 복식부기로 신고 (20%, 100만원 한도)</label>
 <label class="fc-check" style="margin-bottom:12px;"><input type="checkbox" id="inc-honest" data-fc="inc"> 성실사업자 (사업용계좌 신고 등 요건 충족 — 표준세액공제 12만원)</label>
 <label class="fc-check" style="margin-bottom:12px;"><input type="checkbox" id="inc-efile" data-fc="inc" checked> 홈택스로 직접 전자신고 (전자신고세액공제 1만원)</label>
 <label class="fc-field"><span>그 밖의 세액공제</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-othercr" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-othercr" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-othercr" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-othercr" data-unit="won">원</button></span></span></label></div></details>
-<details class="inc-sec" data-sec="paid"><summary><span class="inc-sec-t">이미 낸 세금 <small>중간예납</small></span><span class="inc-sec-v" id="inc-sum-paid">입력 없음</span><svg class="inc-chev" width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 4.5 6 7.5l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="inc-sec-in"><label class="fc-field"><span>중간예납세액 (11월에 낸 금액)</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-interim" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-interim" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-interim" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-interim" data-unit="won">원</button></span></span></label></div></details>
+<details class="inc-sec" data-sec="paid"><summary><span class="inc-sec-t">이미 낸 세금 <small>중간예납</small></span><span class="inc-sec-v" id="inc-sum-paid">입력 없음</span><span class="acc-arrow" aria-hidden="true">▼</span></summary><div class="inc-sec-in"><label class="fc-field"><span>중간예납세액 (11월에 낸 금액)</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="inc-interim" value="0" data-fc="inc" data-unit="man"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="inc-interim" data-unit="eok">억원</button><button type="button" class="unit-btn active" data-fc-unit="inc-interim" data-unit="man">만원</button><button type="button" class="unit-btn" data-fc-unit="inc-interim" data-unit="won">원</button></span></span></label></div></details>
       </div>
       <div>
 <div class="card fc-hero"><p class="fc-hero-label" id="inc-label">5월에 낼 종합소득세 (지방소득세 포함)</p><p class="fc-hero-val" id="inc-pay">—</p><p class="fc-hero-sub" id="inc-pay-sub">—</p><div class="fc-kpis"><div><p id="inc-k1-l">종합소득금액</p><b id="inc-k1">—</b></div><div><p id="inc-k2-l">과세표준</p><b id="inc-k2">—</b></div><div><p id="inc-k3-l">적용 세율</p><b id="inc-k3">—</b></div></div></div>
@@ -2540,8 +2547,8 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     <div style="display:grid;grid-template-columns:380px 1fr;gap:24px;align-items:start;" id="loan-layout">
       <!-- 왼쪽 입력 -->
       <div class="card" style="padding-top:8px;padding-bottom:12px;">
-        <div class="acc-header" onclick="toggleAcc('loan-acc-method',this)" style="margin-top:0;">
-          <span class="acc-title">상환 방식</span><span class="acc-arrow open">▼</span>
+        <div class="acc-header acc-open" onclick="toggleAcc('loan-acc-method',this)" style="margin-top:0;">
+          <span class="acc-title">상환 방식</span><span class="acc-arrow">▼</span>
         </div>
         <div class="acc-body default-open" id="loan-acc-method">
           <div style="display:flex;background:var(--bg3);border:1px solid var(--card-border);border-radius:10px;padding:4px;gap:2px;margin-bottom:8px;">
@@ -2552,8 +2559,8 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           </div>
           <p style="font-size:11px;color:var(--text3);line-height:1.7;" id="loan-method-desc">매월 원금+이자를 동일하게 납부. 초기 이자 비중이 높고 후반 원금 비중이 높아집니다.</p>
         </div>
-        <div class="acc-header" onclick="toggleAcc('loan-acc-cond',this)">
-          <span class="acc-title">대출 조건 설정</span><span class="acc-arrow open">▼</span>
+        <div class="acc-header acc-open" onclick="toggleAcc('loan-acc-cond',this)">
+          <span class="acc-title">대출 조건 설정</span><span class="acc-arrow">▼</span>
         </div>
         <div class="acc-body default-open" id="loan-acc-cond">
           <div class="slider-block">
@@ -2729,9 +2736,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         </div>
 
         <!-- 초기 투자금 -->
-        <div class="acc-header" onclick="toggleAcc('cpd-acc-invest',this)" style="margin-top:0;">
+        <div class="acc-header acc-open" onclick="toggleAcc('cpd-acc-invest',this)" style="margin-top:0;">
           <span class="acc-title">투자 조건 설정</span>
-          <span class="acc-arrow open">▼</span>
+          <span class="acc-arrow">▼</span>
         </div>
         <div class="acc-body default-open" id="cpd-acc-invest">
           <div class="slider-block">
@@ -2780,9 +2787,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
         <!-- 적립식 설정 (DCA 모드에서만) -->
         <div id="cpd-dca-section" style="display:none;">
-          <div class="acc-header" onclick="toggleAcc('cpd-acc-dca',this)">
+          <div class="acc-header acc-open" onclick="toggleAcc('cpd-acc-dca',this)">
             <span class="acc-title">적립식 설정</span>
-            <span class="acc-arrow open">▼</span>
+            <span class="acc-arrow">▼</span>
           </div>
           <div class="acc-body default-open" id="cpd-acc-dca">
             <div class="slider-block">
@@ -2988,9 +2995,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <p style="font-size:11px;color:var(--text3);margin-top:6px;" id="partial-desc">분배금의 50%는 재투자, 50%는 수령</p>
       </div>
       <!-- ① 투자 조건 설정 -->
-      <div class="acc-header" onclick="toggleAcc('acc-invest', this)">
+      <div class="acc-header acc-open" onclick="toggleAcc('acc-invest', this)">
         <span class="acc-title">투자 조건 설정</span>
-        <span class="acc-arrow open">▼</span>
+        <span class="acc-arrow">▼</span>
       </div>
       <div class="acc-body default-open" id="acc-invest">
       <div class="slider-block">
@@ -3352,7 +3359,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <!-- 차트 카드 -->
       <div class="card" style="padding:20px 24px;">
         <!-- 접이식 토글 행 -->
-        <div class="acc-header" style="border:none;background:transparent;margin:0;border-radius:0;padding:4px 0 12px 0;"
+        <div class="acc-header acc-flat acc-open" style="padding:4px 0 12px 0;"
              onclick="toggleAcc('acc-chart', this)">
           <span class="acc-title"><span class="txt-div">분배금</span> 추이</span>
           <div style="display:flex;align-items:center;gap:12px;">
@@ -3360,7 +3367,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
               <button class="chart-tab active" id="tab-annual"  onclick="setChartTab('annual',this)">연간</button>
               <button class="chart-tab"        id="tab-monthly" onclick="setChartTab('monthly',this)">월간</button>
             </div>
-            <span class="acc-arrow open">▼</span>
+            <span class="acc-arrow">▼</span>
           </div>
         </div>
         <!-- 접이식 내용 -->
@@ -3414,14 +3421,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
   <!-- ── 코스피 대비 수익률 비교 (상장 이후) ── [KODEX-CMP] ── -->
   <div class="card kcmp-card">
-    <div class="acc-header kcmp-head" onclick="toggleAcc('kcmp-body', this)">
+    <div class="acc-header acc-flat kcmp-head acc-open" onclick="toggleAcc('kcmp-body', this)">
       <span class="acc-title">코스피 대비 수익률 비교</span>
       <div style="display:flex;align-items:center;gap:12px;">
         <div class="chart-tabs" onclick="event.stopPropagation()">
           <button class="chart-tab active" id="kcmp-mode-price" onclick="kcmpSetMode('simulator',false)">주가</button>
           <button class="chart-tab"        id="kcmp-mode-total" onclick="kcmpSetMode('simulator',true)">분배금 포함</button>
         </div>
-        <span class="acc-arrow open">▼</span>
+        <span class="acc-arrow">▼</span>
       </div>
     </div>
     <div class="acc-body default-open" id="kcmp-body">
@@ -3545,9 +3552,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <p style="font-size:11px;color:var(--text3);margin-top:6px;" id="sol-partial-desc">분배금의 50%는 재투자, 50%는 수령</p>
       </div>
       <!-- ① 투자 조건 설정 -->
-      <div class="acc-header" onclick="toggleAcc('sol-acc-invest', this)">
+      <div class="acc-header acc-open" onclick="toggleAcc('sol-acc-invest', this)">
         <span class="acc-title">투자 조건 설정</span>
-        <span class="acc-arrow open">▼</span>
+        <span class="acc-arrow">▼</span>
       </div>
       <div class="acc-body default-open" id="sol-acc-invest">
       <div class="slider-block">
@@ -3908,15 +3915,15 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
       <!-- 차트 카드 -->
       <div class="card" style="padding:0; overflow:hidden;">
-        <div class="acc-header" onclick="toggleAcc('sol-acc-chart', this)"
-             style="border:none;background:transparent;margin:0;border-radius:0;padding:16px 20px;">
+        <div class="acc-header acc-flat acc-open" onclick="toggleAcc('sol-acc-chart', this)"
+             style="padding:16px 20px;">
           <span class="acc-title"><span class="txt-div">분배금</span> 추이</span>
           <div style="display:flex;align-items:center;gap:12px;">
             <div class="chart-tabs" onclick="event.stopPropagation()">
               <button class="chart-tab active" id="sol-tab-annual" onclick="solSetChartTab('annual',this)">연간</button>
               <button class="chart-tab"        id="sol-tab-monthly" onclick="solSetChartTab('monthly',this)">월간</button>
             </div>
-            <span class="acc-arrow open">▼</span>
+            <span class="acc-arrow">▼</span>
           </div>
         </div>
         <div class="acc-body default-open" id="sol-acc-chart">
@@ -3972,14 +3979,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   </div>
   <!-- ── 코스피 대비 수익률 비교 (상장 이후) ── [KODEX-CMP] ── -->
   <div class="card kcmp-card">
-    <div class="acc-header kcmp-head" onclick="toggleAcc('sol-kcmp-body', this)">
+    <div class="acc-header acc-flat kcmp-head acc-open" onclick="toggleAcc('sol-kcmp-body', this)">
       <span class="acc-title">코스피 대비 수익률 비교</span>
       <div style="display:flex;align-items:center;gap:12px;">
         <div class="chart-tabs" onclick="event.stopPropagation()">
           <button class="chart-tab active" id="sol-kcmp-mode-price" onclick="kcmpSetMode('sol',false)">주가</button>
           <button class="chart-tab"        id="sol-kcmp-mode-total" onclick="kcmpSetMode('sol',true)">분배금 포함</button>
         </div>
-        <span class="acc-arrow open">▼</span>
+        <span class="acc-arrow">▼</span>
       </div>
     </div>
     <div class="acc-body default-open" id="sol-kcmp-body">
@@ -4103,9 +4110,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <p style="font-size:11px;color:var(--text3);margin-top:6px;" id="tiger-partial-desc">분배금의 50%는 재투자, 50%는 수령</p>
       </div>
       <!-- ① 투자 조건 설정 -->
-      <div class="acc-header" onclick="toggleAcc('tiger-acc-invest', this)">
+      <div class="acc-header acc-open" onclick="toggleAcc('tiger-acc-invest', this)">
         <span class="acc-title">투자 조건 설정</span>
-        <span class="acc-arrow open">▼</span>
+        <span class="acc-arrow">▼</span>
       </div>
       <div class="acc-body default-open" id="tiger-acc-invest">
       <div class="slider-block">
@@ -4466,15 +4473,15 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
       <!-- 차트 카드 -->
       <div class="card" style="padding:0; overflow:hidden;">
-        <div class="acc-header" onclick="toggleAcc('tiger-acc-chart', this)"
-             style="border:none;background:transparent;margin:0;border-radius:0;padding:16px 20px;">
+        <div class="acc-header acc-flat acc-open" onclick="toggleAcc('tiger-acc-chart', this)"
+             style="padding:16px 20px;">
           <span class="acc-title"><span class="txt-div">분배금</span> 추이</span>
           <div style="display:flex;align-items:center;gap:12px;">
             <div class="chart-tabs" onclick="event.stopPropagation()">
               <button class="chart-tab active" id="tiger-tab-annual" onclick="tigerSetChartTab('annual',this)">연간</button>
               <button class="chart-tab"        id="tiger-tab-monthly" onclick="tigerSetChartTab('monthly',this)">월간</button>
             </div>
-            <span class="acc-arrow open">▼</span>
+            <span class="acc-arrow">▼</span>
           </div>
         </div>
         <div class="acc-body default-open" id="tiger-acc-chart">
@@ -4530,14 +4537,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   </div>
   <!-- ── 코스피 대비 수익률 비교 (상장 이후) ── [KODEX-CMP] ── -->
   <div class="card kcmp-card">
-    <div class="acc-header kcmp-head" onclick="toggleAcc('tiger-kcmp-body', this)">
+    <div class="acc-header acc-flat kcmp-head acc-open" onclick="toggleAcc('tiger-kcmp-body', this)">
       <span class="acc-title">코스피 대비 수익률 비교</span>
       <div style="display:flex;align-items:center;gap:12px;">
         <div class="chart-tabs" onclick="event.stopPropagation()">
           <button class="chart-tab active" id="tiger-kcmp-mode-price" onclick="kcmpSetMode('tiger',false)">주가</button>
           <button class="chart-tab"        id="tiger-kcmp-mode-total" onclick="kcmpSetMode('tiger',true)">분배금 포함</button>
         </div>
-        <span class="acc-arrow open">▼</span>
+        <span class="acc-arrow">▼</span>
       </div>
     </div>
     <div class="acc-body default-open" id="tiger-kcmp-body">
@@ -4662,9 +4669,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <p style="font-size:11px;color:var(--text3);margin-top:6px;" id="tigerdiv-partial-desc">분배금의 50%는 재투자, 50%는 수령</p>
       </div>
       <!-- ① 투자 조건 설정 -->
-      <div class="acc-header" onclick="toggleAcc('tigerdiv-acc-invest', this)">
+      <div class="acc-header acc-open" onclick="toggleAcc('tigerdiv-acc-invest', this)">
         <span class="acc-title">투자 조건 설정</span>
-        <span class="acc-arrow open">▼</span>
+        <span class="acc-arrow">▼</span>
       </div>
       <div class="acc-body default-open" id="tigerdiv-acc-invest">
       <div class="slider-block">
@@ -5025,15 +5032,15 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
       <!-- 차트 카드 -->
       <div class="card" style="padding:0; overflow:hidden;">
-        <div class="acc-header" onclick="toggleAcc('tigerdiv-acc-chart', this)"
-             style="border:none;background:transparent;margin:0;border-radius:0;padding:16px 20px;">
+        <div class="acc-header acc-flat acc-open" onclick="toggleAcc('tigerdiv-acc-chart', this)"
+             style="padding:16px 20px;">
           <span class="acc-title"><span class="txt-div">분배금</span> 추이</span>
           <div style="display:flex;align-items:center;gap:12px;">
             <div class="chart-tabs" onclick="event.stopPropagation()">
               <button class="chart-tab active" id="tigerdiv-tab-annual" onclick="tigerdivSetChartTab('annual',this)">연간</button>
               <button class="chart-tab"        id="tigerdiv-tab-monthly" onclick="tigerdivSetChartTab('monthly',this)">월간</button>
             </div>
-            <span class="acc-arrow open">▼</span>
+            <span class="acc-arrow">▼</span>
           </div>
         </div>
         <div class="acc-body default-open" id="tigerdiv-acc-chart">
@@ -5089,14 +5096,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   </div>
   <!-- ── 코스피 대비 수익률 비교 (상장 이후) ── [KODEX-CMP] ── -->
   <div class="card kcmp-card">
-    <div class="acc-header kcmp-head" onclick="toggleAcc('tigerdiv-kcmp-body', this)">
+    <div class="acc-header acc-flat kcmp-head acc-open" onclick="toggleAcc('tigerdiv-kcmp-body', this)">
       <span class="acc-title">코스피 대비 수익률 비교</span>
       <div style="display:flex;align-items:center;gap:12px;">
         <div class="chart-tabs" onclick="event.stopPropagation()">
           <button class="chart-tab active" id="tigerdiv-kcmp-mode-price" onclick="kcmpSetMode('tigerdiv',false)">주가</button>
           <button class="chart-tab"        id="tigerdiv-kcmp-mode-total" onclick="kcmpSetMode('tigerdiv',true)">분배금 포함</button>
         </div>
-        <span class="acc-arrow open">▼</span>
+        <span class="acc-arrow">▼</span>
       </div>
     </div>
     <div class="acc-body default-open" id="tigerdiv-kcmp-body">
@@ -5221,9 +5228,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <p style="font-size:11px;color:var(--text3);margin-top:6px;" id="tigersemi-partial-desc">분배금의 50%는 재투자, 50%는 수령</p>
       </div>
       <!-- ① 투자 조건 설정 -->
-      <div class="acc-header" onclick="toggleAcc('tigersemi-acc-invest', this)">
+      <div class="acc-header acc-open" onclick="toggleAcc('tigersemi-acc-invest', this)">
         <span class="acc-title">투자 조건 설정</span>
-        <span class="acc-arrow open">▼</span>
+        <span class="acc-arrow">▼</span>
       </div>
       <div class="acc-body default-open" id="tigersemi-acc-invest">
       <div class="slider-block">
@@ -5584,15 +5591,15 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
       <!-- 차트 카드 -->
       <div class="card" style="padding:0; overflow:hidden;">
-        <div class="acc-header" onclick="toggleAcc('tigersemi-acc-chart', this)"
-             style="border:none;background:transparent;margin:0;border-radius:0;padding:16px 20px;">
+        <div class="acc-header acc-flat acc-open" onclick="toggleAcc('tigersemi-acc-chart', this)"
+             style="padding:16px 20px;">
           <span class="acc-title"><span class="txt-div">분배금</span> 추이</span>
           <div style="display:flex;align-items:center;gap:12px;">
             <div class="chart-tabs" onclick="event.stopPropagation()">
               <button class="chart-tab active" id="tigersemi-tab-annual" onclick="tigersemiSetChartTab('annual',this)">연간</button>
               <button class="chart-tab"        id="tigersemi-tab-monthly" onclick="tigersemiSetChartTab('monthly',this)">월간</button>
             </div>
-            <span class="acc-arrow open">▼</span>
+            <span class="acc-arrow">▼</span>
           </div>
         </div>
         <div class="acc-body default-open" id="tigersemi-acc-chart">
@@ -5648,14 +5655,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   </div>
   <!-- ── 코스피 대비 수익률 비교 (상장 이후) ── [KODEX-CMP] ── -->
   <div class="card kcmp-card">
-    <div class="acc-header kcmp-head" onclick="toggleAcc('tigersemi-kcmp-body', this)">
+    <div class="acc-header acc-flat kcmp-head acc-open" onclick="toggleAcc('tigersemi-kcmp-body', this)">
       <span class="acc-title">코스피 대비 수익률 비교</span>
       <div style="display:flex;align-items:center;gap:12px;">
         <div class="chart-tabs" onclick="event.stopPropagation()">
           <button class="chart-tab active" id="tigersemi-kcmp-mode-price" onclick="kcmpSetMode('tigersemi',false)">주가</button>
           <button class="chart-tab"        id="tigersemi-kcmp-mode-total" onclick="kcmpSetMode('tigersemi',true)">분배금 포함</button>
         </div>
-        <span class="acc-arrow open">▼</span>
+        <span class="acc-arrow">▼</span>
       </div>
     </div>
     <div class="acc-body default-open" id="tigersemi-kcmp-body">
@@ -8180,14 +8187,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
     <!-- 공포 & 탐욕 지수 접이식 카드 -->
     <div class="card" style="padding:0;overflow:hidden;">
-      <div class="acc-header" onclick="toggleAcc('fear-main-body',this)"
-           style="border:none;background:transparent;margin:0;border-radius:0;padding:16px 20px;">
+      <div class="acc-header acc-flat acc-open" onclick="toggleAcc('fear-main-body',this)"
+           style="padding:16px 20px;">
         <div style="display:flex;align-items:center;gap:10px;">
           <svg width="16" height="16" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 2a7 7 0 1 0 0 14A7 7 0 0 0 9 2z" stroke="currentColor" stroke-width="1.3"/><path d="M6 7.5 C6 6.7 6.7 6 7.5 6 S9 6.7 9 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M9 7.5 C9 6.7 9.7 6 10.5 6 S12 6.7 12 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><circle cx="7.5" cy="7.5" r="0.8" fill="currentColor"/><circle cx="10.5" cy="7.5" r="0.8" fill="currentColor"/><path d="M6.5 11.5 Q9 10 11.5 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>
           <span class="acc-title">공포 &amp; 탐욕 지수</span>
           <span style="font-size:11px;color:var(--text3);">미국 주식 시장 투자 심리 · CNN</span>
         </div>
-        <span class="acc-arrow open">▼</span>
+        <span class="acc-arrow">▼</span>
       </div>
       <div class="acc-body default-open" id="fear-main-body">
         <div style="display:flex;flex-direction:column;gap:20px;max-width:900px;margin:0 auto;">
@@ -8242,10 +8249,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
       <!-- 구성 지표 설명 (접이식) -->
       <div class="card" style="padding:0;overflow:hidden;">
-        <div class="acc-header" onclick="toggleAcc('fear-explain-body',this)"
-             style="border:none;background:transparent;margin:0;border-radius:0;padding:16px 20px;">
-          <span class="acc-title" style="color:var(--text);font-size:13px;font-weight:500;">구성 지표 설명</span>
-          <span class="acc-arrow open">▼</span>
+        <div class="acc-header acc-flat acc-open" onclick="toggleAcc('fear-explain-body',this)"
+             style="padding:16px 20px;">
+          <span class="acc-title">구성 지표 설명</span>
+          <span class="acc-arrow">▼</span>
         </div>
         <div class="acc-body default-open" id="fear-explain-body">
           <div style="display:flex;flex-direction:column;gap:0;">
@@ -8550,9 +8557,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
     <!-- ② 통화량 -->
     <div class="card" style="padding:0;overflow:hidden;">
-      <div class="acc-header" onclick="toggleAcc('ms-money-body',this)" style="border:none;background:transparent;margin:0;border-radius:0;padding:14px 20px;">
+      <div class="acc-header acc-flat acc-open" onclick="toggleAcc('ms-money-body',this)" style="padding:14px 20px;">
         <span class="acc-title">통화량 — M0 / M1 / M2</span>
-        <span class="acc-arrow open">▼</span>
+        <span class="acc-arrow">▼</span>
       </div>
       <div class="acc-body default-open" id="ms-money-body" style="padding:0">
         <div style="padding:20px 20px 24px;">
@@ -8601,9 +8608,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
     <!-- ③ 근로소득 -->
     <div class="card" style="padding:0;overflow:hidden;">
-      <div class="acc-header" onclick="toggleAcc('ms-income-body',this)" style="border:none;background:transparent;margin:0;border-radius:0;padding:14px 20px;">
+      <div class="acc-header acc-flat acc-open" onclick="toggleAcc('ms-income-body',this)" style="padding:14px 20px;">
         <span class="acc-title">근로소득 — 임금 상승률</span>
-        <span class="acc-arrow open">▼</span>
+        <span class="acc-arrow">▼</span>
       </div>
       <div class="acc-body default-open" id="ms-income-body" style="padding:0">
         <div style="padding:20px 20px 24px;">
@@ -8632,9 +8639,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
     <!-- ④ 부동산 -->
     <div class="card" style="padding:0;overflow:hidden;">
-      <div class="acc-header" onclick="toggleAcc('ms-realty-body',this)" style="border:none;background:transparent;margin:0;border-radius:0;padding:14px 20px;">
+      <div class="acc-header acc-flat acc-open" onclick="toggleAcc('ms-realty-body',this)" style="padding:14px 20px;">
         <span class="acc-title">부동산 — 서울·강남 아파트 평균 실거래가</span>
-        <span class="acc-arrow open">▼</span>
+        <span class="acc-arrow">▼</span>
       </div>
       <div class="acc-body default-open" id="ms-realty-body" style="padding:0">
         <div style="padding:20px 20px 24px;">
@@ -8664,9 +8671,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
     <!-- ⑤ 물가 -->
     <div class="card" style="padding:0;overflow:hidden;">
-      <div class="acc-header" onclick="toggleAcc('ms-price-body',this)" style="border:none;background:transparent;margin:0;border-radius:0;padding:14px 20px;">
+      <div class="acc-header acc-flat acc-open" onclick="toggleAcc('ms-price-body',this)" style="padding:14px 20px;">
         <span class="acc-title">물가 — 소비자물가·생활물가</span>
-        <span class="acc-arrow open">▼</span>
+        <span class="acc-arrow">▼</span>
       </div>
       <div class="acc-body default-open" id="ms-price-body" style="padding:0">
         <div style="padding:20px 20px 24px;">
@@ -8694,9 +8701,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
     <!-- ⑥ 순자산 분포 -->
     <div class="card" style="padding:0;overflow:hidden;">
-      <div class="acc-header" onclick="toggleAcc('ms-netasset-body',this)" style="border:none;background:transparent;margin:0;border-radius:0;padding:14px 20px;">
+      <div class="acc-header acc-flat acc-open" onclick="toggleAcc('ms-netasset-body',this)" style="padding:14px 20px;">
         <span class="acc-title">대한민국 순자산 분포</span>
-        <span class="acc-arrow open">▼</span>
+        <span class="acc-arrow">▼</span>
       </div>
       <div class="acc-body default-open" id="ms-netasset-body" style="padding:0">
         <div style="padding:20px 20px 24px;">
@@ -8755,7 +8762,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
     <!-- ⑦ 귀금속 실시간 -->
     <div class="card" style="padding:0;overflow:hidden;">
-      <div class="acc-header" onclick="toggleAcc('ms-precious-body',this)" style="border:none;background:transparent;margin:0;border-radius:0;padding:14px 20px;">
+      <div class="acc-header acc-flat acc-open" onclick="toggleAcc('ms-precious-body',this)" style="padding:14px 20px;">
         <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
           <span class="acc-title">귀금속 — 금·은 (원화 기준, 실시간 15년)</span>
           <span id="ms-metal-loading" style="display:none;font-size:11px;color:var(--text3);">⏳ 조회 중...</span>
@@ -8765,7 +8772,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
             style="padding:4px 10px;border-radius:6px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-size:11px;cursor:pointer;font-family:var(--font);">
             ↺ 갱신
           </button>
-          <span class="acc-arrow open">▼</span>
+          <span class="acc-arrow">▼</span>
         </div>
       </div>
       <div class="acc-body default-open" id="ms-precious-body" style="padding:0">
@@ -8796,7 +8803,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
     <!-- ⑧ 주가지수 실시간 -->
     <div class="card" style="padding:0;overflow:hidden;">
-      <div class="acc-header" onclick="toggleAcc('ms-index-body',this)" style="border:none;background:transparent;margin:0;border-radius:0;padding:14px 20px;">
+      <div class="acc-header acc-flat acc-open" onclick="toggleAcc('ms-index-body',this)" style="padding:14px 20px;">
         <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
           <span class="acc-title">주가지수 — 국내·해외 (실시간 15년)</span>
           <span id="ms-index-loading" style="display:none;font-size:11px;color:var(--text3);">⏳ 조회 중...</span>
@@ -8806,7 +8813,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
             style="padding:4px 10px;border-radius:6px;border:1px solid rgba(49,130,246,0.3);background:rgba(49,130,246,0.08);color:var(--accent);font-size:11px;cursor:pointer;font-family:var(--font);">
             ↺ 갱신
           </button>
-          <span class="acc-arrow open">▼</span>
+          <span class="acc-arrow">▼</span>
         </div>
       </div>
       <div class="acc-body default-open" id="ms-index-body" style="padding:0">
@@ -9763,15 +9770,10 @@ function commaFmt(n) {
 function toggleAcc(id, header) {
   var body = document.getElementById(id);
   if (!body) return;
-  var arrow = header ? header.querySelector('.acc-arrow') : null;
   var isOpen = body.classList.contains('open') || body.classList.contains('default-open');
-  if (isOpen) {
-    body.classList.remove('open', 'default-open');
-    if (arrow) arrow.classList.remove('open');
-  } else {
-    body.classList.add('open');
-    if (arrow) arrow.classList.add('open');
-  }
+  if (isOpen) body.classList.remove('open', 'default-open');
+  else body.classList.add('open');
+  if (header) header.classList.toggle('acc-open', !isOpen);   /* 헤더 디자인(접힘/펼침)은 .acc-open 으로 전환 */
 }
 
 /* 요약표 섹션 접이식 */
