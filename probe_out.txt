@@ -1,29 +1,64 @@
-CNT <?xml version="1.0" encoding="UTF-8" ?>
+ACE api paths ['/api/common/companyinfo', '/api/common/cs/sound', '/api/common/getCaptchaImg', '/api/common/importantnotes/{type}', '/api/common/requirementInfo', '/api/faqs', '/api/faqs/category', '/api/funds', '/api/funds/calc', '/api/funds/compare', '/api/funds/favorites', '/api/funds/main', '/api/funds/monthlyreport/{id}', '/api/funds/pds', '/api/funds/pension', '/api/funds/pensiontop10', '/api/funds/performance/graph/calc', '/api/funds/performance/graph/compare', '/api/funds/summary', '/api/funds/{id}', '/api/funds/{id}/addons', '/api/funds/{id}/basepdf', '/api/funds/{id}/basepdf/down', '/api/funds/{id}/counter', '/api/funds/{id}/dividend', '/api/funds/{id}/dividend/down', '/api/funds/{id}/documents', '/api/funds/{id}/indexcodes', '/api/funds/{id}/pdf', '/api/funds/{id}/pdf/down', '/api/funds/{id}/performance', '/api/funds/{id}/performance/baseprice/down', '/api/funds/{id}/performance/graph', '/api/funds/{id}/performance/period/down', '/api/funds/{id}/product', '/api/funds/{id}/ytmcalc', '/api/keywords/{type}', '/api/keywords/{type}/all', '/api/logging', '/api/logout', '/api/main/banner', '/api/main/insight/reports', '/api/main/keyList', '/api/main/keyvisual', '/api/main/popup', '/api/main/top10', '/api/main/topbanner', '/api/member/existEmail', '/api/member/existUserID', '/api/member/findid', '/api/member/findpw', '/api/member/login', '/api/member/login3rd', '/api/member/nice/request', '/api/member/nice/verify', '/api/my/changepw', '/api/my/info', '/api/my/interests', '/api/my/interests/fundcds', '/api/my/qnas', '/api/my/resetelapsed', '/api/my/resetpw', '/api/my/seminar', '/api/my/seminars', '/api/my/summary', '/api/my/token/attach', '/api/my/withdraw', '/api/news', '/api/niceauth/agreeterm', '/api/niceauth/authcheck', '/api/niceauth/dormancyInfo', '/api/niceauth/getToken', '/api/niceauth/info', '/api/niceauth/join', '/api/niceauth/join3rd', '/api/niceauth/join3rdattach', '/api/niceauth/joinattach', '/api/niceauth/wakeupdormancy', '/api/notices', '/api/notices/category']
+ctx pi/funds/{id}/basepdf/down",path:{id:t},errors:{400:"Bad Request",404:"Not Found",500:"Internal Server Error"}})}static getFundCounterPartyListInfoUsingGet(t){return(0,a.W)(o.f,{method:"GET",url:"/api/funds/{id}/counter",path:{id:t},errors:{400:"Bad Request",404:"Not Found",500:"Internal Server Error"}})}static getFundDividendListUsingGet(t,r,i){return(0,a.W)(o.f,{method:"GET",url:"/api/funds/{id}/dividend",path:{id:t},query:{page:r,size:i},errors:{400:"Bad Request",404:"Not Found",500:"Internal Server Error"}})}static getFundDividendListDownUsingGet(t){return(0,a.W)(o.f,{method:"GET",url:"/ap
+ctx counter",path:{id:t},errors:{400:"Bad Request",404:"Not Found",500:"Internal Server Error"}})}static getFundDividendListUsingGet(t,r,i){return(0,a.W)(o.f,{method:"GET",url:"/api/funds/{id}/dividend",path:{id:t},query:{page:r,size:i},errors:{400:"Bad Request",404:"Not Found",500:"Internal Server Error"}})}static getFundDividendListDownUsingGet(t){return(0,a.W)(o.f,{method:"GET",url:"/api/funds/{id}/dividend/down",path:{id:t},errors:{400:"Bad Request",404:"Not Found",500:"Internal Server Error"}})}static getFundDocumentsUsingGet(t){return(0,a.W)(o.f,{method:"GET",url:"/api/funds/{id}/documents",
+===== ACE try ticker 404 https://www.aceetf.co.kr/api/funds/0139P0/dividend 292
+<!DOCTYPE html><html lang="ko"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"/><title>한국투자 ACE ETF</title><meta name="next-head-count" content="3"/><meta charSet="utf-8"/><script>(func
+===== ACE try code 404 https://www.aceetf.co.kr/api/funds/K55101D69599/dividend 292
+<!DOCTYPE html><html lang="ko"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"/><title>한국투자 ACE ETF</title><meta name="next-head-count" content="3"/><meta charSet="utf-8"/><script>(func
+===== SOL page 404 https://www.soletf.com/fund/etf/210942/dividend 300
+<!DOCTYPE html> <html lang="ko"> <head> <meta charset="utf-8"> <title>SOL ETF</title> <meta http-equiv="X-UA-Compatible" content="IE=edge" /> <link rel="shortcut icon" type="image/x-icon" href="/static/img/common/favicon.ico" /> <meta name="description" content="" /> <meta name="keywor
+===== SOL api 200 https://www.soletf.com/api/etf/pds/dividend/210942 8317
+{"workDt":"20260930","fundName":"SOL 미국배당다우존스","totalCount":46,"items":[{"FUND_CD":"210942","WORK_DT":"20260930","DIVIDEND_DT":"20261001","DIVIDEND_PRI":37,"WEEK_PRI":37,"TAX_PRI":13281.630000,"BFAS_STAS_STPR":13578.280000,"COND_FEE1":null,"N01":null},{"FUND_CD":"210942","WORK_DT":"20260831","DIVIDEND_DT":"20260901","DIVIDEND_PRI":27,"WEEK_PRI":27,"TAX_PRI":14181.960000,"BFAS_STAS_STPR":14392.620000,"COND_FEE1":null,"N01":null},{"FUND_CD":"210942","WORK_DT":"20260731","DIVIDEND_DT":"20260803","DIVIDEND_PRI":35,"WEEK_PRI":35,"TAX_PRI":14157.020000,"BFAS_STAS_STPR":14617.500000,"COND_FEE1":null,"N01":null},{"FUND_CD":"210942","WORK_DT":"20260630","DIVIDEND_DT":"20260701","DIVIDEND_PRI":42,"WEEK_PRI":42,"TAX_PRI":14759.530000,"BFAS_STAS_STPR":14652.770000,"COND_FEE1":null,"N01":null},{"FUND_CD":"210942","WORK_DT":"20260529","DIVIDEND_DT":"20260601","DIVIDEND_PRI":33,"WEEK_PRI":33,"TAX_PRI":14613.380000,"BFAS_STAS_STPR":14598.980000,"COND_FEE1":null,"N01":null},{"FUND_CD":"210942","WORK_DT":"20260430","DIVIDEND_DT":"20260504","DIVIDEND_PRI":30,"WEEK_PRI":30,"TAX_PRI":13911.890000,"BFAS_STAS_STPR":13716.570000,"COND_FEE1":null,"N01":null},{"FUND_CD":"210942","WORK_DT":"20260331","DIVIDEND_DT":"20260401","DIVIDEND_PRI":33,"WEEK_PRI":33,"TAX_PRI":13954.950000,"BFAS_STAS_STPR":13854.170000,"COND_FEE1":null,"N01":null},{"FUND_CD":"210942","WORK_DT":"20260227","DIVIDEND_DT":"20260303","DIVIDEND_PRI":35,"WEEK_PRI":35,"TAX_PRI":13531.960000,"BFAS_STAS_STPR":13527.340000,"COND_FEE1":null,
+SOL js ctx " +
+            "                        <col style=\"width:25%;\" />\n" +
+            "                        <col style=\"width:25%;\" />\n" +
+            "                        <col style=\"width:25%;\" />\n" +
+            "                        <col style=\"width:25%;\" />\n" +
+            "                        <col style=\"width:0; display:none;\" />\n" +
+            "                        <col style=\"width:0; display:none;\" />\n" +
+            "                    </colgroup>\n" +
+            "                    <thead>\n" +
+            "                    <tr>\n" +
+            "                        <th scope=\"col\">지급기준일</th>\n" +
+            "                        <th scope=\"col\">실제지급일</th>\n" +
+            "                        <th scope=\"col\">분배금액(원)</th>\n" +
+            "                        <th scope=\"col\">주당과세표준액(원)</th>\n" +
+            "                        <th scope=\"col\" style=\"display:none; width:0;\">과표기준가(원)</th>\n" +
+            "                        <th scope=\"col\" style=\"display:none; width:0;\">배당과표기준가(원)</th>\n" +
+            "                    </tr>\n" +
+            "                    </thead>\n" +
+            "                    <tbody>\n";
 
+        var contentBottom = "                    </tbody>\n" +
+            "                </table>\n" +
+            "            </div>"
+            "            </div>";
 
-<result beforeServletCall="1791384566566" result="1" next="false" beforeEJBCall="1791384566571" afterServletCall="1791384566582" afterEJBCall="1791384566581">
-    <LIST_CNT value="146"/>
-</result>
+        var content = "";
+        $.ajax({
+            url : "/api/etf/pds/dividend/" + fundCode,
+            type: "get",
+            success: function(data) {
 
-13587
-<?xml version="1.0" encoding="UTF-8" ?>
-
-
-<vector beforeServletCall="1791384567659" beforeEJBCall="1791384567664" afterServletCall="1791384567845" afterEJBCall="1791384567845" result="30">
-    <data vectorkey="0" type="Document">
-        <result><ISIN value="KR70015E0001"/><KOR_SECN_NM value="KIWOOM 엔비디아미국30년국채혼합액티브(H)"/><ETF_SORT_CD value="Z0101"/><ISSUCO_CUSTNO value="261832"/><RGT_STD_DT value="20260930"/><TH1_PAY_TERM_BEGIN_DT value="20261002"/><ESTM_STDPRC value="20"/><BUNBE value=".19522"/><ETF_SORT_NM value="기타/기타"/><REP_SECN_NM value="키움투자자산운용"/><TAXSTD value="10444.82"/><RGT_RSN_DTAIL_NM value="이익분배"/></result>
-    </data>
-    <data vectorkey="1" type="Document">
-        <result><ISIN value="KR70233A0001"/><KOR_SECN_NM value="ACE 삼성전자SK하이닉스플러스채권혼합50"/><ETF_SORT_CD value="Z0101"/><ISSUCO_CUSTNO value="268405"/><RGT_STD_DT value="20260930"/><TH1_PAY_TERM_BEGIN_DT value="20261002"/><ESTM_STDPRC value="13"/><BUNBE value=".12015"/><ETF_SORT_NM value="기타/기타"/><REP_SECN_NM value="한국투자신탁운용"/><TAXSTD value="10257.77"/><RGT_RSN_DTAIL_NM value="이익분배"/></result>
-    </data>
-    <data vectorkey="2" type="Document">
-        <result><ISIN value="KR7495230005"/><KOR_SECN_NM value="KoAct 코리아밸류업액티브"/><ETF_SORT_CD value="M0901"/><ISSUCO_CUSTNO value="260947"/><RGT_STD_DT value="20260930"/><TH1_PAY_TERM_BEGIN_DT value="20261002"/><ESTM_STDPRC value="64"/><BUNBE value=".20056"/><ETF_SORT_NM value="테마/기타"/><REP_SECN_NM value="삼성액티브자산운용"/><TAXSTD value="9715.66"/><RGT_RSN_DTAIL_NM value="이익분배"/></result>
-    </data>
-    <data vectorkey="3" type="Document">
-        <result><ISIN value="KR70220A0006"/><KOR_SECN_NM value="KIWOOM 현대차그룹TOP3채권혼합50"/><ETF_SORT_CD value="Z0101"/><ISSUCO_CUSTNO value="267983"/><RGT_STD_DT value="20260930"/><TH1_PAY_TERM_BEGIN_DT value="20261002"/><ESTM_STDPRC value="10"/><BUNBE value=".11468"/><ETF_SORT_NM value="기타/기타"/><REP_SECN_NM value="키움투자자산운용"/><TAXSTD value="9782.88"/><RGT_RSN_DTAIL_NM value="이익분배"/></result>
-    </data>
-    <data vectorkey="4" type="Document">
-        <result><ISIN value="KR7166400002"/><KOR_SECN_NM value="TIGER 200커버드콜OTM"/><ETF_SORT_CD value="P0301"/><ISSUCO_CUSTNO value="178330"/><RGT_STD_DT value="20260930"/><TH1_PAY_TERM_BEGIN_DT value="20261002"/><ESTM_STDPRC value="102"/><BUNBE value=".40157"/><ETF_SORT_NM value="파생상품/구조화"/><REP_SECN_NM value="미래에셋자산운용"/><TAXSTD value="10003.99"/><RGT_RSN_DTAIL_NM value="이익분배"/></result>
-    </data>
-    <data vectorkey="5" type="Document">
-        <result><ISIN value="KR733262000
+                contentTop = "<div class=\"pop-cont-in\">\n" +
+                    "                <div class=\"g-head-p cmg\">\n" +
+                    "                    <h3 class=\"g-title-p\">" + data.fundName + "</h3>\n" +
+                    // "                    <div class=\"g-side-txt\"><strong class=\"fc-4\">" + data.workDt.substring(0, 4) + "년 "+ data.workDt.substring(4, 6) +"월 "+data.workDt.substring(6, 8)+"일 기준 반영</strong></div>\n" +
+                    "                </div>\n" +
+                    "\n" +
+                    "                <!-- 리스트 정렬 (s) // -->\n" +
+                    "                <div class=\"list-opt-sorting mgt-40\">\n" +
+                    "                    <div class=\"list-sort-txt\">\n" +
+                    "                        <div class=\"list-total\">\n" +
+                    "                            총 <em class=\"num\">" + three_commas(data.totalCount)+"</em>건\n" +
+                    "                        </div>\n" +
+                    "                    </div>\n" +
+                    "                    <div class=\"list-sort-etc\">\n" +
+                    "                        <a href=\"/api/etf/pds/down/dividend/" + fundCode + "\" class=\"ir-b i-down api-download-btn\">엑셀 다운로드</a>\n" +
+                    "                    </div>\n" +
+                    "                
+===== PLUS k-divid 200 https://www.plusetf.co.kr/product/k-divid 92674
+<!-- Worker Version Check: P_PR1_2_4.html --> <!DOCTYPE html> <!-- Worker Version Check: 65cbab9 --> <html lang="ko"> <head> <meta charset="utf-8" /> <meta name="robots" content="index,follow"> <meta http-equiv="X-UA-Compatible" content="IE=Edge; chrome=1" /> <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1"/> <meta itemprop="name" content="PLUS ETF" /> <meta itemprop="image" content="../../static/ClientUI/images/common/plus-etf-ozimage.jpg" /> <meta name="author" content="한화자산운용" /> <link rel="shortcut icon" href="../../static/ClientUI/images/common/icon-favicon.ico" type="image/x-icon" /> <link rel="apple-touch-icon" href="../../static/ClientUI/images/common/icon-favicon-192-192.png" type="image/png" sizes="192x192" /> <link rel="shortcut icon" href="../../static/ClientUI/images/common/icon-favicon-150-150.png" type="image/png" sizes="150x150" /> <link rel="shortcut icon" href="../../static/ClientUI/images/common/icon-favicon-32-32.png" type="image/png" sizes="32x32" /> <link rel="shortcut icon" href="../../static/ClientUI/images/common/icon-favicon-16-16.png" type="image/png" sizes="16x16" /> <title>국내 배당 | PLUS ETF</title> <link rel="canonical" href="https://www.plusetf.co.kr/product/k-divid.html" /> <meta name="description" content="안정적인 배당 수익과 장기적인 자본 성장을 함께 추구하는 PLUS 국내 배당 ETF는 투자자의 연금자산 형성과 정기적인 현금흐름을 제공합니다."/> <meta property="og:description" content="안정적인 배당 수익과 장기적인 자본 성장을 함께 추구하는 PLUS 국내 배당 ETF는 투자자의 연금자산 형성과 정기적인 현금흐름을 제공합니다." /> <meta name="twitter:description" content="안정적인 배당 수익과 장기적인 자본 성장을 함께 추구하는 PLUS 국내 배당 ETF는 투자자의 연금자산 형성과 정기적인 현금흐름을 제공합니다."/> <link rel="stylesheet" href="../../static/ClientUI/css/common.css" /> <link rel="stylesheet" href="../../static/ClientUI/css/components-product.css" /> <!-- 각 페이지 마다 변경 --> <meta name="keywords" content="PLUS, PLUS ETF, ETF, 한화자산운용, 자산운용사, 플러스 ETF, 플러스, 주식, 펀드" /> <meta name="description" content="PLUS ETF는 글로벌 전문가들의 안목으로 보지 못한 새로운 투자 기회를 발견하고 글로벌 투자 문화를 선도하는 한화자산운용 ETF입니다."> <!-- 각 페이지 마다 변경 --> <meta property="og:title" content="PLUS ETF 웹사이트" /> <meta property="og:type" content="website" /> <meta property="og:site_name" content="PLUS ETF 웹사이트" /> <meta property="og:url" content="https://www.plusetf.co.kr/" /> <meta property="og:image" content="../../static/ClientUI/images/common/plus-etf-ozimage.jpg" /> <meta property="og:author" content="한화자산운용" /> <!-- 각 페이지 마다 변경 --> <meta name="twitter:title" content="PLUS ETF" /> <meta name="twitter:image" content="../../static/ClientUI/images/common/plus-etf-ozimage.jpg" /> <!-- Google Tag Manager : 개발 --> <!-- // Google Tag Manager : 개발 --> <!-- Google Tag Manager : 운영 --> <script> (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src= 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NLPTCBV6'); </script> <!-- // Google Tag Manager : 운영 --> </head> <body> <div id="document" class="wrapper"> <!-- skip-navi --> <div class="c-skip-navi"> <a href="#header" class="c-skip-navi__linker">주메뉴바로가기</a> <a href="#main" class="c-skip-navi__linker">본문바로가기</a> </div> <!-- // skip-navi --> <!-- header --> <!-- header --> <!-- <header id="header" class="c-header "> --> <header id="header" class="c-header hide"> <div class="c-header__nav-wrap"> <div class="c-header__nav-inner"> <div class="c-header__nav-inner"> <div class="c-main__banner" style="display:none;"> <div class="c-main__banne-inner"> <button type="button" class="c-gnb__banner-btn-close">닫기</button> <a href="#" target="_self" > <p><span></span></p> </a> </div> </div> <nav class="c-gnb"> <a href="/" class="c-gnb__logo" aria-label="한화 PLUS ETF" title="홈으로"> </a> <div class="c-gnb__depth-01 hidden-m"> <ul class="c-gnb__depth-01-list"> <li class="c-gnb__depth-01-item"> <button type="button" class="c-gnb__depth
+PLUS url /api/v1/product/find/list
+PLUS url /product/f-divid
+PLUS url /product/k-divid
