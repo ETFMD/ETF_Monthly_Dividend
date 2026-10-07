@@ -12,11 +12,11 @@
  *   · CNN 은 브라우저에서 직접 부를 수 없어(CORS) 이 Worker 가 대신 받아 옵니다.
  *   · 5분 동안은 D1 에 저장한 값을 다시 씁니다 (workers.dev 에서는 Cache API 가 동작하지 않음).
  *
- * 한국 수집기 (/kr) — 해외 접속을 막는 운용사 사이트(RISE 등)를 한국 서버(Oracle Cloud 서울)가 대신 받아 둠
+ * 한국 수집기 (/kr) — 해외 접속을 막는 운용사 사이트(RISE 등)를 한국에 있는 PC(Windows 예약 작업 · scripts/kr_agent.ps1)가 대신 받아 둠
  *   · GET  /kr?u=…        저장된 응답 반환 + '계속 받아 달라'고 표시 (허용 주소만 · 처음이면 202 → 몇 분 뒤 다시)
- *   · GET  /kr/jobs?k=…   (수집기 전용) 30분 넘게 묵은 요청 주소 목록
+ *   · GET  /kr/jobs?k=…&a=PC이름  (수집기 전용) 30분 넘게 묵은 요청 주소 목록 · 여러 PC가 동시에 돌면 4분 동안 나눠 맡음
  *   · POST /kr/put?k=…    (수집기 전용) [{u, st, v}] 받은 내용 저장
- *   · GET  /kr/status     수집기 마지막 접속 시각·국가·대기 주소 수
+ *   · GET  /kr/status     PC별 마지막 접속 시각·국가 · 주소 수
  *   · 수집기 열쇠는 원문 대신 SHA-256 값만 이 코드에 둠 · 3일 동안 아무도 찾지 않은 주소는 정리
  *
  * 15분마다(cron) GitHub Actions '시세 데이터 갱신'을 직접 실행시킴 (GitHub 자체 예약 실행은 자주 늦어지거나 누락됨)
@@ -144,31 +144,38 @@ async function kr(req, env, url, json) {
   }
   if (url.pathname === '/kr/jobs' && req.method === 'GET') {
     if (!(await authed())) return json({ error: 'forbidden' }, 403);
+    const id = (url.searchParams.get('a') || 'pc').replace(/[^\w-]/g, '').slice(0, 24) || 'pc';   // 수집기(PC)마다 다른 이름
     await env.DB.batch([
       env.DB.prepare('DELETE FROM kr WHERE want < ?').bind(now - KR_KEEP),
+      env.DB.prepare('DELETE FROM kr_lease WHERE until < ?').bind(now),
+      env.DB.prepare('DELETE FROM cache WHERE k LIKE ? AND t < ?').bind('kr_agent:%', now - 14 * 86400),
       env.DB.prepare('INSERT INTO cache (k, t, v) VALUES (?, ?, ?) ON CONFLICT(k) DO UPDATE SET t = excluded.t, v = excluded.v')
-        .bind('kr_agent', now, JSON.stringify({ country: (req.cf && req.cf.country) || null, colo: (req.cf && req.cf.colo) || null })),
+        .bind('kr_agent:' + id, now, JSON.stringify({ country: (req.cf && req.cf.country) || null })),
     ]);
-    // 처음 · 30분 지난 것 · 실패한 것(5분 뒤 다시)
-    const r = await env.DB.prepare('SELECT u FROM kr WHERE t IS NULL OR t < ? OR (st <> 200 AND t < ?) ORDER BY t IS NOT NULL, t LIMIT 80')
+    // 처음 · 30분 지난 것 · 실패한 것(4분 뒤 다시) — 다른 PC가 4분 안에 가져간 주소는 빼고 나눠 받음
+    const r = await env.DB.prepare('SELECT u FROM kr WHERE (t IS NULL OR t < ? OR (st <> 200 AND t < ?)) AND u NOT IN (SELECT u FROM kr_lease) ORDER BY t IS NOT NULL, t LIMIT 40')
       .bind(now - KR_TTL, now - 240).all();
-    return json({ urls: (r.results || []).map((x) => x.u) });
+    const urls = (r.results || []).map((x) => x.u);
+    if (urls.length) await env.DB.batch(urls.map((u) => env.DB.prepare('INSERT OR REPLACE INTO kr_lease (u, until) VALUES (?, ?)').bind(u, now + 240)));
+    return json({ urls });
   }
   if (url.pathname === '/kr/put' && req.method === 'POST') {
     if (!(await authed())) return json({ error: 'forbidden' }, 403);
     const items = await req.json();
-    const st = (Array.isArray(items) ? items : []).filter((x) => x && typeof x.u === 'string' && typeof x.v === 'string')
-      .map((x) => env.DB.prepare('UPDATE kr SET t = ?, st = ?, v = ? WHERE u = ?').bind(now, x.st | 0, x.v.slice(0, 1500000), x.u));
+    const ok = (Array.isArray(items) ? items : []).filter((x) => x && typeof x.u === 'string' && typeof x.v === 'string');
+    const st = ok.flatMap((x) => [env.DB.prepare('UPDATE kr SET t = ?, st = ?, v = ? WHERE u = ?').bind(now, x.st | 0, x.v.slice(0, 1500000), x.u),
+      env.DB.prepare('DELETE FROM kr_lease WHERE u = ?').bind(x.u)]);
     if (st.length) await env.DB.batch(st);
-    return json({ ok: st.length });
+    return json({ ok: ok.length });
   }
   if (url.pathname === '/kr/status' && req.method === 'GET') {
     const [a, c] = await env.DB.batch([
-      env.DB.prepare('SELECT t, v FROM cache WHERE k = ?').bind('kr_agent'),
-      env.DB.prepare('SELECT COUNT(*) AS n, SUM(t IS NOT NULL) AS done FROM kr'),
+      env.DB.prepare('SELECT k, t, v FROM cache WHERE k LIKE ? ORDER BY t DESC').bind('kr_agent:%'),
+      env.DB.prepare('SELECT COUNT(*) AS n, SUM(st = 200) AS ok FROM kr'),
     ]);
-    const A = a.results && a.results[0], C = (c.results && c.results[0]) || {};
-    return json({ agent: A ? { ...JSON.parse(A.v), at: new Date(A.t * 1000).toISOString() } : null, urls: C.n || 0, fetched: C.done || 0 });
+    const C = (c.results && c.results[0]) || {};
+    return json({ agents: (a.results || []).map((x) => ({ id: x.k.slice(9), ...JSON.parse(x.v), at: new Date(x.t * 1000).toISOString() })),
+      urls: C.n || 0, ok: C.ok || 0 });
   }
   return json({ error: 'not found' }, 404);
 }
