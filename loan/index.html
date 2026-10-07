@@ -1169,9 +1169,10 @@
     background: rgba(var(--fg-rgb),0.08); border-radius: 50%;
   }
   /* 펼침 상태: 헤더는 접혔을 때와 같은 디자인 유지(파란 막대·둥근 버튼) — 버튼 속 ▼ 만 ▲ 로 뒤집고, 아래 모서리를 내용 상자와 이음 */
-  .acc-header.acc-open, .inc-sec[open] > summary { border-radius: 12px 12px 0 0; }
+  .acc-header.acc-open, .acc-header.acc-joined, .inc-sec[open] > summary { border-radius: 12px 12px 0 0; }   /* acc-joined: 접히는 애니메이션 동안 내용 상자와 이어진 모양 유지 */
   .acc-arrow { transition: background 0.15s, transform 0.22s ease; }
   .acc-header.acc-open .acc-arrow, .inc-sec[open] > summary .acc-arrow { transform: rotate(180deg); }
+  .inc-sec.acc-closing > summary .acc-arrow { transform: none; }
   .acc-body {            /* 닫힘: 완전히 제거 (높이 제한·틈 노출 없음) */
     display: none;
     overflow: hidden;
@@ -1188,7 +1189,7 @@
   .acc-header.acc-flat, .acc-header.acc-flat:hover, .acc-header.acc-flat.acc-open {
     border: none; border-radius: 0; background: transparent; margin: 0;
   }
-  .acc-header.acc-flat.acc-open { border-bottom: 1px solid var(--card-border); }
+  .acc-header.acc-flat.acc-open, .acc-header.acc-flat.acc-joined { border-bottom: 1px solid var(--card-border); }
   .acc-flat + .acc-body.open, .acc-flat + .acc-body.default-open {
     border: none; border-radius: 0; background: transparent;
   }
@@ -9753,14 +9754,46 @@ function commaFmt(n) {
 }
 
 /* ── 아코디언 토글 ── */
+/* 접이식 열기/닫기 — 높이·여백·투명도를 함께 애니메이션해 부드럽게 펼침/접힘.
+   빠르게 연속 클릭해도 현재 보이는 높이에서 이어서 반대로 움직임. 동작 줄이기 설정이면 즉시 전환. */
+function accAnimate(el, open, done) {
+  var prev = el._accAnim, cur = null;
+  if (prev) { var c = getComputedStyle(el); cur = { h: el.getBoundingClientRect().height + 'px', pt: c.paddingTop, pb: c.paddingBottom, o: c.opacity }; prev.onfinish = null; prev.cancel(); el._accAnim = null; }
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce || !el.animate) { done && done(); return; }
+  var cs = getComputedStyle(el);
+  var full = { h: el.getBoundingClientRect().height + 'px', pt: cs.paddingTop, pb: cs.paddingBottom, o: '1' };
+  var zero = { h: '0px', pt: '0px', pb: '0px', o: '0' };
+  var a = open ? (cur || zero) : (cur || full), b = open ? full : zero;
+  var k = function (v) { return { height: v.h, paddingTop: v.pt, paddingBottom: v.pb, opacity: v.o, overflow: 'hidden' }; };
+  var anim = el.animate([k(a), k(b)], { duration: open ? 280 : 220, easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'forwards' });
+  el._accAnim = anim;
+  anim.onfinish = function () { el._accAnim = null; done && done(); anim.cancel(); };
+}
 function toggleAcc(id, header) {
   var body = document.getElementById(id);
   if (!body) return;
-  var isOpen = body.classList.contains('open') || body.classList.contains('default-open');
-  if (isOpen) body.classList.remove('open', 'default-open');
-  else body.classList.add('open');
-  if (header) header.classList.toggle('acc-open', !isOpen);   /* 헤더 디자인(접힘/펼침)은 .acc-open 으로 전환 */
+  var isOpen = body._accTarget != null ? body._accTarget : (body.classList.contains('open') || body.classList.contains('default-open'));
+  var open = !isOpen; body._accTarget = open;
+  if (header) { header.classList.toggle('acc-open', open); header.classList.add('acc-joined'); }   /* 헤더(▼/▲)는 즉시, 내용은 애니메이션 */
+  if (open) body.classList.add('open');
+  accAnimate(body, open, function () {
+    if (!open) body.classList.remove('open', 'default-open');
+    if (header) header.classList.remove('acc-joined');
+    body._accTarget = null;
+  });
 }
+/* 종합소득세 <details class="inc-sec"> 도 같은 모션으로 */
+document.addEventListener('click', function (e) {
+  var sm = e.target.closest && e.target.closest('.inc-sec > summary'); if (!sm) return;
+  var d = sm.parentNode, inner = d.querySelector(':scope > .inc-sec-in'); if (!inner) return;
+  e.preventDefault();
+  var isOpen = d._accTarget != null ? d._accTarget : d.open;
+  var open = !isOpen; d._accTarget = open;
+  d.classList.toggle('acc-closing', !open);
+  if (open) d.open = true;
+  accAnimate(inner, open, function () { if (!open) d.open = false; d.classList.remove('acc-closing'); d._accTarget = null; });
+});
 
 /* 요약표 섹션 접이식 */
 function msSec(sec, hdrRow) {
