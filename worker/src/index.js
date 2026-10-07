@@ -139,7 +139,8 @@ async function kr(req, env, url, json) {
       await env.DB.prepare('INSERT OR IGNORE INTO kr (u, want) VALUES (?, ?)').bind(u, now).run();
     }
     if (!row || row.t == null) return json({ pending: true }, 202);
-    return new Response(row.v, { status: row.st || 200, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store', 'X-KR-At': String(row.t) } });
+    return new Response(row.v, { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store',
+      'X-KR-At': String(row.t), 'X-KR-Status': String(row.st || 0) } });   // 원래 응답 상태는 X-KR-Status (0 = 접속 실패)
   }
   if (url.pathname === '/kr/jobs' && req.method === 'GET') {
     if (!(await authed())) return json({ error: 'forbidden' }, 403);
@@ -148,7 +149,9 @@ async function kr(req, env, url, json) {
       env.DB.prepare('INSERT INTO cache (k, t, v) VALUES (?, ?, ?) ON CONFLICT(k) DO UPDATE SET t = excluded.t, v = excluded.v')
         .bind('kr_agent', now, JSON.stringify({ country: (req.cf && req.cf.country) || null, colo: (req.cf && req.cf.colo) || null })),
     ]);
-    const r = await env.DB.prepare('SELECT u FROM kr WHERE t IS NULL OR t < ? ORDER BY t IS NOT NULL, t LIMIT 80').bind(now - KR_TTL).all();
+    // 처음 · 30분 지난 것 · 실패한 것(5분 뒤 다시)
+    const r = await env.DB.prepare('SELECT u FROM kr WHERE t IS NULL OR t < ? OR (st <> 200 AND t < ?) ORDER BY t IS NOT NULL, t LIMIT 80')
+      .bind(now - KR_TTL, now - 240).all();
     return json({ urls: (r.results || []).map((x) => x.u) });
   }
   if (url.pathname === '/kr/put' && req.method === 'POST') {
