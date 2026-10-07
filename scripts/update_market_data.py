@@ -23,6 +23,14 @@ UA = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
 
 ETF     = ['498400.KS', '0167B0.KS', '0104N0.KS', '472150.KS', '0177R0.KS']   # KODEX·SOL·TIGER·TIGER배당·TIGER반도체
 INDEX   = ['^KS11', '^KS200', '^KQ11', '^IXIC', '^NDX', '^DJI', '^GSPC', '^SOX', '^DJUSSC']   # ^SOX = 필라델피아 반도체 · ^DJUSSC = 다우존스 미국 반도체
+# 아시아 지수: 일본(닛케이225·TOPIX) · 중국(상해종합·CSI300·선전성분·창업판·과창판50) · 홍콩(항셍·H지수·항셍테크) · 대만(가권)
+#  · '^TOPX' 는 야후에 없는 TOPIX 의 저장용 이름 (시세·과거 모두 CNBC .TOPX)
+ASIA_INDEX = ['^N225', '^TOPX', '000001.SS', '000300.SS', '399001.SZ', '399006.SZ', '000688.SS',
+              '^HSI', '^HSCE', 'HSTECH.HK', '^TWII']
+INDEX  += ASIA_INDEX
+INDEX_CUR = {'^N225': 'JPY', '^TOPX': 'JPY', '000001.SS': 'CNY', '000300.SS': 'CNY', '399001.SZ': 'CNY', '399006.SZ': 'CNY',
+             '000688.SS': 'CNY', '^HSI': 'HKD', '^HSCE': 'HKD', 'HSTECH.HK': 'HKD', '^TWII': 'TWD'}
+NO_YAHOO = {'^TOPX'}   # 야후에 종목 자체가 없음 → 요청하지 않음
 METAL   = ['GC=F', 'SI=F']
 FX      = ['USDKRW=X', 'EURKRW=X', 'JPYKRW=X', 'CNYKRW=X', 'GBPKRW=X', 'HKDKRW=X',
            'SGDKRW=X', 'AUDKRW=X', 'CADKRW=X', 'CHFKRW=X', 'THBKRW=X', 'USDVND=X']
@@ -38,7 +46,15 @@ HIST_RANGE = {'USDKRW=X': (500, 3000)}
 NAVER_INDEX = {'^KS11': 'KOSPI', '^KS200': 'KPI200', '^KQ11': 'KOSDAQ'}
 # 야후가 비거나 오래된 값을 줄 때 쓰는 보조 시세 — 현재가: CNBC → 트레이딩뷰 → 구글 / 과거: CNBC 주봉
 # (^DJUSSC: 야후는 현재가 1개만 주고 과거가 없음 · 트레이딩뷰 과거는 유료 권한 · WSJ·stooq 는 봇 차단 — Actions 에서 확인)
-ALT_QUOTE = {'^DJUSSC': {'cnbc': '.DJUSSC', 'tv': 'DJ:DJUSSC', 'google': 'DJUSSC:INDEXDJX'}}
+# 아시아 지수: 야후 주봉이 짧거나(상해종합·대만 1997~) 없으면(CSI300·창업판·과창판50·항셍테크) 동방재부(EastMoney) → CNBC 주봉으로 앞부분을 채움
+#  (Actions 에서 확인: EastMoney 는 TOPIX 미제공 · CNBC 는 CSI300·창업판 현재가 미제공)
+ALT_QUOTE = {'^DJUSSC': {'cnbc': '.DJUSSC', 'tv': 'DJ:DJUSSC', 'google': 'DJUSSC:INDEXDJX'},
+             '^N225': {'em': '100.N225', 'cnbc': '.N225'},          '^TOPX': {'cnbc': '.TOPX'},
+             '000001.SS': {'em': '1.000001', 'cnbc': '.SSEC'},     '000300.SS': {'em': '1.000300', 'cnbc': '.CSI300'},
+             '399001.SZ': {'em': '0.399001', 'cnbc': '.SZI'},      '399006.SZ': {'em': '0.399006'},
+             '000688.SS': {'em': '1.000688', 'cnbc': '.STAR50'},   '^HSI': {'em': '100.HSI', 'cnbc': '.HSI'},
+             '^HSCE': {'em': '100.HSCEI', 'cnbc': '.HSCE'},        'HSTECH.HK': {'em': '124.HSTECH', 'cnbc': '.HSTECH'},
+             '^TWII': {'em': '100.TWII', 'cnbc': '.TWII'}}
 
 # 분배 시뮬레이터 '지수 비교' 차트 (data/compare.json): ETF 상장 이후 일봉 + 분배금, 비교 지수 일봉
 COMPARE = os.path.join(ROOT, 'compare.json')
@@ -258,7 +274,45 @@ def cnbc_history(symbol, resolution='1W'):
     return [[k, out[k]] for k in sorted(out)]
 
 
-def cnbc_quote(symbol):
+def em_history(secid):
+    """동방재부(EastMoney) 주봉 → [[일수, 종가], ...]  예: em_history('1.000300') (CSI300, 2005년~)"""
+    d = get_json(f'https://push2his.eastmoney.com/api/qt/stock/kline/get?secid={secid}&fields1=f1,f2,f3'
+                 f'&fields2=f51,f53&klt=102&fqt=0&beg=19900101&end=20500101&lmt=100000')
+    out = []
+    for k in ((d.get('data') or {}).get('klines') or []):
+        try:
+            day, close = k.split(',')[:2]
+            c = float(close)
+            if c > 0:
+                out.append([(datetime.date.fromisoformat(day) - datetime.date(1970, 1, 1)).days, round(c, 2)])
+        except ValueError:
+            pass
+    return out
+
+
+def em_quote(secid, currency='CNY'):
+    """동방재부(EastMoney) 현재가 → build_quote 와 같은 형식 (f43 현재가·f60 전일 종가는 10^f59 배 정수)"""
+    d = (get_json(f'https://push2.eastmoney.com/api/qt/stock/get?secid={secid}&fields=f43,f59,f60,f86') or {}).get('data') or {}
+    k, price, prev = 10 ** int(d.get('f59') or 2), d.get('f43'), d.get('f60')
+    if not isinstance(price, (int, float)) or price <= 0:
+        raise ValueError('EastMoney 값 없음')
+    p = round(price / k, 4)
+    ts = int(d.get('f86') or time.time())
+    return {'price': p, 'prev': round(prev / k, 4) if isinstance(prev, (int, float)) and prev > 0 else None,
+            'time': ts, 'currency': currency, 'daily': [[ts, p]]}
+
+
+def _cnbc_time(t):
+    """CNBC last_time: '2026-10-07T15:00:00.000+0900' 또는 장 마감 후 날짜만 '2026-09-30' (중국 지수)"""
+    if not t:
+        return int(time.time())
+    try:
+        return int(datetime.datetime.strptime(t, '%Y-%m-%dT%H:%M:%S.%f%z').timestamp())
+    except ValueError:
+        return int(datetime.datetime.strptime(t[:10], '%Y-%m-%d').replace(hour=7, tzinfo=datetime.timezone.utc).timestamp())
+
+
+def cnbc_quote(symbol, currency='USD'):
     """CNBC 시세 API → build_quote 와 같은 형식"""
     d = get_json('https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=' + urllib.parse.quote(symbol)
                  + '&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1&output=json&events=1')
@@ -268,9 +322,8 @@ def cnbc_quote(symbol):
         raise ValueError('CNBC 값 없음')
     prev = q.get('previous_day_closing') or q.get('previous_close')
     prev = float(str(prev).replace(',', '')) if prev else None
-    t = q.get('last_time')
-    ts = int(datetime.datetime.strptime(t, '%Y-%m-%dT%H:%M:%S.%f%z').timestamp()) if t else int(time.time())
-    return {'price': round(price, 4), 'prev': prev, 'time': ts, 'currency': 'USD', 'daily': [[ts, round(price, 4)]]}
+    ts = _cnbc_time(q.get('last_time'))
+    return {'price': round(price, 4), 'prev': prev, 'time': ts, 'currency': currency, 'daily': [[ts, round(price, 4)]]}
 
 
 def fear_greed():
@@ -806,11 +859,13 @@ def main():
     old = load(MARKET)
     quotes, fails = dict(old.get('quotes') or {}), []
     for sym in QUOTES:
+        alt, cur = ALT_QUOTE.get(sym) or {}, INDEX_CUR.get(sym, 'USD')
         sources = ([('네이버', lambda: naver_quote(NAVER_INDEX[sym]))] if sym in NAVER_INDEX else []) + \
-                  [('야후', lambda: build_quote(yahoo_chart(sym, 'range=1mo&interval=1d')))] + \
-                  ([('CNBC', lambda: cnbc_quote(ALT_QUOTE[sym]['cnbc'])),
-                    ('트레이딩뷰', lambda: tv_quote(ALT_QUOTE[sym]['tv'])),
-                    ('구글', lambda: google_quote(ALT_QUOTE[sym]['google']))] if sym in ALT_QUOTE else [])
+                  ([('야후', lambda: build_quote(yahoo_chart(sym, 'range=1mo&interval=1d')))] if sym not in NO_YAHOO else []) + \
+                  ([('EastMoney', lambda: em_quote(alt['em'], cur))] if 'em' in alt else []) + \
+                  ([('CNBC', lambda: cnbc_quote(alt['cnbc'], cur))] if 'cnbc' in alt else []) + \
+                  ([('트레이딩뷰', lambda: tv_quote(alt['tv']))] if 'tv' in alt else []) + \
+                  ([('구글', lambda: google_quote(alt['google']))] if 'google' in alt else [])
         errs, ok = [], False
         for name, fn in sources:
             try:
@@ -859,7 +914,8 @@ def main():
         for sym in HIST:
             ypts = []
             try:
-                ypts = [[t // 86400, c] for t, c in points(yahoo_chart(sym, f'period1={p1}&period2={int(time.time())}&interval=1wk'), 2)]
+                if sym not in NO_YAHOO:
+                    ypts = [[t // 86400, c] for t, c in points(yahoo_chart(sym, f'period1={p1}&period2={int(time.time())}&interval=1wk'), 2)]
             except Exception as e:
                 print(f'  {sym} 야후 히스토리 실패: {e}')
             npts = []
@@ -868,17 +924,21 @@ def main():
                     npts = naver_history(NAVER_INDEX[sym], HIST_YEARS)
                 except Exception as e:
                     print(f'  {sym} 네이버 히스토리 실패: {e}')
-            if len(ypts) <= 50 and sym in ALT_QUOTE:      # 야후 과거 데이터가 없거나 너무 짧을 때 (예: ^DJUSSC)
-                alt = ALT_QUOTE[sym]
-                for name, fn in (('CNBC', lambda: cnbc_history(alt['cnbc'], '1W')),):
-                    try:
-                        got = fn()
-                        print(f'  {sym} 야후 히스토리 {len(ypts)}개 → {name} {len(got)}개')
-                        if len(got) > 50:
-                            ypts = got
-                            break
-                    except Exception as e:
-                        print(f'  {sym} {name} 히스토리 실패: {e}')
+            # 야후 과거 데이터가 없거나(^DJUSSC·CSI300 등) 31년 앞부분이 비면(상해종합·대만 1997~) 보조 주봉으로 채움
+            alt, d1 = ALT_QUOTE.get(sym) or {}, p1 // 86400
+            hist_alts = ([('EastMoney', lambda: em_history(alt['em']))] if 'em' in alt else []) + \
+                        ([('CNBC', lambda: cnbc_history(alt['cnbc'], '1W'))] if 'cnbc' in alt else [])
+            for name, fn in hist_alts:
+                if len(ypts) > 50 and ypts[0][0] <= d1 + 60:
+                    break
+                try:
+                    got = [p for p in fn() if p[0] >= d1]
+                except Exception as e:
+                    print(f'  {sym} {name} 히스토리 실패: {e}')
+                    continue
+                print(f'  {sym} 야후 히스토리 {len(ypts)}개 → {name} {len(got)}개로 보충')
+                if len(got) > 50:
+                    ypts = merge_older(ypts, got) if len(ypts) > 50 else got
             merged = merge_older(npts, ypts) if npts else ypts   # 국내 지수는 네이버 우선 · [일수, 종가]
             if sym in HIST_RANGE:
                 lo, hi = HIST_RANGE[sym]
