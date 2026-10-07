@@ -1,0 +1,41 @@
+name: 시가총액 순위 갱신
+
+# 전세계 시가총액 TOP 100 (data/mcap.json) — 미국장 마감 뒤 하루 한 번, 모든 시장의 종가 기준
+#  · 21:40 UTC = 한국 시간 06:40 (화~토) · 23:40 UTC 에 한 번 더 (예약 실행이 늦어지거나 빠질 때 대비 — 같은 거래일이면 값만 새로 고침)
+on:
+  schedule:
+    - cron: '40 21 * * 1-5'
+    - cron: '40 23 * * 1-5'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['scripts/update_mcap.py', '.github/workflows/update-mcap.yml']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-data          # 시세 데이터 갱신과 같은 그룹 → data/ 커밋이 겹치지 않음
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: 시가총액 순위 수집
+        run: python3 scripts/update_mcap.py
+      - name: 변경된 경우에만 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898099+github-actions[bot]@users.noreply.github.com'
+          git add data/mcap.json data/mcap_hist.json
+          if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
+          git commit -m "chore: 시가총액 순위 갱신"
+          for i in 1 2 3; do
+            git pull --rebase -X theirs --autostash && git push && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep 5
+          done
+          exit 1

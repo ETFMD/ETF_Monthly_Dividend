@@ -223,6 +223,14 @@
       }
     },
     {
+      "path": "marketcap",
+      "tab": "mcap",
+      "group": "etc",
+      "title": "전세계 시가총액 순위 TOP 100 — 매일 종가 기준 글로벌 기업 순위",
+      "short": "전세계 시가총액 TOP 100",
+      "desc": "엔비디아·애플·삼성전자 등 전 세계 상장 기업 시가총액 상위 100개를 매일 종가 기준 달러·원화로 비교합니다."
+    },
+    {
       "path": "kospi",
       "tab": "kospi",
       "group": "index",
