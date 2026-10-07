@@ -31,6 +31,8 @@ TEXT = {
     '퇴직금 계산기': 'Korean severance pay', '주담대 LTV·DSR 한도 계산기': 'Korean mortgage LTV·DSR limit', '부동산 중개수수료 계산기': 'Korean brokerage fee',
     '공포 &amp; 탐욕 지수': 'Fear &amp; Greed Index', '돈, 자산, 노동의 가치 속도': 'Money, assets & wages in Korea', '무한매수법 기록': 'Infinite buying (TQQQ·SOXL)',
     'ETF CAGR 비교': 'ETF CAGR comparison', '코스피 성장률': 'KOSPI growth', '코스피 200 성장률': 'KOSPI 200 growth', '코스닥 성장률': 'KOSDAQ growth',
+    '세금 계산기': 'Tax calculators', '해외주식 양도소득세 계산기': 'Korean tax on foreign stock gains', '배당소득세·금융소득종합과세': 'Korean dividend & financial income tax',
+    '연금저축·IRP 세액공제': 'Korean pension savings tax credit', '증여세·상속세 계산기': 'Korean gift & inheritance tax', '부동산 취득세 계산기': 'Korean property acquisition tax',
     '일본 지수 성장률': 'Japanese index growth', '중국 지수 성장률': 'Chinese index growth', '홍콩 지수 성장률': 'Hong Kong index growth', '대만 지수 성장률': 'Taiwanese index growth',
     '닛케이 225 성장률': 'Nikkei 225 growth', 'TOPIX 성장률': 'TOPIX growth', '상해종합지수 성장률': 'SSE Composite growth', 'CSI 300 성장률': 'CSI 300 growth',
     '선전성분지수 성장률': 'SZSE Component growth', '창업판지수 성장률': 'ChiNext growth', '과창판50 성장률': 'STAR 50 growth',
