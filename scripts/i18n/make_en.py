@@ -16,7 +16,7 @@ TEXT = {
     '카카오 오픈채팅': 'KakaoTalk open chat (Korean)',
     'ETF 커버드콜 + 배당투자 + 성장주 함께 장기투자를 위한 오픈톡방 가기': 'Join our Korean-language community for long-term investing in covered-call ETFs, dividends and growth stocks',
     '홈': 'Home', '분배 시뮬레이터': 'Distribution simulators', '금융 계산기': 'Financial calculators', '기타 금융 자료': 'Market data',
-    '국내 지수 성장률': 'Korean index growth', '해외 지수 성장률': 'Global index growth',
+    '지수 성장률': 'Index growth', '미국 지수 성장률': 'U.S. index growth', '한국 지수 성장률': 'Korean index growth',
     '☾ 다크': '☾ Dark', '☀ 라이트': '☀ Light', '⌬ 오토': '⌬ Auto', '(기기 설정 따라감)': '(follow device)',
     # ── 하단 ──
     '후원 및 문의': 'Support & contact', '카카오 오픈 1:1채팅으로 연결됩니다': 'Opens a KakaoTalk 1:1 chat (Korean)',
