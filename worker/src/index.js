@@ -32,7 +32,10 @@ const CNN_PARTS = [['market_momentum_sp500', '주가 모멘텀'], ['stock_price_
   ['put_call_options', '풋/콜 비율'], ['market_volatility_vix', '시장 변동성 (VIX)'], ['safe_haven_demand', '안전자산 수요'], ['junk_bond_demand', '정크본드 수요']];
 const FEAR_TTL = 300;   // 초
 const RELAY_HOSTS = ['www.tigeretf.com', 'investments.miraeasset.com', 'www.riseetf.co.kr', 'riseetf.co.kr', 'www.plusetf.co.kr'];   // /relay 허용 주소
-const KR_HOSTS = ['www.riseetf.co.kr', 'riseetf.co.kr', 'www.kbam.co.kr', 'kbam.co.kr'];   // 한국 수집기 허용 주소
+const KR_HOSTS = ['www.riseetf.co.kr', 'riseetf.co.kr', 'www.kbam.co.kr', 'kbam.co.kr',             // 한국 수집기 허용 주소 (운용사 공개 페이지만)
+  'www.nhamundi.com', 'nhamundi.com', 'www.hanaroetf.com', 'www.hanaam.com', 'hanaam.com', 'www.1qetf.com', '1qetf.com',
+  'www.daishin-am.co.kr', 'daishin-am.co.kr', 'www.daishinam.co.kr', 'daishinam.co.kr', 'www.viam.co.kr', 'viam.co.kr', 'www.vi-am.co.kr', 'vi-am.co.kr',
+  'www.viasset.co.kr', 'viasset.co.kr', 'www.daishinfund.com', 'dart.fss.or.kr', 'opendart.fss.or.kr'];
 const KR_KEY = '66862eb910881b358a466876f4303e5ff3d92c59';     // SHA-256(수집기 열쇠) 앞 40자 (sha256() 과 같은 길이)
 const KR_TTL = 1800, KR_KEEP = 3 * 86400, KR_MAX = 600;                                  // 다시 받는 주기 · 보관 · 최대 주소 수(초·개)
 const r1 = (v) => (v == null || isNaN(v) ? null : Math.round(v * 10) / 10);
