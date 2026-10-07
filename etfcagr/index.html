@@ -1442,6 +1442,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .hm-legend { display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--text2); margin:4px 0 14px; }
   .hm-legend span { display:inline-flex; align-items:center; gap:6px; }
   .hm-legend i { width:10px; height:10px; border-radius:3px; display:inline-block; }
+  .hm-legend i.hm-legend-ref { width:0; height:12px; border-radius:0; border-left:1.5px dashed rgba(var(--fg-rgb),0.5); }
+  /* 물가 기준선: 막대 위 무채색 세로 점선 (밝은 막대 위에서도 보이도록 얇은 그림자) */
+  .hm-bar-ref { position:absolute; top:0; bottom:0; width:0; border-left:1.5px dashed rgba(var(--fg-rgb),0.55); filter:drop-shadow(0 0 1px rgba(0,0,0,0.35)); pointer-events:none; }
   .hm-bars { display:flex; flex-direction:column; gap:7px; margin-bottom:18px; }
   .hm-bar { display:grid; grid-template-columns:minmax(150px,220px) minmax(0,1fr) 92px 112px; gap:12px; align-items:center; font-size:12px; }
   .hm-bar-name { color:var(--text); line-height:1.35; }
@@ -1850,6 +1853,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <span><i style="background:var(--text3);"></i>현금·예금</span>
         <span><i style="background:var(--accent3);"></i>실물 자산 (부동산·금)</span>
         <span><i style="background:var(--accent);"></i>주식 지수</span>
+        <span><i class="hm-legend-ref"></i>물가만큼 오른 금액 (기준선)</span>
       </div>
       <div class="hm-bars" id="hm-bars"><p class="hm-loading">데이터를 불러오는 중…</p></div>
       <div class="hm-chart-wrap hm-chart-tall"><canvas id="hm-race-chart" role="img" aria-label="자산별 1억 원 가치 변화 차트"></canvas></div>
@@ -11671,14 +11675,14 @@ window.chartZoom = (function () {
       var w = Math.max(1, x.v / max * 100), cp = cpiVal / max * 100;
       html += '<div class="hm-bar"><div class="hm-bar-name">' + x.a.name + '<small>' + x.a.sub + '</small></div>'
         + '<div class="hm-bar-track" style="position:relative;"><div class="hm-bar-fill" style="width:' + w.toFixed(2) + '%;background:' + colr[x.a.cat] + ';"></div>'
-        + '<div title="물가만큼 오른 금액" style="position:absolute;top:0;bottom:0;left:' + cp.toFixed(2) + '%;border-left:2px solid ' + cssVar('--accent2', '#f04452') + ';"></div></div>'
+        + '<div class="hm-bar-ref" title="물가만큼 오른 금액" style="left:' + cp.toFixed(2) + '%;"></div></div>'
         + '<div class="hm-bar-val">' + won(x.v) + '</div>'
         + '<div class="hm-bar-cagr">' + pct(x.g) + '<small>실질 ' + pct(x.real) + '</small></div></div>';
     });
     setH('hm-bars', html);
     var best = rows[rows.length - 1];
     setH('hm-race-p', y0 + '년에 1억 원을 넣었다면 ' + y1 + '년에는 얼마가 되었을까요? 같은 ' + n + '년 동안 <b>현금은 1억 그대로</b>였지만, 물가가 오른 만큼 같은 생활을 하려면 <b>'
-      + won(cpiVal) + '</b>이 필요해졌습니다(빨간 선). 이 선을 넘어선 자산만 실제로 부를 늘려 준 셈이고, 가장 크게 불어난 것은 <b>' + best.a.name + '</b>(' + won(best.v) + ', 연 ' + pct(best.g) + ')입니다.');
+      + won(cpiVal) + '</b>이 필요해졌습니다(점선). 이 선을 넘어선 자산만 실제로 부를 늘려 준 셈이고, 가장 크게 불어난 것은 <b>' + best.a.name + '</b>(' + won(best.v) + ', 연 ' + pct(best.g) + ')입니다.');
     /* 연도별 추이 차트 */
     var keys = [['spytrk', 'S&P 500 배당 재투자 (원화)'], ['seoul', '서울 아파트'], ['kospi', '코스피'], ['dep', '정기예금 (세후)'], ['cpi', '물가']];
     var labels = [], ds = [];
