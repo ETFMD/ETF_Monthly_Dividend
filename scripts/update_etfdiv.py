@@ -7,12 +7,13 @@ ETF 월분배·배당 달력 — data/etfdiv.json (GitHub Actions '시세 데이
   · 월분배 종목 판별·분배 이력·분배율 ...... 네이버 금융 ETF 분배 이력 (하루 1번, 장 마감 뒤)
   · 확정 공시(기준일·지급일·분배금·공시 시각) KRX KIND 'ETF이익금분배신고(분배금안내)(일괄공시)' — 매 실행마다 새 공시만 읽음
   · 분배락일 ............................ KRX KIND 'ETF 분배락 기준가격 안내'(적용일) → 없으면 기준일 전 영업일로 계산
-  · 주당 과세표준액 ...................... 운용사가 공개하는 경우만 (현재 삼성자산운용 KODEX)
+  · 주당 과세표준액 ...................... 운용사 공개 자료 (KODEX·TIGER·ACE·SOL·PLUS·KIWOOM — scripts/etf_tax.py)
 원칙
   · 한 곳이 실패해도 직전에 저장된 값을 유지하고, 내용이 바뀌었을 때만 파일을 다시 씀
 """
 import json, os, re, sys, time, datetime, http.cookiejar, urllib.request, urllib.parse, concurrent.futures as cf
 from zoneinfo import ZoneInfo
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))   # scripts/etf_tax.py
 KST = ZoneInfo('Asia/Seoul')
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data')
 OUT = os.path.join(ROOT, 'etfdiv.json')
@@ -138,39 +139,6 @@ def kind_rows(acpt):
 
 def isin_ticker(isin): return isin[3:9] if re.match(r'^KR7[0-9A-Z]{9}$', isin or '') else None
 
-# ───────────── KODEX 과세표준 ─────────────
-def kodex_tax(tickers, old_map):
-    """삼성자산운용 공개 API — 종목코드 → [(기준일, 분배금, 주당 과세표준액)]"""
-    H = {'Referer': 'https://www.samsungfund.com/etf/product/distribution.do', 'Accept': 'application/json'}
-    fid = dict(old_map or {})
-    try:
-        if any(t not in fid for t in tickers):
-            for pg in range(1, 30):
-                d = json.loads(http_get('https://www.samsungfund.com/api/v1/kodex/distribution.do?pageNo=%d' % pg, headers=H, tries=2))
-                lst = d.get('dividList') or []
-                for x in lst:
-                    if x.get('stkTicker') and x.get('fid'): fid[x['stkTicker']] = x['fid']
-                if not lst or all(t in fid for t in tickers): break
-    except Exception as e:
-        print('KODEX 목록 실패:', e, file=sys.stderr)
-    out = {}
-    def one(t):
-        if t not in fid: return t, None
-        try:
-            d = json.loads(http_get('https://www.samsungfund.com/api/v1/kodex/divid-info.do?id=' + fid[t], headers=H, tries=2, timeout=20))
-            res = []
-            for x in d.get('dividList') or []:
-                b = x.get('basicD') or ''
-                if len(b) == 8 and x.get('taxDividA') not in (None, ''):
-                    res.append(['%s-%s-%s' % (b[:4], b[4:6], b[6:]), x.get('dividA'), x.get('taxDividA')])
-            return t, res
-        except Exception:
-            return t, None
-    with cf.ThreadPoolExecutor(6) as ex:
-        for t, r in ex.map(one, tickers):
-            if r is not None: out[t] = r
-    return out, fid
-
 def to_num(s):
     try: return float(str(s).replace(',', ''))
     except Exception: return None
@@ -178,9 +146,10 @@ def to_num(s):
 def main():
     t0 = time.time(); now = now_kst(); today = now.date()
     old = load(OUT) or {}
-    data = {k: old.get(k) for k in ('etfs', 'events', 'seen', 'seenEx', 'exMap', 'universeDate', 'kodexFid', 'taxMap')}
-    data['etfs'] = data['etfs'] or {}; data['events'] = data['events'] or []; data['seen'] = data['seen'] or []
-    data['seenEx'] = data['seenEx'] or []; data['exMap'] = data['exMap'] or {}; data['taxMap'] = data['taxMap'] or {}
+    data = {k: old.get(k) for k in ('etfs', 'events', 'seen', 'seenEx', 'exMap', 'universeDate', 'kodexFid', 'taxMap', 'taxCache', 'taxTry')}
+    data = {k: v for k, v in data.items() if v is not None}
+    for k, empty in (('etfs', {}), ('events', []), ('seen', []), ('seenEx', []), ('exMap', {}), ('taxMap', {})):
+        data[k] = data.get(k) or empty
 
     # ① 전체 ETF 목록·현재가 (매번)
     try:
@@ -294,15 +263,38 @@ def main():
         data['exMap'][k] = [d for d in data['exMap'][k] if (today - ddate(d)).days <= 30]
         if not data['exMap'][k]: del data['exMap'][k]
 
-    # ⑥ KODEX 주당 과세표준액 — 하루 한 번 + 최근 10일 안 새 공시가 있는데 값이 없을 때
-    kodex = [c for c, e in data['etfs'].items() if (e.get('n') or '').startswith('KODEX')]
-    need = [e['t'] for e in data['events'] if e['t'] in kodex and (today - ddate(e['rec'])).days <= 10 and e.get('tax') is None]
-    if kodex and (daily or need):
-        tm, data['kodexFid'] = kodex_tax(kodex if daily else sorted(set(need)), data.get('kodexFid'))
-        for t, lst_t in tm.items(): data['taxMap'][t] = lst_t
+    # ⑥ 주당 과세표준액 (운용사 공개 자료 — scripts/etf_tax.py)
+    #    하루 한 번 전 종목 + 매 실행마다 '최근 공시가 있는데 과세표준이 아직 없는' 종목만 (같은 종목은 1시간에 한 번)
+    import etf_tax
+    cache = data.setdefault('taxCache', {})
+    if data.get('kodexFid') and not cache.get('kodexFid'): cache['kodexFid'] = data['kodexFid']
+    data.pop('kodexFid', None)
+    tries = data.setdefault('taxTry', {})
+    names = {c: e.get('n') for c, e in data['etfs'].items()}
+    brand = lambda c: (names.get(c) or '').split(' ')[0]
+    if daily:
+        targets = [c for c in data['etfs'] if brand(c) in etf_tax.BRANDS]
+    else:
+        nowh = now.strftime('%Y-%m-%dT%H')
+        targets = sorted({e['t'] for e in data['events'] if e.get('tax') is None and brand(e['t']) in etf_tax.BRANDS
+                          and (today - ddate(e['rec'])).days <= 20 and tries.get(e['t']) != nowh})
+        for c in targets: tries[c] = nowh
+    for k in list(tries):
+        if k not in data['etfs']: del tries[k]
+    if targets:
+        by = {}
+        for c in targets: by.setdefault(brand(c), []).append(c)
+        recs = sorted({e['rec'][:7] for e in data['events'] if e['t'] in targets}) or [dstr(today)[:7]]
+        months = sorted({(int(r[:4]), int(r[5:7])) for r in recs} | {(today.year, today.month)})[-3:]
+        relay = (load(os.path.join(ROOT, 'counter.json')) or {}).get('endpoint')
+        for t, lst_t in etf_tax.collect(by, names, months, relay, cache).items():
+            old_t = {x[0]: x for x in data['taxMap'].get(t, [])}
+            for x in lst_t: old_t[x[0]] = x
+            data['taxMap'][t] = sorted(old_t.values(), reverse=True)[:12]
     for e in data['events']:
         for rec, amt, tax in data['taxMap'].get(e['t'], []):
-            if rec == e['rec']: e['tax'] = to_num(tax)
+            # 기준일이 같고 분배금도 같을 때만 (운용사 자료 오류·정정 대비)
+            if rec == e['rec'] and tax is not None and (amt is None or abs(float(amt) - float(e['amt'])) < 0.5): e['tax'] = to_num(tax)
 
     data['seen'] = sorted(seen)[-400:]; data['seenEx'] = sorted(seen_ex)[-1500:]
     data['kindChecked'] = now.strftime('%Y-%m-%dT%H:%M:%S+09:00')
