@@ -1,40 +1,104 @@
-== companiesmarketcap csv
-11346
-Rank,Name,Symbol,marketcap,price (USD),country
-1,NVIDIA,NVDA,5776928145408,239.24,United States
-2,Apple,AAPL,4869056364544,333.63,United States
-3,Alphabet (Google),GOOG,4214313189376,344.59,United States
-4,Microsoft,MSFT,3930341244928,529.3,United States
-5,Amazon,AMZN,2764424347648,256.29,United States
-6,TSMC,TSM,2501436243968,482.3,Taiwan
-7,SpaceX,SPCX,2264906334208,171.92,United States
-8,Meta Platforms (Facebook),META,1882301399040,738.88,United States
-9,Broadcom,AVGO,1793977876480,375.81,United States
-10,Saudi Aramco,2222.SR,1661349264891,6.86771,Saudi Arabia
-11,Tesla,TSLA,1503513673728,380.68,United States
-...
-95,CATL,300750.SZ,201251797413,43.4927,China
-96,QUALCOMM,QCOM,193310982144,181.03,United States
-97,Toronto Dominion Bank,TD,192989921280,118.18,Canada
-98,Verizon,VZ,191036571648,45.98,United States
-99,Advantest,6857.T,188293135763,260.811,Japan
-100,Inditex,ITX.MC,188107625447,60.3875,Spain
-101,TotalEnergies,TTE,185383731200,83.98,France
-102,Salesforce,CRM,185166774272,224.99,United States
-103,Deere &amp; Company (John Deere),DE,184097521664,682.79,United States
-104,Seagate Technology,STX,183194632192,805.63,Ireland
-== companiesmarketcap html page 1 (for change %)
-171186
-<tbody>
-<tr><td class="fav"><img alt="favorite icon" src="/img/fav.svg?v2" data-type="company"  data-id="29"></td><td class="rank-td td-right" data-sort="1">1</td><td class="name-td"><div class="logo-container"><img loading="lazy" class="company-logo" alt="NVIDIA logo" src="/img/company-logos/64/NVDA.png" ></div><div class="name-div"><a href="/nvidia/marketcap/"><div class="company-name">NVIDIA</div><div class="company-code"><span class="rank d-none"></span>NVDA</div></a></div></td><td class="td-right" data-sort="5776928145408"><span class="currency-symbol-left">$</span>5.776 T</td><td class="td-right" data-sort="23924">$239.24</td><td data-sort="14" class="rh-sm"><span class="percentage-green"><svg class="a" viewBox="0 0 12 12"><path d="M10 8H2l4-4 4 4z"></path></svg>0.14%</span></td><td class="p-0 sparkline-td green"><svg><path d="M0,37 L5,41 L10,17 L15,31 L20,27 L25,31 L30,22 L35,17 L40,14 L45,14 L50,20 L55,23 L60,30 L65,30 L70,39 L75,38 L80,36 L85,29 L90,25 L95,18 L100,16 L105,21 L110,22 L115,21 L120,16 L125,18 L130,17 L135,14 L140,10 L145,3 L150,3 L155,3" /></svg></td><td><img class="flag" src="/img/flags/us.png"> <span class="responsive-hidden">USA</span></td></tr><tr><td class="fav"><img alt="favorite icon" src="/img/fav.svg?v2" data-type="company"  data-id="2"></td><td class="rank-td td-right" data-sort="2">2</td><td class="name-td"><div class="logo-container"><img loading="lazy" class="company-logo" alt="Apple logo" src="/img/company-logos/64/AAPL.png" data-img-path="/img/company-logos/64/AAPL.png" data-img-dark-path="/img/company-logos/64/AAPL.D.png"></div><div class="name-div"><a href="/apple/marketcap/"><div class="company-name">Apple</div><div class="company-code"><span class="rank d-none"></span>AAPL</div></a></div></td><td class="td-right" data-sort="4869056364544"><span class="currency-symbol-left">$</span>4.869 T</td><td class="td-right" data-sort="33363">$333.63</td><td data-sort="22" class="rh-sm"><span class="percentage-green"><svg class="a" viewBox="0 0 12 12"><path d="M10 8H2l4-4 4 4z"></path></svg>0.22%</span></td><td class="p-0 sparkline-td green"><svg><path d="M0,41 L5,37 L10,35 L15,29 L20,33 L25,22 L30,23 L35,19 L40,29 L45,29 L50,33 L55,34 L60,21 L65,14 L70,13 L75,15 L80,14 L85,8 L90,9 L95,6 L100,5 L105,8 L110,9 L115,3 L120,6 L125,17 L130,13 L135,16 L140,12 L145,13 L150,12 L155,12" /></svg></td><td><img class="flag" src="/img/flags/us.png"> <span class="responsive-hidden">USA</span></td></tr><tr><td class="fav"><img alt="favorite icon" src="/img/fav.svg?v2" data-type="company"  data-id="4"></td><td class="rank-td td-right" data-sort="3">3</td><td class="name-td"><div class="logo-container"><img loading="lazy" class="company-logo" alt="Alphabet (Google) logo" src="/img/company-logos/64/GOOG.png" ></div><div class="name-div"><a href="/alphabet-google/marketcap/"><div class="company-name">Alphabet (Google)</div><div class="company-code"><span class="rank d-none"></span>GOOG</div></a></div></td><td class="td-right" data-sort
-== yahoo crumb
-fc HTTP Error 404: Not Found on Accelerator
-crumb ylvEau4oTk.
-AAPL Apple Inc. USD 4869056364544 333.63 0.222293 1791316801
-2222.SR Saudi Arabian Oil Co. SAR 6236372729856 25.78 -0.07751376 1791372774
-005930.KS SamsungElec KRW 1763122192842752 268500.0 -1.2867647 1791354622
-TSM Taiwan Semiconductor Manufactur USD 2501436243968 482.3 -0.720461 1791316803
-2330.TW TAIWAN SEMICONDUCTOR MANUFACTUR TWD 67035174273024 2585.0 0.0 1791351010
-0700.HK TENCENT HKD 3788022743040 420.6 -1.7748728 1791360530
-BRK-B Berkshire Hathaway Inc. New USD 1082214449152 505.54 0.253837 1791316908
-ASML.AS ASML HOLDING EUR 612716314624 1595.2 -2.5177262 1791372766
+CompletedProcess(args=['python3', 'scripts/update_mcap.py'], returncode=0, stdout='Yahoo 시세 99/100\n저장: 기준일 2026-10-06 · 1위 NVIDIA 5.78조 달러\n', stderr='')
+2026-10-06 None 100
+{'r': 1, 'pr': None, 'n': 'NVIDIA', 's': 'NVDA', 'c': 'United States', 'm': 5776928145408, 'p': 239.24, 'ch': 0.14, 'cur': 'USD', 'lp': 239.24}
+{'r': 2, 'pr': None, 'n': 'Apple', 's': 'AAPL', 'c': 'United States', 'm': 4869056364544, 'p': 333.63, 'ch': 0.22, 'cur': 'USD', 'lp': 333.63}
+{'r': 3, 'pr': None, 'n': 'Alphabet (Google)', 's': 'GOOG', 'c': 'United States', 'm': 4214313189376, 'p': 344.59, 'ch': 0.22, 'cur': 'USD', 'lp': 344.59}
+{'r': 4, 'pr': None, 'n': 'Microsoft', 's': 'MSFT', 'c': 'United States', 'm': 3930341244928, 'p': 529.3, 'ch': 0.78, 'cur': 'USD', 'lp': 529.3}
+{'r': 5, 'pr': None, 'n': 'Amazon', 's': 'AMZN', 'c': 'United States', 'm': 2764424347648, 'p': 256.29, 'ch': 1.95, 'cur': 'USD', 'lp': 256.29}
+{'r': 6, 'pr': None, 'n': 'TSMC', 's': 'TSM', 'c': 'Taiwan', 'm': 2501436243968, 'p': 482.3, 'ch': -0.72, 'cur': 'USD', 'lp': 482.3}
+{'r': 7, 'pr': None, 'n': 'SpaceX', 's': 'SPCX', 'c': 'United States', 'm': 2264906334208, 'p': 171.92, 'ch': 0.49, 'cur': 'USD', 'lp': 171.92}
+{'r': 8, 'pr': None, 'n': 'Meta Platforms (Facebook)', 's': 'META', 'c': 'United States', 'm': 1882301399040, 'p': 738.88, 'ch': -0.41, 'cur': 'USD', 'lp': 738.88}
+{'r': 9, 'pr': None, 'n': 'Broadcom', 's': 'AVGO', 'c': 'United States', 'm': 1793977876480, 'p': 375.81, 'ch': 3.67, 'cur': 'USD', 'lp': 375.81}
+{'r': 10, 'pr': None, 'n': 'Saudi Aramco', 's': '2222.SR', 'c': 'Saudi Arabia', 'm': 1662638126784, 'p': 6.87304, 'ch': 0.0, 'cur': 'SAR', 'lp': 25.8}
+{'r': 11, 'pr': None, 'n': 'Tesla', 's': 'TSLA', 'c': 'United States', 'm': 1503513673728, 'p': 380.68, 'ch': 0.51, 'cur': 'USD', 'lp': 380.68}
+{'r': 12, 'pr': None, 'n': 'Samsung', 's': '005930.KS', 'c': 'South Korea', 'm': 1317897080166, 'p': 200.698, 'ch': -1.29, 'cur': 'KRW', 'lp': 268500.0}
+{'r': 13, 'pr': None, 'n': 'Micron Technology', 's': 'MU', 'c': 'United States', 'm': 1180848357376, 'p': 1045.56, 'ch': -1.73, 'cur': 'USD', 'lp': 1045.56}
+{'r': 14, 'pr': None, 'n': 'Berkshire Hathaway', 's': 'BRK-B', 'c': 'United States', 'm': 1082214449152, 'p': 505.54, 'ch': 0.25, 'cur': 'USD', 'lp': 505.54}
+{'r': 15, 'pr': None, 'n': 'AMD', 's': 'AMD', 'c': 'United States', 'm': 1060161912832, 'p': 649.42, 'ch': 2.8, 'cur': 'USD', 'lp': 649.42}
+{'r': 16, 'pr': None, 'n': 'Eli Lilly', 's': 'LLY', 'c': 'United States', 'm': 1031736852480, 'p': 1157.49, 'ch': 1.26, 'cur': 'USD', 'lp': 1157.49}
+{'r': 17, 'pr': None, 'n': 'SK Hynix', 's': '000660.KS', 'c': 'South Korea', 'm': 915798880582, 'p': 1287.91, 'ch': -2.82, 'cur': 'KRW', 'lp': 1723000.0}
+{'r': 18, 'pr': None, 'n': 'JPMorgan Chase', 's': 'JPM', 'c': 'United States', 'm': 880603955200, 'p': 331.28, 'ch': 0.17, 'cur': 'USD', 'lp': 331.28}
+{'r': 19, 'pr': None, 'n': 'Walmart', 's': 'WMT', 'c': 'United States', 'm': 850497568768, 'p': 107.2, 'ch': 2.03, 'cur': 'USD', 'lp': 107.2}
+{'r': 20, 'pr': None, 'n': 'ASML', 's': 'ASML', 'c': 'Netherlands', 'm': 704477790208, 'p': 1834.1, 'ch': -1.39, 'cur': 'USD', 'lp': 1834.1}
+{'r': 21, 'pr': None, 'n': 'Visa', 's': 'V', 'c': 'United States', 'm': 695822974976, 'p': 370.64, 'ch': 0.25, 'cur': 'USD', 'lp': 370.64}
+{'r': 22, 'pr': None, 'n': 'Exxon Mobil', 's': 'XOM', 'c': 'United States', 'm': 676327260160, 'p': 164.48, 'ch': 0.29, 'cur': 'USD', 'lp': 164.48}
+{'r': 23, 'pr': None, 'n': 'Johnson & Johnson', 's': 'JNJ', 'c': 'United States', 'm': 613993938944, 'p': 254.78, 'ch': 0.73, 'cur': 'USD', 'lp': 254.78}
+{'r': 24, 'pr': None, 'n': 'Intel', 's': 'INTC', 'c': 'United States', 'm': 594686836736, 'p': 112.5, 'ch': -3.18, 'cur': 'USD', 'lp': 112.5}
+{'r': 25, 'pr': None, 'n': 'CXMT', 's': '688825.SS', 'c': 'China', 'm': 579677757129, 'p': 8.1858, 'ch': -1.37, 'cur': 'CNY', 'lp': 54.79}
+{'r': 26, 'pr': None, 'n': 'Mastercard', 's': 'MA', 'c': 'United States', 'm': 496329719808, 'p': 566.58, 'ch': 0.35, 'cur': 'USD', 'lp': 566.58}
+{'r': 27, 'pr': None, 'n': 'Tencent', 's': 'TCEHY', 'c': 'China', 'm': 492298500000, 'p': 54.5, 'ch': -0.62, 'cur': 'USD', 'lp': 54.5}
+{'r': 28, 'pr': None, 'n': 'AbbVie', 's': 'ABBV', 'c': 'United States', 'm': 471272521728, 'p': 266.69, 'ch': 0.35, 'cur': 'USD', 'lp': 266.69}
+{'r': 29, 'pr': None, 'n': 'Cisco', 's': 'CSCO', 'c': 'United States', 'm': 464988700672, 'p': 117.94, 'ch': 4.54, 'cur': 'USD', 'lp': 117.94}
+{'r': 30, 'pr': None, 'n': 'Palantir', 's': 'PLTR', 'c': 'United States', 'm': 461555466240, 'p': 192.07, 'ch': 1.41, 'cur': 'USD', 'lp': 192.07}
+{'r': 31, 'pr': None, 'n': 'Oracle', 's': 'ORCL', 'c': 'United States', 'm': 438870409216, 'p': 144.77, 'ch': 1.61, 'cur': 'USD', 'lp': 144.77}
+{'r': 32, 'pr': None, 'n': 'China Construction Bank', 's': '601939.SS', 'c': 'China', 'm': 432268158700, 'p': 1.6524, 'ch': 0.27, 'cur': 'CNY', 'lp': 11.06}
+{'r': 33, 'pr': None, 'n': 'Applied Materials', 's': 'AMAT', 'c': 'United States', 'm': 420820942848, 'p': 530.27, 'ch': -2.21, 'cur': 'USD', 'lp': 530.27}
+{'r': 34, 'pr': None, 'n': 'Lam Research', 's': 'LRCX', 'c': 'United States', 'm': 417838104576, 'p': 333.89, 'ch': -3.44, 'cur': 'USD', 'lp': 333.89}
+{'r': 35, 'pr': None, 'n': 'Costco', 's': 'COST', 'c': 'United States', 'm': 414755127296, 'p': 935.68, 'ch': 1.32, 'cur': 'USD', 'lp': 935.68}
+{'r': 36, 'pr': None, 'n': 'Chevron', 's': 'CVX', 'c': 'United States', 'm': 407189618688, 'p': 207.58, 'ch': 0.54, 'cur': 'USD', 'lp': 207.58}
+{'r': 37, 'pr': None, 'n': 'Caterpillar', 's': 'CAT', 'c': 'United States', 'm': 396901679104, 'p': 863.44, 'ch': 1.8, 'cur': 'USD', 'lp': 863.44}
+{'r': 38, 'pr': None, 'n': 'Bank of America', 's': 'BAC', 'c': 'United States', 'm': 378237779968, 'p': 54.09, 'ch': 0.17, 'cur': 'USD', 'lp': 54.09}
+{'r': 39, 'pr': None, 'n': 'Coca-Cola', 's': 'KO', 'c': 'United States', 'm': 370750652416, 'p': 86.17, 'ch': -0.39, 'cur': 'USD', 'lp': 86.17}
+{'r': 40, 'pr': None, 'n': 'Dell', 's': 'DELL', 'c': 'United States', 'm': 364956516352, 'p': 574.0, 'ch': 3.93, 'cur': 'USD', 'lp': 574.0}
+{'r': 41, 'pr': None, 'n': 'Agricultural Bank of China', 's': '601288.SS', 'c': 'China', 'm': 364451296390, 'p': 1.04134, 'ch': 0.43, 'cur': 'CNY', 'lp': 6.97}
+{'r': 42, 'pr': None, 'n': 'Merck', 's': 'MRK', 'c': 'United States', 'm': 350190338048, 'p': 141.94, 'ch': 1.72, 'cur': 'USD', 'lp': 141.94}
+{'r': 43, 'pr': None, 'n': 'Roche', 's': 'RO.SW', 'c': 'Switzerland', 'm': 349455354032, 'p': 438.592, 'ch': 1.73, 'cur': 'CHF', 'lp': 365.4}
+{'r': 44, 'pr': None, 'n': 'Procter & Gamble', 's': 'PG', 'c': 'United States', 'm': 344969117696, 'p': 148.41, 'ch': 1.69, 'cur': 'USD', 'lp': 148.41}
+{'r': 45, 'pr': None, 'n': 'ICBC', 's': '1398.HK', 'c': 'China', 'm': 344239779118, 'p': 0.965863, 'ch': 0.0, 'cur': 'HKD', 'lp': 7.58}
+{'r': 46, 'pr': None, 'n': 'Palo Alto Networks', 's': 'PANW', 'c': 'United States', 'm': 343486398464, 'p': 419.91, 'ch': 3.23, 'cur': 'USD', 'lp': 419.91}
+{'r': 47, 'pr': None, 'n': 'UnitedHealth', 's': 'UNH', 'c': 'United States', 'm': 337782898688, 'p': 376.32, 'ch': -0.6, 'cur': 'USD', 'lp': 376.32}
+{'r': 48, 'pr': None, 'n': 'HSBC', 's': 'HSBC', 'c': 'United Kingdom', 'm': 333717176320, 'p': 97.58, 'ch': 0.93, 'cur': 'USD', 'lp': 97.58}
+{'r': 49, 'pr': None, 'n': 'Bank of China', 's': '601988.SS', 'c': 'China', 'm': 323979121239, 'p': 1.00548, 'ch': 1.2, 'cur': 'CNY', 'lp': 6.73}
+{'r': 50, 'pr': None, 'n': 'Arm Holdings', 's': 'ARM', 'c': 'United Kingdom', 'm': 323133636608, 'p': 302.56, 'ch': -0.11, 'cur': 'USD', 'lp': 302.56}
+{'r': 51, 'pr': None, 'n': 'General Electric', 's': 'GE', 'c': 'United States', 'm': 321011482624, 'p': 309.39, 'ch': 1.0, 'cur': 'USD', 'lp': 309.39}
+{'r': 52, 'pr': None, 'n': 'Morgan Stanley', 's': 'MS', 'c': 'United States', 'm': 300009586688, 'p': 191.02, 'ch': 0.44, 'cur': 'USD', 'lp': 191.02}
+{'r': 53, 'pr': None, 'n': 'Philip Morris International', 's': 'PM', 'c': 'United States', 'm': 296759984128, 'p': 190.4, 'ch': 0.46, 'cur': 'USD', 'lp': 190.4}
+{'r': 54, 'pr': None, 'n': 'Home Depot', 's': 'HD', 'c': 'United States', 'm': 286027644928, 'p': 286.69, 'ch': 1.97, 'cur': 'USD', 'lp': 286.69}
+{'r': 55, 'pr': None, 'n': 'Netflix', 's': 'NFLX', 'c': 'United States', 'm': 286021025792, 'p': 68.69, 'ch': 1.76, 'cur': 'USD', 'lp': 68.69}
+{'r': 56, 'pr': None, 'n': 'CrowdStrike', 's': 'CRWD', 'c': 'United States', 'm': 285534453760, 'p': 278.86, 'ch': 2.27, 'cur': 'USD', 'lp': 278.86}
+{'r': 57, 'pr': None, 'n': 'Shell', 's': 'SHEL', 'c': 'United Kingdom', 'm': 277980512256, 'p': 97.62, 'ch': 1.14, 'cur': 'USD', 'lp': 97.62}
+{'r': 58, 'pr': None, 'n': 'GE Vernova', 's': 'GEV', 'c': 'United States', 'm': 274113183744, 'p': 1029.21, 'ch': 3.96, 'cur': 'USD', 'lp': 1029.21}
+{'r': 59, 'pr': None, 'n': 'Royal Bank Of Canada', 's': 'RY', 'c': 'Canada', 'm': 271832809472, 'p': 196.35, 'ch': 0.86, 'cur': 'USD', 'lp': 196.35}
+{'r': 60, 'pr': None, 'n': 'Alibaba', 's': 'BABA', 'c': 'China', 'm': 271811018752, 'p': 109.26, 'ch': -1.39, 'cur': 'USD', 'lp': 109.26}
+{'r': 61, 'pr': None, 'n': 'Arista Networks', 's': 'ANET', 'c': 'United States', 'm': 271617359872, 'p': 215.36, 'ch': 4.09, 'cur': 'USD', 'lp': 215.36}
+{'r': 62, 'pr': None, 'n': 'Texas Instruments', 's': 'TXN', 'c': 'United States', 'm': 271444623360, 'p': 297.23, 'ch': 0.79, 'cur': 'USD', 'lp': 297.23}
+{'r': 63, 'pr': None, 'n': 'Novartis', 's': 'NVS', 'c': 'Switzerland', 'm': 267601641472, 'p': 140.79, 'ch': -0.1, 'cur': 'USD', 'lp': 140.79}
+{'r': 64, 'pr': None, 'n': 'Goldman Sachs', 's': 'GS', 'c': 'United States', 'm': 261233147904, 'p': 897.18, 'ch': 0.42, 'cur': 'USD', 'lp': 897.18}
+{'r': 65, 'pr': None, 'n': 'Mitsubishi UFJ Financial', 's': 'MUFG', 'c': 'Japan', 'm': 261133762560, 'p': 23.2, 'ch': 1.0, 'cur': 'USD', 'lp': 23.2}
+{'r': 66, 'pr': None, 'n': 'Marvell Technology', 's': 'MRVL', 'c': 'United States', 'm': 257937227776, 'p': 287.01, 'ch': 5.81, 'cur': 'USD', 'lp': 287.01}
+{'r': 67, 'pr': None, 'n': 'KLA', 's': 'KLAC', 'c': 'United States', 'm': 257686585344, 'p': 197.46, 'ch': -4.54, 'cur': 'USD', 'lp': 197.46}
+{'r': 68, 'pr': None, 'n': 'RTX', 's': 'RTX', 'c': 'United States', 'm': 247030562816, 'p': 183.29, 'ch': -0.56, 'cur': 'USD', 'lp': 183.29}
+{'r': 69, 'pr': None, 'n': 'Wells Fargo', 's': 'WFC', 'c': 'United States', 'm': 246486188032, 'p': 81.51, 'ch': 0.09, 'cur': 'USD', 'lp': 81.51}
+{'r': 70, 'pr': None, 'n': 'AstraZeneca', 's': 'AZN', 'c': 'United Kingdom', 'm': 245989163008, 'p': 158.61, 'ch': 1.33, 'cur': 'USD', 'lp': 158.61}
+{'r': 71, 'pr': None, 'n': 'Sandisk', 's': 'SNDK', 'c': 'United States', 'm': 243122896896, 'p': 1660.46, 'ch': -2.56, 'cur': 'USD', 'lp': 1660.46}
+{'r': 72, 'pr': None, 'n': 'SAP', 's': 'SAP', 'c': 'Germany', 'm': 242913837056, 'p': 210.46, 'ch': 1.31, 'cur': 'USD', 'lp': 210.46}
+{'r': 73, 'pr': None, 'n': 'Thermo Fisher Scientific', 's': 'TMO', 'c': 'United States', 'm': 242768691200, 'p': 656.58, 'ch': -2.98, 'cur': 'USD', 'lp': 656.58}
+{'r': 74, 'pr': None, 'n': 'MediaTek', 's': '2454.TW', 'c': 'Taiwan', 'm': 242441972838, 'p': 151.796, 'ch': -1.73, 'cur': 'TWD', 'lp': 4835.0}
+{'r': 75, 'pr': None, 'n': 'Kweichow Moutai', 's': '600519.SS', 'c': 'China', 'm': 235067583437, 'p': 188.042, 'ch': 1.86, 'cur': 'CNY', 'lp': 1258.62}
+{'r': 76, 'pr': None, 'n': 'Siemens', 's': 'SIE.DE', 'c': 'Germany', 'm': 233350952925, 'p': 304.849, 'ch': -2.42, 'cur': 'EUR', 'lp': 272.25}
+{'r': 77, 'pr': None, 'n': 'Nestlé', 's': 'NESN.SW', 'c': 'Switzerland', 'm': 232392683232, 'p': 90.3471, 'ch': 0.12, 'cur': 'CHF', 'lp': 75.29}
+{'r': 78, 'pr': None, 'n': 'SoftBank Group Corp.', 's': '9984.T', 'c': 'Japan', 'm': 227149860745, 'p': 39.8575, 'ch': 0.24, 'cur': 'JPY', 'lp': 6310.0}
+{'r': 79, 'pr': None, 'n': 'Linde', 's': 'LIN', 'c': 'United Kingdom', 'm': 225857241088, 'p': 489.95, 'ch': 1.57, 'cur': 'USD', 'lp': 489.95}
+{'r': 80, 'pr': None, 'n': 'PetroChina', 's': '0857.HK', 'c': 'China', 'm': 223531917193, 'p': 1.22135, 'ch': -0.88, 'cur': 'HKD', 'lp': 9.585}
+{'r': 81, 'pr': None, 'n': "L'Oréal", 's': 'OR.PA', 'c': 'France', 'm': 222672746404, 'p': 418.244, 'ch': -0.04, 'cur': 'EUR', 'lp': 373.45}
+{'r': 82, 'pr': None, 'n': 'BHP Group', 's': 'BHP', 'c': 'Australia', 'm': 221108486144, 'p': 87.0, 'ch': 0.2, 'cur': 'USD', 'lp': 87.0}
+{'r': 83, 'pr': None, 'n': 'Toyota', 's': 'TM', 'c': 'Japan', 'm': 219748925440, 'p': 185.57, 'ch': 0.79, 'cur': 'USD', 'lp': 185.57}
+{'r': 84, 'pr': None, 'n': 'Amphenol', 's': 'APH', 'c': 'United States', 'm': 218533986304, 'p': 88.62, 'ch': 1.55, 'cur': 'USD', 'lp': 88.62}
+{'r': 85, 'pr': None, 'n': 'China Mobile', 's': '0941.HK', 'c': 'China', 'm': 218414632702, 'p': 10.0728, 'ch': 0.25, 'cur': 'HKD', 'lp': 79.05}
+{'r': 86, 'pr': None, 'n': 'Amgen', 's': 'AMGN', 'c': 'United States', 'm': 217658441728, 'p': 402.6, 'ch': -0.09, 'cur': 'USD', 'lp': 402.6}
+{'r': 87, 'pr': None, 'n': 'Citigroup', 's': 'C', 'c': 'United States', 'm': 215584178176, 'p': 128.52, 'ch': -0.02, 'cur': 'USD', 'lp': 128.52}
+{'r': 88, 'pr': None, 'n': 'International Holding Company', 's': 'IHC.AE', 'c': 'United Arab Emirates', 'm': 213823251164, 'p': 97.48, 'ch': None, 'cur': None, 'lp': None}
+{'r': 89, 'pr': None, 'n': 'Shopify', 's': 'SHOP', 'c': 'Canada', 'm': 211575734272, 'p': 164.44, 'ch': 2.7, 'cur': 'USD', 'lp': 164.44}
+{'r': 90, 'pr': None, 'n': 'LVMH', 's': 'MC.PA', 'c': 'France', 'm': 210403242261, 'p': 426.812, 'ch': -1.15, 'cur': 'EUR', 'lp': 381.15}
+{'r': 91, 'pr': None, 'n': 'IBM', 's': 'IBM', 'c': 'United States', 'm': 208484909056, 'p': 221.29, 'ch': -0.13, 'cur': 'USD', 'lp': 221.29}
+{'r': 92, 'pr': None, 'n': 'American Express', 's': 'AXP', 'c': 'United States', 'm': 205665599488, 'p': 304.55, 'ch': 0.17, 'cur': 'USD', 'lp': 304.55}
+{'r': 93, 'pr': None, 'n': 'Analog Devices', 's': 'ADI', 'c': 'United States', 'm': 203783995392, 'p': 420.55, 'ch': 0.35, 'cur': 'USD', 'lp': 420.55}
+{'r': 94, 'pr': None, 'n': 'Santander', 's': 'SAN', 'c': 'Spain', 'm': 202849468416, 'p': 14.01, 'ch': 0.79, 'cur': 'USD', 'lp': 14.01}
+{'r': 95, 'pr': None, 'n': 'CATL', 's': '300750.SZ', 'c': 'China', 'm': 201251797413, 'p': 43.4927, 'ch': 1.5, 'cur': 'CNY', 'lp': 291.11}
+{'r': 96, 'pr': None, 'n': 'QUALCOMM', 's': 'QCOM', 'c': 'United States', 'm': 193310982144, 'p': 181.03, 'ch': 0.13, 'cur': 'USD', 'lp': 181.03}
+{'r': 97, 'pr': None, 'n': 'Toronto Dominion Bank', 's': 'TD', 'c': 'Canada', 'm': 192989921280, 'p': 118.18, 'ch': 0.92, 'cur': 'USD', 'lp': 118.18}
+{'r': 98, 'pr': None, 'n': 'Verizon', 's': 'VZ', 'c': 'United States', 'm': 191036571648, 'p': 45.98, 'ch': 0.28, 'cur': 'USD', 'lp': 45.98}
+{'r': 99, 'pr': None, 'n': 'Advantest', 's': '6857.T', 'c': 'Japan', 'm': 188293135763, 'p': 260.811, 'ch': -1.34, 'cur': 'JPY', 'lp': 41290.0}
+{'r': 100, 'pr': None, 'n': 'Inditex', 's': 'ITX.MC', 'c': 'Spain', 'm': 188247171109, 'p': 60.4323, 'ch': 0.26, 'cur': 'EUR', 'lp': 53.96}
+['Australia', 'Canada', 'China', 'France', 'Germany', 'Japan', 'Netherlands', 'Saudi Arabia', 'South Korea', 'Spain', 'Switzerland', 'Taiwan', 'United Arab Emirates', 'United Kingdom', 'United States']
+CompletedProcess(args=['python3', 'scripts/update_mcap.py'], returncode=0, stdout='Yahoo 시세 99/100\n저장: 기준일 2026-10-06 · 1위 NVIDIA 5.78조 달러\n', stderr='')
