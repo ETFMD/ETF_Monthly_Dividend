@@ -281,7 +281,7 @@ def cnbc_history(symbol, resolution='1W'):
 def em_history(secid):
     """동방재부(EastMoney) 주봉 → [[일수, 종가], ...]  예: em_history('1.000300') (CSI300, 2005년~)"""
     d = get_json(f'https://push2his.eastmoney.com/api/qt/stock/kline/get?secid={secid}&fields1=f1,f2,f3'
-                 f'&fields2=f51,f53&klt=102&fqt=0&beg=19900101&end=20500101&lmt=100000', tries=2)
+                 f'&fields2=f51,f53&klt=102&fqt=0&beg=19900101&end=20500101&lmt=100000', tries=4)   # 요청마다 끊기기도 해 여러 번 시도
     out = []
     for k in ((d.get('data') or {}).get('klines') or []):
         try:
