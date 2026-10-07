@@ -12,6 +12,13 @@
  *   · CNN 은 브라우저에서 직접 부를 수 없어(CORS) 이 Worker 가 대신 받아 옵니다.
  *   · 5분 동안은 D1 에 저장한 값을 다시 씁니다 (workers.dev 에서는 Cache API 가 동작하지 않음).
  *
+ * 한국 수집기 (/kr) — 해외 접속을 막는 운용사 사이트(RISE 등)를 한국 서버(Oracle Cloud 서울)가 대신 받아 둠
+ *   · GET  /kr?u=…        저장된 응답 반환 + '계속 받아 달라'고 표시 (허용 주소만 · 처음이면 202 → 몇 분 뒤 다시)
+ *   · GET  /kr/jobs?k=…   (수집기 전용) 30분 넘게 묵은 요청 주소 목록
+ *   · POST /kr/put?k=…    (수집기 전용) [{u, st, v}] 받은 내용 저장
+ *   · GET  /kr/status     수집기 마지막 접속 시각·국가·대기 주소 수
+ *   · 수집기 열쇠는 원문 대신 SHA-256 값만 이 코드에 둠 · 3일 동안 아무도 찾지 않은 주소는 정리
+ *
  * 15분마다(cron) GitHub Actions '시세 데이터 갱신'을 직접 실행시킴 (GitHub 자체 예약 실행은 자주 늦어지거나 누락됨)
  *   · 한국장과 공시 시간(평일 09~20시)·미국장(평일 22~07시, 한국 시간) 15분마다, 그 밖에는 3시간마다
  *   · GH_TOKEN(저장소 1개·Actions 쓰기 권한만 있는 토큰) 비밀값이 있을 때만 동작 · GET /status 로 마지막 실행 결과 확인
@@ -25,6 +32,9 @@ const CNN_PARTS = [['market_momentum_sp500', '주가 모멘텀'], ['stock_price_
   ['put_call_options', '풋/콜 비율'], ['market_volatility_vix', '시장 변동성 (VIX)'], ['safe_haven_demand', '안전자산 수요'], ['junk_bond_demand', '정크본드 수요']];
 const FEAR_TTL = 300;   // 초
 const RELAY_HOSTS = ['www.tigeretf.com', 'investments.miraeasset.com', 'www.riseetf.co.kr', 'riseetf.co.kr', 'www.plusetf.co.kr'];   // /relay 허용 주소
+const KR_HOSTS = ['www.riseetf.co.kr', 'riseetf.co.kr', 'www.kbam.co.kr', 'kbam.co.kr'];   // 한국 수집기 허용 주소
+const KR_KEY = '66862eb910881b358a466876f4303e5ff3d92c59';     // SHA-256(수집기 열쇠) 앞 40자 (sha256() 과 같은 길이)
+const KR_TTL = 1800, KR_KEEP = 3 * 86400, KR_MAX = 600;                                  // 다시 받는 주기 · 보관 · 최대 주소 수(초·개)
 const r1 = (v) => (v == null || isNaN(v) ? null : Math.round(v * 10) / 10);
 
 async function cnnFear() {
@@ -113,6 +123,53 @@ async function counts(env, day) {
   return { day, today: T ? T.n : 0, yesterday: Y ? Y.n : 0, total: S ? S.n : 0, max: M ? M.n : 0, maxDay: M ? M.day : null };
 }
 
+async function kr(req, env, url, json) {
+  const now = Math.floor(Date.now() / 1000);
+  const authed = async () => (await sha256(url.searchParams.get('k') || '')) === KR_KEY;
+  if (url.pathname === '/kr' && req.method === 'GET') {
+    let target;
+    try { target = new URL(url.searchParams.get('u') || ''); } catch (e) { return json({ error: 'bad url' }, 400); }
+    if (target.protocol !== 'https:' || !KR_HOSTS.includes(target.hostname)) return json({ error: 'host not allowed' }, 403);
+    const u = target.toString();
+    const row = await env.DB.prepare('SELECT t, st, v FROM kr WHERE u = ?').bind(u).first();
+    if (row) await env.DB.prepare('UPDATE kr SET want = ? WHERE u = ?').bind(now, u).run();
+    else {
+      const c = await env.DB.prepare('SELECT COUNT(*) AS n FROM kr').first();
+      if (c && c.n >= KR_MAX) return json({ error: 'full' }, 429);
+      await env.DB.prepare('INSERT OR IGNORE INTO kr (u, want) VALUES (?, ?)').bind(u, now).run();
+    }
+    if (!row || row.t == null) return json({ pending: true }, 202);
+    return new Response(row.v, { status: row.st || 200, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store', 'X-KR-At': String(row.t) } });
+  }
+  if (url.pathname === '/kr/jobs' && req.method === 'GET') {
+    if (!(await authed())) return json({ error: 'forbidden' }, 403);
+    await env.DB.batch([
+      env.DB.prepare('DELETE FROM kr WHERE want < ?').bind(now - KR_KEEP),
+      env.DB.prepare('INSERT INTO cache (k, t, v) VALUES (?, ?, ?) ON CONFLICT(k) DO UPDATE SET t = excluded.t, v = excluded.v')
+        .bind('kr_agent', now, JSON.stringify({ country: (req.cf && req.cf.country) || null, colo: (req.cf && req.cf.colo) || null })),
+    ]);
+    const r = await env.DB.prepare('SELECT u FROM kr WHERE t IS NULL OR t < ? ORDER BY t IS NOT NULL, t LIMIT 80').bind(now - KR_TTL).all();
+    return json({ urls: (r.results || []).map((x) => x.u) });
+  }
+  if (url.pathname === '/kr/put' && req.method === 'POST') {
+    if (!(await authed())) return json({ error: 'forbidden' }, 403);
+    const items = await req.json();
+    const st = (Array.isArray(items) ? items : []).filter((x) => x && typeof x.u === 'string' && typeof x.v === 'string')
+      .map((x) => env.DB.prepare('UPDATE kr SET t = ?, st = ?, v = ? WHERE u = ?').bind(now, x.st | 0, x.v.slice(0, 1500000), x.u));
+    if (st.length) await env.DB.batch(st);
+    return json({ ok: st.length });
+  }
+  if (url.pathname === '/kr/status' && req.method === 'GET') {
+    const [a, c] = await env.DB.batch([
+      env.DB.prepare('SELECT t, v FROM cache WHERE k = ?').bind('kr_agent'),
+      env.DB.prepare('SELECT COUNT(*) AS n, SUM(t IS NOT NULL) AS done FROM kr'),
+    ]);
+    const A = a.results && a.results[0], C = (c.results && c.results[0]) || {};
+    return json({ agent: A ? { ...JSON.parse(A.v), at: new Date(A.t * 1000).toISOString() } : null, urls: C.n || 0, fetched: C.done || 0 });
+  }
+  return json({ error: 'not found' }, 404);
+}
+
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
@@ -152,6 +209,7 @@ export default {
           Referer: target.origin + '/' }, redirect: 'follow' });
         return new Response(r.body, { status: r.status, headers: { 'Content-Type': r.headers.get('Content-Type') || 'text/plain', 'Cache-Control': 'no-store' } });
       }
+      if (url.pathname.startsWith('/kr')) return await kr(req, env, url, json);
       if (url.pathname === '/fear' && req.method === 'GET') {
         try { return json(await fear(env)); } catch (e) { return json({ error: 'cnn', detail: String(e && e.message || e) }, 502); }
       }
