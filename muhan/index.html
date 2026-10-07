@@ -1421,6 +1421,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .dv-st.ok { color:#16a34a; background:rgba(34,197,94,0.12); }
   .dv-st.today { color:var(--accent); background:var(--accent-dim); }
   .dv-st.done { color:var(--text3); background:rgba(var(--fg-rgb),0.06); }
+  .dv-ttl { display:flex; flex-direction:column; gap:6px; }
+  .dv-cyc-leg { display:flex; flex-wrap:wrap; gap:4px 14px; font-size:12px; color:var(--text2); padding-left:12px; }
+  .dv-cyc-leg span { display:inline-flex; align-items:center; gap:6px; }
+  .dv-cyc-leg small { font-size:11px; color:var(--text3); }
+  .dv-cyc { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; vertical-align:1px; flex-shrink:0; }
+  .dv-cyc-leg .dv-cyc { margin-right:0; }
+  .dv-cyc.mid { background:var(--accent); box-shadow:0 0 0 2px rgba(49,130,246,0.18); }
+  .dv-cyc.end { background:var(--accent2); box-shadow:0 0 0 2px rgba(240,68,82,0.18); }
   .dv-new { font-family:var(--font); font-size:9.5px; font-weight:700; color:var(--accent2); margin-left:4px; vertical-align:1px; }
   .dv-y { color:#16a34a; } .dv-dim { color:var(--text3); opacity:.7; }
   .dv-calc { font-size:9px; color:var(--text3); margin-left:2px; font-family:var(--font); }
@@ -9193,7 +9201,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
     <div class="card dv-card">
       <div class="dv-top">
-        <span class="acc-title">종목별 분배 일정</span>
+        <div class="dv-ttl">
+          <span class="acc-title">종목별 분배 일정</span>
+          <div class="dv-cyc-leg"><span><i class="dv-cyc mid"></i>월중분배 <small>(기준일 15일 무렵)</small></span><span><i class="dv-cyc end"></i>월말분배 <small>(기준일 말일 무렵)</small></span></div>
+        </div>
         <div class="chart-tabs dv-sort" role="group" aria-label="정렬">
           <button class="chart-tab active" data-sort="date">일정순</button>
           <button class="chart-tab" data-sort="yield">분배율순</button>
@@ -14652,6 +14663,12 @@ var TAX = (function () {
     });
     return rows;
   }
+  /* 분배 시기: 기준일이 20일 이전이면 월중(파랑), 그 뒤면 월말(빨강) */
+  function cyc(rec) {
+    if (!rec) return '';
+    var mid = +rec.slice(8, 10) <= 20;
+    return '<i class="dv-cyc ' + (mid ? 'mid' : 'end') + '" title="' + (mid ? '월중분배' : '월말분배') + ' (기준일 ' + (+rec.slice(5, 7)) + '/' + (+rec.slice(8, 10)) + ')" aria-label="' + (mid ? '월중분배' : '월말분배') + '"></i>';
+  }
   function stLabel(r) {
     if (r.noAnn) return '<span class="dv-st done" title="최근 공시를 찾지 못해 분배 이력으로 표시">지급 완료</span>';
     return r.st === 'today' ? '<span class="dv-st today">오늘 지급</span>' : r.st === 'done' ? '<span class="dv-st done">지급 완료</span>' : '<span class="dv-st ok">확정</span>';
@@ -14672,7 +14689,7 @@ var TAX = (function () {
       var y = r.y != null ? '<span class="dv-y">' + r.y.toFixed(2) + '%</span>' + (r.yCalc ? '<span class="dv-calc" title="현재가로 계산한 예상 분배율">*</span>' : '') : '<span class="dv-dim">—</span>';
       var tr = '<tr class="dv-row" data-t="' + esc(r.t) + '" tabindex="0" aria-expanded="' + (S.open[r.t] ? 'true' : 'false') + '">' +
         '<td class="dv-c-pay" data-l="지급일">' + (r.pay ? md(r.pay) : '<span class="dv-dim">—</span>') + '</td>' +
-        '<td class="dv-c-n"><span class="dv-nm">' + esc(r.n) + (r.isNew ? '<span class="dv-new">NEW</span>' : '') + '</span><span class="dv-tk">' + esc(r.t) + '</span></td>' +
+        '<td class="dv-c-n"><span class="dv-nm">' + cyc(r.rec) + esc(r.n) + (r.isNew ? '<span class="dv-new">NEW</span>' : '') + '</span><span class="dv-tk">' + esc(r.t) + '</span></td>' +
         '<td class="dv-c-st" data-l="상태">' + stLabel(r) + '</td>' +
         '<td class="dv-c-ann" data-l="공시일">' + (r.ann ? md(r.ann.slice(0, 10)) + (r.fix ? ' <span class="dv-dim">(정정)</span>' : '') : '<span class="dv-dim">—</span>') + '</td>' +
         '<td class="dv-c-ex" data-l="분배락일">' + md(r.ex) + '</td>' +
