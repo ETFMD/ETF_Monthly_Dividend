@@ -1142,7 +1142,7 @@
 
   /* ── 아코디언 (사이트 공통) ──
      접힘: 카드형 행 + 파란 세로 막대 + 둥근 ▼ 버튼
-     펼침: 테두리 컨테이너 + 헤더 구분선 + 얇은 ˄ 쉐브론 + 내용 여백
+     펼침: 헤더는 접힘과 같은 디자인 유지(▼→▲ 회전만) + 아래 테두리 내용 상자
      .acc-header/.acc-body(toggleAcc) 와 종합소득세 <details class="inc-sec"> 가 같은 규칙을 공유 */
   .acc-header, .inc-sec > summary {
     display: flex; align-items: center; justify-content: space-between; gap: 10px;
@@ -1170,22 +1170,11 @@
     display: flex; align-items: center; justify-content: center;
     color: var(--text2); font-size: 10px; line-height: 1;
     background: rgba(var(--fg-rgb),0.08); border-radius: 50%;
-    transition: background 0.15s;
   }
-  /* 펼침 상태 */
-  .acc-header.acc-open, .inc-sec[open] > summary {
-    border-color: var(--card-border);
-    border-radius: 12px 12px 0 0;
-    background: rgba(var(--fg-rgb),0.02);
-  }
-  .acc-header.acc-open:hover, .inc-sec[open] > summary:hover { background: rgba(49,130,246,0.04); }
-  .acc-header.acc-open .acc-title::before, .inc-sec[open] .inc-sec-t::before { width: 0; margin-right: 0; opacity: 0; }
-  .acc-header.acc-open .acc-arrow, .inc-sec[open] > summary .acc-arrow { background: transparent; font-size: 0; }
-  .acc-header.acc-open .acc-arrow::before, .inc-sec[open] > summary .acc-arrow::before {
-    content: ''; width: 7px; height: 7px;
-    border-left: 1.5px solid var(--text3); border-top: 1.5px solid var(--text3);
-    transform: translateY(2px) rotate(45deg);
-  }
+  /* 펼침 상태: 헤더는 접혔을 때와 같은 디자인 유지(파란 막대·둥근 버튼) — 버튼 속 ▼ 만 ▲ 로 뒤집고, 아래 모서리를 내용 상자와 이음 */
+  .acc-header.acc-open, .inc-sec[open] > summary { border-radius: 12px 12px 0 0; }
+  .acc-arrow { transition: background 0.15s, transform 0.22s ease; }
+  .acc-header.acc-open .acc-arrow, .inc-sec[open] > summary .acc-arrow { transform: rotate(180deg); }
   .acc-body {            /* 닫힘: 완전히 제거 (높이 제한·틈 노출 없음) */
     display: none;
     overflow: hidden;
@@ -1194,7 +1183,7 @@
   .acc-body.open, .acc-body.default-open {
     display: block;
     padding: 18px 16px 12px;
-    border: 1px solid var(--card-border); border-top: none;
+    border: 1px solid rgba(var(--fg-rgb),0.07); border-top: none;
     border-radius: 0 0 12px 12px;
     background: rgba(var(--fg-rgb),0.02);
   }
@@ -1607,7 +1596,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .inc-sec-v { flex:1 0 auto; max-width:100%; text-align:right; font-size:12px; font-weight:500; font-variant-numeric:tabular-nums; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .inc-sec-v.on { color:var(--accent); }
   .inc-sec.has-v:not([open]) .inc-sec-t small { display:none; }
-  .inc-sec-in { padding:18px 16px 8px; border:1px solid var(--card-border); border-top:none; border-radius:0 0 12px 12px; background:rgba(var(--fg-rgb),0.02); }
+  .inc-sec-in { padding:18px 16px 8px; border:1px solid rgba(var(--fg-rgb),0.07); border-top:none; border-radius:0 0 12px 12px; background:rgba(var(--fg-rgb),0.02); }
   @media (max-width: 720px) { .inc-sec-in { padding-left:12px; padding-right:12px; } }
   @media (max-width: 700px) {
     .fc-hero { padding:18px; }
