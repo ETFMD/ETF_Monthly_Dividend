@@ -24,6 +24,7 @@ const CNN_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KH
 const CNN_PARTS = [['market_momentum_sp500', '주가 모멘텀'], ['stock_price_strength', '주가 강도'], ['stock_price_breadth', '주가 폭'],
   ['put_call_options', '풋/콜 비율'], ['market_volatility_vix', '시장 변동성 (VIX)'], ['safe_haven_demand', '안전자산 수요'], ['junk_bond_demand', '정크본드 수요']];
 const FEAR_TTL = 300;   // 초
+const RELAY_HOSTS = ['www.tigeretf.com', 'investments.miraeasset.com', 'www.riseetf.co.kr', 'riseetf.co.kr'];   // /relay 허용 주소
 const r1 = (v) => (v == null || isNaN(v) ? null : Math.round(v * 10) / 10);
 
 async function cnnFear() {
@@ -141,6 +142,15 @@ export default {
       if (url.pathname === '/status' && req.method === 'GET') {
         const row = await env.DB.prepare('SELECT t, v FROM cache WHERE k = ?').bind('dispatch').first();
         return json({ token: !!env.GH_TOKEN, lastDispatch: row ? { ...JSON.parse(row.v), at: new Date(row.t * 1000).toISOString() } : null });
+      }
+      /* GET /relay?u=… → 해외 서버(GitHub Actions)를 막는 운용사 사이트의 공개 분배금 자료만 대신 받아 옴 (허용 주소만 · GET 만) */
+      if (url.pathname === '/relay' && req.method === 'GET') {
+        let target;
+        try { target = new URL(url.searchParams.get('u') || ''); } catch (e) { return json({ error: 'bad url' }, 400); }
+        if (target.protocol !== 'https:' || !RELAY_HOSTS.includes(target.hostname)) return json({ error: 'host not allowed' }, 403);
+        const r = await fetch(target.toString(), { headers: { 'User-Agent': CNN_UA, Accept: req.headers.get('Accept') || '*/*', 'Accept-Language': 'ko-KR,ko;q=0.9',
+          Referer: target.origin + '/' }, redirect: 'follow' });
+        return new Response(r.body, { status: r.status, headers: { 'Content-Type': r.headers.get('Content-Type') || 'text/plain', 'Cache-Control': 'no-store' } });
       }
       if (url.pathname === '/fear' && req.method === 'GET') {
         try { return json(await fear(env)); } catch (e) { return json({ error: 'cnn', detail: String(e && e.message || e) }, 502); }
