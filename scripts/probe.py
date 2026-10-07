@@ -18,6 +18,6 @@ def articles(name, wanted):
         no = (a.findtext('조문번호') or '').strip(); br = (a.findtext('조문가지번호') or '').strip(); key = no + ('의' + br if br else '')
         if key in wanted and (a.findtext('조문여부') or '') == '조문':
             print('===== 제' + key + '조'); print('\n'.join(t.strip() for t in a.itertext() if t.strip())[:9000]); print(flush=True)
-for n, w in (('소득세법', {'14', '17', '20의3', '47의2', '56', '62', '64의4'}), ('소득세법 시행령', {'143'}), ('조세특례제한법', {'104의8', '122의3'})):
+for n, w in (('조세특례제한법 시행령', {'104의5'}), ('소득세법 시행규칙', {'67'})):
     try: articles(n, w)
     except Exception as e: print('#####', n, 'ERR', e, flush=True)
