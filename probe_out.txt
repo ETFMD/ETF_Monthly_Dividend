@@ -1,23 +1,47 @@
-SOL map /api/etf/pds/down/dividend/" + fundCode + "\" class=\"ir-b i-down api-download-btn\">엑셀 다운로드</a>\n" + " </div>\n" + " </div>\n" + " <!-- // (e) 리스트 정렬 -->\n"; if(data.items.length > 0) { data.items.forEach(function (item, index) { content += "<tr>" + "<td>" + item.WORK_DT.substring(0, 4) + "." + item.WORK_DT.substring(4, 6) + "." + item.WORK_DT.substring(6, 8) + "</td>" + "<td>" + item.DIVIDEND_DT.substring(0, 4) + "." + item.DIVIDEND_DT.substring(4, 6) + "." + item.DIVIDEND_DT.substring(6, 8) + "</td>" + "<td>" + three_commas(item.DIVIDEND_PRI) + "</td>" + "<td>" + three_commas(item.WEEK_PRI) + "</td>" + "<td style=\"display:none;\">" + (item.TAX_PRI !== null ? three_commas(item.TAX_PRI) : '-') + "</td>" + "<td style=\"display:none;\">" + (item.BFAS_STAS_STPR !== null ? three_commas(item.BFAS_STAS_STPR) : '-') + "</td>" + "</tr>"; }); }else{ content += "<tr><td colspan='6'>분배금 현황이 없습니다</td></tr>"; } $("#SEPC_DOC_01_01P .pop-contents").html(contentTop + contentHeader + content + contentBottom); // 과표기준가, 배당과표기준가 열 숨김 처리 $("#SEPC_DOC_01_01P table.tb-data th:nth-child(5), #SEPC_DOC_01_01P table.tb-data th:nth-child(6)").hide(); $("#SEPC_DOC_01_01P table.tb-dat
-SOL list? 404 <!DOCTYPE html> <html lang="ko"> <head> <meta charset="utf-8"> <title>SOL ETF</title> <meta http-equiv="X-UA-Compatible" content="IE=edge" /> <link rel="shortcut icon" type="image/x-icon" href="/static/img/common/favicon.ico" /> <meta name="description" content="" /> <meta name="keywor
-ACE funds 404 <!DOCTYPE html><html lang="ko"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"/><title>한국투자 ACE ETF</title><meta name="next-head-count" content="3"/><meta charSet="utf-8"/><script>(func
-ACE main 404 <!DOCTYPE html><html lang="ko"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"/><title>한국투자 ACE ETF</title><meta name="next-head-count" content="3"/><meta charSet="utf-8"/><script>(func
-PLUS list 405 <!-- Worker Version Check: P_CO4.html --> <!DOCTYPE html> <html lang="ko"> <head> <meta charset="utf-8" /> <meta name="robots" content="index,follow"> <meta http-equiv="X-UA-Compatible" content="IE=Edge; chrome=1" /> <meta name="viewport" content="width=device-width, initial-s
-PLUS js ps://www.plusetf.co.kr/static/ClientUI/js/basic.js ['/api/v1/main/footer/realTime', '/api/v1/main/footer/realTimeNew', '/api/v1/main/search/keyword']
-PLUS js s://www.plusetf.co.kr/static/ClientUI/js/common.js ['/api/v1/ckeditor/fileUpload?']
-PLUS js plusetf.co.kr/static/ClientUI/js/comparison-pop.js ['/api/v1/product/compare', '/api/v1/product/compare/graph']
-===== HANARO 200 139806
- api-ish ['/api/v1/file/file-download', '/api/v1/member/del-cookie', '/api/v1/member/logout']
- hrefs ['/assets/etf/global/css/detail.css?v=260916', '/assets/etf/ko/css/detailKR.css', '/customer/about-hanaro-etf', '/fund/etf-data-board', '/fund/etf-sumnmary', '/fund/pension-etf', '/login?redirectUrl=https://www.hanaroetf.com/mypage/keyword', '/login?redirecturl=https://www.hanaroetf.com/mypage/keyword']
-===== KIWOOM 200 126396
- api-ish []
- hrefs ['/service/etf/KO02010100M', '/service/etf/KO02010200M?gcode=${etf.gcode}', '/service/etf/KO02010200M?gcode=${p.gcode}', '/service/etf/KO02010300M']
-===== 1Q 200 60117
- api-ish []
- hrefs ['/hanaam/consumer-protection/products', '/qetf/main']
-===== WON 200 180585
- api-ish []
- hrefs ['/investment/etf-list', '/investment/etf-view/E14ljTVNUg2Qik6g', '/investment/etf-view/Gj1sVGSQRVH9n2om', '/investment/etf-view/mVaDY8DzrSj59MlO', '/investment/etf-view/ts8ym1V3HHeDnN9S']
-===== TIME 200 48454
- api-ish []
- hrefs []
+##### ACE
+ page / 200 102064
+  [/_next/static/chunks/main-35c260cf7312c4a2.js] apis ['/api', '/api/']
+  [/_next/static/chunks/pages/_app-dbbe0ebed46e03ad.js] apis ['/api/common/companyinfo', '/api/common/cs/sound', '/api/common/getCaptchaImg', '/api/common/importantnotes/{type}', '/api/common/requirementInfo', '/api/faqs', '/api/faqs/category', '/api/funds', '/api/funds/calc', '/api/funds/compare', '/api/funds/favorites', '/api/funds/main', '/api/funds/monthlyreport/{id}', '/api/funds/pds', '/api/funds/pension', '/api/funds/pensiontop10', '/api/funds/performance/graph/calc', '/api/funds/performance/graph/compare', '/api/funds/summary', '/api/funds/{id}', '/api/funds/{id}/addons', '/api/funds/{id}/basepdf', '/api/funds/{id}/basepdf/down', '/api/funds/{id}/counter', '/api/funds/{id}/dividend', '/api/funds/{id}/dividend/down', '/api/funds/{id}/documents', '/api/funds/{id}/indexcodes', '/api/funds/{id}/pdf', '/api/funds/{id}/pdf/down']
+  [/_next/static/20260915143717/_buildManifest.js] apis ['/api/build-id']
+ page /fund/K55101DO9015 200 100689
+  [/static/chunks/pages/fund/%5BfundCode%5D-87de52e2357ffdbc.js] 과세표준 :: j," 분배금 현황표"]}),(0,s.jsxs)("colgroup",{children:[(0,s.jsx)("col",{}),(0,s.jsx)("col",{}),(0,s.jsx)("col",{}),(0,s.jsx)("col",{}),(0,s.jsx)("col",{})]}),(0,s.jsx)("thead",{children:(0,s.jsxs)("tr",{children:[(0,s.jsx)("th",{scope:"col",children:(0,s.jsx)("div",{children:"지급기준일"})}),(0,s.jsx)("th",{scope:"col",children:(0,s.jsx)("div",{children:"실제지급일"})}),(0,s.jsx)("th",{scope:"col",children:(0,s.jsx)("div",{children:"분배금액(원)"})}),(0,s.jsx)("th",{scope:"col",children:(0,s.jsx)("div",{children:"주당과세표준액(원)"})}),(0,s.jsx)("th",{scope:"col",children:(0,s.jsx)("div",{children:"분배율"})})]})}),(0,s.jsx)("tbody",{children:(0,b.xb)(C.dividendList)?(0,s.jsx)("tr",{children:(0,s.jsx)("td",{colSpan:5,children:"데이터가 없습니다."})}):null===(l=C.dividendList)||void 0===l?void 0:l.map((e,t)=>(0,s.jsxs)("tr",{children:[(0,s.jsx)("td",{children:(0,b.C3)(e.std_DT)}),(0,s.jsx)("td",{children:(0,b.C3)(e.dividend_DT
+  [/static/chunks/pages/fund/%5BfundCode%5D-87de52e2357ffdbc.js] 과표 :: CT_CLSF_CD,C)&&(0,s.jsx)(s.Fragment,{children:(0,s.jsx)("th",{scope:"col",rowSpan:2,children:"YTM"})}),eF?(0,s.jsxs)(s.Fragment,{children:[(0,s.jsx)("th",{scope:"col",rowSpan:2,children:"기준가격(달러)"}),(0,s.jsx)("th",{scope:"col",rowSpan:2,children:"Sofr 금리(%)"})]}):null]}),(0,s.jsxs)("tr",{children:[(0,s.jsx)("th",{scope:"col",children:"종가(원)"}),(0,s.jsx)("th",{scope:"col",children:"전일대비"}),(0,s.jsx)("th",{scope:"col",children:"증감률(%)"}),(0,s.jsx)("th",{scope:"col",className:"lineright",children:"과표기준가(원)"}),(0,s.jsx)("th",{scope:"col",children:"종가(원)"}),(0,s.jsx)("th",{scope:"col",children:"전일대비"}),(0,s.jsx)("th",{scope:"col",className:"lineright",children:"증감률(%)"})]})]}),(0,s.jsx)("tbody",{children:(0,s.jsx)(s.Fragment,{children:null==eE?void 0:eE.map((e,t)=>{var l,n,i;let d=[e.fundPre,e.fundDiffRT],c=[e.marketPre,e.marketDiffRT];return(0,s.jsxs)("tr",{ref:e=>er.current[t]=e,children:[(
+  [/static/chunks/pages/fund/%5BfundCode%5D-87de52e2357ffdbc.js] apis ['/api/funds/']
+##### SOL
+ page /ko/main 200 878006
+  [page /ko/main] apis ['/api/common/getKeywordList', '/api/common/searchByEtfNameOrFilter']
+  [/static/pc/js/common.js?v=1791385110115] apis ['/api/common/sendMail', '/api/fund/deleteCart', '/api/fund/saveCart']
+  [/static/pc/js/ko/main/index.js] apis ['/api/cs/notice', '/api/information/insight', '/api/information/insight/', '/api/information/news', '/api/information/research']
+  [/static/pc/js/ko/etf_pds.js] 과세표준 ::  " <col style=\"width:0; display:none;\" />\n" + " </colgroup>\n" + " <thead>\n" + " <tr>\n" + " <th scope=\"col\">지급기준일</th>\n" + " <th scope=\"col\">실제지급일</th>\n" + " <th scope=\"col\">분배금액(원)</th>\n" + " <th scope=\"col\">주당과세표준액(원)</th>\n" + " <th scope=\"col\" style=\"display:none; width:0;\">과표기준가(원)</th>\n" + " <th scope=\"col\" style=\"display:none; width:0;\">배당과표기준가(원)</th>\n" + " </tr>\n" + " </thead>\n" + " <tbody>\n"; var contentBo
+  [/static/pc/js/ko/etf_pds.js] 과표 ::  </colgroup>\n" + " <thead>\n" + " <tr>\n" + " <th scope=\"col\">지급기준일</th>\n" + " <th scope=\"col\">실제지급일</th>\n" + " <th scope=\"col\">분배금액(원)</th>\n" + " <th scope=\"col\">주당과세표준액(원)</th>\n" + " <th scope=\"col\" style=\"display:none; width:0;\">과표기준가(원)</th>\n" + " <th scope=\"col\" style=\"display:none; width:0;\">배당과표기준가(원)</th>\n" + " </tr>\n" + " </thead>\n" + " <tbody>\n"; var contentBottom = " </tbody>\n" + " </table>\n" + " 
+  [/static/pc/js/ko/etf_pds.js] 과표 :: \n" + " <th scope=\"col\">지급기준일</th>\n" + " <th scope=\"col\">실제지급일</th>\n" + " <th scope=\"col\">분배금액(원)</th>\n" + " <th scope=\"col\">주당과세표준액(원)</th>\n" + " <th scope=\"col\" style=\"display:none; width:0;\">과표기준가(원)</th>\n" + " <th scope=\"col\" style=\"display:none; width:0;\">배당과표기준가(원)</th>\n" + " </tr>\n" + " </thead>\n" + " <tbody>\n"; var contentBottom = " </tbody>\n" + " </table>\n" + " </div>" " </div>"; var content = ""; $.ajax({ url
+  [/static/pc/js/ko/etf_pds.js] apis ['/api/etf/pds', '/api/etf/pds/dividend/', '/api/etf/pds/down/dividend/', '/api/etf/pds/down/pdf/', '/api/etf/pds/down/policyDescription/', '/api/etf/pds/pdf/', '/api/etf/pds/policyDescription/', '/api/etf/pds/search']
+ page /ko/fund/etf/210942 200 43745
+  [page /ko/fund/etf/210942] apis ['/api/common/getKeywordList', '/api/common/searchByEtfNameOrFilter', '/api/etf/pds/down/policyDescription/210942?type=description', '/api/etf/pds/down/policyDescription/210942?type=policy', '/api/etf/pds/down/policyDescription/210942?type=simple_desc', 'https://www.theice.com/products/197/EUA-Futures/data?marketId=6173130', 'https://www.theice.com/products/71085674/California-Carbon-Allowance-Vintage-2022-Future/data?marketId=5981519&span=1', 'https://www.theice.com/products/71544087/Regional-Greenhouse-Gas-Initiative-Vintage-2022-Future/data?marketId=5999992&span=1', 'https://www.theice.com/products/80216150/UKA-Futures/data?marketId=6675113&span=1']
+  [/static/pc/js/common.js?v=1791385123491] apis ['/api/common/sendMail', '/api/fund/deleteCart', '/api/fund/saveCart']
+  [/static/pc/js/common/fileDownload.js?v=1791385123491] apis ['/api/etf/pds/down/']
+##### PLUS
+ page /product/k-divid 200 92674
+  [page /product/k-divid] apis ['/api/v1/product/find/list']
+ page /product/detail?n=006313 500 0
+##### HANARO
+ page / 200 139806
+  [page /] apis ['/api/v1/fund/etc/get-auto-complete-search-keyword?keyword=', '/api/v1/main/investment-insight?category=', '/api/v1/main/ko/top6-return-etf?target=', '/api/v1/search/total-search']
+  [/assets/global/js/nh.common.js] apis ['/api/v1/file/file-download', '/api/v1/member/del-cookie', '/api/v1/member/history/tv/', '/api/v1/member/interest/content/', '/api/v1/member/interest/fund/', '/api/v1/member/interest/tv/', '/api/v1/member/logout']
+ page /fund/etf-sumnmary 200 84589
+  [page /fund/etf-sumnmary] apis ['/api/v1/fund/etc/get-auto-complete-search-keyword?keyword=', '/api/v1/search/total-search']
+##### KIWOOM
+ page /service/etf/KO02010100M 200 97524
+##### WON
+ page /investment/etf-list 200 67020
+ page /investment/etf-view/E14ljTVNUg2Qik6g 200 154627
+  [page /investment/etf-view/E14ljTVNUg2Qik6g] 과세표준 ::  <path d="M25.6528 12.082L26.9786 13.4079L13.7204 26.6661L12.3945 25.3403L25.6528 12.082Z" fill="white"/> </svg> </i> </header> <div class="base-modal__body"> <div class="base-table-box"> <table class="base-table etf-pop"> <tr> <th>지급 기준일</th> <th>실지급일</th> <th>주당분배금액(원)</th> <th>주당과세표준액(원)</th> <th>분배율(%)</th> </tr> </table> </div> <div class="base-modal__btn-group"> <button type="button" class="base-button" onclick="closePop('popPayStatus')">확인</button> <button type="button" class="base-button pdf__download" onClick="ExcelDown
+  [page /investment/etf-view/E14ljTVNUg2Qik6g] 과표 ::  <thead> <tr> <th class="table__width--70 base-table__text--th" rowspan="2">일자</th> <th class="base-table__text--th" colspan="2">시장가격(원)</th> <th class="base-table__text--th" colspan="2">기준가격(원)</th> <th class="base-table__text--th" rowspan="2">과표기준가(원)</th> </tr> <tr> <th class="base-table__text--th">종가</th> <th class="base-table__text--th">등락률(%)</th> <th class="base-table__text--th">종가</th> 
+##### 1Q
+ page /qetf/main 200 165895
+  [/_next/static/chunks/2eojwawtku2r-.js] apis ['/api/FullMenuBanner', '/api/SearchField']
+  [/_next/static/chunks/2d9b83k7bz7d_.js] apis ['/api/EtfRecommendation', '/api/EtfRecommendation/top-rate', '/api/preview/${e}']
+  [/_next/static/chunks/0zj35h_ixsaee.js] apis ['/api/Banner', '/api/Etf', '/api/Etf/${e}/counterparty', '/api/Etf/${e}/holdings', '/api/Etf/${e}/nav', '/api/Etf/${e}/performance', '/api/Etf/${e}/performance/chart', '/api/Etf/${e}/product', '/api/Etf/${e}/related', '/api/Etf/filters', '/api/OneQNews', '/api/OneQNews/${e}', '/api/Popup', '/api/StripBanner']
+##### TIME
+ page / 200 48454
+  [page /] apis ['https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/smoothscroll/1.4.9/SmoothScroll.min.js']
