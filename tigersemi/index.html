@@ -2420,14 +2420,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 <label class="fc-check" id="acq-temp-f" style="margin-bottom:12px;"><input type="checkbox" id="acq-temp" data-fc="acq"> 일시적 2주택 — 종전 주택을 3년 안에 처분 (중과 제외)</label>
 <label class="fc-check" id="acq-cheap-f" style="margin-bottom:12px;"><input type="checkbox" id="acq-cheap" data-fc="acq"> 시가표준액(공시가격) 1억원 이하 주택 (중과 제외, 정비구역 제외)</label>
 <label class="fc-check" id="acq-gheavy-f" style="margin-bottom:12px;"><input type="checkbox" id="acq-gheavy" data-fc="acq"><span>조정대상지역 · 시가표준액 3억원 이상 · 증여자가 1세대 2주택 이상 (12% 중과)<small class="fc-sub-inline" style="display:block;margin:3px 0 0;">1세대 1주택자가 배우자·직계존비속에게 주면 제외</small></span></label>
-<label class="fc-field" id="acq-relief-f"><span>감면 (주택 매매 · 1주택 · 12억원 이하)</span><select id="acq-relief" data-fc="acq"><option value="none" selected>없음</option><option value="first">생애최초 주택 — 200만원 한도</option><option value="firstRural">생애최초 — 인구감소지역 300만원 한도</option><option value="birth">출산·양육 주택 — 500만원 한도</option></select></label>
+<label class="fc-field" id="acq-relief-f"><span>감면 (주택 매매 · 1주택 · 12억원 이하)</span><small class="fc-hint">300만원 한도: 전용 60㎡·3억원(수도권 6억원) 이하 연립·다세대·도시형생활주택·다가구(아파트 제외) 또는 인구감소지역 주택</small><select id="acq-relief" data-fc="acq"><option value="none" selected>없음</option><option value="first">생애최초 주택 — 200만원 한도</option><option value="firstSmall">생애최초 소형주택·인구감소지역 — 300만원 한도</option><option value="birth">출산·양육 주택 — 500만원 한도</option></select></label>
       </div>
       <div>
 <div class="card fc-hero"><p class="fc-hero-label" id="acq-label">납부할 취득세 합계 (지방교육세·농어촌특별세 포함)</p><p class="fc-hero-val" id="acq-pay">—</p><p class="fc-hero-sub" id="acq-pay-sub">—</p><div class="fc-kpis"><div><p id="acq-k1-l">취득세율</p><b id="acq-k1">—</b></div><div><p id="acq-k2-l">지방교육세율</p><b id="acq-k2">—</b></div><div><p id="acq-k3-l">농어촌특별세율</p><b id="acq-k3">—</b></div></div></div>
 <div class="notice fc-notice" id="acq-note" style="display:none;"></div>
 <div class="card" style="margin-top:16px;"><p class="card-title" style="margin-bottom:12px;">계산 내역</p><div class="table-scroll"><table class="cagr-table fc-table fc-wrap"><tbody id="acq-table"></tbody></table></div></div>
 <div class="card" style="margin-top:16px;"><p class="card-title" style="margin-bottom:12px;">주택 취득세율 한눈에 (개인, 합계 = 취득세 + 지방교육세 + 농특세)</p><div class="table-scroll"><table class="cagr-table fc-table fc-wrap"><thead><tr><th>구분</th><th>취득세</th><th>85㎡ 이하</th><th>85㎡ 초과</th></tr></thead><tbody><tr><td>1주택 6억원 이하</td><td>1%</td><td>1.1%</td><td>1.3%</td></tr><tr><td>1주택 6억~9억원</td><td>1~3%</td><td>1.1~3.3%</td><td>1.3~3.5%</td></tr><tr><td>1주택 9억원 초과</td><td>3%</td><td>3.3%</td><td>3.5%</td></tr><tr><td>조정 2주택 · 비조정 3주택</td><td>8%</td><td>8.4%</td><td>9.0%</td></tr><tr><td>조정 3주택 이상 · 비조정 4주택 이상</td><td>12%</td><td>12.4%</td><td>13.4%</td></tr><tr><td>증여 (일반 / 중과)</td><td>3.5% / 12%</td><td>3.8% / 12.4%</td><td>4.0% / 13.4%</td></tr><tr><td>상속</td><td>2.8%</td><td>2.96%</td><td>3.16%</td></tr><tr><td>토지·상가 등 매매</td><td>4%</td><td colspan="2">4.6%</td></tr></tbody></table></div></div>
-<div class="notice fc-notice">※ 주택 매매 6억~9억원 구간 세율 = (취득가액 × 2/3억원 − 3) × 1/100 (지방세법 제11조). 다주택 중과는 지방세법 제13조의2, 조정대상지역은 국토교통부 지정 기준이며 2026년 7월 1일 화성 동탄·용인 기흥·구리가 추가되었습니다.<br>※ 감면은 취득세 본세에만 반영했습니다. 생애최초 감면은 3개월 안 전입·3년 이상 실거주 등 요건을 지키지 않으면 추징되며, 감면 종류에 따라 지방교육세·농어촌특별세 처리가 다를 수 있으니 신고 전 위택스에서 확인하세요. 정부가 발표한 생애최초 감면 300만원 확대안은 아직 시행 전입니다.<br>※ 무주택자의 주택 상속 특례(0.8%), 법인 취득(12%), 지방 미분양 주택 감면, 분양권·입주권·주거용 오피스텔의 주택 수 포함 여부는 반영하지 않았습니다. 취득일(잔금일·등기일 중 빠른 날)부터 60일 안에 신고·납부하지 않으면 가산세가 붙습니다.</div>
+<div class="notice fc-notice">※ 주택 매매 6억~9억원 구간 세율 = (취득가액 × 2/3억원 − 3) × 1/100 (지방세법 제11조). 다주택 중과는 지방세법 제13조의2, 조정대상지역은 국토교통부 지정 기준이며 2026년 7월 1일 화성 동탄·용인 기흥·구리가 추가되었습니다.<br>※ 감면(지방세특례제한법 제36조의3·제36조의5): 산출 취득세가 한도 이하면 면제, 넘으면 한도만큼 뺍니다. 지방교육세는 같은 감면율만큼 줄고(지방세법 제151조제1항제1호 다목), 농어촌특별세는 85㎡ 이하 서민주택이면 비과세, 85㎡ 초과면 감면세액의 20%가 붙습니다(농어촌특별세법 제4조·제5조). 생애최초 감면은 3년 안에 팔거나 임대 등 다른 용도로 쓰면 추징됩니다. 정부가 발표한 청년 생애최초 감면 확대안(2026년 8월)은 아직 시행 전입니다.<br>※ 무주택자의 주택 상속 특례(0.8%), 법인 취득(12%), 지방 미분양 주택 감면, 분양권·입주권·주거용 오피스텔의 주택 수 포함 여부는 반영하지 않았습니다. 취득일(잔금일·등기일 중 빠른 날)부터 60일 안에 신고·납부하지 않으면 가산세가 붙습니다.</div>
       </div>
     </div>
     <!-- [GUIDE:acquisition] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
@@ -2435,10 +2435,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <h2 id="g-acquisition-h">부동산 취득세는 이렇게 계산합니다</h2>
       <p class="g-lead">집이나 땅을 사거나 증여·상속받으면 취득세와 함께 지방교육세, 농어촌특별세를 냅니다. 주택은 가격과 1세대가 가진 주택 수, 조정대상지역 여부에 따라 1%에서 12%까지 세율이 크게 달라집니다.</p>
       <div class="g-grid">
-        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>주택 매매 기본세율</b>: 6억원 이하 1%, 9억원 초과 3%, 그 사이는 (취득가액 × 2/3억원 − 3)% (소수점 넷째 자리까지)</li><li><b>다주택 중과</b>: 조정대상지역 2주택 8%·3주택 이상 12%, 비조정대상지역 3주택 8%·4주택 이상 12%</li><li><b>지방교육세</b>: 기본세율이면 취득세율의 10%, 중과면 0.4%</li><li><b>농어촌특별세</b>: 전용 85㎡ 초과 주택 0.2% (중과 8%면 0.6%, 12%면 1.0%), 85㎡ 이하는 비과세</li><li><b>증여</b> 3.5% (조정대상지역 · 시가표준액 3억 이상 · 증여자 2주택 이상이면 12%), <b>상속</b> 2.8%, <b>토지·상가</b> 4%</li><li><b>감면</b>: 생애최초 주택 200만원(인구감소지역 300만원), 출산·양육 주택 500만원 한도 — 12억원 이하</li></ul></article>
-        <article class="g-card"><h3>계산 예시</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>항목</th><th>값</th></tr></thead><tbody><tr><td>5억원 아파트 · 1주택 · 85㎡ 이하</td><td>취득세 500만 + 지방교육세 50만 = <b>550만원</b></td></tr><tr><td>7억 5천만원 · 1주택 · 85㎡ 초과</td><td>세율 (7.5 × 2/3 − 3) = 2% → 1,500만 + 150만 + 150만 = <b>1,800만원</b></td></tr><tr><td>8억원 · 조정대상지역 2주택 · 85㎡ 초과</td><td>8% 6,400만 + 0.4% 320만 + 0.6% 480만 = <b>7,200만원</b></td></tr><tr><td>3억원 · 생애최초 · 85㎡ 이하</td><td>취득세 300만 − 감면 200만 + 지방교육세 30만 = <b>130만원</b></td></tr><tr><td>5억원 주택 증여 · 85㎡ 초과</td><td>3.5% + 0.3% + 0.2% = 4% → <b>2,000만원</b></td></tr></tbody></table></div><p class="g-cap">세금은 원 단위 미만을 버리고 계산합니다. 실제 고지액은 위택스·구청에서 확인하세요.</p></article>
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>주택 매매 기본세율</b>: 6억원 이하 1%, 9억원 초과 3%, 그 사이는 (취득가액 × 2/3억원 − 3)%를 소수점 둘째 자리까지 반올림 (7억원 → 1.67%)</li><li><b>다주택 중과</b>: 조정대상지역 2주택 8%·3주택 이상 12%, 비조정대상지역 3주택 8%·4주택 이상 12%</li><li><b>지방교육세</b>: 기본세율이면 취득세율의 10%, 중과면 0.4%</li><li><b>농어촌특별세</b>: 전용 85㎡ 초과 주택 0.2% (중과 8%면 0.6%, 12%면 1.0%), 85㎡ 이하는 비과세</li><li><b>증여</b> 3.5% (조정대상지역 · 시가표준액 3억 이상 · 증여자 2주택 이상이면 12%), <b>상속</b> 2.8%, <b>토지·상가</b> 4%</li><li><b>감면</b>: 생애최초 주택 200만원(소형 연립·다세대 등과 인구감소지역 300만원), 출산·양육 주택 500만원 한도 — 12억원 이하. 지방교육세는 같은 비율로 감면, 85㎡ 초과면 감면세액의 20% 농어촌특별세</li></ul></article>
+        <article class="g-card"><h3>계산 예시</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>항목</th><th>값</th></tr></thead><tbody><tr><td>7억원 · 1주택 · 85㎡ 이하</td><td>세율 1.67% → 1,169만 + 116만 9천 = <b>1,285만 9천원</b></td></tr><tr><td>5억원 아파트 · 1주택 · 85㎡ 이하</td><td>취득세 500만 + 지방교육세 50만 = <b>550만원</b></td></tr><tr><td>7억 5천만원 · 1주택 · 85㎡ 초과</td><td>세율 (7.5 × 2/3 − 3) = 2% → 1,500만 + 150만 + 150만 = <b>1,800만원</b></td></tr><tr><td>8억원 · 조정대상지역 2주택 · 85㎡ 초과</td><td>8% 6,400만 + 0.4% 320만 + 0.6% 480만 = <b>7,200만원</b></td></tr><tr><td>3억원 · 생애최초 · 85㎡ 이하</td><td>취득세 300만 − 감면 200만(감면율 66.67%) + 지방교육세 30만 × 33.33% = 100만 + 10만 = <b>110만원</b></td></tr><tr><td>5억원 주택 증여 · 85㎡ 초과</td><td>3.5% + 0.3% + 0.2% = 4% → <b>2,000만원</b></td></tr></tbody></table></div><p class="g-cap">감면이 없는 사례는 위택스 &lsquo;지방세 미리계산&rsquo;과 같은 결과입니다 (2026년 10월 확인). 세금은 원 단위 미만을 버리고 계산합니다.</p></article>
       </div>
-      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>주택 수는 어떻게 세나요?</summary><div class="g-ans"><p>취득하는 주택을 포함해 같은 세대(배우자·미혼 30세 미만 자녀 등)가 가진 주택을 모두 셉니다. 2020년 8월 12일 이후 취득한 분양권·입주권과 주거용 오피스텔도 주택 수에 들어가고, 시가표준액 1억원 이하 주택(정비구역 제외)은 주택 수에서 빠지는 등 예외가 많습니다.</p></div></details><details class="g-faq"><summary>일시적 2주택은 어떤 경우인가요?</summary><div class="g-ans"><p>이사 등으로 새 집을 먼저 산 경우, 종전 주택을 새 주택 취득일부터 3년 안에 팔면 새 주택에 중과세율(8%) 대신 1~3% 기본세율을 적용합니다. 기한 안에 팔지 않으면 차액과 가산세를 추징합니다.</p></div></details><details class="g-faq"><summary>조정대상지역은 어디인가요?</summary><div class="g-ans"><p>서울 25개 구 전역 · 경기 과천·광명·의왕·하남·구리, 성남 분당·수정·중원, 수원 영통·장안·팔달, 안양 동안, 용인 수지·기흥, 화성 동탄입니다 (2026년 7월 1일 기준). 2025년 10월 16일 서울 전역과 경기 12곳이 지정되었고, 2026년 7월 1일 화성 동탄구·용인 기흥구·구리시가 추가되었습니다. 지정·해제는 수시로 바뀌니 계약 전에 국토교통부 발표를 확인하세요.</p></div></details><details class="g-faq"><summary>생애최초 감면 요건은 무엇인가요?</summary><div class="g-ans"><p>본인과 배우자 모두 주택을 가진 적이 없고, 취득가액 12억원 이하 주택을 사면 취득세를 200만원(인구감소지역 300만원)까지 감면합니다. 소득 기준은 없으며, 취득일부터 3개월 안에 전입하고 3년 이상 살아야 합니다. 2026년 8월 정부가 청년 감면 한도를 300만원으로 늘리는 개정안을 발표했지만 아직 시행 전입니다.</p></div></details><details class="g-faq"><summary>취득세는 언제까지 내야 하나요?</summary><div class="g-ans"><p>잔금일과 등기일 중 빠른 날(취득일)부터 60일 안에 신고·납부해야 하고, 증여는 증여일이 속한 달의 말일부터 3개월, 상속은 상속개시일이 속한 달의 말일부터 6개월 안에 냅니다. 늦으면 무신고 가산세 20%와 납부지연 가산세가 붙습니다.</p></div></details></div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>주택 수는 어떻게 세나요?</summary><div class="g-ans"><p>취득하는 주택을 포함해 같은 세대(배우자·미혼 30세 미만 자녀 등)가 가진 주택을 모두 셉니다. 2020년 8월 12일 이후 취득한 분양권·입주권과 주거용 오피스텔도 주택 수에 들어가고, 시가표준액 1억원 이하 주택(정비구역 제외)은 주택 수에서 빠지는 등 예외가 많습니다.</p></div></details><details class="g-faq"><summary>일시적 2주택은 어떤 경우인가요?</summary><div class="g-ans"><p>이사 등으로 새 집을 먼저 산 경우, 종전 주택을 새 주택 취득일부터 3년 안에 팔면 새 주택에 중과세율(8%) 대신 1~3% 기본세율을 적용합니다. 기한 안에 팔지 않으면 차액과 가산세를 추징합니다.</p></div></details><details class="g-faq"><summary>조정대상지역은 어디인가요?</summary><div class="g-ans"><p>서울 25개 구 전역 · 경기 과천·광명·의왕·하남·구리, 성남 분당·수정·중원, 수원 영통·장안·팔달, 안양 동안, 용인 수지·기흥, 화성 동탄입니다 (2026년 7월 1일 기준). 2025년 10월 16일 서울 전역과 경기 12곳이 지정되었고, 2026년 7월 1일 화성 동탄구·용인 기흥구·구리시가 추가되었습니다. 지정·해제는 수시로 바뀌니 계약 전에 국토교통부 발표를 확인하세요.</p></div></details><details class="g-faq"><summary>생애최초 감면 요건은 무엇인가요?</summary><div class="g-ans"><p>본인과 배우자 모두 주택을 가진 적이 없고, 직접 살 목적으로 취득가액 12억원 이하 주택을 사면 취득세를 200만원까지 감면합니다. 전용 60㎡ 이하이면서 3억원(수도권 6억원) 이하인 연립·다세대·도시형생활주택·다가구(아파트 제외)나 인구감소지역 주택은 300만원까지입니다. 소득 기준은 없고 2028년 12월 31일까지 적용되며, 3년 안에 팔거나 임대하면 추징됩니다. 지방교육세도 같은 비율로 줄어듭니다. 2026년 8월 정부가 청년 감면 한도를 300만원으로 늘리는 개정안을 발표했지만 아직 시행 전입니다.</p></div></details><details class="g-faq"><summary>취득세는 언제까지 내야 하나요?</summary><div class="g-ans"><p>잔금일과 등기일 중 빠른 날(취득일)부터 60일 안에 신고·납부해야 하고, 증여는 증여일이 속한 달의 말일부터 3개월, 상속은 상속개시일이 속한 달의 말일부터 6개월 안에 냅니다. 늦으면 무신고 가산세 20%와 납부지연 가산세가 붙습니다.</p></div></details></div>
     </section>
     <!-- [/GUIDE:acquisition] -->
   </div><!-- /page-acquisition -->
@@ -13498,15 +13498,21 @@ var TAX = (function () {
              rate: base > 0 ? marginal(base, GIFT_RATES) : 0 };
   }
 
-  /* ── 5. 부동산 취득세 (지방세법 제11조·제13조의2·제151조, 농어촌특별세법 제5조, 지방세특례제한법) ──
+  /* ── 5. 부동산 취득세 (지방세법 제11조·제13조의2·제151조, 농어촌특별세법 제4조·제5조, 지방세특례제한법 제36조의3·제36조의5) ──
      kind: buy(주택 유상) · gift(주택 증여) · inherit(주택 상속) · land(주택 외 유상: 토지·상가 등)
      price 취득가액(증여·상속은 시가인정액 등) · big 전용 85㎡ 초과 · houses 취득 후 1세대 주택 수 · adj 조정대상지역
-     temp 일시적 2주택 · cheap 시가표준액 1억원 이하 · giftHeavy 증여 중과 요건 · relief none/first/firstRural/birth */
-  var RELIEF = { first: 2e6, firstRural: 3e6, birth: 5e6 };
+     temp 일시적 2주택 · cheap 시가표준액 1억원 이하 · giftHeavy 증여 중과 요건 · relief none/first/firstSmall/birth
+     감면(산출세액이 한도 이하면 면제, 넘으면 한도만큼 공제):
+       first 생애최초 200만원 · firstSmall 생애최초 300만원(전용 60㎡·3억원[수도권 6억원] 이하 연립·다세대·도시형생활주택·다가구, 인구감소지역 주택)
+       birth 출산·양육 500만원 — 모두 12억원 이하 (지특법 제36조의3·제36조의5, 2028.12.31까지)
+     지방교육세: 감면율(감면액 ÷ 산출세액)만큼 같이 줄어듦 (지방세법 제151조제1항제1호 다목1)
+     농어촌특별세: 85㎡ 이하 서민주택은 비과세(농특세법 제4조제9호·제11호, 시행령 제4조제5항),
+       85㎡ 초과는 본세분(표준세율 2%로 산출한 취득세 × 10%, 제5조제1항제6호 — '산출세액'은 감면 전 금액)에 감면세액의 20%(제5조제1항제1호)를 더함 */
+  var RELIEF = { first: 2e6, firstSmall: 3e6, birth: 5e6 };
   function houseRate(p) {                                            /* 주택 유상거래 표준세율 */
     if (p <= 6e8) return 0.01;
     if (p > 9e8) return 0.03;
-    return Math.round((p * 2 / 3e8 - 3) * 1e4) / 1e6;                /* (취득가액 × 2/3억 − 3)%, 소수점 다섯째 자리에서 반올림 */
+    return Math.round((p * 2 / 3e8 - 3) * 100) / 1e4;                /* (취득가액 × 2/3억 − 3) × 1/100 → 세율을 소수점 다섯째 자리에서 반올림해 넷째 자리까지 (7억원 → 0.0167 = 1.67%, 위택스와 같음) */
   }
   function acquisition(o) {
     var p = nz(o.price), kind = o.kind || 'buy', big = !!o.big, h = Math.max(1, Math.floor(nz(o.houses) || 1));
@@ -13525,15 +13531,22 @@ var TAX = (function () {
       if (heavy) { rate = heavy; edu = 0.004; farm = big ? (heavy === 0.08 ? 0.006 : 0.01) : 0; }
       else { rate = houseRate(p); edu = rate * 0.1; farm = big ? 0.002 : 0; }
     }
-    var acq = fl(p * rate), eduT = fl(p * edu), farmT = fl(p * farm);
-    var relief = 0, reliefOk = false;
+    var acq = fl(p * rate), edu0 = fl(p * edu), farm0 = fl(p * farm);
+    var relief = 0, reliefOk = false, ratio = 0, eduRelief = 0, farmRelief = 0;
     if (o.relief && o.relief !== 'none') {
       reliefOk = kind === 'buy' && !heavy && p <= 12e8 && h === 1;
       if (!reliefOk) note = '감면 요건(주택 유상취득 · 1주택 · 12억원 이하 · 중과 아님)에 맞지 않아 감면을 빼고 계산했습니다';
-      else relief = Math.min(acq, RELIEF[o.relief] || 0);
+      else {
+        relief = Math.min(acq, RELIEF[o.relief] || 0);
+        ratio = acq > 0 ? relief / acq : 0;                              /* 감면율 */
+        eduRelief = edu0 - fl(edu0 * (1 - ratio));
+      }
     }
-    var acqPay = acq - relief;
-    return { rate: rate, edu: edu, farm: farm, heavy: heavy, acq: acq, relief: relief, acqPay: acqPay, eduT: eduT, farmT: farmT,
+    var acqPay = acq - relief, eduT = edu0 - eduRelief;
+    var farmOnRelief = big ? fl(relief * 0.2) : 0;                       /* 감면분 농어촌특별세 (85㎡ 초과만) */
+    var farmT = farm0 - farmRelief + farmOnRelief;
+    return { rate: rate, edu: edu, farm: farm, heavy: heavy, acq: acq, relief: relief, ratio: ratio, acqPay: acqPay,
+             edu0: edu0, eduRelief: eduRelief, eduT: eduT, farm0: farm0, farmRelief: farmRelief, farmOnRelief: farmOnRelief, farmT: farmT,
              total: acqPay + eduT + farmT, totalRate: rate + edu + farm, note: note, reliefOk: reliefOk };
   }
 
@@ -13744,16 +13757,18 @@ var TAX = (function () {
     var r = TAX.acquisition({ kind: kind, price: amt('acq-price'), big: kind !== 'land' && chk('acq-big'), houses: houses, adj: chk('acq-adj'),
       temp: chk('acq-temp'), cheap: chk('acq-cheap'), giftHeavy: chk('acq-gheavy'), relief: buy ? $('acq-relief').value : 'none' });
     setT('acq-pay', won(r.total));
-    setT('acq-pay-sub', '취득세 ' + won(r.acqPay) + ' + 지방교육세 ' + won(r.eduT) + ' + 농어촌특별세 ' + won(r.farmT) + ' · 합계 세율 ' + pct(r.totalRate, 4) +
+    setT('acq-pay-sub', '취득세 ' + won(r.acqPay) + ' + 지방교육세 ' + won(r.eduT) + ' + 농어촌특별세 ' + won(r.farmT) + (r.relief ? ' · 감면 반영' : ' · 합계 세율 ' + pct(r.totalRate, 4)) +
       (r.heavy ? ' · 다주택·증여 중과' : '') + ' · 취득일부터 60일 안에 신고·납부');
     setT('acq-k1', pct(r.rate, 4)); setT('acq-k2', pct(r.edu, 4)); setT('acq-k3', r.farm ? pct(r.farm, 4) : '비과세');
     setT('acq-note', r.note);
     show('acq-note', !!r.note);
     setH('acq-table', rows([
       ['취득세 <small>(' + pct(r.rate, 4) + ')</small>', won(r.acq)],
-      r.relief ? ['감면 <small>(' + ({ first: '생애최초 200만원 한도', firstRural: '생애최초 인구감소지역 300만원 한도', birth: '출산·양육 500만원 한도' })[$('acq-relief').value] + ')</small>', '−' + won(r.relief)] : null,
-      ['지방교육세 <small>(' + pct(r.edu, 4) + ')</small>', won(r.eduT)],
-      ['농어촌특별세 <small>(' + (r.farm ? pct(r.farm, 4) : kind === 'land' ? '0.2%' : '전용 85㎡ 이하 비과세') + ')</small>', won(r.farmT)],
+      r.relief ? ['취득세 감면 <small>(' + ({ first: '생애최초 200만원 한도', firstSmall: '생애최초 300만원 한도', birth: '출산·양육 500만원 한도' })[$('acq-relief').value] + ' · 감면율 ' + pct(r.ratio, 2) + ')</small>', '−' + won(r.relief)] : null,
+      ['지방교육세 <small>(' + pct(r.edu, 4) + ')</small>', won(r.edu0)],
+      r.eduRelief ? ['지방교육세 감면 <small>(취득세 감면율만큼 · 지방세법 제151조)</small>', '−' + won(r.eduRelief)] : null,
+      ['농어촌특별세 <small>(' + (r.farm ? pct(r.farm, 4) : kind === 'land' ? '0.2%' : '전용 85㎡ 이하 서민주택 비과세') + ')</small>', won(r.farm0)],
+      r.farmOnRelief ? ['감면분 농어촌특별세 <small>(감면세액 × 20% · 85㎡ 초과)</small>', '+' + won(r.farmOnRelief)] : null,
       ['납부할 세금 합계', won(r.total), 'fc-total']]));
   }
 
