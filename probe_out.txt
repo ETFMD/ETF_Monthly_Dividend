@@ -1,79 +1,197 @@
-===== 20260928000287
-22353
-[('discls', '')]
-+ pIsurCd;
-	window.open(url, "_blank", "top=100,left=200,scrollbars=yes");
-}
-</script>
-</head>
-<body class="pop">
+SELECT <select id="mainDoc" name="mainDoc" title="본문" onchange="fnChangeDoc(); return false;" style="width:452px;">
+								<option value="">본문선택</option>
+								<option value='20260928000861|Y'selected="selected">ETF이익금분배신고(분배금안내)(일괄공시) (2026.09.28)</option>
 
-<!--
-2018.03.13 다운로드 기능 개선 
-파일 다운로드(PDF, EXCEL)에 사용되는 정보 저장
-method, acpNo, docNo, fileName 추가
--->
-<form name="docdownloadform" id="docdownloadform" action="#">
-	<input type="hidden" name="method"		id="method"		value=""/>
-	<input type="hidden" name="acptNo"		id="acptNo"		value="20260928000287" />
-	<input type="hidden" name="docNo"		id="docNo"		value="" />
-	<input type
+							</select>
+SELECT <select id="attachedDoc" name="attachedDoc" onchange="fnChangeAttachDoc(); return false;" style="width:452px;">
+								<option>첨부문서선택</option>
+								
+							</select>
+SELECT <select id="orgDisclsId" name="orgDiscls" title="" onchange="openOrgDiscls(this);return false;">
+								<option>기공시선택</option>
+								<option value="discls"></option>
+							</select>
+searchContents :: m name="docpathfrm" id="docpathfrm" target="docpathframe" action="/common/disclsviewer.do"> 	<input type="hidden" name="method"		id="method"		value="searchContents" /> 	<input type="hidden" name="docNo"		id="docNo"		value="" /> 	<input type="submit" name="goAction2"	style="display:none" /> </form> <form name="frm" id="frm" action="#"> <input type="hidden" name="sndLocTpCd"		id="sndLocTpCd"		
+docNo :: eft=200,scrollbars=yes"); } </script> </head> <body class="pop">  <!-- 2018.03.13 다운로드 기능 개선  파일 다운로드(PDF, EXCEL)에 사용되는 정보 저장 method, acpNo, docNo, fileName 추가 --> <form name="docdownloadform" id="docdownloadform" action="#"> 	<input type="hidden" name="method"		id="method"		value=""/> 	<input type="hidden" name="acptNo"		id="acptNo"		value="20260928000287" /> 	<input type="hidden" n
+docNo :: den" name="method"		id="method"		value=""/> 	<input type="hidden" name="acptNo"		id="acptNo"		value="20260928000287" /> 	<input type="hidden" name="docNo"		id="docNo"		value="" /> 	<input type="hidden" name="fileName"	id="fileName"	value="" /> 	<input type="hidden" name="docLocPath"	id="docLocPath"	value="" /> 	<input type="hidden" name="docpath"		id="docpath"	value="0" /> 	<input type="subm
+docNo :: ethod"		id="method"		value=""/> 	<input type="hidden" name="acptNo"		id="acptNo"		value="20260928000287" /> 	<input type="hidden" name="docNo"		id="docNo"		value="" /> 	<input type="hidden" name="fileName"	id="fileName"	value="" /> 	<input type="hidden" name="docLocPath"	id="docLocPath"	value="" /> 	<input type="hidden" name="docpath"		id="docpath"	value="0" /> 	<input type="submit" name="go
+docNo :: athframe" action="/common/disclsviewer.do"> 	<input type="hidden" name="method"		id="method"		value="searchContents" /> 	<input type="hidden" name="docNo"		id="docNo"		value="" /> 	<input type="submit" name="goAction2"	style="display:none" /> </form> <form name="frm" id="frm" action="#"> <input type="hidden" name="sndLocTpCd"		id="sndLocTpCd"		value="" /><!-- 현재 보여줄 공시 문서의 송신처구분코드 저장 --> <i
+docNo :: tion="/common/disclsviewer.do"> 	<input type="hidden" name="method"		id="method"		value="searchContents" /> 	<input type="hidden" name="docNo"		id="docNo"		value="" /> 	<input type="submit" name="goAction2"	style="display:none" /> </form> <form name="frm" id="frm" action="#"> <input type="hidden" name="sndLocTpCd"		id="sndLocTpCd"		value="" /><!-- 현재 보여줄 공시 문서의 송신처구분코드 저장 --> <input type="h
+docNo :: close').css("top")); 		fnTocResize(); 		$(window).resize(function(){ 			fnTocResize(); 		}); 		init();  		  	});  	function init(){ 		var docNo = "";  		if($("#mainDoc option:selected").val() != ""){ 			var temps	= $("#mainDoc option:selected").val().split("|"); 			var docNo	= temps[0]; 			var lstYn	= temps[1]; 			if("N" == lstYn){ 				$(".viewrIssue").show(); 			} else { 				
+docNo :: nit(){ 		var docNo = "";  		if($("#mainDoc option:selected").val() != ""){ 			var temps	= $("#mainDoc option:selected").val().split("|"); 			var docNo	= temps[0]; 			var lstYn	= temps[1]; 			if("N" == lstYn){ 				$(".viewrIssue").show(); 			} else { 				$(".viewrIssue").hide(); 			}  			$("#attachedDoc option:first").attr("selected", "selected"); 			if(docNo != null && docNo != ""){
+docNo :: 		$(".viewrIssue").show(); 			} else { 				$(".viewrIssue").hide(); 			}  			$("#attachedDoc option:first").attr("selected", "selected"); 			if(docNo != null && docNo != ""){ 				search(docNo); 				 				//2018.03.13 다운로드 기능 개선 				$("#docdownloadform").find("#docNo").val(docNo); 				$("#docdownloadform").find("#fileName").val("[신한펀드파트너스] "+$("#mainDoc option:selected").text()); 			} 	
+docNo :: ).show(); 			} else { 				$(".viewrIssue").hide(); 			}  			$("#attachedDoc option:first").attr("selected", "selected"); 			if(docNo != null && docNo != ""){ 				search(docNo); 				 				//2018.03.13 다운로드 기능 개선 				$("#docdownloadform").find("#docNo").val(docNo); 				$("#docdownloadform").find("#fileName").val("[신한펀드파트너스] "+$("#mainDoc option:selected").text()); 			} 		}  		var title
+docNo :: 		$(".viewrIssue").hide(); 			}  			$("#attachedDoc option:first").attr("selected", "selected"); 			if(docNo != null && docNo != ""){ 				search(docNo); 				 				//2018.03.13 다운로드 기능 개선 				$("#docdownloadform").find("#docNo").val(docNo); 				$("#docdownloadform").find("#fileName").val("[신한펀드파트너스] "+$("#mainDoc option:selected").text()); 			} 		}  		var title = $("#frm").find("#tempTi
+docNo :: elected", "selected"); 			if(docNo != null && docNo != ""){ 				search(docNo); 				 				//2018.03.13 다운로드 기능 개선 				$("#docdownloadform").find("#docNo").val(docNo); 				$("#docdownloadform").find("#fileName").val("[신한펀드파트너스] "+$("#mainDoc option:selected").text()); 			} 		}  		var title = $("#frm").find("#tempTitle").val(); 		fnSetCookieDiscls('20260928000287', title);  		if(docNo.len
+docNo :: elected"); 			if(docNo != null && docNo != ""){ 				search(docNo); 				 				//2018.03.13 다운로드 기능 개선 				$("#docdownloadform").find("#docNo").val(docNo); 				$("#docdownloadform").find("#fileName").val("[신한펀드파트너스] "+$("#mainDoc option:selected").text()); 			} 		}  		var title = $("#frm").find("#tempTitle").val(); 		fnSetCookieDiscls('20260928000287', title);  		if(docNo.length  > 1){ 
+docNo :: Doc option:selected").text()); 			} 		}  		var title = $("#frm").find("#tempTitle").val(); 		fnSetCookieDiscls('20260928000287', title);  		if(docNo.length  > 1){ 			search(docNo); 			 			//2018.03.13 다운로드 기능 개선 			$("#docdownloadform").find("#docNo").val(docNo); 			$("#docdownloadform").find("#fileName").val("[신한펀드파트너스] "+$("#mainDoc option:selected").text()); 		} 		 		//2013.02.04
+docNo ::  			} 		}  		var title = $("#frm").find("#tempTitle").val(); 		fnSetCookieDiscls('20260928000287', title);  		if(docNo.length  > 1){ 			search(docNo); 			 			//2018.03.13 다운로드 기능 개선 			$("#docdownloadform").find("#docNo").val(docNo); 			$("#docdownloadform").find("#fileName").val("[신한펀드파트너스] "+$("#mainDoc option:selected").text()); 		} 		 		//2013.02.04 수시공시 사전확인절차면제 관련 추가 		var gub
+docNo :: okieDiscls('20260928000287', title);  		if(docNo.length  > 1){ 			search(docNo); 			 			//2018.03.13 다운로드 기능 개선 			$("#docdownloadform").find("#docNo").val(docNo); 			$("#docdownloadform").find("#fileName").val("[신한펀드파트너스] "+$("#mainDoc option:selected").text()); 		} 		 		//2013.02.04 수시공시 사전확인절차면제 관련 추가 		var gubn	= ''; 		var reqTpCd = '';  		//gubn값이 1이면 정정요청서로 기공시 목록 표출 		//gubn값
+docNo :: 20260928000287', title);  		if(docNo.length  > 1){ 			search(docNo); 			 			//2018.03.13 다운로드 기능 개선 			$("#docdownloadform").find("#docNo").val(docNo); 			$("#docdownloadform").find("#fileName").val("[신한펀드파트너스] "+$("#mainDoc option:selected").text()); 		} 		 		//2013.02.04 수시공시 사전확인절차면제 관련 추가 		var gubn	= ''; 		var reqTpCd = '';  		//gubn값이 1이면 정정요청서로 기공시 목록 표출 		//gubn값이 2이면 기공시문서로
+docNo :: / 	function fnChangeDoc(){ 		if($("#mainDoc option:selected").val() != ""){ 			var temps	= $("#mainDoc option:selected").val().split("|"); 			var docNo	= temps[0]; 			var lstYn	= temps[1]; 			if("N" == lstYn){ 				$(".viewrIssue").show(); 			} else { 				$(".viewrIssue").hide(); 			}  			$("#attachedDoc option:first").attr("selected", "selected"); 			if(docNo != null && docNo != ""){
+docNo :: 		$(".viewrIssue").show(); 			} else { 				$(".viewrIssue").hide(); 			}  			$("#attachedDoc option:first").attr("selected", "selected"); 			if(docNo != null && docNo != ""){ 				search(docNo); 				 				//2018.03.13 다운로드 기능 개선 				$("#docdownloadform").find("#docNo").val(docNo); 				$("#docdownloadform").find("#fileName").val("[신한펀드파트너스] "+$("#mainDoc option:selected").text()); 			} 	
+docNo :: ).show(); 			} else { 				$(".viewrIssue").hide(); 			}  			$("#attachedDoc option:first").attr("selected", "selected"); 			if(docNo != null && docNo != ""){ 				search(docNo); 				 				//2018.03.13 다운로드 기능 개선 				$("#docdownloadform").find("#docNo").val(docNo); 				$("#docdownloadform").find("#fileName").val("[신한펀드파트너스] "+$("#mainDoc option:selected").text()); 			} 		} 	}  	/*====
+docNo :: 		$(".viewrIssue").hide(); 			}  			$("#attachedDoc option:first").attr("selected", "selected"); 			if(docNo != null && docNo != ""){ 				search(docNo); 				 				//2018.03.13 다운로드 기능 개선 				$("#docdownloadform").find("#docNo").val(docNo); 				$("#docdownloadform").find("#fileName").val("[신한펀드파트너스] "+$("#mainDoc option:selected").text()); 			} 		} 	}  	/*==============================
+docNo :: elected", "selected"); 			if(docNo != null && docNo != ""){ 				search(docNo); 				 				//2018.03.13 다운로드 기능 개선 				$("#docdownloadform").find("#docNo").val(docNo); 				$("#docdownloadform").find("#fileName").val("[신한펀드파트너스] "+$("#mainDoc option:selected").text()); 			} 		} 	}  	/*=============================================================================* 	 * 첨부문서 불러오기 	 *=========
+docNo :: elected"); 			if(docNo != null && docNo != ""){ 				search(docNo); 				 				//2018.03.13 다운로드 기능 개선 				$("#docdownloadform").find("#docNo").val(docNo); 				$("#docdownloadform").find("#fileName").val("[신한펀드파트너스] "+$("#mainDoc option:selected").text()); 			} 		} 	}  	/*=============================================================================* 	 * 첨부문서 불러오기 	 *=====================
+docNo :: ===========* 	 * 첨부문서 불러오기 	 *============================================================================*/ 	function fnChangeAttachDoc(){ 		var docNo = $("#attachedDoc option:selected").val(); 		$("#mainDoc option:first").attr("selected", "selected"); 		if(docNo != null && docNo != ""){ 			search(docNo); 			 			//2018.03.13 다운로드 기능 개선 			$("#docdownloadform").find("#docNo").val(docNo);
+docNo :: nction fnChangeAttachDoc(){ 		var docNo = $("#attachedDoc option:selected").val(); 		$("#mainDoc option:first").attr("selected", "selected"); 		if(docNo != null && docNo != ""){ 			search(docNo); 			 			//2018.03.13 다운로드 기능 개선 			$("#docdownloadform").find("#docNo").val(docNo); 			$("#docdownloadform").find("#fileName").val($("#frm").find("#tempTitle").val()+" "+$("#attachedDoc option:sele
+docNo :: tachDoc(){ 		var docNo = $("#attachedDoc option:selected").val(); 		$("#mainDoc option:first").attr("selected", "selected"); 		if(docNo != null && docNo != ""){ 			search(docNo); 			 			//2018.03.13 다운로드 기능 개선 			$("#docdownloadform").find("#docNo").val(docNo); 			$("#docdownloadform").find("#fileName").val($("#frm").find("#tempTitle").val()+" "+$("#attachedDoc option:selected").text()); 
+docNo ::  $("#attachedDoc option:selected").val(); 		$("#mainDoc option:first").attr("selected", "selected"); 		if(docNo != null && docNo != ""){ 			search(docNo); 			 			//2018.03.13 다운로드 기능 개선 			$("#docdownloadform").find("#docNo").val(docNo); 			$("#docdownloadform").find("#fileName").val($("#frm").find("#tempTitle").val()+" "+$("#attachedDoc option:selected").text()); 		} 	}  	/*===========
+docNo :: tr("selected", "selected"); 		if(docNo != null && docNo != ""){ 			search(docNo); 			 			//2018.03.13 다운로드 기능 개선 			$("#docdownloadform").find("#docNo").val(docNo); 			$("#docdownloadform").find("#fileName").val($("#frm").find("#tempTitle").val()+" "+$("#attachedDoc option:selected").text()); 		} 	}  	/*=============================================================================* 	 * 첨
+docNo :: ", "selected"); 		if(docNo != null && docNo != ""){ 			search(docNo); 			 			//2018.03.13 다운로드 기능 개선 			$("#docdownloadform").find("#docNo").val(docNo); 			$("#docdownloadform").find("#fileName").val($("#frm").find("#tempTitle").val()+" "+$("#attachedDoc option:selected").text()); 		} 	}  	/*=============================================================================* 	 * 첨부문서 불러오기 	 
+mainDoc :: l width="65"> 					<col width="*"> 					<col width="*"> 				</colgroup> 				<tbody> 					<tr class="first"> 						<th class="first"><label for="mainDoc">본 문</label></th> 						<td colspan="2"> 							<select id="mainDoc" name="mainDoc" title="본문" onchange="fnChangeDoc(); return false;" style="width:452px;"> 								<option value="">본문선택</option> 								<option value='20260928000861|Y'se
+mainDoc :: oup> 				<tbody> 					<tr class="first"> 						<th class="first"><label for="mainDoc">본 문</label></th> 						<td colspan="2"> 							<select id="mainDoc" name="mainDoc" title="본문" onchange="fnChangeDoc(); return false;" style="width:452px;"> 								<option value="">본문선택</option> 								<option value='20260928000861|Y'selected="selected">ETF이익금분배신고(분배금안내)(일괄공시) (2026.09.28)</option>  				
+mainDoc :: y> 					<tr class="first"> 						<th class="first"><label for="mainDoc">본 문</label></th> 						<td colspan="2"> 							<select id="mainDoc" name="mainDoc" title="본문" onchange="fnChangeDoc(); return false;" style="width:452px;"> 								<option value="">본문선택</option> 								<option value='20260928000861|Y'selected="selected">ETF이익금분배신고(분배금안내)(일괄공시) (2026.09.28)</option>  							</select> 	
+mainDoc :: fnTocResize(); 		$(window).resize(function(){ 			fnTocResize(); 		}); 		init();  		  	});  	function init(){ 		var docNo = "";  		if($("#mainDoc option:selected").val() != ""){ 			var temps	= $("#mainDoc option:selected").val().split("|"); 			var docNo	= temps[0]; 			var lstYn	= temps[1]; 			if("N" == lstYn){ 				$(".viewrIssue").show(); 			} else { 				$(".viewrIssue").hide();
+mainDoc :: ze(); 		}); 		init();  		  	});  	function init(){ 		var docNo = "";  		if($("#mainDoc option:selected").val() != ""){ 			var temps	= $("#mainDoc option:selected").val().split("|"); 			var docNo	= temps[0]; 			var lstYn	= temps[1]; 			if("N" == lstYn){ 				$(".viewrIssue").show(); 			} else { 				$(".viewrIssue").hide(); 			}  			$("#attachedDoc option:first").attr("selected",
+mainDoc ::  				//2018.03.13 다운로드 기능 개선 				$("#docdownloadform").find("#docNo").val(docNo); 				$("#docdownloadform").find("#fileName").val("[신한펀드파트너스] "+$("#mainDoc option:selected").text()); 			} 		}  		var title = $("#frm").find("#tempTitle").val(); 		fnSetCookieDiscls('20260928000287', title);  		if(docNo.length  > 1){ 			search(docNo); 			 			//2018.03.13 다운로드 기능 개선 			$("#docdownloadform"
+mainDoc :: 		 			//2018.03.13 다운로드 기능 개선 			$("#docdownloadform").find("#docNo").val(docNo); 			$("#docdownloadform").find("#fileName").val("[신한펀드파트너스] "+$("#mainDoc option:selected").text()); 		} 		 		//2013.02.04 수시공시 사전확인절차면제 관련 추가 		var gubn	= ''; 		var reqTpCd = '';  		//gubn값이 1이면 정정요청서로 기공시 목록 표출 		//gubn값이 2이면 기공시문서로 요구유형값이 01(정정요구서)일때 경고문구 표출 		if( gubn == '1' ){ 			document.getElementB
+mainDoc :: ======* 	 * 공시문서 불러오기 	 *============================================================================*/ 	function fnMainDocSet(){ 		var len = $("#mainDoc option").size(); 		if(len > 1){ 			$("#mainDoc option:eq(1)").attr("selected", "selected"); 		} 	}  	/*=============================================================================* 	 * 공시문서 불러오기 	 *===================================
+mainDoc :: ======================================================*/ 	function fnMainDocSet(){ 		var len = $("#mainDoc option").size(); 		if(len > 1){ 			$("#mainDoc option:eq(1)").attr("selected", "selected"); 		} 	}  	/*=============================================================================* 	 * 공시문서 불러오기 	 *============================================================================*/ 	fun
+mainDoc :: ==============* 	 * 공시문서 불러오기 	 *============================================================================*/ 	function fnChangeDoc(){ 		if($("#mainDoc option:selected").val() != ""){ 			var temps	= $("#mainDoc option:selected").val().split("|"); 			var docNo	= temps[0]; 			var lstYn	= temps[1]; 			if("N" == lstYn){ 				$(".viewrIssue").show(); 			} else { 				$(".viewrIssue").hide();
+mainDoc :: ===================================================*/ 	function fnChangeDoc(){ 		if($("#mainDoc option:selected").val() != ""){ 			var temps	= $("#mainDoc option:selected").val().split("|"); 			var docNo	= temps[0]; 			var lstYn	= temps[1]; 			if("N" == lstYn){ 				$(".viewrIssue").show(); 			} else { 				$(".viewrIssue").hide(); 			}  			$("#attachedDoc option:first").attr("selected",
+mainDoc ::  				//2018.03.13 다운로드 기능 개선 				$("#docdownloadform").find("#docNo").val(docNo); 				$("#docdownloadform").find("#fileName").val("[신한펀드파트너스] "+$("#mainDoc option:selected").text()); 			} 		} 	}  	/*=============================================================================* 	 * 첨부문서 불러오기 	 *============================================================================*/ 	function fnChan
+mainDoc :: ====================================================*/ 	function fnChangeAttachDoc(){ 		var docNo = $("#attachedDoc option:selected").val(); 		$("#mainDoc option:first").attr("selected", "selected"); 		if(docNo != null && docNo != ""){ 			search(docNo); 			 			//2018.03.13 다운로드 기능 개선 			$("#docdownloadform").find("#docNo").val(docNo); 			$("#docdownloadform").find("#fileName").val($("#frm
+setPath :: =======================================* 	 * 첨부문서 불러오기 	 *============================================================================*/ 	function setPath(tocLocPath, docLocPath, docServerPath, formUpclssCd, sndLocTpCd){	     		 		//https 접속 시 변경 2020.01.31 		var url = window.location.href;		 		if(url.indexOf("https://")!=-1){ 			tocLocPath = tocLocPath.replace("http://","https://"); 			d
+setPath :: path").val(docServerPath);  		$("#frm").find("#sndLocTpCd").val(sndLocTpCd); 		$("#frm").find("#formUpclssCd").val(formUpclssCd); 	}  	function setPath2(tocLocPath, docLocPath, docServerPath, formUpclssCd, sndLocTpCd){ 		if(tocLocPath == ""){ 			$('section.toc-wrapper a.btn-close').click(); 			toc.location.href = "/common/noToc.htm"; 			docViewFrm.location.href =  "/common/JLDDST60200_i2
+external :: ttr("src", tocLocPath); 			$("#toc").load(function(){ 				//https://적용을위해 상대경로로 변경 2020.01.31 				$("#toc").contents().find('link').attr('href', '/external/dart_toc.css'); 				$("#toc").contents().find("a").attr("target","docViewFrm"); 			}); 		} 	    docViewFrm.location.href = docLocPath; 	  //https://적용을위해 상대경로로 변경 2020.01.31 		$("#docViewFrm").load(function(){	 			if($("#docViewFrm").
+external :: oad(function(){	 			if($("#docViewFrm").contents().find('link').length > 0){ 				if($("#docViewFrm").contents().find('link').attr('href').indexOf('/external/report_xml.css')!= -1){ 					$("#docViewFrm").contents().find('link').attr('href', '/external/report_xml.css'); 				}else if($("#docViewFrm").contents().find('link').attr('href').indexOf('/external/xforms.css')!= -1){ 					$("#docViewFrm"
+external :: ewFrm").contents().find('link').attr('href').indexOf('/external/report_xml.css')!= -1){ 					$("#docViewFrm").contents().find('link').attr('href', '/external/report_xml.css'); 				}else if($("#docViewFrm").contents().find('link').attr('href').indexOf('/external/xforms.css')!= -1){ 					$("#docViewFrm").contents().find('link').attr('href', '/external/xforms.css'); 				}	 			} 		}); 	     	 
+external :: Frm").contents().find('link').attr('href', '/external/report_xml.css'); 				}else if($("#docViewFrm").contents().find('link').attr('href').indexOf('/external/xforms.css')!= -1){ 					$("#docViewFrm").contents().find('link').attr('href', '/external/xforms.css'); 				}	 			} 		}); 	     	    $("#docdownloadform").find("#docLocPath").val(docLocPath); 		$("#docdownloadform").find("#docpath").v
+external :: ocViewFrm").contents().find('link').attr('href').indexOf('/external/xforms.css')!= -1){ 					$("#docViewFrm").contents().find('link').attr('href', '/external/xforms.css'); 				}	 			} 		}); 	     	    $("#docdownloadform").find("#docLocPath").val(docLocPath); 		$("#docdownloadform").find("#docpath").val(docServerPath);  		$("#frm").find("#sndLocTpCd").val(sndLocTpCd); 		$("#frm").find("#
+scape;
+							margin: 0;					
+						}
+						body{
+							zoom: 0.90;
+						}
+					`;
+					docView.document.head.appendChild(printStyle);
+	            }else{
+                    var docView = window.frames["docViewFrm"];
 
-<!DOCTYPE html>
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
-<title>창 닫기</title>
-<script type="text/javascript" src="../js/jquery/jquery.js"></script>
-<script type="text/javascript">
-	$(document).ready(function(){
-		location.href = '/common/blank.html';
-	});
+                    var printStyle = docView.document.createElement("style");
+                    printStyle.textContent=`
+                            @page{
+                                    size: portrait;
+                                    
+                            }
+                            body{
+                                    zoom: 0.80;
+                            		box-sizing:border-box;
+                            		margin-right: 20px;
+
+                            }
+                            table{
+                                	width: 100%;
+                                	table-layout: fixed;
+                                	word-wrap: break-word;
+                        	}
+
+                    `;
+                    docView.document.head.appendChild(printStyle);
+	            	
+	            	
+	            	
+	            }                    
+
+                 	
+                    //필요 시 테이블 크기 조정
+                    $("#docViewFrm").contents().find(".nb").each(function() {
+
+	                    if( this.width > 1250){   
+                    		$(this).removeAttr('width');
+                    		this.style.maxWidth = "1250px";
+                    		this.style.minWidth = "1250px";
+                    		this.style.width= "1250px";
+                    		this.style.tableLayout = "auto";
+                    	}               	       	
+                    });
+                    $("#docViewFrm").contents().find(".TABLE").each(function() {
+
+                        if(  this.width > 1250){   
+                    		$(this).removeAttr('width');
+                    		this.style.maxWidth = "1250px";
+                    		this.style.minWidth = "1250px";
+                    		this.style.width= "1250px";
+                    		this.style.tableLayout = "auto";
+                    		
+                            $(this).find('colgroup col').each(function(){ 
+                            	$(this).removeAttr('width');
+                            });     
+                    	}   
+                    });
+               
+				window.frames["docViewFrm"].focus();
+				window.frames["docViewFrm"].print();
+			}else{
+				return;
+			}
+		
+		}else{ // 일반 공시일 경우
+			 fnPdfJson();
+			// 기존 로직은 바로 viewer.js의 공통 함수를 호출하지만, pdf파일 존재 여부 체크를 위해 막음. 2025.01.15
+		}
+	}
+	
+	function fnPdfJson(){
+		
+		// 실제 파일 다운로드를 하기 전 pdf 파일이 있는지 확인하기 위해 호출
+		$("#docdownloadform").find("#method").val("pdfDownJson");
+		$("#docdownloadform").ajaxSubmit({
+			  ajaxUrl		: '/common/pdfDownload.do'
+			, ajaxDataType	: 'json'
+			, ajaxCallBack	: fnPdfJsonCallBack
+		});
+	}
+	
+	
+	// pdf 파일 존재여부 체크 확인 결과
+	function fnPdfJsonCallBack(response, status) {
+		if(status == "success") {
+			var items = response;
+			if(items.length == 1){
+				var filestatus = items[0].filestatus;
+				// pdf 파일이 없는 상태
+				if(filestatus == "empty") {
+					var message = "PDF가 아직 변환되지 않았습니다. 처리중이오니 잠시후 다시 클릭하시기 바랍니다.";
+					alert(message);
+					return;
+				} else { // 에러 상태
+					var message = "PDF 파일 변환 중 오류가 발생하였습니다. 잠시 후 다시 시도해 주시기 바랍니다.";
+					alert(message);
+					return;
+				}
+			} 
+			else {
+				// pdf 파일이 존재하기 때문에 다운로드 호출
+				filedownload('pdf');
+			}
+		}
+	}
+	
+	
+	function excelDownload(){
+		
+		
+		var isEsgDiscls = false; //ESG공시 판단용
+		
+		var maindocFileNm = document.docdownloadform.docLocPath.value;
+		if( maindocFileNm.indexOf("99667.htm") > -1 ) isEsgDiscls = true; // 기업지배구조 보고서 공시 (본문)
+		if( maindocFileNm.indexOf("99926.htm") > -1 ) isEsgDiscls = true; // 기타공개첨부서류 (첨부)
+		
+		
+		// ESG 공시일 경우
+		if( isEsgDiscls ){			
+			alert('해당서식은 Excel 다운로드 기능을 제공하지 않습니다.');
+		}else{ // 일반 공시일 경우			
+			filedownload('excel');
+		}
+		
+	}
+		
 </script>
-</head>
-<body>
 </body>
 </html>
-[]
-ERR IndexError('list index out of range')
-===== 20260928000137
-22345
-[('discls', '')]
-+ pIsurCd;
-	window.open(url, "_blank", "top=100,left=200,scrollbars=yes");
-}
-</script>
-</head>
-<body class="pop">
 
-<!--
-2018.03.13 다운로드 기능 개선 
-파일 다운로드(PDF, EXCEL)에 사용되는 정보 저장
-method, acpNo, docNo, fileName 추가
--->
-<form name="docdownloadform" id="docdownloadform" action="#">
-	<input type="hidden" name="method"		id="method"		value=""/>
-	<input type="hidden" name="acptNo"		id="acptNo"		value="20260928000137" />
-	<input type="hidden" name="docNo"		id="docNo"		value="" />
-	<input type
-
-<!DOCTYPE html>
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
-<title>창 닫기</title>
-<script type="text/javascript" src="../js/jquery/jquery.js"></script>
-<script type="text/javascript">
-	$(document).ready(function(){
-		location.href = '/common/blank.html';
-	});
-</script>
-</head>
-<body>
-</body>
-</html>
-[]
-ERR IndexError('list index out of range')
-===== naver etf list
-1171
-{'itemcode': '069500', 'etfTabCode': 1, 'itemname': 'KODEX 200', 'nowVal': 108550, 'risefall': '5', 'changeVal': -2195, 'changeRate': -1.98, 'nav': 108555.0, 'threeMonthEarnRate': -14.7221, 'quant': 17544467, 'amonut': 1928468, 'marketSum': 252162}
