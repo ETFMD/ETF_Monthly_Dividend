@@ -31,6 +31,10 @@ TEXT = {
     '퇴직금 계산기': 'Korean severance pay', '주담대 LTV·DSR 한도 계산기': 'Korean mortgage LTV·DSR limit', '부동산 중개수수료 계산기': 'Korean brokerage fee',
     '공포 &amp; 탐욕 지수': 'Fear &amp; Greed Index', '돈, 자산, 노동의 가치 속도': 'Money, assets & wages in Korea', '무한매수법 기록': 'Infinite buying (TQQQ·SOXL)',
     'ETF CAGR 비교': 'ETF CAGR comparison', '코스피 성장률': 'KOSPI growth', '코스피 200 성장률': 'KOSPI 200 growth', '코스닥 성장률': 'KOSDAQ growth',
+    '일본 지수 성장률': 'Japanese index growth', '중국 지수 성장률': 'Chinese index growth', '홍콩 지수 성장률': 'Hong Kong index growth', '대만 지수 성장률': 'Taiwanese index growth',
+    '닛케이 225 성장률': 'Nikkei 225 growth', 'TOPIX 성장률': 'TOPIX growth', '상해종합지수 성장률': 'SSE Composite growth', 'CSI 300 성장률': 'CSI 300 growth',
+    '선전성분지수 성장률': 'SZSE Component growth', '창업판지수 성장률': 'ChiNext growth', '과창판50 성장률': 'STAR 50 growth',
+    '항셍지수 성장률': 'Hang Seng growth', '홍콩H지수 성장률': 'Hang Seng China Enterprises growth', '항셍테크지수 성장률': 'Hang Seng TECH growth', '대만 가권지수 성장률': 'TAIEX growth',
     '나스닥 종합 성장률': 'NASDAQ Composite growth', '나스닥 100 성장률': 'Nasdaq-100 growth', '다우존스 성장률': 'Dow Jones growth',
     'S&P 500 성장률': 'S&P 500 growth', '필라델피아 반도체 성장률': 'PHLX Semiconductor (SOX) growth', '다우존스 반도체 성장률': 'DJ US Semiconductors growth',
     # ── 지수 성장률 공통 ──

@@ -275,6 +275,94 @@
         "title": "Dow Jones U.S. Semiconductors Index (DJUSSC) CAGR",
         "desc": "Dow Jones U.S. Semiconductors Index (DJUSSC) compound annual growth rate since 2000 and over the last 5–20 years, with monthly and daily rates."
       }
+    },
+    {
+      "path": "n225",
+      "tab": "n225",
+      "group": "index",
+      "title": "닛케이 225 연평균 성장률(CAGR) — 1949년 이후 일본 지수 분석",
+      "short": "닛케이 225 성장률 분석",
+      "desc": "1949년 176.21에서 출발한 닛케이 225의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."
+    },
+    {
+      "path": "topix",
+      "tab": "topix",
+      "group": "index",
+      "title": "TOPIX 연평균 성장률(CAGR) — 1968년 이후 일본 시가총액 지수 분석",
+      "short": "TOPIX 성장률 분석",
+      "desc": "1968년 기준지수 100에서 출발한 TOPIX의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."
+    },
+    {
+      "path": "sse",
+      "tab": "sse",
+      "group": "index",
+      "title": "상해종합지수 연평균 성장률(CAGR) — 1990년 이후 중국 지수 분석",
+      "short": "상해종합지수 성장률 분석",
+      "desc": "1990년 기준지수 100에서 출발한 상해종합지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."
+    },
+    {
+      "path": "csi300",
+      "tab": "csi300",
+      "group": "index",
+      "title": "CSI 300 연평균 성장률(CAGR) — 2004년 이후 중국 대형주 지수 분석",
+      "short": "CSI 300 성장률 분석",
+      "desc": "2004년 기준지수 1000에서 출발한 CSI 300의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."
+    },
+    {
+      "path": "szse",
+      "tab": "szse",
+      "group": "index",
+      "title": "선전성분지수 연평균 성장률(CAGR) — 1994년 이후 중국 지수 분석",
+      "short": "선전성분지수 성장률 분석",
+      "desc": "1994년 기준지수 1000에서 출발한 선전성분지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."
+    },
+    {
+      "path": "chinext",
+      "tab": "chinext",
+      "group": "index",
+      "title": "창업판지수(ChiNext) 연평균 성장률(CAGR) — 2010년 이후 분석",
+      "short": "창업판지수 성장률 분석",
+      "desc": "2010년 기준지수 1000에서 출발한 창업판지수(ChiNext)의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."
+    },
+    {
+      "path": "star50",
+      "tab": "star50",
+      "group": "index",
+      "title": "과창판50(STAR 50) 연평균 성장률(CAGR) — 2019년 이후 분석",
+      "short": "과창판50 성장률 분석",
+      "desc": "2019년 기준지수 1000에서 출발한 과창판50(STAR 50)의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."
+    },
+    {
+      "path": "hsi",
+      "tab": "hsi",
+      "group": "index",
+      "title": "항셍지수 연평균 성장률(CAGR) — 1964년 이후 홍콩 지수 분석",
+      "short": "항셍지수 성장률 분석",
+      "desc": "1964년 기준지수 100에서 출발한 항셍지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."
+    },
+    {
+      "path": "hscei",
+      "tab": "hscei",
+      "group": "index",
+      "title": "홍콩H지수(HSCEI) 연평균 성장률(CAGR) — 2000년 기준 분석",
+      "short": "홍콩H지수 성장률 분석",
+      "desc": "2000년 기준지수 2000으로 산출되는 홍콩H지수(항셍중국기업지수)의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다."
+    },
+    {
+      "path": "hstech",
+      "tab": "hstech",
+      "group": "index",
+      "title": "항셍테크지수 연평균 성장률(CAGR) — 2014년 기준 분석",
+      "short": "항셍테크지수 성장률 분석",
+      "desc": "2014년 기준지수 3000에서 출발한 항셍테크지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."
+    },
+    {
+      "path": "taiex",
+      "tab": "taiex",
+      "group": "index",
+      "title": "대만 가권지수(TAIEX) 연평균 성장률(CAGR) — 1966년 이후 분석",
+      "short": "대만 가권지수 성장률 분석",
+      "desc": "1966년 평균 기준지수 100에서 출발한 대만 가권지수(TAIEX)의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."
     }
   ],
   "brand_en": "Decoding Capitalism"
