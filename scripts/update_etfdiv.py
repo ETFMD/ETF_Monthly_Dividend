@@ -146,7 +146,8 @@ def to_num(s):
 def main():
     t0 = time.time(); now = now_kst(); today = now.date()
     old = load(OUT) or {}
-    data = {k: old.get(k) for k in ('etfs', 'events', 'seen', 'seenEx', 'exMap', 'universeDate', 'kodexFid', 'taxMap', 'taxCache', 'taxTry')}
+    # 깊은 복사: 직전 자료(old)를 그대로 고치면 '바뀌었는지' 비교가 항상 같다고 나옴
+    data = json.loads(json.dumps({k: old.get(k) for k in ('etfs', 'events', 'seen', 'seenEx', 'exMap', 'universeDate', 'kodexFid', 'taxMap', 'taxCache', 'taxTry')}))
     data = {k: v for k, v in data.items() if v is not None}
     for k, empty in (('etfs', {}), ('events', []), ('seen', []), ('seenEx', []), ('exMap', {}), ('taxMap', {})):
         data[k] = data.get(k) or empty
@@ -287,7 +288,11 @@ def main():
         recs = sorted({e['rec'][:7] for e in data['events'] if e['t'] in targets}) or [dstr(today)[:7]]
         months = sorted({(int(r[:4]), int(r[5:7])) for r in recs} | {(today.year, today.month)})[-3:]
         relay = (load(os.path.join(ROOT, 'counter.json')) or {}).get('endpoint')
-        for t, lst_t in etf_tax.collect(by, names, months, relay, cache).items():
+        sig = {}
+        for e in data['events']: sig.setdefault(e['t'], set()).add((e['rec'], float(e['amt'])))
+        for c, x in data['etfs'].items():               # 분배 이력(분배락일 → 기준일)도 더해 월중 분배 종목도 2건 이상 맞춰 봄
+            for ex_d, amt, _y in (x.get('h') or [])[:6]: sig.setdefault(c, set()).add((dstr(next_bday(ddate(ex_d))), float(amt)))
+        for t, lst_t in etf_tax.collect(by, names, months, relay, cache, sig).items():
             old_t = {x[0]: x for x in data['taxMap'].get(t, [])}
             for x in lst_t: old_t[x[0]] = x
             data['taxMap'][t] = sorted(old_t.values(), reverse=True)[:12]

@@ -6,7 +6,7 @@ ETF 1좌당 과세표준액 — 운용사별 공개 자료 (scripts/update_etfdi
   미래에셋(TIGER) ... investments.miraeasset.com 분배금 현황 list.ajax (월별 전 종목)   종목코드가 표에 있음 · 해외 서버 차단 → 카운터 Worker 중계(/relay)
   한국투자(ACE) ..... papi.aceetf.co.kr /api/funds/{펀드코드}/dividend (tax_PRI)       ISIN → 펀드코드 (/api/funds 목록)
   신한(SOL) ......... soletf.com /api/etf/pds/dividend/{펀드코드} (WEEK_PRI)           종목코드 → 펀드코드 (/api/etf/pds 목록)
-  한화(PLUS) ........ plusetf.co.kr /api/v1/product/dividend/list?n= (taxBase)       상품 번호 n → 상품명 (상세 페이지 제목)
+  한화(PLUS) ........ plusetf.co.kr /api/v1/product/dividend/list?n= (taxBase)       상품 번호 n ↔ 공시 (기준일, 분배금) 일치 · Worker 중계
   키움(KIWOOM) ...... kiwoometf.com 상품 상세 KO02010200M?gcode=종목코드 (분배금 표)    종목코드 그대로
 반환: {종목코드: [[기준일 'YYYY-MM-DD', 분배금, 주당 과세표준액], ...]}  · 실패한 종목은 빠짐 (호출한 쪽이 직전 값 유지)
 """
@@ -139,44 +139,44 @@ def sol(tickers, cache):
 
 
 # ───── 한화 PLUS ─────
-def plus(tickers, names, cache):
-    """names: 종목코드 → 네이버 종목명 · 상품 번호(n)는 상세 페이지 제목으로 찾아 기억 (새 번호만 하루 한 번 훑음)"""
-    nmap = cache.setdefault('plusN', {})                 # 정규화 이름 → n
-    seen = set(cache.setdefault('plusSeen', []))          # 이미 확인한 상품 번호
-    want = {t: _norm(names.get(t)) for t in tickers}
-    if any(v not in nmap for v in want.values()):
-        known = [int(n) for n in nmap.values()]
-        top = max(known + [6420]) + 60
-        todo = [n for n in range(6170, top) if n not in seen]
-        if not todo and cache.get('plusScan') != time.strftime('%Y-%m-%d'):     # 다 봤는데도 없으면 하루 한 번 최근 번호를 다시 봄
-            cache['plusScan'] = time.strftime('%Y-%m-%d')
-            seen = {n for n in seen if n < max(known + [6420]) - 40}; todo = [n for n in range(6170, top) if n not in seen]
-        def title(n):
-            try:
-                h = _get('https://www.plusetf.co.kr/product/detail?n=%06d' % n, tries=2, timeout=20)
-                m = re.search(r'<title>(.*?) \| PLUS ETF</title>', h)
-                return n, (m.group(1).replace('&amp;', '&') if m else '')
-            except Exception: return n, None                # 실패 → 다음 실행에서 다시
-        deadline = time.time() + 90                         # 한 번 실행에 90초까지만 (나머지는 다음 실행)
-        ex = cf.ThreadPoolExecutor(4)
-        futs = [ex.submit(title, n) for n in todo[:120]]
+def _via(url, relay):
+    """해외 서버(GitHub Actions)에서 막히거나 느린 사이트는 카운터 Worker(/relay)로 받음"""
+    return relay.rstrip('/') + '/relay?u=' + urllib.parse.quote(url, safe='') if relay else url
+
+
+def plus(tickers, sig, cache, relay=None):
+    """상품 번호(n) 찾기: 상세 페이지 대신 가벼운 분배금 목록 API를 번호별로 받아, 거래소 공시의 (기준일, 분배금) 기록과 2건 이상
+    일치하는 번호를 그 종목으로 기억 · sig: 종목코드 → {(기준일, 분배금)} · 한 번 실행에 90초까지만 훑고 나머지는 다음 실행"""
+    pmap = cache.setdefault('plusMap', {})                # 종목코드 → n
+    seen = set(cache.setdefault('plusSeen', []))
+    def fetch(n):
+        try:
+            d = _get(_via('https://www.plusetf.co.kr/api/v1/product/dividend/list?n=%06d&page=0' % n, relay), as_json=True, tries=2, timeout=30)
+            return n, [[_ymd(x.get('wkdate')), _num(x.get('dividend')), _num(x.get('taxBase'))] for x in d.get('content') or [] if _ymd(x.get('wkdate'))]
+        except Exception: return n, None
+    lost = [t for t in tickers if t not in pmap and len(sig.get(t) or ()) >= 2]
+    got = {}
+    if lost:
+        top = max([int(v) for v in pmap.values()] + [6420]) + 60
+        todo = [n for n in range(6170, top) if n not in seen and '%06d' % n not in pmap.values()]
+        if not todo and cache.get('plusScan') != time.strftime('%Y-%m-%d'):     # 다 봤는데 못 찾은 종목이 있으면 하루 한 번 다시
+            cache['plusScan'] = time.strftime('%Y-%m-%d'); seen = set(); todo = [n for n in range(6170, top) if '%06d' % n not in pmap.values()]
+        deadline = time.time() + 90
+        ex = cf.ThreadPoolExecutor(6)
+        futs = [ex.submit(fetch, n) for n in todo[:200]]
         for f in futs:
-            try: n, nm = f.result(timeout=max(0.1, deadline - time.time()))
+            try: n, rows = f.result(timeout=max(0.1, deadline - time.time()))
             except Exception: continue
-            if nm is None: continue
+            if rows is None: continue
             seen.add(n)
-            if nm: nmap[_norm(nm)] = '%06d' % n
+            have = {(r[0], r[1]) for r in rows}
+            for t in lost:
+                if t not in pmap and len(have & sig[t]) >= 2: pmap[t] = '%06d' % n; got[t] = rows[:12]
         ex.shutdown(wait=False, cancel_futures=True)
         cache['plusSeen'] = sorted(seen)
-    def one(t):
-        n = nmap.get(want[t])
-        if not n: return t, None
-        try:
-            d = _get('https://www.plusetf.co.kr/api/v1/product/dividend/list?n=%s&page=0' % n, as_json=True, tries=3)
-            return t, [[_ymd(x.get('wkdate')), _num(x.get('dividend')), _num(x.get('taxBase'))] for x in d.get('content') or []
-                       if _ymd(x.get('wkdate')) and x.get('taxBase') not in (None, '')]
-        except Exception: return t, None
-    return _pool(one, tickers, 3)
+    rest = [t for t in tickers if t in pmap and t not in got]
+    for n_, rows in _pool(lambda t: (t, fetch(int(pmap[t]))[1]), rest, 4).items(): got[n_] = rows[:12]
+    return {t: [r for r in rows if r[2] is not None] for t, rows in got.items() if rows}
 
 
 # ───── 키움 KIWOOM ─────
@@ -199,11 +199,11 @@ def kiwoom(tickers):
 BRANDS = ('KODEX', 'TIGER', 'ACE', 'SOL', 'PLUS', 'KIWOOM')
 
 
-def collect(by_brand, names, months, relay, cache):
+def collect(by_brand, names, months, relay, cache, sig=None):
     """by_brand: {'KODEX': [종목코드...], ...} → {종목코드: [[기준일, 분배금, 과세표준], ...]}"""
     out = {}
     jobs = {'KODEX': lambda L: kodex(L, cache), 'TIGER': lambda L: tiger(L, months, relay), 'ACE': lambda L: ace(L, cache),
-            'SOL': lambda L: sol(L, cache), 'PLUS': lambda L: plus(L, names, cache), 'KIWOOM': kiwoom}
+            'SOL': lambda L: sol(L, cache), 'PLUS': lambda L: plus(L, sig or {}, cache, relay), 'KIWOOM': kiwoom}
     for b, L in by_brand.items():
         if not L or b not in jobs: continue
         try:
