@@ -8,6 +8,11 @@ ETF 1좌당 과세표준액 — 운용사별 공개 자료 (scripts/update_etfdi
   신한(SOL) ......... soletf.com /api/etf/pds/dividend/{펀드코드} (WEEK_PRI)           종목코드 → 펀드코드 (/api/etf/pds 목록)
   한화(PLUS) ........ plusetf.co.kr /api/v1/product/dividend/list?n= (taxBase)       상품 번호 n ↔ 공시 (기준일, 분배금) 일치 · Worker 중계
   키움(KIWOOM) ...... kiwoometf.com 상품 상세 KO02010200M?gcode=종목코드 (분배금 표)    종목코드 그대로
+  우리(WON) ......... wooriam.kr ETF 상세 '최근 3년 분배금 지급현황' 표                 상세 페이지 제목의 (종목코드)
+  타임폴리오(TIME) .. timeetf.co.kr m11_view.php?idx= '최근 3년 분배금 지급현황' 표      상세 페이지 제목의 (종목코드)
+  삼성액티브(KoAct)·그 밖 · 위에서 못 받은 종목 ... FunETF etfdividend (taxDividAmt)      ISIN (종목코드로 계산)
+    ※ 미래에셋·한화 외 HANARO·1Q·DAISHIN·FOCUS·RISE 는 운용사 사이트에 과세표준이 없거나(RISE 는 해외 접속 차단) FunETF 에도
+      아직 없어, FunETF 에 올라오는 대로 자동 반영
 반환: {종목코드: [[기준일 'YYYY-MM-DD', 분배금, 주당 과세표준액], ...]}  · 실패한 종목은 빠짐 (호출한 쪽이 직전 값 유지)
 """
 import json, re, ssl, sys, time, urllib.parse, urllib.request, concurrent.futures as cf
@@ -196,20 +201,110 @@ def kiwoom(tickers):
     return _pool(one, tickers, 4)
 
 
-BRANDS = ('KODEX', 'TIGER', 'ACE', 'SOL', 'PLUS', 'KIWOOM')
+# ───── 우리 WON ─────
+def _table(h, start):
+    """start 뒤 첫 표에서 [기준일, 분배금, 과세표준] (열: 기준일 · 지급일 · 분배금 · 과세표준 …)"""
+    i = h.find(start)
+    if i < 0: return None
+    body = h[i:h.find('</table>', i)]
+    res = []
+    for r in re.findall(r'<tr[^>]*>(.*?)</tr>', body, re.S):
+        tds = [re.sub(r'<[^>]+>', '', x).strip() for x in re.findall(r'<td[^>]*>(.*?)</td>', r, re.S)]
+        if len(tds) >= 4 and _ymd(tds[0]) and _num(tds[3]) is not None: res.append([_ymd(tds[0]), _num(tds[2]), _num(tds[3])])
+    return res[:12]
+
+
+def won(tickers, cache):
+    B = 'https://www.wooriam.kr/investment/'
+    ids = cache.setdefault('wonId', {})                  # 종목코드 → 상세 페이지 id
+    pages = {}
+    if any(t not in ids for t in tickers):
+        try: lst = sorted(set(re.findall(r'etf-view/(\w+)', _get(B + 'etf-list'))))
+        except Exception as e: print('WON 목록 실패:', e, file=sys.stderr); lst = []
+        def view(i):
+            try: return i, _get(B + 'etf-view/' + i)
+            except Exception: return i, None
+        for i, h in _pool(view, [i for i in lst if i not in ids.values()], 4).items():
+            m = re.search(r'\((\w{6})\)', re.sub(r'<[^>]+>', ' ', h[h.find('<body'):]))
+            if m: ids[m.group(1)] = i; pages[m.group(1)] = h
+    def one(t):
+        if t not in ids: return t, None
+        try: return t, _table(pages.get(t) or _get(B + 'etf-view/' + ids[t]), 'id="popPayStatus"')
+        except Exception: return t, None
+    return _pool(one, tickers, 4)
+
+
+# ───── 타임폴리오 TIME ─────
+def time_(tickers, cache):
+    B = 'https://timeetf.co.kr/'
+    idx = cache.setdefault('timeIdx', {})                 # 종목코드 → 'idx&cate'
+    pages = {}
+    if any(t not in idx for t in tickers):
+        cand = set()
+        for c in ('001', '002', '003'):
+            try: cand |= set(re.findall(r'm11_view\.php\?idx=(\d+)&(?:amp;)?cate=(\d+)', _get(B + 'm11_list.php?cate=' + c)))
+            except Exception: pass
+        cand |= {(str(i), c) for i in range(1, 41) for c in ('001', '002')}   # 목록에 안 보이는 상품까지
+        def view(k):
+            try: return k, _get(B + 'm11_view.php?idx=%s&cate=%s' % k, tries=1, timeout=15)
+            except Exception: return k, None
+        for k, h in _pool(view, sorted(c for c in cand if 'idx=%s&cate=%s' % c not in idx.values()), 6).items():
+            m = re.search(r'TIME[^<>()]{0,60}\((\w{6})\)', h)
+            if m and m.group(1) not in idx and 'moreList3' in h: idx[m.group(1)] = 'idx=%s&cate=%s' % k; pages[m.group(1)] = h
+    def one(t):
+        if t not in idx: return t, None
+        try: return t, _table(pages.get(t) or _get(B + 'm11_view.php?' + idx[t]), 'moreList3')
+        except Exception: return t, None
+    return _pool(one, tickers, 4)
+
+
+# ───── FunETF (삼성액티브 KoAct · 다른 곳에서 못 받은 종목) ─────
+def _isin(t):
+    s = 'KR7' + t + '00'
+    d = ''.join(str(int(c, 36)) for c in s)
+    tot = 0
+    for i, ch in enumerate(reversed(d)):
+        n = int(ch) * (2 if i % 2 == 0 else 1)
+        tot += n // 10 + n % 10
+    return s + str((10 - tot % 10) % 10)
+
+
+def funetf(tickers):
+    def one(t):
+        try:
+            d = _get('https://www.funetf.co.kr/api/public/product/view/etfdividend?itemId=' + _isin(t), as_json=True, timeout=20,
+                     headers={'X-Requested-With': 'XMLHttpRequest', 'Referer': 'https://www.funetf.co.kr/product/etf/view/' + _isin(t)})
+            return t, [[_ymd(x.get('basicDt')), _num(x.get('divAmt')), _num(x.get('taxDividAmt'))] for x in d or []
+                       if _ymd(x.get('basicDt')) and x.get('taxDividAmt') is not None][:12]
+        except Exception: return t, None
+    return _pool(one, tickers, 4)
+
+
+# 과세표준을 찾아보는 브랜드 (HANARO·1Q·DAISHIN·FOCUS·RISE 는 FunETF 에 올라오면 반영)
+BRANDS = ('KODEX', 'TIGER', 'ACE', 'SOL', 'PLUS', 'KIWOOM', 'WON', 'TIME', 'KoAct', 'HANARO', '1Q', 'DAISHIN', 'FOCUS', 'RISE')
 
 
 def collect(by_brand, names, months, relay, cache, sig=None):
     """by_brand: {'KODEX': [종목코드...], ...} → {종목코드: [[기준일, 분배금, 과세표준], ...]}"""
     out = {}
     jobs = {'KODEX': lambda L: kodex(L, cache), 'TIGER': lambda L: tiger(L, months, relay), 'ACE': lambda L: ace(L, cache),
-            'SOL': lambda L: sol(L, cache), 'PLUS': lambda L: plus(L, sig or {}, cache, relay), 'KIWOOM': kiwoom}
+            'SOL': lambda L: sol(L, cache), 'PLUS': lambda L: plus(L, sig or {}, cache, relay), 'KIWOOM': kiwoom,
+            'WON': lambda L: won(L, cache), 'TIME': lambda L: time_(L, cache)}
     for b, L in by_brand.items():
         if not L or b not in jobs: continue
         try:
-            r = jobs[b](sorted(set(L)))
+            r = {t: v for t, v in jobs[b](sorted(set(L))).items() if v}
             out.update(r)
             print('과세표준 %s: %d/%d종목' % (b, len(r), len(set(L))))
         except Exception as e:
             print('과세표준 %s 실패: %s' % (b, e), file=sys.stderr)
+    # 운용사 자료가 없거나 실패한 종목은 FunETF 로 한 번 더
+    rest = sorted({t for L in by_brand.values() for t in L if t not in out})
+    if rest:
+        try:
+            r = {t: v for t, v in funetf(rest).items() if v}
+            out.update(r)
+            print('과세표준 FunETF 보충: %d/%d종목' % (len(r), len(rest)))
+        except Exception as e:
+            print('과세표준 FunETF 실패: %s' % e, file=sys.stderr)
     return out
