@@ -1,4 +1,12 @@
-ERR <HTTPError 403: 'Forbidden'>
-tigeretf.com ERR <HTTPError 403: 'Forbidden'>
-32
-ERR | 
+https://www.samsungfund.com/etf/main.do 200 131149
+https://www.samsungfund.com/ 200 129984
+https://www.riseetf.co.kr/ ERR URLError(TimeoutError('timed out'))
+https://www.aceetf.co.kr/ 200 103788
+https://www.soletf.com/ 200 888465
+https://www.plusetf.co.kr/ 200 190817
+https://www.kiwoometf.com/ ERR URLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local is
+https://www.tigeretf.com/ ERR <HTTPError 403: 'Forbidden'>
+https://seibro.or.kr/ 200 110
+https://data.krx.co.kr/ 200 626
+https://www.hanaroetf.com/ 200 148441
+https://www.koact.co.kr/ ERR URLError(gaierror(-3, 'Temporary failure in name resolution'))
