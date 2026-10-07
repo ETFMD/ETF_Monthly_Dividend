@@ -5,3 +5,4 @@ CREATE TABLE IF NOT EXISTS cache  (k TEXT PRIMARY KEY, t INTEGER NOT NULL, v TEX
 CREATE TABLE IF NOT EXISTS kr     (u TEXT PRIMARY KEY, want INTEGER NOT NULL, t INTEGER, st INTEGER, v TEXT);  -- 한국 수집기: 요청 주소 · 받은 시각 · 상태 · 내용
 CREATE TABLE IF NOT EXISTS kr_lease (u TEXT PRIMARY KEY, until INTEGER NOT NULL);  -- 한국 수집기 여러 대: 같은 주소를 겹쳐 받지 않게 잠시 맡김
 DELETE FROM cache WHERE k = 'kr_agent';  -- 예전 한 대용 기록
+DELETE FROM kr WHERE u NOT LIKE 'https://kbam.co.kr/api/%';  -- 탐색용으로 받아 본 주소 정리 (지금은 KB API 만 사용)

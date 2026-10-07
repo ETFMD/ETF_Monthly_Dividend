@@ -11,8 +11,9 @@ ETF 1좌당 과세표준액 — 운용사별 공개 자료 (scripts/update_etfdi
   우리(WON) ......... wooriam.kr ETF 상세 '최근 3년 분배금 지급현황' 표                 상세 페이지 제목의 (종목코드)
   타임폴리오(TIME) .. timeetf.co.kr m11_view.php?idx= '최근 3년 분배금 지급현황' 표      상세 페이지 제목의 (종목코드)
   삼성액티브(KoAct)·그 밖 · 위에서 못 받은 종목 ... FunETF etfdividend (taxDividAmt)      ISIN (종목코드로 계산)
-    ※ 미래에셋·한화 외 HANARO·1Q·DAISHIN·FOCUS·RISE 는 운용사 사이트에 과세표준이 없거나(RISE 는 해외 접속 차단) FunETF 에도
-      아직 없어, FunETF 에 올라오는 대로 자동 반영
+  KB(RISE) .......... kbam.co.kr /api/products/etfs/{상품코드}/dividend (tax_standard_amount)  종목명 → 상품코드 (/api/products/etfs/overview)
+                      해외 접속 차단 → 한국 PC 수집기(scripts/kr_agent.ps1)가 받아 둔 것을 카운터 Worker(/kr)에서 읽음
+    ※ HANARO·1Q·DAISHIN·FOCUS 는 운용사 사이트·FunETF 어디에도 과세표준이 없어, FunETF 에 올라오는 대로 자동 반영
 반환: {종목코드: [[기준일 'YYYY-MM-DD', 분배금, 주당 과세표준액], ...]}  · 실패한 종목은 빠짐 (호출한 쪽이 직전 값 유지)
 """
 import json, re, ssl, sys, time, urllib.parse, urllib.request, concurrent.futures as cf
@@ -280,7 +281,43 @@ def funetf(tickers):
     return _pool(one, tickers, 4)
 
 
-# 과세표준을 찾아보는 브랜드 (HANARO·1Q·DAISHIN·FOCUS·RISE 는 FunETF 에 올라오면 반영)
+# ───── KB RISE (한국 PC 수집기가 받아 둔 응답 · Worker /kr) ─────
+def _kr(url, relay):
+    """Worker 에 저장된 응답 (없으면 None — 요청 표시만 남기고 다음 실행 때 읽음)"""
+    q = urllib.request.Request(relay.rstrip('/') + '/kr?u=' + urllib.parse.quote(url, safe=''), headers={'User-Agent': UA})
+    with urllib.request.urlopen(q, timeout=30) as r:
+        if r.status != 200 or r.headers.get('X-KR-Status') != '200': return None
+        return json.loads(r.read().decode('utf-8'))
+
+
+def rise(tickers, names, relay, cache):
+    if not relay: return {}
+    B = 'https://kbam.co.kr/api/products/etfs/'
+    fc = cache.setdefault('riseFund', {})                 # 종목코드 → KB 상품코드
+    if any(t not in fc for t in tickers):
+        try:
+            o, m = _kr(B + 'overview', relay), {}
+            def walk(x):
+                if isinstance(x, dict):
+                    if x.get('fund_cd') and x.get('name'): m[_norm(x['name'])] = x['fund_cd']
+                    for v in x.values(): walk(v)
+                elif isinstance(x, list):
+                    for v in x: walk(v)
+            walk(o)
+            for t in tickers:
+                if _norm(names.get(t)) in m: fc[t] = m[_norm(names.get(t))]
+        except Exception as e: print('RISE 목록 실패:', e, file=sys.stderr)
+    def one(t):
+        if t not in fc: return t, None
+        try:
+            d = _kr(B + fc[t] + '/dividend', relay)
+            return t, d and [[_ymd(x.get('base_date')), _num(x.get('amount')), _num(x.get('tax_standard_amount'))] for x in (d.get('history') or [])[:12]
+                              if _ymd(x.get('base_date')) and x.get('tax_standard_amount') is not None]
+        except Exception: return t, None
+    return _pool(one, tickers, 4)
+
+
+# 과세표준을 찾아보는 브랜드 (HANARO·1Q·DAISHIN·FOCUS 는 FunETF 에 올라오면 반영)
 BRANDS = ('KODEX', 'TIGER', 'ACE', 'SOL', 'PLUS', 'KIWOOM', 'WON', 'TIME', 'KoAct', 'HANARO', '1Q', 'DAISHIN', 'FOCUS', 'RISE')
 
 
@@ -289,7 +326,7 @@ def collect(by_brand, names, months, relay, cache, sig=None):
     out = {}
     jobs = {'KODEX': lambda L: kodex(L, cache), 'TIGER': lambda L: tiger(L, months, relay), 'ACE': lambda L: ace(L, cache),
             'SOL': lambda L: sol(L, cache), 'PLUS': lambda L: plus(L, sig or {}, cache, relay), 'KIWOOM': kiwoom,
-            'WON': lambda L: won(L, cache), 'TIME': lambda L: time_(L, cache)}
+            'WON': lambda L: won(L, cache), 'TIME': lambda L: time_(L, cache), 'RISE': lambda L: rise(L, names, relay, cache)}
     for b, L in by_brand.items():
         if not L or b not in jobs: continue
         try:
