@@ -1,23 +1,115 @@
-===== ACE https://www.aceetf.co.kr/ 102064 
- links []
-  JS etf.co.kr/_next/static/chunks/pages/_app-dbbe0ebed46e03ad.js 540267 ['/api/funds/{id}/dividend', '/api/funds/{id}/dividend/down']
-===== SOL https://www.soletf.com/ko/main?selectedLanguage=ko 878006 
- links ['/fund/etf/210942/dividend', '/fund/etf/211077/dividend']
-  JS https://www.soletf.com/static/pc/js/ko/etf_pds.js 17521 ['/api/etf/pds/dividend/', '/api/etf/pds/down/dividend/']
-===== PLUS https://www.plusetf.co.kr/ 181695 
- links ['/product/f-divid', '/product/k-divid', 'javascript:closeWin_dividend();']
-===== HANARO https://www.hanaroetf.com/ 139806 
- links []
-===== KIWOOM(noverify) https://www.kiwoometf.com/ 126396 
- links []
-===== RISE https://www.riseetf.co.kr/ 39 ERR URLError(TimeoutError('timed out'))
-===== TIGER https://www.tigeretf.com/ 32 ERR <HTTPError 403: 'Forbidden'>
-===== KoAct https://www.koactetf.com/ 55 ERR URLError(gaierror(-2, 'Name or service not known'))
-===== 1Q https://www.hanaam.com/qetf/main 165895 
- links []
-===== WON https://www.wooriam.kr/ 180585 
- links []
-===== DAISHIN https://www.daishinam.co.kr/ 55 ERR URLError(gaierror(-2, 'Name or service not known'))
-===== FOCUS https://www.vi-am.co.kr/ 55 ERR URLError(gaierror(-2, 'Name or service not known'))
-===== TIME https://timeetf.co.kr/ 48454 
- links []
+===== 200 https://seibro.or.kr/ 110
+<html>
+<script>
+window.location = "/websquare/control.jsp?w2xPath=/IPORTAL/user/index.xml";
+</script>
+</html>
+
+===== 200 https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/etf/BIP_CNTS06030V.xml&menuNo=179 1048
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml' xmlns:ev='http://www.w3.org/2001/xml-events' xmlns:w2='http://www.inswave.com/websquare' xmlns:xf='http://www.w3.org/2002/xforms' lang='ko'>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<!--<meta http-equiv="X-UA-Compatible" content="IE=Edge" />-->
+		<meta http-equiv="X-UA-Compatible" content="IE=9, chrome=1" />
+		<title>  SEIBro  </title>
+		<script type="text/javascript" src="javascript.wq?q=/bootloader"></script>
+
+
+		<script type="text/javascript">
+			window.onload = init;
+
+			function init() {
+				try{
+					WebSquare.startApplication();
+				} catch(e) {
+					alert(e.message);
+				}
+			}
+			var _visibleHelper = function( htmlStr ) {
+				var obj = document.getElementById("visDiv");
+				obj.innerHTML = htmlStr;
+			}
+		</script>
+	</head>
+<body>
+	<div id="visDiv"></div>
+	<script type="text/javascript"></script>
+</body>
+</html>
+
+===== 200 https://seibro.or.kr/IPORTAL/user/etf/BIP_CNTS06030V.xml 35425
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+	<head>
+		<title>권리행사정보 &gt; 분배금지급현황 | SEIBro</title>
+		<w2:buildDate />
+		<xf:model>
+			<xf:instance>
+				<data xmlns="" />
+			</xf:instance>
+			<xf:submission id="submission_exerInfoDtramtPayStatPlist" ref="request/reqParam" target="response" action="/websquare/engine/proworks/callServletService.jsp" method="post" mediatype="application/xml"
+				encoding="UTF-8" instance="" replace="instance" errorHandler="" customHandler="" mode="asynchronous" processMsg="조회중입니다.">
+				<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+					var docXml = WebSquare.xml.findNode( e.responseBody , "vector" );
+					
+					console.log("submission_exerInfoDtramtPayStatPlist : "+WebSquare.xml.indent(e.responseBody));
+					grid1.removeAll();
+					grid1.setXML ( docXml , false);
+				]]></script>
+			</xf:submission>
+			<xf:submission id="submission_exerInfoDtramtPayStatPlistCnt" ref="request/reqParam" target="response" action="/websquare/engine/proworks/callServletService.jsp" method="post"
+				mediatype="application/xml" encoding="UTF-8" instance="" replace="instance" errorHandler="" customHandler="" mode="asynchronous" processMsg="조회중입니다.">
+				<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+					var docXml = WebSquare.xml.findNode( e.responseBody , "result"
+===== 200 https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/index.xml 1048
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml' xmlns:ev='http://www.w3.org/2001/xml-events' xmlns:w2='http://www.inswave.com/websquare' xmlns:xf='http://www.w3.org/2002/xforms' lang='ko'>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<!--<meta http-equiv="X-UA-Compatible" content="IE=Edge" />-->
+		<meta http-equiv="X-UA-Compatible" content="IE=9, chrome=1" />
+		<title>  SEIBro  </title>
+		<script type="text/javascript" src="javascript.wq?q=/bootloader"></script>
+
+
+		<script type="text/javascript">
+			window.onload = init;
+
+			function init() {
+				try{
+					WebSquare.startApplication();
+				} catch(e) {
+					alert(e.message);
+				}
+			}
+			var _visibleHelper = function( htmlStr ) {
+				var obj = document.getElementById("visDiv");
+				obj.innerHTML = htmlStr;
+			}
+		</script>
+	</head>
+<body>
+	<div id="visDiv"></div>
+	<script type="text/javascript"></script>
+</body>
+</html>
+
