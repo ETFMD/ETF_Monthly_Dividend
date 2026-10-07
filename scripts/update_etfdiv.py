@@ -216,9 +216,11 @@ def main():
     if lst:
         for c, e in data['etfs'].items():
             if c in lst: e['p'] = lst[c]['p']; e['n'] = lst[c]['n']; e['cap'] = lst[c]['cap']
+    for e in data['etfs'].values():                    # 이력의 최근 분배락일 → 기준일 (공시를 못 찾은 종목 표시용)
+        e['lastRec'] = dstr(next_bday(ddate(e['h'][0][0]))) if e.get('h') else None
 
     # ③ KIND 확정 공시 (매번) — 새 공시만 내용 읽음, 정정 공시는 나중 것이 우선
-    frm, to = dstr(today - datetime.timedelta(days=21)), dstr(today + datetime.timedelta(days=1))
+    frm, to = dstr(today - datetime.timedelta(days=45)), dstr(today + datetime.timedelta(days=1))   # 월중(15일)·월말 두 주기를 모두 덮음
     seen = set(data['seen'])
     try:
         lst_ann = [x for x in kind_search('분배금', frm, to) if '분배금안내' in x['title'].replace(' ', '')]
