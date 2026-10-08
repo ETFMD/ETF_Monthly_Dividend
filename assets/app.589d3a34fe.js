@@ -12060,3 +12060,374 @@ var FIRE = (function () {
   }
   window.fcRegister('fire', render, 'fire');
 })();
+
+/* ════════════════════════════════════════
+   [RE-TAX] 재산세(PTX) · 종합부동산세(JBX) 계산 — 2026년 과세기준일(6.1) 현행 법령
+   근거(2026-10 국가법령정보센터 원문 확인)
+   · 지방세법 [시행 2026.1.1] 제110조(과세표준·과표상한), 제111조(세율), 제111조의2(1세대1주택 특례세율 — 2026년분까지),
+     제112조(도시지역분 0.14%), 제115조(납기), 제118조(분할납부), 제122조(세부담상한 — 주택 제외), 제146조(소방분), 제151조(지방교육세 20%)
+   · 지방세법 시행령 [2026.5.29 개정] 제109조(공정시장가액비율: 토지·건축물 70%, 주택 60%, 2026년 1세대1주택 43/44/45%), 제109조의2(과표상한율 5%)
+   · 종합부동산세법 제8조(공제 9억·1세대1주택 12억·법인 0), 제9조(세율·재산세 공제·1세대1주택 세액공제), 제10조(세부담상한 150%),
+     제13~15조(토지), 제20조(분납) · 시행령 제2조의4(주택 60%·토지 100%), 제4조의3(재산세 공제), 제5조(세부담상한) · 농특세법 제5조(20%)
+   금액 단위: 원 · 고지 세액은 10원 미만 버림(국고금관리법 제47조·지방회계법)
+════════════════════════════════════════ */
+var PTX = (function () {
+  var INF = Infinity;
+  function fl10(x) { return Math.floor(Math.max(0, x) / 10 + 1e-9) * 10; }
+  function prog(base, br) {      /* br: [[상한, 세율], …] — 구간별 누진 */
+    if (!(base > 0)) return 0;
+    var t = 0, prev = 0;
+    for (var i = 0; i < br.length; i++) { if (base > prev) t += (Math.min(base, br[i][0]) - prev) * br[i][1]; prev = br[i][0]; }
+    return t;
+  }
+  var HOUSE = [[6e7, 0.001], [1.5e8, 0.0015], [3e8, 0.0025], [INF, 0.004]];
+  var HOUSE_ONE = [[6e7, 0.0005], [1.5e8, 0.001], [3e8, 0.002], [INF, 0.0035]];
+  var LAND_AGG = [[5e7, 0.002], [1e8, 0.003], [INF, 0.005]];
+  var LAND_SEP = [[2e8, 0.002], [1e9, 0.003], [INF, 0.004]];
+  var LAND_SPLIT = { farm: 0.0007, luxury: 0.04, other: 0.002 };
+  var BLDG = { general: 0.0025, luxury: 0.04, factory: 0.005, newfactory: 0.0125 };
+  var FIRE = [[6e6, 0.0004], [1.3e7, 0.0005], [2.6e7, 0.0006], [3.9e7, 0.0008], [6.4e7, 0.001], [INF, 0.0012]];
+  /* 주택 공정시장가액비율 (시행령 제109조①2호) */
+  function houseRatio(price, one) { return one ? (price <= 3e8 ? 0.43 : price <= 6e8 ? 0.44 : 0.45) : 0.6; }
+  /* 소방분 지역자원시설세 (법 제146조③④) */
+  function fireTax(base, mult) { return prog(base, FIRE) * (mult || 1); }
+  /* 주택 1채 — o: {price, prev, one, urban, share, flex, bldg, fireMult} · 세액은 지분 비율만큼 */
+  function house(o) {
+    var price = Math.max(0, +o.price || 0), one = !!o.one, share = o.share == null ? 1 : Math.min(1, Math.max(0, +o.share));
+    var ratio = houseRatio(price, one), raw = price * ratio, base = raw, capped = false;
+    if (o.prev > 0) {   /* 과표상한(법 제110조③): 직전연도 시가표준액 × 올해 비율 + 올해 과표 × 5% */
+      var cap = o.prev * ratio + raw * 0.05;
+      if (cap < raw) { base = cap; capped = true; }
+    }
+    base = Math.floor(base);
+    var flex = Math.max(-0.5, Math.min(0.5, +o.flex || 0));
+    var std = prog(base, HOUSE), stdFlex = std * (1 + flex);
+    var special = one && price <= 9e8, tax;
+    if (special) { var sp = prog(base, HOUSE_ONE); tax = flex && stdFlex < sp ? stdFlex : sp; special = !(flex && stdFlex < sp); }   /* 탄력세율 세액이 더 적으면 특례 대신 탄력세율(법 제111조의2③) */
+    else tax = stdFlex;
+    var urban = o.urban === false ? 0 : base * 0.0014;
+    var fireBase = Math.max(0, +o.bldg || 0) * ratio, fire = fireBase > 0 ? fireTax(fireBase, o.fireMult) : 0;
+    var r = { price: price, ratio: ratio, raw: raw, base: base, capped: capped, special: special, flex: flex, share: share,
+      stdFull: std, taxFull: tax, urbanFull: urban, fireBase: fireBase };
+    r.tax = fl10(tax * share); r.urban = fl10(urban * share); r.edu = fl10(tax * share * 0.2); r.fire = fl10(fire * share);
+    r.std = std * share;                                /* 종부세 재산세 공제 분모용 (표준세율 · 지분) */
+    r.prop = r.tax + r.urban;                          /* 재산세 (본세 + 도시지역분) */
+    r.total = r.tax + r.urban + r.edu + r.fire;
+    return r;
+  }
+  /* 토지 — kind: agg(종합합산) · sep(별도합산) · split(분리과세: farm/luxury/other) · prevTax: 전년 재산세 상당액(세부담상한 150%) */
+  function land(o) {
+    var v = Math.max(0, +o.value || 0), base = Math.floor(v * 0.7), flex = Math.max(-0.5, Math.min(0.5, +o.flex || 0)), tax;
+    if (o.kind === 'agg') tax = prog(base, LAND_AGG); else if (o.kind === 'sep') tax = prog(base, LAND_SEP); else tax = base * (LAND_SPLIT[o.split] || 0.002);
+    tax *= 1 + flex;
+    var urban = o.urban === false ? 0 : base * 0.0014, r = { base: base, ratio: 0.7 };
+    r.taxRaw = tax; r.capT = false; r.capU = false;
+    if (o.prevTax > 0 && tax > o.prevTax * 1.5) { tax = o.prevTax * 1.5; r.capT = true; }
+    if (o.prevUrban > 0 && urban > o.prevUrban * 1.5) { urban = o.prevUrban * 1.5; r.capU = true; }
+    r.tax = fl10(tax); r.urban = fl10(urban); r.edu = fl10(tax * 0.2); r.fire = 0;
+    r.prop = r.tax + r.urban; r.total = r.tax + r.urban + r.edu;
+    return r;
+  }
+  /* 건축물 — kind: general/luxury/factory/newfactory · 소방분은 재산세 과세표준(시가표준액 × 70%) 기준 */
+  function building(o) {
+    var v = Math.max(0, +o.value || 0), base = Math.floor(v * 0.7), flex = Math.max(-0.5, Math.min(0.5, +o.flex || 0));
+    var tax = base * (BLDG[o.kind] || 0.0025) * (1 + flex), urban = o.urban === false ? 0 : base * 0.0014, r = { base: base, ratio: 0.7 };
+    r.capT = false; r.capU = false;
+    if (o.prevTax > 0 && tax > o.prevTax * 1.5) { tax = o.prevTax * 1.5; r.capT = true; }
+    if (o.prevUrban > 0 && urban > o.prevUrban * 1.5) { urban = o.prevUrban * 1.5; r.capU = true; }
+    var fire = fireTax(base, o.fireMult);
+    r.tax = fl10(tax); r.urban = fl10(urban); r.edu = fl10(tax * 0.2); r.fire = fl10(fire);
+    r.prop = r.tax + r.urban; r.total = r.tax + r.urban + r.edu + r.fire;
+    return r;
+  }
+  /* 분할납부(법 제118조): 납기별 세액 250만원 초과 → 500만원 이하는 250만원 초과분, 그 이상은 50% 이하, 3개월 안 */
+  function installment(x) { return x > 5e6 ? fl10(x / 2) : x > 2.5e6 ? x - 2.5e6 : 0; }
+  return { house: house, land: land, building: building, houseRatio: houseRatio, prog: prog, installment: installment, fl10: fl10,
+    HOUSE: HOUSE, HOUSE_ONE: HOUSE_ONE, LAND_AGG: LAND_AGG, LAND_SEP: LAND_SEP, FIRE: FIRE };
+})();
+
+var JBX = (function () {
+  var INF = Infinity, prog = PTX.prog, fl10 = PTX.fl10;
+  var H2 = [[3e8, 0.005], [6e8, 0.007], [12e8, 0.01], [25e8, 0.013], [50e8, 0.015], [94e8, 0.02], [INF, 0.027]];
+  var H3 = [[3e8, 0.005], [6e8, 0.007], [12e8, 0.01], [25e8, 0.02], [50e8, 0.03], [94e8, 0.04], [INF, 0.05]];
+  var L_AGG = [[15e8, 0.01], [45e8, 0.02], [INF, 0.03]];
+  var L_SEP = [[200e8, 0.005], [400e8, 0.006], [INF, 0.007]];
+  function ageRate(a) { return a >= 70 ? 0.4 : a >= 65 ? 0.3 : a >= 60 ? 0.2 : 0; }
+  function holdRate(y) { return y >= 15 ? 0.5 : y >= 10 ? 0.4 : y >= 5 ? 0.2 : 0; }
+  /* 주택분 — useprev: 직전연도 상당액 계산(과표상한·탄력세율·도시지역분 제외, 직전연도 공시가격·나이·보유기간) */
+  function houseTax(o, usePrev) {
+    var owner = o.owner || 'person', one = owner === 'person' && o.count === 'one';
+    var rows = (o.houses || []).filter(function (h) { return (usePrev ? h.prev : h.price) > 0; }).map(function (h) {
+      var price = usePrev ? h.prev : h.price, share = h.share == null ? 1 : h.share;
+      var p = PTX.house({ price: price, prev: usePrev ? 0 : h.prev, one: !!h.propOne, share: share, urban: false, flex: usePrev ? 0 : o.flex });
+      return { h: h, price: price, share: share, value: price * share, p: p };
+    });
+    var r = { one: one, rows: rows };
+    r.value = rows.reduce(function (a, x) { return a + x.value; }, 0);
+    r.ded = owner === 'corp' ? 0 : one ? 12e8 : 9e8;
+    r.base = Math.max(0, Math.floor((r.value - r.ded) * 0.6));
+    /* 세율(법 제9조): corp 일반 법인 2.7%·5% 단일 / corpProg 공익법인 직접사용·공공주택사업자 등 → 주택 수 무관 일반 누진 / person·corpPub(그 밖의 공익법인) → 주택 수별 */
+    var heavy = owner !== 'corpProg' && o.count === 'three';
+    r.heavy = heavy;
+    r.gross = owner === 'corp' ? r.base * (heavy ? 0.05 : 0.027) : prog(r.base, heavy ? H3 : H2);
+    /* 재산세 공제(시행령 제4조의3①): 부과액 × (종부세 과표 × 재산세 공정시장가액비율 × 표준세율 0.4%) ÷ 표준세율로 계산한 재산세 상당액 */
+    r.propTax = rows.reduce(function (a, x) { return a + x.p.tax; }, 0);
+    r.propStd = rows.reduce(function (a, x) { return a + x.p.std; }, 0);
+    r.propRatio = r.value > 0 ? rows.reduce(function (a, x) { return a + x.value * x.p.ratio; }, 0) / r.value : 0.6;
+    r.num = r.base * r.propRatio * 0.004;
+    r.propDed = r.base > 0 && r.propStd > 0 ? Math.floor(r.propTax * Math.min(1, r.num / r.propStd) + 1e-6) : 0;
+    r.calc = Math.max(0, r.gross - r.propDed);
+    /* 1세대1주택 세액공제 — 주택 수 제외 주택(일시적 2주택·상속·지방 저가 등)분은 공시가격 비율로 빼고 적용 */
+    r.ageRate = 0; r.holdRate = 0; r.credit = 0;
+    if (one) {
+      var age = usePrev ? (o.age || 0) - 1 : (o.age || 0), yrs = usePrev ? (o.years || 0) - 1 : (o.years || 0);
+      r.ageRate = ageRate(age); r.holdRate = holdRate(yrs);
+      r.creditRate = Math.min(0.8, r.ageRate + r.holdRate);
+      var excl = rows.reduce(function (a, x) { return a + (x.h.excl ? x.value : 0); }, 0);
+      r.creditBase = r.value > 0 ? r.calc * (r.value - excl) / r.value : 0;
+      r.credit = Math.floor(r.creditBase * r.creditRate);
+    }
+    r.tax = Math.max(0, r.calc - r.credit);
+    return r;
+  }
+  /* 토지분 — kind agg/sep · value 공시지가 합 */
+  function landTax(value, kind, usePrev) {
+    var r = { value: value || 0, ded: kind === 'agg' ? 5e8 : 80e8 };
+    r.base = Math.max(0, Math.floor(r.value - r.ded));
+    r.gross = prog(r.base, kind === 'agg' ? L_AGG : L_SEP);
+    var p = PTX.land({ value: r.value, kind: kind, urban: false });
+    r.propTax = p.tax; r.propStd = p.taxRaw;
+    r.num = r.base * 0.7 * (kind === 'agg' ? 0.005 : 0.004);
+    r.propDed = r.base > 0 && r.propStd > 0 ? Math.floor(r.propTax * Math.min(1, r.num / r.propStd) + 1e-6) : 0;
+    r.tax = Math.max(0, r.gross - r.propDed);
+    return r;
+  }
+  function capApply(cur, prev, propTax) {   /* 세부담상한 150%: (올해 재산세 + 종부세) ≤ 직전연도 상당액 × 150% */
+    var limit = prev * 1.5;
+    if (cur.tax + propTax <= limit) return { tax: cur.tax, capped: false, limit: limit };
+    return { tax: Math.max(0, Math.floor(limit - propTax)), capped: true, limit: limit };
+  }
+  function calc(o) {
+    var res = { notes: [] };
+    var H = houseTax(o, false);
+    res.house = H;
+    H.final = H.tax; H.capped = false;
+    var capOn = o.owner !== 'corp' && H.rows.length && H.tax > 0;
+    if (capOn) {
+      var allPrev = (o.houses || []).filter(function (h) { return h.price > 0; }).every(function (h) { return h.prev > 0; });
+      if (allPrev) {
+        var P = houseTax(o, true);
+        H.prevTotal = P.propTax + P.tax; H.prevProp = P.propTax; H.prevJb = P.tax;
+        var c = capApply(H, H.prevTotal, H.propTax);
+        H.final = c.tax; H.capped = c.capped; H.limit = c.limit;
+      } else H.capUnknown = true;
+    }
+    res.land = {};
+    ['agg', 'sep'].forEach(function (k) {
+      var L = o.land && o.land[k];
+      if (!L || !(L.value > 0)) return;
+      var T = landTax(L.value, k, false); T.final = T.tax; T.capped = false;
+      if (L.prev > 0 && T.tax > 0) {
+        var Pv = landTax(L.prev, k, true), prevTotal = Pv.propTax + Pv.tax, cc = capApply(T, prevTotal, T.propTax);
+        T.prevTotal = prevTotal; T.final = cc.tax; T.capped = cc.capped; T.limit = cc.limit;
+      }
+      res.land[k] = T;
+    });
+    var landSum = (res.land.agg ? res.land.agg.final : 0) + (res.land.sep ? res.land.sep.final : 0);
+    res.jb = fl10(H.final + landSum);
+    res.rural = fl10(res.jb * 0.2);
+    res.total = res.jb + res.rural;
+    /* 분납(법 제20조): 250만원 초과 → 500만원 이하는 250만원 초과분, 초과는 50% · 농특세는 같은 비율 */
+    res.inst = res.jb > 5e6 ? fl10(res.jb / 2) : res.jb > 2.5e6 ? res.jb - 2.5e6 : 0;
+    res.ruralInst = res.jb > 0 && res.inst > 0 ? fl10(res.rural * res.inst / res.jb) : (res.rural > 5e6 ? fl10(res.rural / 2) : 0);
+    return res;
+  }
+  return { calc: calc, houseTax: houseTax, landTax: landTax, H2: H2, H3: H3, L_AGG: L_AGG, L_SEP: L_SEP, ageRate: ageRate, holdRate: holdRate };
+})();
+
+/* [RE-TAX] 화면 — 재산세(data-fc="ptx") · 종합부동산세(data-fc="jbx") · 입력·단위·버튼은 [FC-UI] 공통 처리 */
+(function () {
+  var PT = document.getElementById('page-proptax'), JB = document.getElementById('page-jongbu');
+  if (!PT && !JB) return;   /* 도구별 페이지 분리: 해당 화면이 있는 페이지에서만 */
+  function $(id) { return document.getElementById(id); }
+  function setT(id, v) { var e = $(id); if (e) e.textContent = v; }
+  function setH(id, v) { var e = $(id); if (e) e.innerHTML = v; }
+  function numOf(id) { var e = $(id); return e ? (parseFloat(String(e.value).replace(/,/g, '')) || 0) : 0; }
+  var UNIT = { eok: 1e8, man: 1e4, won: 1 };
+  function amt(id) { var e = $(id); return Math.round(numOf(id) * (UNIT[e && e.getAttribute('data-unit')] || 1)); }
+  function chk(id) { var e = $(id); return !!(e && e.checked); }
+  function seg(name) { var b = document.querySelector('.fc-seg[data-name="' + name + '"] .mode-btn.active'); return b ? b.getAttribute('data-v') : null; }
+  function show(id, on) { var e = $(id); if (e) e.style.display = on ? '' : 'none'; }
+  function won(n) { return (n < 0 ? '−' : '') + Math.round(Math.abs(n)).toLocaleString('ko-KR') + '원'; }
+  function eok(n) {
+    var neg = n < 0; n = Math.round(Math.abs(n) / 1e4) * 1e4;
+    var e = Math.floor(n / 1e8), m = Math.round((n - e * 1e8) / 1e4), s;
+    if (!e) s = m.toLocaleString('ko-KR') + '만원'; else s = e.toLocaleString('ko-KR') + '억' + (m ? ' ' + m.toLocaleString('ko-KR') + '만원' : '원');
+    return (neg ? '−' : '') + s;
+  }
+  function pct(v, d) { var t = (v * 100).toFixed(d == null ? 2 : d); if (t.indexOf('.') >= 0) t = t.replace(/\.?0+$/, ''); return t + '%'; }
+  function rows(list) { return list.filter(Boolean).map(function (r) { return '<tr' + (r[2] ? ' class="' + r[2] + '"' : '') + '><td>' + r[0] + '</td><td style="text-align:right;">' + r[1] + '</td></tr>'; }).join(''); }
+  function brRows(br, base, fmt) {
+    var prev = 0, acc = 0;
+    return br.map(function (b) {
+      var lo = prev, hi = b[0], on = base > lo && (base <= hi || hi === Infinity);
+      var label = hi === Infinity ? eok(lo) + ' 초과' : (lo ? eok(lo) + ' 초과 ~ ' : '') + eok(hi) + (lo ? '' : ' 이하');
+      var txt = (acc ? won(Math.round(acc)) + ' + ' + (lo ? eok(lo) + ' 초과분 × ' : '') : '') + pct(b[1], 3);
+      if (hi !== Infinity) acc += (hi - lo) * b[1];
+      prev = hi;
+      return '<tr' + (on ? ' class="fc-hl"' : '') + '><td>' + label + '</td><td>' + (fmt ? fmt(b, lo) : txt) + '</td></tr>';
+    }).join('');
+  }
+  function fireMult(id) { return +($(id) ? $(id).value : 1) || 1; }
+
+  /* ── 재산세 ── */
+  function renderPT() {
+    var kind = seg('ptx-kind') || 'house', urban = chk('ptx-urban'), flex = numOf('ptx-flex') / 100;
+    show('ptx-house-box', kind === 'house'); show('ptx-bldg-box', kind === 'bldg'); show('ptx-land-box', kind === 'land');
+    var r, lines = [], title = '', basis = 0, rateBr = null, rateBase = 0, schedule = '';
+    if (kind === 'house') {
+      var price = amt('ptx-price'), one = chk('ptx-one');
+      r = PTX.house({ price: price, prev: amt('ptx-prev'), one: one, urban: urban, share: Math.min(100, numOf('ptx-share') || 100) / 100, flex: flex, bldg: amt('ptx-bldg'), fireMult: fireMult('ptx-fire') });
+      basis = price * r.share;
+      lines = [
+        ['주택 공시가격', won(price)],
+        ['공정시장가액비율 <small>(' + (one ? '1세대1주택 특례 — 공시가격 ' + (price <= 3e8 ? '3억 이하' : price <= 6e8 ? '3억 초과 6억 이하' : '6억 초과') : '일반 주택') + ')</small>', pct(r.ratio, 0)],
+        ['과세표준 산정액 <small>(공시가격 × ' + pct(r.ratio, 0) + ')</small>', won(Math.floor(r.raw))],
+        r.capped ? ['과세표준 상한 적용 <small>(전년 공시가격 × ' + pct(r.ratio, 0) + ' + 올해 산정액 × 5%)</small>', won(r.base), 'fc-hl'] : (amt('ptx-prev') > 0 ? ['과세표준 상한 <small>(전년 대비 상승폭이 작아 해당 없음)</small>', '—'] : null),
+        ['<b>과세표준</b>', won(r.base), 'fc-total'],
+        ['세율 <small>(' + (r.special ? '1세대1주택 특례세율 0.05~0.35% — 공시가격 9억 이하' : '표준세율 0.1~0.4%' + (one && price > 9e8 ? ' — 9억 초과라 특례세율 제외' : '')) + (flex ? ' · 탄력세율 ' + (flex > 0 ? '+' : '') + pct(flex, 0) : '') + ')</small>', ''],
+        r.share < 1 ? ['지분 <small>(세액 × 지분율)</small>', pct(r.share, 2)] : null,
+        ['<b>재산세</b>', won(r.tax), 'fc-total'],
+        ['재산세 도시지역분 <small>(과세표준 × 0.14%' + (urban ? '' : ' · 도시지역 밖이라 없음') + ')</small>', won(r.urban)],
+        ['지방교육세 <small>(재산세 × 20%)</small>', won(r.edu)],
+        ['지역자원시설세 (소방분) <small>' + (r.fireBase > 0 ? '(건물분 시가표준액 × ' + pct(r.ratio, 0) + ' = ' + won(Math.floor(r.fireBase)) + ' 기준)' : '(건물분 시가표준액을 넣으면 계산)') + '</small>', won(r.fire)],
+        ['<b>합계</b>', won(r.total), 'fc-hl']
+      ];
+      if (one && price <= 9e8 && !r.special && flex) lines.splice(6, 0, ['※ 탄력세율 세액이 특례세율보다 적어 탄력세율 적용 (지방세법 §111의2③)', '']);
+      /* 납기: 주택은 7월·9월 각 1/2 — 재산세(본세+도시지역분) 20만원 이하면 조례에 따라 7월 한 번에 */
+      var half = r.prop <= 2e5;
+      var jul = half ? r.total : PTX.fl10(r.total / 2), sep = r.total - jul;
+      schedule = half ? '7월에 한 번에 ' + won(r.total) + ' (재산세 20만원 이하 — 대부분 지자체 조례)' : '7월 ' + won(jul) + ' · 9월 ' + won(sep);
+      rateBr = r.special ? PTX.HOUSE_ONE : PTX.HOUSE; rateBase = r.base;
+      title = '주택';
+    } else if (kind === 'bldg') {
+      var v = amt('ptx-bvalue');
+      r = PTX.building({ value: v, kind: $('ptx-bkind').value, urban: urban, flex: flex, prevTax: amt('ptx-bprev'), prevUrban: amt('ptx-bprevu'), fireMult: fireMult('ptx-bfire') });
+      basis = v;
+      var bk = $('ptx-bkind'); var bkTxt = bk.options[bk.selectedIndex].text;
+      lines = [
+        ['건축물 시가표준액', won(v)],
+        ['<b>과세표준</b> <small>(× 공정시장가액비율 70%)</small>', won(r.base), 'fc-total'],
+        ['세율 <small>(' + bkTxt + (flex ? ' · 탄력세율 ' + (flex > 0 ? '+' : '') + pct(flex, 0) : '') + ')</small>', ''],
+        ['<b>재산세</b>' + (r.capT ? ' <small>(세부담상한 — 전년 × 150%)</small>' : ''), won(r.tax), 'fc-total'],
+        ['재산세 도시지역분 <small>(과세표준 × 0.14%' + (urban ? '' : ' · 도시지역 밖') + (r.capU ? ' · 세부담상한' : '') + ')</small>', won(r.urban)],
+        ['지방교육세 <small>(재산세 × 20%)</small>', won(r.edu)],
+        ['지역자원시설세 (소방분) <small>(과세표준 기준 0.04~0.12%' + (fireMult('ptx-bfire') > 1 ? ' × ' + fireMult('ptx-bfire') + '배' : '') + ')</small>', won(r.fire)],
+        ['<b>합계</b>', won(r.total), 'fc-hl']
+      ];
+      schedule = '7월 16일 ~ 31일 한 번에 ' + won(r.total);
+      title = '건축물';
+    } else {
+      var lv = amt('ptx-lvalue'), lk = $('ptx-lkind').value, split = lk.indexOf('split-') === 0;
+      r = PTX.land({ value: lv, kind: split ? 'split' : lk, split: split ? lk.slice(6) : null, urban: urban, flex: flex, prevTax: amt('ptx-lprev'), prevUrban: amt('ptx-lprevu') });
+      basis = lv;
+      var lkEl = $('ptx-lkind'); var lkTxt = lkEl.options[lkEl.selectedIndex].text;
+      lines = [
+        ['토지 공시지가 합계', won(lv)],
+        ['<b>과세표준</b> <small>(× 공정시장가액비율 70%)</small>', won(r.base), 'fc-total'],
+        ['세율 <small>(' + lkTxt + (flex ? ' · 탄력세율 ' + (flex > 0 ? '+' : '') + pct(flex, 0) : '') + ')</small>', ''],
+        ['<b>재산세</b>' + (r.capT ? ' <small>(세부담상한 — 전년 × 150%)</small>' : ''), won(r.tax), 'fc-total'],
+        ['재산세 도시지역분 <small>(과세표준 × 0.14%' + (urban ? '' : ' · 도시지역 밖') + (r.capU ? ' · 세부담상한' : '') + ')</small>', won(r.urban)],
+        ['지방교육세 <small>(재산세 × 20%)</small>', won(r.edu)],
+        ['<b>합계</b>', won(r.total), 'fc-hl']
+      ];
+      schedule = '9월 16일 ~ 30일 한 번에 ' + won(r.total);
+      rateBr = lk === 'agg' ? PTX.LAND_AGG : lk === 'sep' ? PTX.LAND_SEP : null; rateBase = r.base;
+      title = '토지';
+    }
+    var perDue = kind === 'house' && r.prop > 2e5 ? PTX.fl10(r.prop / 2) : r.prop, inst = PTX.installment(perDue);   /* 납기별 재산세(도시지역분 포함) 250만원 초과 */
+    if (inst) lines.push(['분할납부 가능 금액 <small>(' + (kind === 'house' ? '7월·9월 납기마다 ' : '') + '재산세 ' + won(perDue) + ' 중 · 납부기한 후 3개월 안)</small>', won(inst)]);
+    setH('ptx-table', rows(lines));
+    setT('ptx-label', title + ' 재산세 합계 (1년)');
+    setT('ptx-pay', won(r.total));
+    setT('ptx-sub', schedule);
+    setT('ptx-k1', won(r.base)); setT('ptx-k2', won(r.tax)); setT('ptx-k3', basis > 0 ? pct(r.total / basis, 3) : '—');
+    $('ptx-rate-card').style.display = rateBr ? '' : 'none';
+    if (rateBr) { setT('ptx-rate-title', kind === 'house' ? (rateBr === PTX.HOUSE_ONE ? '주택 재산세 1세대1주택 특례세율 (공시가격 9억 이하)' : '주택 재산세 표준세율') : (rateBr === PTX.LAND_AGG ? '토지 종합합산 세율' : '토지 별도합산 세율')); setH('ptx-rates', brRows(rateBr, rateBase)); }
+  }
+
+  /* ── 종합부동산세 ── */
+  var lastCount = 'one';
+  function renderJB() {
+    var owner = $('jbx-owner').value, count = seg('jbx-count') || 'one';
+    if (owner !== 'person' && count === 'one') count = 'two';
+    var one = owner === 'person' && count === 'one';
+    show('jbx-one-btn', owner === 'person'); show('jbx-one-box', one);
+    document.querySelectorAll('.jbx-excl-col').forEach(function (e) { e.style.display = one ? '' : 'none'; });
+    if (owner !== 'person' && seg('jbx-count') === 'one') {   /* 법인은 1세대1주택 없음 → 2주택 이하로 */
+      document.querySelectorAll('.fc-seg[data-name="jbx-count"] .mode-btn').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-v') === 'two'); });
+    }
+    if (count !== lastCount) {   /* 주택 수 구분을 바꾸면 재산세 1세대1주택 특례 체크 기본값도 맞춤 (직접 바꿀 수 있음) */
+      for (var j = 1; j <= 5; j++) { var cb = $('jbx-h' + j + '-one'); if (cb) cb.checked = one && j === 1; }
+      lastCount = count;
+    }
+    var houses = [];
+    for (var i = 1; i <= 5; i++) {
+      houses.push({ price: amt('jbx-h' + i + '-p'), prev: amt('jbx-h' + i + '-v'), share: Math.min(100, numOf('jbx-h' + i + '-s') || 100) / 100,
+        propOne: chk('jbx-h' + i + '-one'), excl: one && chk('jbx-h' + i + '-ex') });
+    }
+    var o = { owner: owner, count: count, age: numOf('jbx-age'), years: numOf('jbx-years'), houses: houses, flex: numOf('jbx-flex') / 100,
+      land: { agg: { value: amt('jbx-agg'), prev: amt('jbx-agg-prev') }, sep: { value: amt('jbx-sep'), prev: amt('jbx-sep-prev') } } };
+    var r = JBX.calc(o), H = r.house;
+    var lines = [];
+    if (H.rows.length) {
+      lines = lines.concat([
+        ['<b>주택분</b>', '', 'fc-total'],
+        ['공시가격 합계' + (H.rows.some(function (x) { return x.share < 1; }) ? ' <small>(지분 반영)</small>' : ''), won(H.value)],
+        ['공제금액 <small>(' + (owner === 'corp' ? '법인 — 공제 없음' : one ? '1세대1주택자 12억' : '9억') + ')</small>', '−' + won(Math.min(H.value, H.ded))],
+        ['<b>과세표준</b> <small>(× 공정시장가액비율 60%)</small>', won(H.base), 'fc-total'],
+        ['종합부동산세액 <small>(' + (owner === 'corp' ? (H.heavy ? '법인 3주택 이상 5%' : '법인 2.7%') : H.heavy ? '3주택 이상 세율 — 과세표준 12억 초과분 2~5%' : '2주택 이하 세율 0.5~2.7%') + ')</small>', won(Math.floor(H.gross))],
+        ['재산세 공제 <small>(주택분 재산세 ' + won(H.propTax) + ' × [과세표준 × 재산세 비율 ' + pct(H.propRatio, 2) + ' × 0.4% ÷ 표준세율 재산세 ' + won(Math.round(H.propStd)) + '])</small>', '−' + won(H.propDed)],
+        ['<b>산출세액</b>', won(Math.floor(H.calc)), 'fc-total']
+      ]);
+      if (one) {
+        lines.push(['1세대1주택 세액공제 <small>(고령자 ' + pct(H.ageRate, 0) + ' + 장기보유 ' + pct(H.holdRate, 0) + ', 한도 80%' + (H.creditBase < H.calc - 0.5 ? ' · 주택 수 제외 주택분 ' + won(Math.round(H.calc - H.creditBase)) + '은 공제 제외' : '') + ')</small>', '−' + won(H.credit)]);
+      }
+      if (H.capped) lines.push(['세부담상한 <small>(올해 재산세 ' + won(H.propTax) + ' + 종부세가 전년 상당액 ' + won(Math.round(H.prevTotal)) + '의 150%를 넘는 부분)</small>', '−' + won(H.tax - H.final), 'fc-hl']);
+      else if (H.prevTotal != null) lines.push(['세부담상한 <small>(전년 상당액 ' + won(Math.round(H.prevTotal)) + ' × 150% = ' + won(Math.round(H.limit)) + ' — 넘지 않음)</small>', '해당 없음']);
+      else if (H.capUnknown) lines.push(['세부담상한 <small>(모든 주택의 전년 공시가격을 넣으면 계산)</small>', '—']);
+      lines.push(['<b>주택분 종합부동산세</b>', won(H.final), 'fc-total']);
+    }
+    var LK = { agg: '종합합산 토지 (나대지·잡종지 등 · 공제 5억 · 1~3%)', sep: '별도합산 토지 (상가·사무실 부속토지 등 · 공제 80억 · 0.5~0.7%)' };
+    ['agg', 'sep'].forEach(function (k) {
+      var T = r.land[k]; if (!T) return;
+      lines = lines.concat([
+        ['<b>토지분 — ' + LK[k] + '</b>', '', 'fc-total'],
+        ['과세표준 <small>(공시지가 ' + won(T.value) + ' − ' + eok(T.ded) + ', 비율 100%)</small>', won(T.base)],
+        ['종합부동산세액', won(Math.floor(T.gross))],
+        ['재산세 공제 <small>(토지분 재산세 ' + won(T.propTax) + ' 중 과세표준 해당분)</small>', '−' + won(T.propDed)],
+        T.capped ? ['세부담상한 <small>(전년 상당액 ' + won(Math.round(T.prevTotal)) + ' × 150%)</small>', '−' + won(T.tax - T.final), 'fc-hl'] : null,
+        ['<b>토지분 종합부동산세</b>', won(T.final), 'fc-total']
+      ]);
+    });
+    lines = lines.concat([
+      ['<b>종합부동산세</b>', won(r.jb), 'fc-hl'],
+      ['농어촌특별세 <small>(종부세 × 20%)</small>', won(r.rural)],
+      ['<b>납부할 세액 합계</b>', won(r.total), 'fc-hl'],
+      r.inst ? ['분납 가능 금액 <small>(종부세 ' + won(r.inst) + ' + 농특세 ' + won(r.ruralInst) + ' · 납부기한 후 6개월 안)</small>', won(r.inst + r.ruralInst)] : null,
+      r.inst ? ['12월 15일까지 낼 금액', won(r.total - r.inst - r.ruralInst)] : null
+    ]);
+    setH('jbx-table', rows(lines));
+    setT('jbx-pay', won(r.total));
+    var anyBase = (H.base || 0) + (r.land.agg ? r.land.agg.base : 0) + (r.land.sep ? r.land.sep.base : 0);
+    setT('jbx-sub', r.total > 0 ? '종합부동산세 ' + won(r.jb) + ' + 농어촌특별세 ' + won(r.rural) + ' · 12월 1~15일 납부' : anyBase > 0 ? '재산세 공제·세액공제로 낼 세금이 없습니다' : H.value > 0 ? '공시가격 합계가 공제금액(' + eok(H.ded) + ') 이하라 종합부동산세 대상이 아닙니다' : '주택 공시가격을 넣어 주세요');
+    setT('jbx-k1', won(H.base || 0)); setT('jbx-k2', won(r.jb)); setT('jbx-k3', H.value > 0 ? pct(r.total / (H.value + (r.land.agg ? r.land.agg.value : 0) + (r.land.sep ? r.land.sep.value : 0)), 3) : '—');
+    setT('jbx-rate-title', owner === 'corp' ? '법인 세율 — 2주택 이하 2.7% · 3주택 이상 5% (단일)' : H.heavy ? '주택분 세율 — 3주택 이상 (과세표준 12억 이하는 2주택 이하와 같음)' : '주택분 세율 — 2주택 이하');
+    setH('jbx-rates', owner === 'corp' ? '<tr class="fc-hl"><td>과세표준 전체</td><td>' + (H.heavy ? '5%' : '2.7%') + '</td></tr>' : brRows(H.heavy ? JBX.H3 : JBX.H2, H.base));
+    var notes = [];
+    if (owner === 'person' && count === 'one' && H.rows.filter(function (x) { return !x.h.excl; }).length > 1) notes.push('1세대1주택자는 주택 수에서 빼는 주택(일시적 2주택·상속주택·지방 저가주택 등)을 빼면 1채여야 합니다. 나머지 주택에 "주택 수 제외"를 체크하세요.');
+    setH('jbx-notes', notes.map(function (t) { return '<p class="fc-note" style="margin:8px 0 0;">※ ' + t + '</p>'; }).join(''));
+  }
+  if (PT) window.fcRegister('ptx', renderPT, 'proptax');
+  if (JB) window.fcRegister('jbx', renderJB, 'jongbu');
+})();
