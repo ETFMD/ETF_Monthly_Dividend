@@ -1,14 +1,15 @@
-name: 연봉 순위 자료 갱신
+name: 연봉·자산 순위 자료 갱신
 
 # 국내 나의 연봉 순위 (data/salary_rank.json) — 국세청 근로소득 백분위(천분위) 자료
-#  · 1년에 한 번 새 귀속연도 자료가 올라오므로 매주 월요일 확인하고, 바뀌었을 때만 커밋
+# 국내 나의 자산 순위 (data/asset_rank.json) — 통계청 가계금융복지조사 (KOSIS)
+#  · 둘 다 1년에 한 번 새 자료가 나오므로 매주 월요일 확인하고, 바뀌었을 때만 커밋
 on:
   schedule:
     - cron: '17 1 * * 1'      # 매주 월요일 10:17 (한국 시간)
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['scripts/update_salary_rank.py', '.github/workflows/update-salary-rank.yml']
+    paths: ['scripts/update_salary_rank.py', 'scripts/update_asset_rank.py', 'scripts/kosis_asset_req.json', '.github/workflows/update-salary-rank.yml']
 
 permissions:
   contents: write
@@ -25,13 +26,15 @@ jobs:
       - uses: actions/checkout@v5
       - name: 국세청 근로소득 천분위 자료 확인
         run: python3 scripts/update_salary_rank.py || echo "::warning::연봉 순위 자료 갱신 실패 — 직전 자료 유지"
+      - name: 통계청 가계금융복지조사(KOSIS) 순자산 자료 확인
+        run: python3 scripts/update_asset_rank.py || echo "::warning::자산 순위 자료 갱신 실패 — 직전 자료 유지"
       - name: 변경된 경우에만 커밋
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email '41898099+github-actions[bot]@users.noreply.github.com'
-          git add data/salary_rank.json
+          git add data/salary_rank.json data/asset_rank.json
           if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
-          git commit -m "chore: 연봉 순위 자료 갱신"
+          git commit -m "chore: 연봉·자산 순위 자료 갱신"
           for i in 1 2 3; do
             git pull --rebase -X theirs --autostash && git push && exit 0
             git rebase --abort 2>/dev/null || true
