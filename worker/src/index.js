@@ -28,6 +28,7 @@
  */
 const REPO = 'ETFMD/d-capitalism';
 const WORKFLOW = 'update-market-data.yml';
+const APT_WORKFLOW = 'update-apt-rank.yml';   // 아파트 시세 순위 (2시간마다)
 const BOT = /bot|crawl|spider|slurp|bingpreview|facebookexternalhit|kakaotalk-scrap|yeti|daum|headless|lighthouse|preview|python|curl|wget|java\/|go-http|axios|node-fetch/i;
 
 const CNN_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
@@ -79,10 +80,10 @@ async function fear(env) {
   }
 }
 
-async function dispatch(env) {
+async function dispatch(env, workflow) {
   let status = 0, detail = '';
   try {
-    const r = await fetch(`https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/dispatches`, {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/actions/workflows/${workflow || WORKFLOW}/dispatches`, {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + env.GH_TOKEN, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28',
                  'User-Agent': 'etfmd-counter', 'Content-Type': 'application/json' },
@@ -93,7 +94,7 @@ async function dispatch(env) {
   } catch (e) { detail = String(e && e.message || e).slice(0, 200); }
   const now = Math.floor(Date.now() / 1000);
   await env.DB.prepare('INSERT INTO cache (k, t, v) VALUES (?, ?, ?) ON CONFLICT(k) DO UPDATE SET t = excluded.t, v = excluded.v')
-    .bind('dispatch', now, JSON.stringify({ status, ok: status === 204, detail })).run();
+    .bind(workflow ? 'dispatch:' + workflow : 'dispatch', now, JSON.stringify({ status, ok: status === 204, detail })).run();
 }
 
 function kstDay(ms) {
@@ -244,8 +245,9 @@ export default {
       /* GET /geo → 접속 국가 (Cloudflare 가 IP 로 판별한 ISO 국가 코드) — 사이트 기본 언어 선택용, 저장하지 않음 */
       if (url.pathname === '/geo' && req.method === 'GET') return json({ country: (req.cf && req.cf.country) || null });
       if (url.pathname === '/status' && req.method === 'GET') {
-        const row = await env.DB.prepare('SELECT t, v FROM cache WHERE k = ?').bind('dispatch').first();
-        return json({ token: !!env.GH_TOKEN, lastDispatch: row ? { ...JSON.parse(row.v), at: new Date(row.t * 1000).toISOString() } : null });
+        const [row, ap] = await env.DB.batch([env.DB.prepare('SELECT t, v FROM cache WHERE k = ?').bind('dispatch'), env.DB.prepare('SELECT t, v FROM cache WHERE k = ?').bind('dispatch:' + APT_WORKFLOW)]);
+        const one = (x) => { const r = x.results && x.results[0]; return r ? { ...JSON.parse(r.v), at: new Date(r.t * 1000).toISOString() } : null; };
+        return json({ token: !!env.GH_TOKEN, lastDispatch: one(row), aptDispatch: one(ap) });
       }
       /* GET /relay?u=… → 해외 서버(GitHub Actions)를 막는 운용사 사이트의 공개 분배금 자료만 대신 받아 옴 (허용 주소만 · GET 만) */
       if (url.pathname === '/relay' && req.method === 'GET') {
@@ -276,6 +278,7 @@ export default {
       ctx.waitUntil(env.DB.prepare('DELETE FROM visits WHERE day < ?').bind(cut).run());
     }
     if (!env.GH_TOKEN) return;
+    if (h % 2 === 0 && m < 15) ctx.waitUntil(dispatch(env, APT_WORKFLOW));     // 아파트 실거래: 2시간마다 (공공 API 하루 한도 안에서 가장 자주)
     const weekday = dow >= 1 && dow <= 5, usOpen = (h >= 22 && dow >= 1 && dow <= 5) || (h < 7 && dow >= 2 && dow <= 6);
     const market = (weekday && h >= 9 && h < 20) || usOpen;           // 09~20시: 한국장 + 장 마감 뒤 ETF 분배금 공시 시간
     if (!market && !(h % 3 === 0 && m < 15)) return;                    // 장 밖에는 3시간마다
