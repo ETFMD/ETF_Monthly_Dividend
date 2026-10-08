@@ -115,7 +115,7 @@ def fetch_month(sgg, ym, api=None):
     rows, page = [], 1
     while True:
         q = urllib.parse.urlencode({'serviceKey': KEY, 'LAWD_CD': sgg, 'DEAL_YMD': ym, 'pageNo': page, 'numOfRows': 1000})
-        root = ET.fromstring(get((api or API) + '?' + q, timeout=60))
+        root = ET.fromstring(get((api or API) + '?' + q, timeout=35, tries=2))   # 장애 때 오래 붙잡지 않게
         code = (root.findtext('.//resultCode') or '').strip()
         if code not in ('00', '000'):
             raise RuntimeError('API %s %s: %s %s' % (sgg, ym, code, (root.findtext('.//resultMsg') or root.findtext('.//returnAuthMsg') or '')[:80]))
@@ -284,7 +284,8 @@ def main():
     print('받기 %.0f초 · 바뀐 달 %d · 실패 %d' % (time.time() - t0, len(done), len(fails)))
     if fails:
         print('실패 예: %s' % fails[0], file=sys.stderr)
-        if len(fails) > max(10, len(jobs) * 0.2): sys.exit('실패가 너무 많아 저장하지 않음')
+        if len(fails) > max(10, len(jobs) * 0.2):                              # 공공 API 장애 → 직전 자료 유지 (실행은 정상 종료)
+            print('::warning::공공 API 실패 %d건 — 저장하지 않고 직전 자료 유지' % len(fails)); return
     ok, n = upload(sggs, yms)                                                  # 단지 그래프용 (바뀐 달·못 올린 달만)
     if n: print('Worker 업로드 %d/%d' % (ok, n))
     if API_DOWN['ok'] == 0 and API_DOWN['fail']: print('공공 API 응답 없음 — 과거 자료 채우기는 다음 실행에', file=sys.stderr)
