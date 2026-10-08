@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
 """도구(탭)별 고유 주소 페이지·sitemap.xml·robots.txt·404.html 생성
 
-· 원본은 루트 index.html 하나 — 이 스크립트가 scripts/routes.json 의 도구마다
+· 원본은 src/index.html 하나(모든 도구가 든 한 파일) — 이 스크립트가 홈(루트 index.html)과 scripts/routes.json 의 도구마다
   <경로>/index.html 을 만들고, 각 페이지의 <head> 에 고유 제목·설명·공유 미리보기(OG)·canonical 을 넣습니다.
+· 도구별 페이지 분리: 각 페이지의 HTML 에는 그 도구 화면(app-page) 하나만 남기고, 큰 CSS·JS 는
+  assets/app.<해시>.css · assets/app.<해시>.js 로 빼서 모든 페이지가 같은 파일을 캐시로 함께 씀
+  (다른 도구로 가면 메뉴가 그 주소로 이동 — src/index.html 의 [ROUTER] 참고)
+· 푸터의 전체 도구 링크(<!--FOOTMAP-->)를 routes.json 으로 채움 (검색엔진이 모든 도구 주소를 따라갈 수 있게)
 · 하위 페이지는 <base href="../"> 로 data/*.json 등 상대 경로를 루트 기준으로 맞추고,
   처음부터 해당 도구 화면이 보이도록 active 탭을 바꿔 둡니다 (검색엔진·JS 없는 환경도 같은 화면).
-· 루트 index.html 은 <!--SEO:BEGIN--> ~ <!--SEO:END--> 구간만 다시 씁니다 (몇 번 실행해도 결과 동일).
 · 자체 도메인을 쓰려면 저장소 루트에 CNAME 파일(예: decoding.kr)만 두면 주소가 자동으로 바뀝니다.
-사용: python3 scripts/build_pages.py   (GitHub Actions 'build-pages' 가 index.html 변경 시 자동 실행)
+사용: python3 scripts/build_pages.py   (GitHub Actions 'build-pages' 가 src/index.html 변경 시 자동 실행)
 """
-import datetime, html, json, os, re, sys
+import datetime, hashlib, html, json, os, re, sys
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-SRC = os.path.join(ROOT, 'index.html')
+SRC = os.path.join(ROOT, 'src', 'index.html')
 CFG = json.load(open(os.path.join(ROOT, 'scripts', 'routes.json'), encoding='utf-8'))
 BEGIN, END = '<!--SEO:BEGIN-->', '<!--SEO:END-->'
 
@@ -161,6 +164,70 @@ def activate(src, r):
     return out
 
 
+# ───────────── 도구별 페이지 분리 ─────────────
+AREA = {'money': '돈', 'stock': '주식·ETF', 'realty': '부동산', 'passive': '패시브인컴'}
+ASSET = {}   # 'css' / 'js' → assets/app.<해시>.<확장자> (main 에서 원본으로 만듦)
+
+
+def main_script_span(src):
+    """원본의 큰 앱 스크립트(<script> /* [I18N] 영어 페이지 …) 위치"""
+    a = src.index('<script>\n/* [I18N] 영어 페이지')
+    return a, src.index('</script>', a) + len('</script>')
+
+
+def style_span(src):
+    m = re.search(r'<style>\n.*?</style>', src, re.S)
+    if not m or len(m.group(0)) < 50000:
+        sys.exit('원본의 큰 <style> 블록을 찾지 못했습니다')
+    return m.start(), m.end()
+
+
+def make_assets(src):
+    """원본의 큰 CSS·JS 를 assets/app.<해시>.css/js 로 저장 (내용이 같으면 같은 이름 → 브라우저 캐시 재사용)"""
+    a, b = style_span(src)
+    css = src[a:b][len('<style>\n'):-len('</style>')]
+    a, b = main_script_span(src)
+    js = src[a:b][len('<script>\n'):-len('</script>')]
+    keep = set()
+    for kind, body in (('css', css), ('js', js)):
+        name = f"assets/app.{hashlib.sha256(body.encode('utf-8')).hexdigest()[:10]}.{kind}"
+        write_if_changed(name, body)
+        ASSET[kind] = name
+        keep.add(os.path.basename(name))
+    for f in os.listdir(os.path.join(ROOT, 'assets')):   # 예전 해시 파일 정리
+        if re.fullmatch(r'app\.[0-9a-f]{10}\.(css|js)', f) and f not in keep:
+            os.remove(os.path.join(ROOT, 'assets', f))
+            print('  삭제', f'assets/{f}')
+
+
+def footmap(en=False):
+    T = tr_text if en else (lambda t: t)
+    cols = []
+    for g, name in AREA.items():
+        links = ''.join(f'<a href="{esc(r["path"])}/">{esc(T(NAV_LABEL[r["tab"]]))}</a>' for r in ROUTES if r['group'] == g)
+        cols.append(f'<div class="sf-col"><p class="sf-h">{esc(T(name))}</p>{links}</div>')
+    return f'<nav class="sf-map" aria-label="{esc(T("전체 도구"))}">' + ''.join(cols) + '</nav>'
+
+
+def finalize(html_text, tab, en=False):
+    """한 페이지 출력: 그 도구 화면만 남기고, 큰 CSS·JS 는 공용 파일로"""
+    tabs = re.findall(r'<div class="app-page[^"]*" id="page-([a-z0-9]+)">', html_text)
+    if tab not in tabs:
+        sys.exit(f'page-{tab} 을 찾지 못했습니다')
+    for t in tabs:
+        if t != tab:
+            a, b = section_span(html_text, t)
+            html_text = html_text[:a] + html_text[b:]
+    a, b = main_script_span(html_text)
+    html_text = html_text[:a] + f'<script src="{ASSET["js"]}"></script>' + html_text[b:]
+    a, b = style_span(html_text)
+    html_text = html_text[:a] + f'<link rel="stylesheet" href="{ASSET["css"]}">' + html_text[b:]
+    html_text, n = re.subn(r'<!--FOOTMAP-->.*?<!--/FOOTMAP-->', lambda m: '<!--FOOTMAP-->' + footmap(en) + '<!--/FOOTMAP-->', html_text, count=1, flags=re.S)
+    if n != 1:
+        sys.exit('<!--FOOTMAP--> 표시를 찾지 못했습니다')
+    return html_text
+
+
 # ───────────── 영어 페이지 (/en/<도구>/) ─────────────
 TOP_A, TOP_B = '<div class="wrap">', '<!-- ── 홈 (메인 화면) ── [HOME] ── -->'
 BOT_A = '<!-- ── 하단 후원/문의 배너 ── -->'
@@ -238,21 +305,22 @@ def main():
     src = open(SRC, encoding='utf-8').read()
     load_nav_labels(src)
     # 원본에 이미 들어 있는 하위 페이지 표시(앞선 빌드 결과)가 있으면 루트 기준으로 되돌린 뒤 시작
+    make_assets(src)
     home = with_head(src, HOME)
-    write_if_changed('index.html', home)
+    write_if_changed('index.html', finalize(home, HOME['tab']))
     paths = set()
     for r in ROUTES:
         if r['path'] in paths or not re.fullmatch(r'[a-z0-9-]+', r['path']):
             sys.exit(f"경로 오류: {r['path']}")
         paths.add(r['path'])
-        write_if_changed(f"{r['path']}/index.html", activate(with_head(home, r), r))
+        write_if_changed(f"{r['path']}/index.html", finalize(activate(with_head(home, r), r), r['tab']))
         if 'en' in r:
-            write_if_changed(f"en/{r['path']}/index.html", english_page(activate(with_head(home, r, 'en'), r)))
+            write_if_changed(f"en/{r['path']}/index.html", finalize(english_page(activate(with_head(home, r, 'en'), r)), r['tab'], en=True))
     # 예전 빌드에 있었으나 routes.json 에서 빠진 경로 정리
     marker = '<meta name="etfmd-route" content="'
     for d in sorted(os.listdir(ROOT)):
         f = os.path.join(ROOT, d, 'index.html')
-        if d not in paths and os.path.isfile(f) and marker in open(f, encoding='utf-8').read(8192 * 4):
+        if d not in paths and d != 'src' and os.path.isfile(f) and marker in open(f, encoding='utf-8').read(8192 * 4):
             os.remove(f)
             print('  삭제', f'{d}/index.html')
     en_paths = {r['path'] for r in ROUTES if 'en' in r}
@@ -281,7 +349,7 @@ def main():
     old = open(os.path.join(ROOT, 'sitemap.xml'), encoding='utf-8').read() if os.path.exists(os.path.join(ROOT, 'sitemap.xml')) else ''
     if re.sub(r'<lastmod>[^<]*</lastmod>', '', old) != re.sub(r'<lastmod>[^<]*</lastmod>', '', sitemap):
         write_if_changed('sitemap.xml', sitemap)          # 주소 목록이 바뀔 때만 (날짜만 바뀌는 커밋 방지)
-    write_if_changed('robots.txt', f'User-agent: *\nAllow: /\n\nSitemap: {SITE}sitemap.xml\n')
+    write_if_changed('robots.txt', f'User-agent: *\nAllow: /\nDisallow: /src/\n\nSitemap: {SITE}sitemap.xml\n')
     write_if_changed('404.html', f'''<!DOCTYPE html>
 <html lang="ko"><head><meta charset="UTF-8"><meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>페이지를 찾을 수 없습니다 | {esc(BRAND)}</title>

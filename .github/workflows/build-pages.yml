@@ -1,12 +1,12 @@
 name: 도구별 주소 페이지 생성
 
-# index.html(원본)·routes.json 이 바뀌면 도구별 <경로>/index.html, sitemap.xml, robots.txt, 404.html 을 다시 만듦
-# (직접 index.html 만 고쳐 올려도 하위 주소 페이지가 자동으로 맞춰짐)
+# src/index.html(원본)·routes.json 이 바뀌면 홈(index.html)·도구별 <경로>/index.html, assets/app.<해시>.css·js, sitemap.xml, robots.txt, 404.html 을 다시 만듦
+# (원본만 고쳐 올려도 모든 주소 페이지가 자동으로 맞춰짐 — 페이지마다 자기 도구 화면만 들어 있음)
 on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['index.html', 'scripts/routes.json', 'scripts/build_pages.py', 'scripts/i18n/**', 'assets/**', 'CNAME', '.github/workflows/build-pages.yml']
+    paths: ['src/index.html', 'scripts/routes.json', 'scripts/build_pages.py', 'scripts/i18n/**', 'assets/**', 'CNAME', '.github/workflows/build-pages.yml']
 
 permissions:
   contents: write
@@ -27,7 +27,7 @@ jobs:
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email '41898099+github-actions[bot]@users.noreply.github.com'
-          git add -A -- index.html '*/index.html' sitemap.xml robots.txt 404.html
+          git add -A -- index.html '*/index.html' 'assets/app.*' sitemap.xml robots.txt 404.html
           if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
           git commit -m "chore: 도구별 주소 페이지 갱신"
           for i in 1 2 3; do git pull --rebase --autostash && git push && exit 0; sleep 5; done

@@ -15,7 +15,7 @@ TEXT = {
     '한국어': '한국어', 'Language / 언어': 'Language',   # 언어 선택 목록은 각 언어 이름 그대로
     '카카오 오픈채팅': 'KakaoTalk open chat (Korean)',
     'ETF 커버드콜 + 배당투자 + 성장주 함께 장기투자를 위한 오픈톡방 가기': 'Join our Korean-language community for long-term investing in covered-call ETFs, dividends and growth stocks',
-    '디코딩 자본주의': 'Decoding Capitalism', '디코딩 자본주의 홈': 'Decoding Capitalism home', '사이트 검색': 'Site search', '검색 결과': 'Search results',
+    '전체 도구': 'All tools', '공포 & 탐욕 지수': 'Fear & Greed Index', '디코딩 자본주의': 'Decoding Capitalism', '디코딩 자본주의 홈': 'Decoding Capitalism home', '사이트 검색': 'Site search', '검색 결과': 'Search results',
     '계산기·자료 검색 (예: 연봉, 취득세, 배당)': 'Search tools (e.g. salary, tax, dividend)',
     '돈': 'Money', '주식·ETF': 'Stocks & ETFs', '부동산': 'Real estate', '패시브인컴': 'Passive income', '커버드콜 분배 시뮬레이터': 'Covered-call simulators',
     'ETF 월분배 및 배당 달력': 'Korean ETF distribution calendar', '국내 나의 아파트 시세 순위': 'Korean apartment price ranking', '국내 나의 연봉 순위': 'My salary rank in Korea',
