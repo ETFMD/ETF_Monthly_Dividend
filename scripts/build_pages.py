@@ -52,7 +52,11 @@ def esc(s):
 
 def og_image(r):
     rel = f"assets/og/{r['path'] or 'home'}.png"
-    return SITE + (rel if os.path.exists(os.path.join(ROOT, rel)) else 'assets/og/home.png')
+    if not os.path.exists(os.path.join(ROOT, rel)):
+        rel = 'assets/og/home.png'
+    # 이미지가 바뀌면 주소도 바뀌게(?v=내용 해시) — 카카오톡·페이스북 등이 예전 미리보기 이미지를 계속 쓰지 않도록
+    v = hashlib.sha256(open(os.path.join(ROOT, rel), 'rb').read()).hexdigest()[:8]
+    return f'{SITE}{rel}?v={v}'
 
 
 NAV_LABEL = {}   # 탭 id → 메뉴에 보이는 탭 이름 (index.html 의 드롭다운 버튼 글자에서 읽음)
