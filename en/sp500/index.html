@@ -15472,6 +15472,7 @@ var TAX = (function () {
   }
   function short(n) { var e = n / 1e4; return e >= 1 ? (Math.round(e * 10) / 10) + '억' : Math.round(n).toLocaleString('ko-KR') + '만'; }
   function md(d) { return d ? (+d.slice(5, 7)) + '/' + (+d.slice(8, 10)) : ''; }
+  function hid(k) { var h = 5381; for (var i = 0; i < k.length; i++) h = ((h << 5) + h + k.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }   // 단지키(한글 포함) → 요소 id
   var PER = 50, SIDO_ORDER = ['서울', '경기', '인천', '부산', '대구', '광주', '대전', '울산', '세종', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주'];
   var S = { data: null, rows: null, sort: 'price', q: '', sido: '', page: 1, open: {}, loading: false };
   var charts = {}, hist = {};
@@ -15540,13 +15541,13 @@ var TAX = (function () {
         '<td class="ap-c-addr" data-l="주소">' + esc(r.addr) + (r.road ? '<small>' + esc(r.road) + '</small>' : '') + '</td>' +
         '<td class="ap-c-sido" data-l="지역">' + esc(r.sido) + '</td>' +
         '<td class="ap-c-gu" data-l="구">' + esc(r.gu) + '</td></tr>' +
-        (open ? '<tr class="dv-hist"><td colspan="7"><div id="ap-h-' + esc(r.k.replace(/[^\w-]/g, '_')) + '"></div></td></tr>' : '');
+        (open ? '<tr class="dv-hist"><td colspan="7"><div id="ap-h-' + hid(r.k) + '"></div></td></tr>' : '');
     }).join('') : '<tr><td colspan="7" class="dv-empty">' + (S.q ? '‘' + esc(S.q) + '’에 맞는 아파트가 없습니다.' : '자료가 없습니다.') + '</td></tr>';
     pager(all.length, pages);
     rows.forEach(function (r) { if (S.open[r.k]) histDraw(r); });
   }
   function histDraw(r) {
-    var box = $('ap-h-' + r.k.replace(/[^\w-]/g, '_')); if (!box) return;
+    var box = $('ap-h-' + hid(r.k)); if (!box) return;
     var h = hist[r.k];
     if (!h) {
       box.innerHTML = '<div class="ap-hist-msg">1년 실거래를 불러오는 중…</div>';
@@ -15565,7 +15566,7 @@ var TAX = (function () {
     var areas = {}; h.forEach(function (d) { var k = Math.round(d[2]); (areas[k] = areas[k] || []).push(d); });
     var keys = Object.keys(areas).sort(function (a, b) { return areas[b].length - areas[a].length; });
     var hi = h.reduce(function (m, d) { return d[1] > m[1] ? d : m; }), lo = h.reduce(function (m, d) { return d[1] < m[1] ? d : m; });
-    var id = 'ap-c-' + r.k.replace(/[^\w-]/g, '_');
+    var id = 'ap-c-' + hid(r.k);
     box.innerHTML = '<div class="ap-hist-top"><span>최근 1년 매매 <b>' + h.length + '건</b></span><span>최고 <b>' + man(hi[1]) + '</b> <small>(' + hi[2] + '㎡ · ' + md(hi[0]) + ')</small></span><span>최저 <b>' + man(lo[1]) + '</b> <small>(' + lo[2] + '㎡ · ' + md(lo[0]) + ')</small></span></div>' +
       '<div class="ap-chart"><canvas id="' + id + '" aria-label="' + esc(r.n) + ' 1년 실거래가 그래프"></canvas></div>';
     if (typeof Chart === 'undefined') return;

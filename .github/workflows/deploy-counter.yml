@@ -27,7 +27,6 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       GH_DISPATCH_TOKEN: ${{ secrets.GH_DISPATCH_TOKEN }}   # 선택: 15분마다 시세 수집을 실행시킬 토큰 (저장소 1개 · Actions 쓰기)
-      APT_KEY: ${{ secrets.APT_KEY }}                       # 선택: 아파트 실거래 그래프용 공공데이터포털 인증키
     steps:
       - uses: actions/checkout@v5
       - name: 설정 확인
@@ -67,7 +66,6 @@ jobs:
           else
             echo "::notice::GH_DISPATCH_TOKEN 시크릿이 없어 15분 실행은 꺼져 있습니다 (GitHub 예약 실행만 사용)"
           fi
-          if [ -n "${APT_KEY:-}" ]; then printf '%s' "$APT_KEY" | $W secret put APT_KEY >/dev/null && echo "::notice::APT_KEY 등록 — 아파트 실거래 그래프 사용"; fi
           url=$(grep -oE 'https://[a-zA-Z0-9.-]+\.workers\.dev' deploy.log | head -n1)
           [ -n "$url" ] || { echo "workers.dev 주소를 찾지 못했습니다 — Cloudflare 대시보드에서 Workers 하위 도메인(workers.dev)을 먼저 등록하세요"; exit 1; }
           curl -fsS "$url/" && echo
