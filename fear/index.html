@@ -1441,6 +1441,16 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .dv-hb i { display:block; width:100%; max-width:30px; background:linear-gradient(180deg, rgba(49,130,246,0.85), rgba(49,130,246,0.45)); border-radius:4px 4px 0 0; }
   .dv-hb b { font-family:var(--mono); font-size:10px; font-weight:600; color:var(--text); }
   .dv-hb small { font-family:var(--mono); font-size:9.5px; color:var(--text3); white-space:nowrap; }
+  .dv-hb { cursor:default; }
+  .dv-hb:hover i, .dv-hb.on i { background:linear-gradient(180deg, rgba(49,130,246,1), rgba(49,130,246,0.6)); }
+  /* 분배 이력 막대 툴팁 — 차트(Chart.js) 툴팁과 같은 모양 */
+  .dv-tip { position:fixed; z-index:1000; pointer-events:none; background:rgba(0,0,0,0.8); color:#fff; border-radius:6px; padding:6px 8px 7px;
+    font:12px 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height:1.45; white-space:nowrap; opacity:0; transition:opacity .12s; }
+  .dv-tip.show { opacity:1; }
+  .dv-tip .t { font-weight:700; margin-bottom:3px; }
+  .dv-tip .l { display:flex; align-items:center; gap:6px; }
+  .dv-tip .l i { width:10px; height:10px; flex:none; border:1px solid #fff; background:rgb(49,130,246); }
+  .dv-tip .l i.y { background:rgb(46,190,120); }
   .dv-hsum { font-family:var(--font); font-size:12px; color:var(--text2); }
   .dv-empty { text-align:center !important; color:var(--text3); padding:28px 10px !important; font-family:var(--font) !important; }
   .dv-note { margin:12px 0 0; font-size:11px; color:var(--text3); line-height:1.7; }
@@ -14682,8 +14692,27 @@ var TAX = (function () {
     var mx = Math.max.apply(null, h.map(function (z) { return z[1]; })) || 1, sum = 0, yr = new Date(Date.now() - 365 * 864e5).toISOString().slice(0, 10);
     h.forEach(function (z) { if (z[0] > yr) sum += z[1]; });
     return '<tr class="dv-hist"><td colspan="12"><div class="dv-hsum">최근 ' + h.length + '회 분배 (분배락일 기준) · 최근 1년 합계 <b>' + num(sum) + '원</b>' + (r.p ? ' · 현재가 대비 ' + (sum / r.p * 100).toFixed(2) + '%' : '') + '</div><div class="dv-hbars">' +
-      h.map(function (z) { return '<div class="dv-hb" title="' + esc(z[0]) + ' · ' + num(z[1]) + '원 · ' + (z[2] != null ? z[2] + '%' : '') + '"><b>' + num(z[1]) + '</b><i style="height:' + Math.max(4, z[1] / mx * 60).toFixed(1) + 'px"></i><small>' + (+z[0].slice(5, 7)) + '/' + (+z[0].slice(8)) + '</small></div>'; }).join('') + '</div></td></tr>';
+      h.map(function (z) { return '<div class="dv-hb" data-d="' + esc(z[0]) + '" data-a="' + z[1] + '" data-y="' + (z[2] != null ? z[2] : '') + '"><b>' + num(z[1]) + '</b><i style="height:' + Math.max(4, z[1] / mx * 60).toFixed(1) + 'px"></i><small>' + (+z[0].slice(5, 7)) + '/' + (+z[0].slice(8)) + '</small></div>'; }).join('') + '</div></td></tr>';
   }
+  // 분배 이력 막대 툴팁 (마우스 올림 · 터치는 누르면 표시, 다른 곳을 누르면 닫힘)
+  var tipEl = null, tipOn = null;
+  function tipHide() { if (tipEl) tipEl.classList.remove('show'); if (tipOn) tipOn.classList.remove('on'); tipOn = null; }
+  function tipShow(bar) {
+    if (!tipEl) { tipEl = document.createElement('div'); tipEl.className = 'dv-tip'; tipEl.setAttribute('role', 'tooltip'); document.body.appendChild(tipEl); }
+    if (tipOn && tipOn !== bar) tipOn.classList.remove('on');
+    tipOn = bar; bar.classList.add('on');
+    var d = bar.getAttribute('data-d') || '', y = bar.getAttribute('data-y');
+    tipEl.innerHTML = '<div class="t">' + esc(d.replace(/-/g, '/')) + '</div>' +
+      '<div class="l"><i></i>분배금  ' + num(+bar.getAttribute('data-a')) + '원</div>' +
+      (y !== '' && y != null ? '<div class="l"><i class="y"></i>분배율  ' + (+y).toFixed(2) + '%</div>' : '');
+    var r = (bar.querySelector('i') || bar).getBoundingClientRect(), w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+    var x = r.right + 8; if (x + w > window.innerWidth - 8) x = r.left - w - 8; if (x < 8) x = 8;
+    var top = Math.max(8, Math.min(r.top + r.height / 2 - h / 2, window.innerHeight - h - 8));
+    tipEl.style.left = x + 'px'; tipEl.style.top = top + 'px'; tipEl.classList.add('show');
+  }
+  document.addEventListener('mouseover', function (e) { var b = e.target.closest && e.target.closest('.dv-hb'); if (b) tipShow(b); else if (tipOn) tipHide(); });
+  document.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('.dv-hb'); if (b) tipShow(b); else if (tipOn) tipHide(); }, true);
+  window.addEventListener('scroll', function () { if (tipOn) tipHide(); }, { passive: true, capture: true });
   function table() {
     var all = rowsNow(), pages = Math.max(1, Math.ceil(all.length / PER));
     if (S.page > pages) S.page = pages;
