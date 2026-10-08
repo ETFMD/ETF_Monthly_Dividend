@@ -2,12 +2,14 @@
 #   설치:  PowerShell 에서  $env:KR_TOKEN='열쇠'; irm https://raw.githubusercontent.com/ETFMD/d-capitalism/main/scripts/kr_install.ps1 | iex
 #   삭제:  $env:KR_REMOVE='1'; irm https://raw.githubusercontent.com/ETFMD/d-capitalism/main/scripts/kr_install.ps1 | iex
 # 하는 일: %LOCALAPPDATA%\kr-agent 에 열쇠와 실행 파일(run.ps1)을 두고, 5분마다 창 없이 실행하는 예약 작업 'DCapitalism-KR-Agent' 등록
+#          (수집기가 처음 실행될 때 절전 중 1시간마다 깨우는 'DCapitalism-KR-Agent-Wake' 도 등록)
 $ErrorActionPreference = 'Stop'
 $Task = 'DCapitalism-KR-Agent'
 $Dir  = Join-Path $env:LOCALAPPDATA 'kr-agent'
 
 if ($env:KR_REMOVE -eq '1') {
   Unregister-ScheduledTask -TaskName $Task -Confirm:$false -ErrorAction SilentlyContinue
+  Unregister-ScheduledTask -TaskName 'DCapitalism-KR-Agent-Wake' -Confirm:$false -ErrorAction SilentlyContinue
   Remove-Item $Dir -Recurse -Force -ErrorAction SilentlyContinue
   Remove-Item Env:\KR_REMOVE -ErrorAction SilentlyContinue
   Write-Host '한국 수집기를 삭제했습니다.' -ForegroundColor Green

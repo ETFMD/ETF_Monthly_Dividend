@@ -36,6 +36,7 @@ const KR_HOSTS = ['www.riseetf.co.kr', 'riseetf.co.kr', 'www.kbam.co.kr', 'kbam.
   'www.nhamundi.com', 'nhamundi.com', 'www.hanaroetf.com', 'www.hanaam.com', 'hanaam.com', 'www.1qetf.com', '1qetf.com',
   'www.daishin-am.co.kr', 'daishin-am.co.kr', 'www.daishinam.co.kr', 'daishinam.co.kr', 'www.viam.co.kr', 'viam.co.kr', 'www.vi-am.co.kr', 'vi-am.co.kr',
   'asset.daishin.com', 'www.viamc.kr', 'viamc.kr', 'dart.fss.or.kr', 'opendart.fss.or.kr'];
+const KR_HTTP = ['www.viamc.kr', 'viamc.kr'];   // https 를 받지 않는 운용사 (http 허용)
 const KR_KEY = '66862eb910881b358a466876f4303e5ff3d92c59';     // SHA-256(수집기 열쇠) 앞 40자 (sha256() 과 같은 길이)
 const KR_TTL = 1800, KR_KEEP = 3 * 86400, KR_MAX = 600;                                  // 다시 받는 주기 · 보관 · 최대 주소 수(초·개)
 const r1 = (v) => (v == null || isNaN(v) ? null : Math.round(v * 10) / 10);
@@ -132,7 +133,8 @@ async function kr(req, env, url, json) {
   if (url.pathname === '/kr' && req.method === 'GET') {
     let target;
     try { target = new URL(url.searchParams.get('u') || ''); } catch (e) { return json({ error: 'bad url' }, 400); }
-    if (target.protocol !== 'https:' || !KR_HOSTS.includes(target.hostname)) return json({ error: 'host not allowed' }, 403);
+    if (!KR_HOSTS.includes(target.hostname) || !(target.protocol === 'https:' || (target.protocol === 'http:' && KR_HTTP.includes(target.hostname))))
+      return json({ error: 'host not allowed' }, 403);
     const u = target.toString();
     const row = await env.DB.prepare('SELECT t, st, v FROM kr WHERE u = ?').bind(u).first();
     if (row) await env.DB.prepare('UPDATE kr SET want = ? WHERE u = ?').bind(now, u).run();
@@ -153,7 +155,7 @@ async function kr(req, env, url, json) {
       env.DB.prepare('DELETE FROM kr_lease WHERE until < ?').bind(now),
       env.DB.prepare('DELETE FROM cache WHERE k LIKE ? AND t < ?').bind('kr_agent:%', now - 14 * 86400),
       env.DB.prepare('INSERT INTO cache (k, t, v) VALUES (?, ?, ?) ON CONFLICT(k) DO UPDATE SET t = excluded.t, v = excluded.v')
-        .bind('kr_agent:' + id, now, JSON.stringify({ country: (req.cf && req.cf.country) || null })),
+        .bind('kr_agent:' + id, now, JSON.stringify({ country: (req.cf && req.cf.country) || null, info: (url.searchParams.get('i') || '').replace(/[^\w-]/g, '').slice(0, 40) || null })),
     ]);
     // 처음 · 30분 지난 것 · 실패한 것(4분 뒤 다시) — 다른 PC가 4분 안에 가져간 주소는 빼고 나눠 받음
     const r = await env.DB.prepare('SELECT u FROM kr WHERE (t IS NULL OR t < ? OR (st <> 200 AND t < ?)) AND u NOT IN (SELECT u FROM kr_lease) ORDER BY t IS NOT NULL, t LIMIT 40')

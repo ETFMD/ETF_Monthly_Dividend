@@ -41,7 +41,35 @@ function Put($item) {
   [void]$c.PostAsync("$E/kr/put?k=$K", $body).GetAwaiter().GetResult()
 }
 
-$jobs = $c.GetStringAsync("$E/kr/jobs?k=$K&a=$Id").GetAwaiter().GetResult() | ConvertFrom-Json
+# 절전 중에도 1시간마다 PC 를 깨워 수집하는 예약 작업 (사용자가 요청 · 없거나 옛 버전이면 이 PC 에 등록)
+#   전원 연결 시에만 깨움(배터리 사용 중인 노트북은 깨우지 않음) · 깨어난 뒤 30초 기다려 네트워크 연결 후 실행
+$Info = 'wake-none'
+try {
+  $WT = 'DCapitalism-KR-Agent-Wake'; $WV = 'wake-v1'
+  $old = Get-ScheduledTask -TaskName $WT -ErrorAction SilentlyContinue
+  if (-not $old -or $old.Description -notlike "*$WV*") {
+    $ps  = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+    $run = Join-Path $Dir 'run.ps1'
+    $arg = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -Command `"Start-Sleep -Seconds 30; & '$run'`""
+    $con = Join-Path $env:SystemRoot 'System32\conhost.exe'
+    if ((Test-Path $con) -and [Environment]::OSVersion.Version.Build -ge 18362) { $act = New-ScheduledTaskAction -Execute $con -Argument "--headless `"$ps`" $arg" }
+    else { $act = New-ScheduledTaskAction -Execute $ps -Argument $arg }
+    $trg = New-ScheduledTaskTrigger -Once -At ((Get-Date).Date.AddHours((Get-Date).Hour + 1).AddMinutes(7)) -RepetitionInterval (New-TimeSpan -Hours 1)
+    $set = New-ScheduledTaskSettingsSet -WakeToRun -StartWhenAvailable -MultipleInstances IgnoreNew -ExecutionTimeLimit (New-TimeSpan -Minutes 6)
+    Register-ScheduledTask -TaskName $WT -Action $act -Trigger $trg -Settings $set -Description "디코딩 자본주의: 절전 중이면 1시간마다 PC 를 깨워 RISE 등 공개 분배금 자료 수집 ($WV)" -Force | Out-Null
+    'wake task registered'
+  }
+  $t = Get-ScheduledTask -TaskName $WT -ErrorAction SilentlyContinue
+  if ($t) { $Info = $WV + $(if ($t.Settings.WakeToRun) { '-on' } else { '-off' }) }
+} catch { $Info = 'wake-err'; 'wake task error: ' + $_.Exception.Message }
+
+# 수집하는 동안 절전으로 다시 들어가지 않게 (끝나면 자동 해제)
+try {
+  Add-Type -Namespace KrAgent -Name Power -MemberDefinition '[DllImport("kernel32.dll")] public static extern uint SetThreadExecutionState(uint f);'
+  [void][KrAgent.Power]::SetThreadExecutionState([uint32]2147483649)   # ES_CONTINUOUS | ES_SYSTEM_REQUIRED
+} catch { }
+
+$jobs = $c.GetStringAsync("$E/kr/jobs?k=$K&a=$Id&i=$Info").GetAwaiter().GetResult() | ConvertFrom-Json
 $n = 0
 foreach ($u in @($jobs.urls)) {
   if (-not $u -or (Get-Date) -gt $End) { continue }
