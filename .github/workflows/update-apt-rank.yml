@@ -1,0 +1,59 @@
+name: 아파트 시세 순위 갱신
+
+# 국내 나의 아파트 시세 순위 (data/apt_rank.json) — 국토교통부 아파트 매매 실거래가 (공공데이터포털 API)
+#  · 매일 새벽: 이번 달·지난달·그 전달 실거래를 전국 시군구별로 다시 받고(신고 30일·해제 반영), 더 지난 달은 캐시를 씀
+#  · 인증키: 저장소 시크릿 APT_KEY (공공데이터포털 '국토교통부_아파트 매매 실거래가 자료' 일반 인증키)
+on:
+  schedule:
+    - cron: '43 20 * * *'      # 매일 05:43 (한국 시간) — 전날 신고분이 반영된 뒤
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['scripts/update_apt_rank.py', '.github/workflows/update-apt-rank.yml']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-data          # 다른 데이터 갱신과 같은 그룹 → data/ 커밋이 겹치지 않음
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      APT_KEY: ${{ secrets.APT_KEY }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: 지난 실거래 캐시 불러오기
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache/apt
+          key: apt-raw-${{ github.run_id }}
+          restore-keys: apt-raw-
+      - name: 실거래 수집 · 순위 계산
+        id: run
+        run: |
+          if [ -z "$APT_KEY" ]; then echo "::warning::APT_KEY 시크릿이 없어 건너뜁니다"; exit 0; fi
+          python3 scripts/update_apt_rank.py
+      - name: 실거래 캐시 저장
+        if: always() && hashFiles('.cache/apt/*.json') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/apt
+          key: apt-raw-${{ github.run_id }}
+      - name: 변경된 경우에만 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898099+github-actions[bot]@users.noreply.github.com'
+          [ -f data/apt_rank.json ] || exit 0
+          git add data/apt_rank.json
+          if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
+          git commit -m "chore: 아파트 시세 순위 갱신"
+          for i in 1 2 3; do
+            git pull --rebase -X theirs --autostash && git push && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep 5
+          done
+          exit 1

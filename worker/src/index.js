@@ -19,6 +19,10 @@
  *   · GET  /kr/status     PC별 마지막 접속 시각·국가 · 주소 수
  *   · 수집기 열쇠는 원문 대신 SHA-256 값만 이 코드에 둠 · 3일 동안 아무도 찾지 않은 주소는 정리
  *
+ * GET /apt?sgg=11650&seq=11650-1234 → 아파트 한 단지의 최근 1년 매매 실거래 [[계약일, 금액(만원), 전용㎡, 층], ...]
+ *   · 국토교통부 실거래가 API(공공데이터포털)를 시군구 × 월로 받아 D1 에 보관 (이번 달·지난달 6시간, 그 전 달 7일)
+ *   · 인증키는 Worker 비밀값 APT_KEY (GitHub 시크릿 APT_KEY → 배포 때 등록) — 사이트 코드에는 없음
+ *
  * 15분마다(cron) GitHub Actions '시세 데이터 갱신'을 직접 실행시킴 (GitHub 자체 예약 실행은 자주 늦어지거나 누락됨)
  *   · 한국장과 공시 시간(평일 09~20시)·미국장(평일 22~07시, 한국 시간) 15분마다, 그 밖에는 3시간마다
  *   · GH_TOKEN(저장소 1개·Actions 쓰기 권한만 있는 토큰) 비밀값이 있을 때만 동작 · GET /status 로 마지막 실행 결과 확인
@@ -127,6 +131,54 @@ async function counts(env, day) {
   return { day, today: T ? T.n : 0, yesterday: Y ? Y.n : 0, total: S ? S.n : 0, max: M ? M.n : 0, maxDay: M ? M.day : null };
 }
 
+/* ── 아파트 실거래 (단지 상세 그래프) ── */
+const APT_API = 'https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade';
+function aptMonths(n) {                                              // 한국 시간 이번 달부터 거꾸로 n개 'YYYYMM'
+  const k = new Date(Date.now() + 9 * 3600e3); let y = k.getUTCFullYear(), m = k.getUTCMonth() + 1; const out = [];
+  for (let i = 0; i < n; i++) { out.push(y + String(m).padStart(2, '0')); if (--m === 0) { m = 12; y--; } }
+  return out;
+}
+async function aptMonth(env, sgg, ym, recent) {
+  const k = 'apt:' + sgg + ':' + ym, now = Math.floor(Date.now() / 1000);
+  const row = await env.DB.prepare('SELECT t, v FROM cache WHERE k = ?').bind(k).first();
+  if (row && now - row.t < (recent ? 6 * 3600 : 7 * 86400)) return JSON.parse(row.v);
+  try {
+    const out = [];
+    for (let page = 1; page <= 10; page++) {
+      const q = new URLSearchParams({ serviceKey: env.APT_KEY, LAWD_CD: sgg, DEAL_YMD: ym, pageNo: String(page), numOfRows: '1000' });
+      const r = await fetch(APT_API + '?' + q.toString());
+      const x = await r.text();
+      const code = (x.match(/<resultCode>([^<]*)</) || [])[1];
+      if (!r.ok || (code !== '00' && code !== '000')) throw new Error('api ' + r.status + ' ' + (code || x.slice(0, 80)));
+      const items = x.split('<item>').slice(1);
+      for (const it of items) {
+        const g = (t) => { const m = it.match(new RegExp('<' + t + '>([^<]*)</' + t + '>')); return m ? m[1].trim() : ''; };
+        const amt = parseInt(g('dealAmount').replace(/,/g, ''), 10);
+        if (!amt) continue;
+        out.push([g('aptSeq'), g('dealYear') + '-' + g('dealMonth').padStart(2, '0') + '-' + g('dealDay').padStart(2, '0'), amt, +g('excluUseAr') || 0, g('floor'), g('cdealType') ? 1 : 0]);
+      }
+      const total = parseInt((x.match(/<totalCount>(\d+)</) || [])[1] || '0', 10);
+      if (page * 1000 >= total || !items.length) break;
+    }
+    await env.DB.prepare('INSERT INTO cache (k, t, v) VALUES (?, ?, ?) ON CONFLICT(k) DO UPDATE SET t = excluded.t, v = excluded.v').bind(k, now, JSON.stringify(out)).run();
+    return out;
+  } catch (e) {
+    if (row) return JSON.parse(row.v);                               // 실패하면 묵은 값이라도
+    throw e;
+  }
+}
+async function apt(env, url, json) {
+  const sgg = url.searchParams.get('sgg') || '', seq = url.searchParams.get('seq') || '';
+  if (!/^\d{5}$/.test(sgg) || !seq || seq.length > 40) return json({ error: 'bad params' }, 400);
+  if (!env.APT_KEY) return json({ error: 'no key' }, 503);
+  const months = aptMonths(13), cut = new Date(Date.now() + 9 * 3600e3 - 366 * 86400e3).toISOString().slice(0, 10);
+  const lists = await Promise.all(months.map((ym, i) => aptMonth(env, sgg, ym, i < 2).catch(() => null)));
+  const deals = [];
+  lists.forEach((l) => (l || []).forEach((d) => { if (d[0] === seq && !d[5] && d[1] >= cut) deals.push([d[1], d[2], d[3], d[4]]); }));
+  deals.sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0));
+  return json({ seq, deals, missing: lists.filter((l) => !l).length });
+}
+
 async function kr(req, env, url, json) {
   const now = Math.floor(Date.now() / 1000);
   const authed = async () => (await sha256(url.searchParams.get('k') || '')) === KR_KEY;
@@ -225,6 +277,7 @@ export default {
         return new Response(r.body, { status: r.status, headers: { 'Content-Type': r.headers.get('Content-Type') || 'text/plain', 'Cache-Control': 'no-store' } });
       }
       if (url.pathname.startsWith('/kr')) return await kr(req, env, url, json);
+      if (url.pathname === '/apt' && req.method === 'GET') return await apt(env, url, json);
       if (url.pathname === '/fear' && req.method === 'GET') {
         try { return json(await fear(env)); } catch (e) { return json({ error: 'cnn', detail: String(e && e.message || e) }, 502); }
       }
