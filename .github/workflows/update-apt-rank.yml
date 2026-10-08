@@ -5,6 +5,7 @@ name: 아파트 시세 순위 갱신
 #  · 새벽 5~6시 실행: 그 전달까지 3개월 (늦은 신고·계약 해제 반영) · 더 지난 달은 캐시를 씀
 #  · 받은 달은 카운터 Worker(/apt/put)에도 올려 단지 그래프에 씀 · 그보다 이전(2006년~)은 data/apt_hist/ 연도 파일로 조금씩 채움
 #  · 인증키: 저장소 시크릿 APT_KEY (공공데이터포털 '국토교통부_아파트 매매 실거래가 자료' 일반 인증키)
+#  · 공급면적: 같은 키로 '국토교통부_건축HUB_건축물대장정보 서비스' 활용신청 → data/apt_supply.json 에 비싼 단지부터 쌓음
 on:
   schedule:
     - cron: '43 20 * * *'      # 한국 05:43 — 3개월 확인 (2시간마다 실행은 카운터 Worker 가 시킴: GitHub 예약 실행은 자주 늦어짐)
@@ -50,8 +51,8 @@ jobs:
           git config user.name  'github-actions[bot]'
           git config user.email '41898099+github-actions[bot]@users.noreply.github.com'
           [ -f data/apt_rank.json ] || exit 0
-          git add data/apt_hist 2>/dev/null || true
-          git add data/apt_rank.json data/apt_hist 2>/dev/null || git add data/apt_rank.json
+          git add data/apt_rank.json
+          git add data/apt_hist data/apt_supply.json 2>/dev/null || true
           if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
           git commit -m "chore: 아파트 시세 순위 갱신"
           for i in 1 2 3; do

@@ -5,13 +5,16 @@
 자료
   · 실거래: https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade  (시군구 × 계약월, 인증키 APT_KEY)
            단지 구분 = 시군구|법정동|지번|단지명 (기본 API 에는 단지 일련번호가 없음)
+  · 공급면적: 국토교통부 건축HUB 건축물대장 「전유공용면적」 https://apis.data.go.kr/1613000/BldRgstHubService/getBrExposPubuseAreaInfo
+           (같은 인증키로 활용신청) 필지마다 호별 전유 + 지상 주거공용(계단·복도·벽체 등, 지하·주차장·관리동 등 기타공용 제외) = 공급면적
+           → 전용면적별 중앙값을 data/apt_supply.json 에 쌓음 (비싼 단지부터 실행마다 BLD_BUDGET 건씩 · 한 번 받은 필지는 다시 안 받음)
   · 세대수: 공공데이터포털 「한국부동산원_공동주택 단지 식별정보_기본정보」 CSV (매달 갱신 · 인증키 필요 없음)
            필지고유번호(PNU) = 시군구(5)+법정동(5)+산 여부(1)+본번(4)+부번(4) 로 실거래와 연결
 순위: 최근 12개월 안에 거래된 단지마다 '가장 최근 실거래'(해제 거래 제외) 금액으로 내림차순
 캐시: .cache/apt/<시군구>_<YYYYMM>.json (Actions cache 로 실행 사이에 보관) — 2시간마다 이번 달·지난달, 새벽 한 번 그 전달까지 다시 받고
       나머지 달은 캐시가 없을 때만 받음 (신고 기한 30일 · 해제 신고 반영) · 받은 달은 카운터 Worker(/apt/put)에도 올려 단지 그래프에 씀
 출력: data/apt_rank.json  { updated, months:[from,to], source, total, rows:[[단지키(시군구|법정동|지번|이름), 이름, 금액(만원), 전용㎡, 계약일, 층, 세대수,
-       시도, 시군구, 법정동 지번, 도로명, 건축년도, 1년 거래 수], ...] }  — 한 줄에 한 단지(키 순)로 써서 git 변경분을 작게
+       시도, 시군구, 법정동 지번, 도로명, 건축년도, 1년 거래 수, 공급㎡(모르면 0)], ...] }  — 한 줄에 한 단지(키 순)로 써서 git 변경분을 작게
 """
 import csv, datetime, hashlib, io, json, os, re, sys, time, urllib.parse, urllib.request, concurrent.futures as cf
 import xml.etree.ElementTree as ET
@@ -25,6 +28,9 @@ API_DEV = 'https://apis.data.go.kr/1613000/RTMSDataSvcAptTradeDev/getRTMSDataSvc
 HIST = os.path.join(ROOT, 'data', 'apt_hist')
 FIRST_YM = '200601'                                                              # 국토교통부 아파트 매매 실거래 공개 시작
 API_DOWN = {'ok': 0, 'fail': 0}                                                   # 공공 API 장애(시간 초과 등)면 처음 24건 실패 뒤 나머지는 건너뜀
+BLD_API = 'https://apis.data.go.kr/1613000/BldRgstHubService/getBrExposPubuseAreaInfo'
+SUPPLY = os.path.join(ROOT, 'data', 'apt_supply.json')
+BLD_BUDGET = int(os.environ.get('BLD_BUDGET', '700'))                            # 실행마다 건축물대장 호출 수 (2시간마다 × 12 ≈ 하루 한도 1만 안쪽)
 CPLX_PAGE = 'https://www.data.go.kr/data/15106861/fileData.do'
 DOWN = 'https://www.data.go.kr/cmm/cmm/fileDownload.do?atchFileId=%s&fileDetailSn=%s&insertDataPrcus=N'
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36'
@@ -104,6 +110,83 @@ def pnu_of(sgg, umd_code, jibun):
     m = re.fullmatch(r'(산)?\s*(\d+)(?:-(\d+))?', (jibun or '').strip())
     if not umd_code or not m: return ''
     return sgg + umd_code + ('2' if m.group(1) else '1') + m.group(2).zfill(4) + (m.group(3) or '0').zfill(4)
+
+
+# ───── 공급면적 (건축물대장 전유공용면적) ─────
+NOT_HOME = re.compile(r'주차|기계|전기|발전|관리|경비|커뮤니티|부대|복리|근린|판매|업무|노인|경로|어린이|보육|유치|주민|운동|피트니스|휘트니스|'
+                      r'독서|문고|헬스|골프|수영|저수|물탱크|펌프|정화|쓰레기|분리수거|창고|휴게|공용시설|체육|상가|점포|사무|변전|방재|중앙감시|자전거')
+
+
+class BldStop(Exception): pass
+
+
+def bld_lot(pnu, budget):
+    """필지(PNU) → ([[전용㎡, 공급㎡], ...], 쓴 호출 수) · 한도가 모자라면 BldStop"""
+    base = {'serviceKey': KEY, 'sigunguCd': pnu[:5], 'bjdongCd': pnu[5:10], 'platGbCd': '1' if pnu[10] == '2' else '0',
+            'bun': pnu[11:15], 'ji': pnu[15:19], 'numOfRows': 1000}
+    items, page, used, total = [], 1, 0, None
+    while True:
+        if used >= budget: raise BldStop('한도')
+        root = ET.fromstring(get(BLD_API + '?' + urllib.parse.urlencode(dict(base, pageNo=page)), timeout=40, tries=2)); used += 1
+        err = root.findtext('.//returnAuthMsg') or root.findtext('.//errMsg')
+        code = (root.findtext('.//resultCode') or '').strip()
+        if err or code not in ('00', '000'):
+            raise BldStop('%s %s' % (code, (err or root.findtext('.//resultMsg') or '').strip()))
+        got = root.findall('.//item')
+        items += [{c.tag: (c.text or '').strip() for c in it} for it in got]
+        total = int(root.findtext('.//totalCount') or 0)
+        if not got or len(items) >= total: break
+        if total > 60000: return [], used                                           # 비정상적으로 큰 필지 — 건너뜀
+        page += 1
+    units = {}
+    for it in items:
+        u = units.setdefault(it.get('mgmBldrgstPk') or (it.get('dongNm', '') + '|' + it.get('hoNm', '')), [0.0, 0.0, False])
+        try: a = float(it.get('area') or 0)
+        except ValueError: continue
+        purp = (it.get('mainPurpsCdNm') or '') + ' ' + (it.get('etcPurps') or '')
+        if it.get('exposPubuseGbCd') == '1':                                       # 전유
+            if re.search(r'아파트|공동주택|주택', purp): u[0] += a; u[2] = True
+        elif it.get('flrGbCd') != '10' and it.get('mainAtchGbCd', '0') != '1' and not NOT_HOME.search(purp):   # 지상 주거공용 (지하·부속·기타공용 제외)
+            u[1] += a
+    by = {}
+    for ex, co, home in units.values():
+        if home and ex > 10 and 1.03 <= (ex + co) / ex <= 1.7: by.setdefault(round(ex, 2), []).append(round(ex + co, 2))
+    return [[e, sorted(v)[len(v) // 2]] for e, v in sorted(by.items())], used
+
+
+def supply_fill(order):
+    """order: 받을 필지(PNU) 목록 (중요한 순) → data/apt_supply.json 갱신 · {pnu: [[전용, 공급], ...]} (자료 없으면 [])"""
+    try: sup = json.load(open(SUPPLY, encoding='utf-8'))
+    except Exception: sup = {}
+    if not KEY or BLD_BUDGET <= 0: return sup
+    todo = [p for p in dict.fromkeys(order) if p and p not in sup]
+    left, n, t0 = BLD_BUDGET, 0, time.time()
+    for pnu in todo:
+        if left <= 0 or time.time() - t0 > 900: break
+        try: sup[pnu], used = bld_lot(pnu, left)
+        except BldStop as e:
+            if str(e) != '한도': print('건축물대장(공급면적) 조회 안 됨: %s — 공공데이터포털에서 「국토교통부_건축HUB_건축물대장정보 서비스」 활용신청 필요' % e, file=sys.stderr)
+            break
+        except Exception as e:
+            if '403' in str(e) or '401' in str(e):                                 # 등록 안 된 키 → HTTP 403 + SERVICE_KEY_IS_NOT_REGISTERED
+                print('건축물대장(공급면적) 조회 안 됨: %s — 공공데이터포털에서 「국토교통부_건축HUB_건축물대장정보 서비스」 활용신청 필요' % e, file=sys.stderr); break
+            print('건축물대장 %s 실패: %s' % (pnu, e), file=sys.stderr); left -= 2
+            if API_DOWN.setdefault('bld', 0) >= 5: break
+            API_DOWN['bld'] += 1; continue
+        left -= used; n += 1
+    if n:
+        with open(SUPPLY, 'w', encoding='utf-8') as f:                            # 한 줄에 한 필지 → 바뀐 줄만 git 에 남음
+            f.write('{\n' + ',\n'.join('%s:%s' % (json.dumps(k), json.dumps(v, separators=(',', ':'))) for k, v in sorted(sup.items())) + '\n}\n')
+        print('공급면적: 이번에 필지 %d곳 (호출 %d건) · 받은 필지 %d / 남은 %d' % (n, BLD_BUDGET - left, len(sup), len(todo) - n))
+    return sup
+
+
+def supply_of(sup, pnus, area):
+    """거래 전용면적에 맞는 공급면적 (같은 전용 ±0.1㎡) — 모르면 0"""
+    for p in pnus:
+        best = min(sup.get(p) or [], key=lambda t: abs(t[0] - area), default=None)
+        if best and abs(best[0] - area) <= 0.1: return best[1]
+    return 0
 
 
 # ───── 실거래 ─────
@@ -304,20 +387,26 @@ def main():
                 a = apts.setdefault(d[0], {'sgg': s, 'n': 0, 'last': None})
                 a['n'] += 1
                 if a['last'] is None or (d[1], d[2]) > (a['last'][1], a['last'][2]): a['last'] = d
-    rows, hit = [], 0
+    rows, hit, pnus = [], 0, {}
     for key, a in apts.items():
         d, s = a['last'], a['sgg']
         sido, gu = sgg_name.get(s, ('', ''))
         hh, road = 0, ''
-        for pnu in [pnu_of(s, umd.get((s, d[7].strip())), d[8])] + by_addr.get((s, d[7].strip() + ' ' + d[8].strip()), []):   # 필지번호 → 주소 지번 순
+        cand = [pnu_of(s, umd.get((s, d[7].strip())), d[8])] + by_addr.get((s, d[7].strip() + ' ' + d[8].strip()), [])   # 필지번호 → 주소 지번 순
+        for pnu in cand:
             hh, road = households(by_pnu, pnu, d[6])
             if hh: break
         hit += 1 if hh else 0
+        pnus[key] = [p for p in dict.fromkeys([pnu if hh else ''] + cand) if p]   # 세대수가 맞은 필지 먼저
         rows.append([key, d[6], d[2], d[3], d[1], d[4], hh, sido, gu, (d[7] + ' ' + d[8]).strip(), road, d[9], a['n']])
+    sup = supply_fill([pnus[r[0]][0] for r in sorted(rows, key=lambda r: -r[2]) if pnus[r[0]]])   # 비싼 단지부터
+    sp = 0
+    for r in rows:
+        r.append(supply_of(sup, pnus[r[0]], r[3])); sp += 1 if r[-1] else 0
     rows.sort(key=lambda r: r[0])
     if len(rows) < 5000: sys.exit('단지 수가 너무 적음: %d' % len(rows))
     data = {'source': '국토교통부 아파트 매매 실거래가 · 한국부동산원 공동주택 단지 식별정보', 'months': [yms[-1], yms[0]],
-            'total': len(rows), 'hhMatched': hit}
+            'total': len(rows), 'hhMatched': hit, 'supplyMatched': sp}
     old = None
     if os.path.exists(OUT):
         try: old = json.load(open(OUT, encoding='utf-8'))
@@ -328,7 +417,7 @@ def main():
     head = json.dumps(data, ensure_ascii=False, separators=(',', ':'))[:-1]
     with open(OUT, 'w', encoding='utf-8') as f:                                 # 한 줄에 한 단지 → 바뀐 줄만 git 에 남음
         f.write(head + ',"rows":[\n' + ',\n'.join(json.dumps(r, ensure_ascii=False, separators=(',', ':')) for r in rows) + '\n]}\n')
-    print('저장: 단지 %d개 · 세대수 연결 %d개 (%.0f%%) · %s~%s' % (len(rows), hit, hit * 100 / len(rows), yms[-1], yms[0]))
+    print('저장: 단지 %d개 · 세대수 연결 %d개 (%.0f%%) · 공급면적 %d개 · %s~%s' % (len(rows), hit, hit * 100 / len(rows), sp, yms[-1], yms[0]))
 
 
 if __name__ == '__main__':
