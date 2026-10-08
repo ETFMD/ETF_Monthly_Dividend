@@ -1458,6 +1458,12 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .dv-pg.active { background:var(--accent-dim); border-color:rgba(49,130,246,0.5); color:var(--accent); font-weight:700; }
   .dv-pg:disabled { opacity:.35; cursor:default; }
   .dv-pg-gap { color:var(--text3); padding:0 2px; }
+  .dv-pg-go { display:inline-flex; align-items:center; gap:4px; margin-left:6px; }
+  .dv-pg-go input { width:64px; height:34px; padding:0 8px; font-family:var(--mono); font-size:13px; text-align:center; color:var(--text); background:rgba(var(--fg-rgb),0.04); border:1px solid rgba(var(--fg-rgb),0.08); border-radius:9px; outline:none; -moz-appearance:textfield; appearance:textfield; }
+  .dv-pg-go input::-webkit-outer-spin-button, .dv-pg-go input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+  .dv-pg-gobtn { height:34px; padding:0 12px; font-size:13px; color:var(--text2); background:rgba(var(--fg-rgb),0.04); border:1px solid rgba(var(--fg-rgb),0.08); border-radius:9px; cursor:pointer; }
+  .dv-pg-gobtn:hover { border-color:rgba(49,130,246,0.4); color:var(--text); }
+  .dv-pg-go input:focus { border-color:rgba(49,130,246,0.5); }
   .dv-pg-info { width:100%; text-align:center; font-size:11px; color:var(--text3); margin-top:2px; }
   html[data-theme="light"] .dv-st.ok, html[data-theme="light"] .dv-y { color:#15803d; }
   @media (max-width: 860px) {
@@ -14789,6 +14795,18 @@ var TAX = (function () {
 (function () {
   var S = { data: null, rows: [], month: null, day: null, q: '', brand: 'all', sort: 'yield', open: {}, timer: null, loading: null, page: 1 };   /* 기본 정렬: 분배율 높은 순 */
   var PER = 50;   /* 표 한 페이지에 보일 종목 수 */
+  /* 페이지 번호 입력 이동 — 분배 일정·아파트 순위 표 공통 (입력한 번호로 기존 페이지 버튼 동작을 그대로 실행) */
+  window.pgJump = function (pages, cur) {
+    return '<form class="dv-pg-go" novalidate><input type="number" inputmode="numeric" min="1" max="' + pages + '" placeholder="' + cur + '" aria-label="이동할 페이지 (1~' + pages + ')" title="1~' + pages + ' 페이지"><button type="submit" class="dv-pg-gobtn">이동</button></form>';
+  };
+  document.addEventListener('submit', function (e) {
+    var f = e.target.closest && e.target.closest('.dv-pg-go'); if (!f) return;
+    e.preventDefault();
+    var inp = f.querySelector('input'), n = Math.round(+inp.value), max = +inp.max || 1;
+    if (!n) { inp.focus(); return; }
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'dv-pg'; b.hidden = true;
+    b.setAttribute('data-pg', Math.min(max, Math.max(1, n))); f.parentNode.appendChild(b); b.click(); if (b.parentNode) b.remove();
+  });
   var BRANDS = ['KODEX', 'TIGER', 'RISE', 'ACE', 'SOL', 'PLUS', 'KIWOOM', 'HANARO', 'KoAct', '1Q', 'WON', 'TIME', 'FOCUS', 'DAISHIN', 'BNK', 'TIMEFOLIO', 'KCGI', 'UNICORN', 'ITF', 'VITA', 'HK'];
   function $(id) { return document.getElementById(id); }
   function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -14987,6 +15005,7 @@ var TAX = (function () {
       prev = i;
     });
     h += '<button type="button" class="dv-pg" data-pg="' + (cur + 1) + '"' + (cur === pages ? ' disabled' : '') + ' aria-label="다음 페이지">›</button>';
+    h += window.pgJump(pages, cur);
     h += '<span class="dv-pg-info">' + ((cur - 1) * PER + 1) + '–' + Math.min(cur * PER, total) + ' / ' + total + '종목</span>';
     el.hidden = false; el.innerHTML = h;
   }
@@ -15527,6 +15546,7 @@ var TAX = (function () {
       prev = i;
     });
     h += '<button type="button" class="dv-pg" data-pg="' + (cur + 1) + '"' + (cur === pages ? ' disabled' : '') + ' aria-label="다음 페이지">›</button>';
+    h += window.pgJump(pages, cur);
     h += '<span class="dv-pg-info">' + ((cur - 1) * PER + 1).toLocaleString('ko-KR') + '–' + Math.min(cur * PER, total).toLocaleString('ko-KR') + ' / ' + total.toLocaleString('ko-KR') + '단지</span>';
     el.hidden = false; el.innerHTML = h;
   }

@@ -120,71 +120,112 @@ NOT_HOME = re.compile(r'주차|기계|전기|발전|관리|경비|커뮤니티|�
 class BldStop(Exception): pass
 
 
-def bld_lot(pnu, budget):
-    """필지(PNU) → ([[전용㎡, 공급㎡], ...], 쓴 호출 수) · 한도가 모자라면 BldStop"""
-    base = {'serviceKey': KEY, 'sigunguCd': pnu[:5], 'bjdongCd': pnu[5:10], 'platGbCd': '1' if pnu[10] == '2' else '0',
-            'bun': pnu[11:15], 'ji': pnu[15:19], 'numOfRows': 1000}
-    items, page, used, total = [], 1, 0, None
-    while True:
-        if used >= budget: raise BldStop('한도')
-        root = ET.fromstring(get(BLD_API + '?' + urllib.parse.urlencode(dict(base, pageNo=page)), timeout=40, tries=2)); used += 1
-        err = root.findtext('.//returnAuthMsg') or root.findtext('.//errMsg')
-        code = (root.findtext('.//resultCode') or '').strip()
-        if err or code not in ('00', '000'):
-            raise BldStop('%s %s' % (code, (err or root.findtext('.//resultMsg') or '').strip()))
-        got = root.findall('.//item')
-        items += [{c.tag: (c.text or '').strip() for c in it} for it in got]
-        total = int(root.findtext('.//totalCount') or 0)
-        if not got or len(items) >= total: break
-        if total > 60000: return [], used                                           # 비정상적으로 큰 필지 — 건너뜀
-        page += 1
-    units = {}
+def bld_page(pnu, page):
+    """건축물대장 전유공용면적 한 쪽 (한 번에 최대 100줄) → (줄 목록, 전체 줄 수)"""
+    q = {'serviceKey': KEY, 'sigunguCd': pnu[:5], 'bjdongCd': pnu[5:10], 'platGbCd': '1' if pnu[10] == '2' else '0',
+         'bun': pnu[11:15], 'ji': pnu[15:19], 'numOfRows': 100, 'pageNo': page}
+    try: root = ET.fromstring(get(BLD_API + '?' + urllib.parse.urlencode(q), timeout=40, tries=2))
+    except Exception as e:
+        if re.search(r'40[13]', str(e)): raise BldStop(str(e))                     # 등록 안 된 키 → HTTP 403
+        raise
+    code = (root.findtext('.//resultCode') or '').strip()
+    if root.findtext('.//returnAuthMsg') or code not in ('00', '000'):
+        raise BldStop('%s %s' % (code, (root.findtext('.//returnAuthMsg') or root.findtext('.//resultMsg') or '').strip()))
+    return [{c.tag: (c.text or '').strip() for c in it} for it in root.findall('.//item')], int(root.findtext('.//totalCount') or 0)
+
+
+def bld_units(items, first, last):
+    """한 쪽의 줄 → 호별 [전용, 주거공용] (쪽 경계에 걸쳐 잘린 앞뒤 호는 뺌)"""
+    units, order = {}, []
     for it in items:
-        u = units.setdefault(it.get('mgmBldrgstPk') or (it.get('dongNm', '') + '|' + it.get('hoNm', '')), [0.0, 0.0, False])
+        k = it.get('mgmBldrgstPk') or (it.get('dongNm', '') + '|' + it.get('hoNm', ''))
+        if k not in units: units[k] = [0.0, 0.0, False]; order.append(k)
+        u = units[k]
         try: a = float(it.get('area') or 0)
         except ValueError: continue
         purp = (it.get('mainPurpsCdNm') or '') + ' ' + (it.get('etcPurps') or '')
         if it.get('exposPubuseGbCd') == '1':                                       # 전유
             if re.search(r'아파트|공동주택|주택', purp): u[0] += a; u[2] = True
-        elif it.get('flrGbCd') != '10' and it.get('mainAtchGbCd', '0') != '1' and not NOT_HOME.search(purp):   # 지상 주거공용 (지하·부속·기타공용 제외)
+        elif it.get('mainAtchGbCd') != '1' and not NOT_HOME.search(purp):          # 주거공용 (계단실·복도·벽체 등) — 부속·지하주차장·주민시설 등 기타공용 제외
             u[1] += a
-    by = {}
-    for ex, co, home in units.values():
-        if home and ex > 10 and 1.03 <= (ex + co) / ex <= 1.7: by.setdefault(round(ex, 2), []).append(round(ex + co, 2))
-    return [[e, sorted(v)[len(v) // 2]] for e, v in sorted(by.items())], used
+    if order and not first: units.pop(order[0], None)
+    if len(order) > 1 and not last: units.pop(order[-1], None)
+    return [(round(ex, 2), round(ex + co, 2)) for ex, co, home in units.values() if home and ex > 10 and 1.1 <= (ex + co) / ex <= 1.7]
 
 
-def supply_fill(order):
-    """order: 받을 필지(PNU) 목록 (중요한 순) → data/apt_supply.json 갱신 · {pnu: [[전용, 공급], ...]} (자료 없으면 [])"""
+def probe_order(n):
+    """쪽 번호를 고르게 퍼뜨린 순서 (1, 가운데, 1/4, 3/4, ...) — 동·라인마다 다른 평형을 적은 호출로 찾음"""
+    out, seen, d = [1], {1}, 2
+    while len(out) < n and d <= 64:
+        for k in range(1, d, 2):
+            p = 1 + round((n - 1) * k / d)
+            if p not in seen: seen.add(p); out.append(p)
+        d *= 2
+    return out + [p for p in range(1, n + 1) if p not in seen]
+
+
+def lot_types(rec):
+    return sorted([float(e), sorted(v)[len(v) // 2]] for e, v in rec['u'].items())
+
+
+def has_area(rec, area): return any(abs(e - area) <= 0.1 for e, _ in rec.get('t', []))
+
+
+def supply_fill(need):
+    """need: {필지 PNU: 거래된 전용면적 집합} (중요한 순) → data/apt_supply.json 갱신
+       {pnu: {"t": [[전용, 공급(중앙값)], ...], "u": {전용: [표본 호 공급, 최대 9개]}, "p": [본 쪽], "n": 전체 쪽 수}}"""
     try: sup = json.load(open(SUPPLY, encoding='utf-8'))
     except Exception: sup = {}
     if not KEY or BLD_BUDGET <= 0: return sup
-    todo = [p for p in dict.fromkeys(order) if p and p not in sup]
-    left, n, t0 = BLD_BUDGET, 0, time.time()
-    for pnu in todo:
-        if left <= 0 or time.time() - t0 > 900: break
-        try: sup[pnu], used = bld_lot(pnu, left)
-        except BldStop as e:
-            if str(e) != '한도': print('건축물대장(공급면적) 조회 안 됨: %s — 공공데이터포털에서 「국토교통부_건축HUB_건축물대장정보 서비스」 활용신청 필요' % e, file=sys.stderr)
-            break
-        except Exception as e:
-            if '403' in str(e) or '401' in str(e):                                 # 등록 안 된 키 → HTTP 403 + SERVICE_KEY_IS_NOT_REGISTERED
-                print('건축물대장(공급면적) 조회 안 됨: %s — 공공데이터포털에서 「국토교통부_건축HUB_건축물대장정보 서비스」 활용신청 필요' % e, file=sys.stderr); break
-            print('건축물대장 %s 실패: %s' % (pnu, e), file=sys.stderr); left -= 2
-            if API_DOWN.setdefault('bld', 0) >= 5: break
-            API_DOWN['bld'] += 1; continue
-        left -= used; n += 1
-    if n:
+    def missing(p, areas):
+        r = sup.get(p)
+        if r is None: return True
+        return len(r["p"]) < min(r["n"], 12) and any(not has_area(r, a) for a in areas)
+    todo = [p for p, ar in need.items() if p and missing(p, ar)]
+    todo.sort(key=lambda p: p in sup)                                               # 처음 보는 필지 먼저, 그다음 덜 찾은 필지
+    left, calls, t0, stop = BLD_BUDGET, [0], time.time(), []
+    lock = __import__('threading').Lock()
+
+    def work(pnu):
+        nonlocal left
+        r = sup.get(pnu) or {'t': [], 'u': {}, 'p': [], 'n': 0}
+        for _ in range(8):                                                          # 한 번에 필지당 최대 8쪽
+            if stop or time.time() - t0 > 1200: break
+            if r['n'] and (len(r["p"]) >= min(r["n"], 12) or all(has_area(r, a) for a in need[pnu])): break
+            page = next((p for p in probe_order(r['n']) if p not in r['p']), None) if r['n'] else 1
+            if page is None: break
+            with lock:
+                if left <= 0: break
+                left -= 1
+            try: items, total = bld_page(pnu, page)
+            except BldStop as e: stop.append(str(e)); break
+            except Exception as e:
+                print('건축물대장 %s %d쪽 실패: %s' % (pnu, page, e), file=sys.stderr); break
+            calls[0] += 1
+            r['n'] = max(1, -(-total // 100)); r['p'].append(page)
+            for ex_, sp in bld_units(items, page == 1, page >= r['n']):
+                v = r['u'].setdefault('%.2f' % ex_, [])
+                if len(v) < 9: v.append(sp)
+            r['t'] = lot_types(r)
+            if not total: break
+        if r['p']:
+            with lock: sup[pnu] = r
+
+    with cf.ThreadPoolExecutor(4) as ex:
+        list(ex.map(work, todo[:max(1, BLD_BUDGET)]))
+    if stop: print('건축물대장(공급면적) 조회 안 됨: %s — 공공데이터포털 「국토교통부_건축HUB_건축물대장정보 서비스」 활용신청 확인' % stop[0], file=sys.stderr)
+    if calls[0]:
+        for r in sup.values(): r['p'].sort()
         with open(SUPPLY, 'w', encoding='utf-8') as f:                            # 한 줄에 한 필지 → 바뀐 줄만 git 에 남음
             f.write('{\n' + ',\n'.join('%s:%s' % (json.dumps(k), json.dumps(v, separators=(',', ':'))) for k, v in sorted(sup.items())) + '\n}\n')
-        print('공급면적: 이번에 필지 %d곳 (호출 %d건) · 받은 필지 %d / 남은 %d' % (n, BLD_BUDGET - left, len(sup), len(todo) - n))
+        print('공급면적: 호출 %d건 · 받은 필지 %d / 대상 %d' % (calls[0], len(sup), len(need)))
     return sup
 
 
 def supply_of(sup, pnus, area):
     """거래 전용면적에 맞는 공급면적 (같은 전용 ±0.1㎡) — 모르면 0"""
     for p in pnus:
-        best = min(sup.get(p) or [], key=lambda t: abs(t[0] - area), default=None)
+        best = min((sup.get(p) or {}).get('t', []), key=lambda t: abs(t[0] - area), default=None)
         if best and abs(best[0] - area) <= 0.1: return best[1]
     return 0
 
@@ -384,8 +425,8 @@ def main():
             if not os.path.exists(p): continue
             for d in json.load(open(p, encoding='utf-8')):
                 if d[5] or d[1] < cut: continue                                  # 해제 거래 · 1년 지난 거래 제외
-                a = apts.setdefault(d[0], {'sgg': s, 'n': 0, 'last': None})
-                a['n'] += 1
+                a = apts.setdefault(d[0], {'sgg': s, 'n': 0, 'last': None, 'ar': set()})
+                a['n'] += 1; a['ar'].add(d[3])
                 if a['last'] is None or (d[1], d[2]) > (a['last'][1], a['last'][2]): a['last'] = d
     rows, hit, pnus = [], 0, {}
     for key, a in apts.items():
@@ -399,7 +440,10 @@ def main():
         hit += 1 if hh else 0
         pnus[key] = [p for p in dict.fromkeys([pnu if hh else ''] + cand) if p]   # 세대수가 맞은 필지 먼저
         rows.append([key, d[6], d[2], d[3], d[1], d[4], hh, sido, gu, (d[7] + ' ' + d[8]).strip(), road, d[9], a['n']])
-    sup = supply_fill([pnus[r[0]][0] for r in sorted(rows, key=lambda r: -r[2]) if pnus[r[0]]])   # 비싼 단지부터
+    need = {}
+    for r in sorted(rows, key=lambda r: -r[2]):                                 # 비싼 단지부터
+        if pnus[r[0]]: need.setdefault(pnus[r[0]][0], set()).update(apts[r[0]]['ar'])
+    sup = supply_fill(need)
     sp = 0
     for r in rows:
         r.append(supply_of(sup, pnus[r[0]], r[3])); sp += 1 if r[-1] else 0
