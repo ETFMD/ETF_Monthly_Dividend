@@ -21,6 +21,9 @@ OUT = os.path.join(ROOT, 'data', 'apt_rank.json')
 CACHE = os.path.join(ROOT, '.cache', 'apt')
 KEY = os.environ.get('APT_KEY', '').strip()
 API = 'https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade'
+API_DEV = 'https://apis.data.go.kr/1613000/RTMSDataSvcAptTradeDev/getRTMSDataSvcAptTradeDev'   # 상세 자료 — 같은 키로 활용신청하면 하루 한도가 따로 있어 과거 자료 채우기에 씀
+HIST = os.path.join(ROOT, 'data', 'apt_hist')
+FIRST_YM = '200601'                                                              # 국토교통부 아파트 매매 실거래 공개 시작
 CPLX_PAGE = 'https://www.data.go.kr/data/15106861/fileData.do'
 DOWN = 'https://www.data.go.kr/cmm/cmm/fileDownload.do?atchFileId=%s&fileDetailSn=%s&insertDataPrcus=N'
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36'
@@ -106,12 +109,12 @@ def pnu_of(sgg, umd_code, jibun):
 def apt_key(sgg, umd, jibun, name): return '%s|%s|%s|%s' % (sgg, umd.strip(), jibun.strip(), name.strip())
 
 
-def fetch_month(sgg, ym):
+def fetch_month(sgg, ym, api=None):
     """[단지키, 계약일, 금액(만원), 전용㎡, 층, 해제여부, 단지명, 법정동, 지번, 건축년도]"""
     rows, page = [], 1
     while True:
         q = urllib.parse.urlencode({'serviceKey': KEY, 'LAWD_CD': sgg, 'DEAL_YMD': ym, 'pageNo': page, 'numOfRows': 1000})
-        root = ET.fromstring(get(API + '?' + q, timeout=60))
+        root = ET.fromstring(get((api or API) + '?' + q, timeout=60))
         code = (root.findtext('.//resultCode') or '').strip()
         if code not in ('00', '000'):
             raise RuntimeError('API %s %s: %s %s' % (sgg, ym, code, (root.findtext('.//resultMsg') or root.findtext('.//returnAuthMsg') or '')[:80]))
@@ -160,11 +163,87 @@ def upload(sggs, yms):
     return ok, len(todo)
 
 
+def kst_today(): return (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=9)).date()
+
+
 def months(n=13):
-    d = datetime.date.today().replace(day=1); out = []
+    d = kst_today().replace(day=1); out = []
     for _ in range(n):
         out.append(d.strftime('%Y%m')); d = (d - datetime.timedelta(days=1)).replace(day=1)
     return out                                                                   # 최근 달부터
+
+
+# ───── 과거 전체 기간 (단지 그래프용) ─────
+#  data/apt_hist/<시군구>/<연도>.json = {"m":[들어 있는 달], "k":[단지키...], "d":[[단지번호, "MMDD", 금액(만원), 전용㎡, 층], ...]}
+#  · 최근 13개월(순위 창)보다 이전 달만 · 계약 해제 거래 제외 · 한 번 채운 달은 바뀌지 않음
+#  · 실행마다 정해진 호출 수(APT_BACKFILL, 기본 200)만큼 최근 연도부터 거꾸로 채움 — 상세 자료 API 가 열려 있으면 그쪽 한도로 더 많이
+def hist_path(sgg, year): return os.path.join(HIST, sgg, '%s.json' % year)
+
+
+def hist_load(sgg, year):
+    p = hist_path(sgg, year)
+    if os.path.exists(p):
+        try: return json.load(open(p, encoding='utf-8'))
+        except Exception: pass
+    return {'m': [], 'k': [], 'd': []}
+
+
+def hist_add(sgg, ym, rows):
+    year, mon = ym[:4], int(ym[4:])
+    h = hist_load(sgg, year)
+    if mon in h['m']: return
+    idx = {k: i for i, k in enumerate(h['k'])}
+    for d in rows:
+        if d[5]: continue
+        if d[0] not in idx: idx[d[0]] = len(h['k']); h['k'].append(d[0])
+        h['d'].append([idx[d[0]], d[1][5:7] + d[1][8:10], d[2], d[3], d[4]])
+    h['m'] = sorted(h['m'] + [mon]); h['d'].sort(key=lambda x: (x[1], x[0]))
+    os.makedirs(os.path.dirname(hist_path(sgg, year)), exist_ok=True)
+    with open(hist_path(sgg, year), 'w', encoding='utf-8') as f: json.dump(h, f, ensure_ascii=False, separators=(',', ':'))
+
+
+def backfill(sggs, window):
+    """window 보다 이전 달 중 아직 없는 달을 최근 달부터 채움 · 받은 순위 캐시(.cache/apt)에 있으면 API 를 부르지 않음"""
+    start = window[-1]                                                            # 순위 창의 가장 오래된 달 (이 달부터는 Worker 가 가짐)
+    todo, d = [], datetime.date(int(start[:4]), int(start[4:]), 1)
+    have = {}
+    while True:
+        d = (d - datetime.timedelta(days=1)).replace(day=1); ym = d.strftime('%Y%m')
+        if ym < FIRST_YM: break
+        for s in sggs:
+            key = (s, ym[:4])
+            if key not in have: have[key] = set(hist_load(s, ym[:4])['m'])
+            if int(ym[4:]) not in have[key]: todo.append((s, ym))
+    if not todo: return 0, 0
+    budget = int(os.environ.get('APT_BACKFILL', '200'))
+    api = API
+    try:                                                                          # 상세 자료 API 가 열려 있으면 하루 한도가 따로 → 더 많이
+        fetch_month(sggs[0], todo[0][1], API_DEV); api = API_DEV; budget = int(os.environ.get('APT_BACKFILL_DEV', '750'))
+    except Exception: pass
+    done = 0
+    cached = [(s, ym) for s, ym in todo if os.path.exists(os.path.join(CACHE, '%s_%s.json' % (s, ym)))]
+    for s, ym in cached:                                                          # 순위 창에서 막 빠진 달: 캐시 그대로
+        hist_add(s, ym, json.load(open(os.path.join(CACHE, '%s_%s.json' % (s, ym)), encoding='utf-8'))); done += 1
+    rest = [t for t in todo if t not in set(cached)][:budget]
+    def run(t):
+        try: return t, fetch_month(t[0], t[1], api)
+        except Exception as e: return t, None
+    with cf.ThreadPoolExecutor(8) as ex:
+        for (s, ym), rows in ex.map(run, rest):
+            if rows is not None: hist_add(s, ym, rows); done += 1
+    # 목록: {시군구: [연도...]} · 진행률
+    idx = {}
+    for s in sorted(os.listdir(HIST)) if os.path.isdir(HIST) else []:
+        if os.path.isdir(os.path.join(HIST, s)):
+            idx[s] = sorted(f[:4] for f in os.listdir(os.path.join(HIST, s)) if f.endswith('.json'))
+    total = len(sggs) * ((int(start[:4]) - int(FIRST_YM[:4])) * 12 + int(start[4:]) - 1)
+    left = len(todo) - done
+    with open(os.path.join(HIST, 'index.json'), 'w', encoding='utf-8') as f:
+        json.dump({'from': FIRST_YM, 'to': (datetime.date(int(start[:4]), int(start[4:]), 1) - datetime.timedelta(days=1)).strftime('%Y%m'),
+                   'done': total - left, 'total': total, 'sgg': idx}, f, ensure_ascii=False, separators=(',', ':'))
+    print('과거 자료: 이번에 %d달 (%s) · 남은 %d / 전체 %d' % (done, 'API_DEV' if api == API_DEV else '기본 API', left, total))
+    return done, left
+
 
 
 def main():
@@ -202,8 +281,10 @@ def main():
         if len(fails) > max(10, len(jobs) * 0.2): sys.exit('실패가 너무 많아 저장하지 않음')
     ok, n = upload(sggs, yms)                                                  # 단지 그래프용 (바뀐 달·못 올린 달만)
     if n: print('Worker 업로드 %d/%d' % (ok, n))
+    try: backfill(sggs, yms)                                                     # 과거 전체 기간 (조금씩)
+    except Exception as e: print('과거 자료 채우기 실패:', e, file=sys.stderr)
     # 단지별 모으기
-    cut = (datetime.date.today() - datetime.timedelta(days=366)).isoformat()
+    cut = (kst_today() - datetime.timedelta(days=366)).isoformat()
     apts = {}
     for s in sggs:
         for ym in yms:

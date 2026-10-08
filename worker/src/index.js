@@ -155,9 +155,11 @@ async function apt(req, env, url, json) {
   const months = aptMonths(13), cut = new Date(Date.now() + 9 * 3600e3 - 366 * 86400e3).toISOString().slice(0, 10);
   const r = await env.DB.prepare('SELECT k, t, v FROM cache WHERE k IN (' + months.map(() => '?').join(',') + ')').bind(...months.map((ym) => 'apt:' + sgg + ':' + ym)).all();
   const deals = []; let at = 0;
-  (r.results || []).forEach((row) => { at = Math.max(at, row.t); JSON.parse(row.v).forEach((d) => { if (d[0] === seq && !d[5] && d[1] >= cut) deals.push([d[1], d[2], d[3], d[4]]); }); });
+  const all = url.searchParams.get('all') === '1';                  // all=1: 13개월 창 전체 (1년 자르기 없음)
+  (r.results || []).forEach((row) => { at = Math.max(at, row.t); JSON.parse(row.v).forEach((d) => { if (d[0] === seq && !d[5] && (all || d[1] >= cut)) deals.push([d[1], d[2], d[3], d[4]]); }); });
   deals.sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0));
-  return json({ seq, deals, months: (r.results || []).length, updated: at ? new Date(at * 1000).toISOString() : null });
+  // from: 이 응답이 맡는 첫 달 (그 이전은 사이트가 data/apt_hist/ 연도 파일에서 읽음)
+  return json({ seq, deals, from: months[months.length - 1], months: (r.results || []).length, updated: at ? new Date(at * 1000).toISOString() : null });
 }
 
 async function kr(req, env, url, json) {

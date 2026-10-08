@@ -1503,7 +1503,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .ap-tbl td.ap-c-sido, .ap-tbl td.ap-c-gu { font-family:var(--font); font-size:12px; }
   .ap-hist-top { display:flex; flex-wrap:wrap; gap:6px 16px; align-items:baseline; font-size:12px; color:var(--text2); }
   .ap-hist-top b { font-family:var(--mono); color:var(--text); }
-  .ap-chart { position:relative; height:240px; margin-top:10px; }
+  .ap-chart { position:relative; height:260px; margin-top:10px; }
+  .ap-hist-head { display:flex; flex-wrap:wrap; align-items:center; gap:6px 12px; margin-bottom:10px; }
+  .ap-range .chart-tab { padding:4px 12px; font-size:12px; }
+  .ap-prog { font-size:11px; color:var(--text3); }
   .ap-hist-msg { padding:24px 0; text-align:center; color:var(--text3); font-size:12px; }
   @media (max-width: 860px) {
     .ap-tbl tr.dv-row { grid-template-columns:1fr 1fr; }
@@ -9513,7 +9516,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <div class="dv-top">
         <div class="dv-ttl">
           <span class="acc-title">단지별 실거래가 순위</span>
-          <small class="ap-sub">단지마다 가장 최근 실거래(계약 해제 제외) 금액 기준 · 아파트를 누르면 1년 실거래 그래프</small>
+          <small class="ap-sub">단지마다 가장 최근 실거래(계약 해제 제외) 금액 기준 · 아파트를 누르면 전체 기간 실거래 그래프</small>
         </div>
         <div class="chart-tabs ap-sort" role="group" aria-label="정렬">
           <button class="chart-tab active" data-sort="price">실거래가순</button>
@@ -9548,7 +9551,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <p class="g-lead">아파트를 사고팔면 계약일로부터 30일 안에 실거래 신고를 해야 하고, 국토교통부는 이 신고 자료를 공개합니다. 이 페이지는 최근 1년 동안 한 번이라도 매매된 전국 아파트 단지를 모아, 단지마다 가장 최근 실거래 금액이 높은 순서로 순위를 매깁니다.</p>
       <div class="g-grid">
         <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>실거래가</b> = 그 단지에서 가장 최근에 계약된 매매 금액 (계약이 해제된 거래는 뺌)</li><li><b>순위</b> = 실거래가가 높은 순 · 같은 금액이면 같은 순위</li><li><b>평당가</b> = 실거래가 ÷ (전용면적 ÷ 3.3058) · <b>평수</b> = 전용면적 ÷ 3.3058 — 실거래 신고에는 전용면적만 있어 공급면적(분양 평형)이 아닌 전용 기준</li><li><b>세대수</b> = 한국부동산원 공동주택 단지 식별정보의 단지 세대수 (필지번호로 연결)</li></ul></article>
-        <article class="g-card"><h3>자료와 갱신</h3><ul class="g-list"><li>자료: 국토교통부 아파트 매매 실거래가 (공공데이터포털) · 한국부동산원 공동주택 단지 식별정보</li><li>2시간마다 이번 달·지난달 신고분을 전국 252개 시군구에서 다시 받아 순위를 새로 매기고, 새벽에는 그 전달까지 확인합니다 (늦은 신고·계약 해제 반영).</li><li>계약 후 신고까지 최대 30일이 걸려 최근 몇 주 거래는 나중에 더 들어올 수 있습니다.</li></ul></article>
+        <article class="g-card"><h3>자료와 갱신</h3><ul class="g-list"><li>자료: 국토교통부 아파트 매매 실거래가 (공공데이터포털) · 한국부동산원 공동주택 단지 식별정보</li><li>단지 그래프는 실거래 공개가 시작된 2006년부터 전체 기간을 보여 줍니다 (1·3·5·10년으로 좁혀 보기 가능).</li><li>2시간마다 이번 달·지난달 신고분을 전국 252개 시군구에서 다시 받아 순위를 새로 매기고, 새벽에는 그 전달까지 확인합니다 (늦은 신고·계약 해제 반영).</li><li>계약 후 신고까지 최대 30일이 걸려 최근 몇 주 거래는 나중에 더 들어올 수 있습니다.</li></ul></article>
       </div>
       <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>왜 같은 단지인데 평형에 따라 순위가 크게 달라지나요?</summary><div class="g-ans"><p>순위는 단지에서 '가장 최근에 계약된 한 건'의 금액이라, 그 거래가 작은 평형이면 낮게, 큰 평형이면 높게 나옵니다. 면적과 관계없이 비교하려면 '평당가순'으로 정렬해 보세요. 단지를 누르면 1년 동안의 모든 거래를 면적별로 볼 수 있습니다.</p></div></details><details class="g-faq"><summary>우리 아파트가 목록에 없어요.</summary><div class="g-ans"><p>최근 1년 동안 매매 거래가 한 건도 신고되지 않은 단지는 순위에 들어가지 않습니다. 분양권·입주권 거래와 전월세 거래도 포함되지 않습니다.</p></div></details><details class="g-faq"><summary>세대수가 비어 있는 단지가 있어요.</summary><div class="g-ans"><p>실거래 신고의 지번과 공동주택 단지 정보의 대표 지번이 다르면 자동으로 연결되지 않을 수 있습니다. 이런 단지는 세대수를 '—'로 표시합니다.</p></div></details><details class="g-faq"><summary>실거래가가 시세와 다른데요?</summary><div class="g-ans"><p>실거래가는 실제 계약된 금액이라 층·향·수리 상태나 가족 간 거래 등에 따라 그 시점의 호가·시세와 다를 수 있습니다. 그래프에서 최근 여러 거래를 함께 보면 흐름을 판단하는 데 도움이 됩니다.</p></div></details></div>
     </section>
@@ -15475,6 +15478,7 @@ var TAX = (function () {
   }
   function short(n) { var e = n / 1e4; return e >= 1 ? (Math.round(e * 10) / 10) + '억' : Math.round(n).toLocaleString('ko-KR') + '만'; }
   function md(d) { return d ? (+d.slice(5, 7)) + '/' + (+d.slice(8, 10)) : ''; }
+  function ymd(d) { return d ? d.slice(2).replace(/-/g, '.') : ''; }
   function hid(k) { var h = 5381; for (var i = 0; i < k.length; i++) h = ((h << 5) + h + k.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }   // 단지키(한글 포함) → 요소 id
   var PER = 50, SIDO_ORDER = ['서울', '경기', '인천', '부산', '대구', '광주', '대전', '울산', '세종', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주'];
   var S = { data: null, rows: null, sort: 'price', q: '', sido: '', page: 1, open: {}, loading: false };
@@ -15551,34 +15555,64 @@ var TAX = (function () {
     pager(all.length, pages);
     rows.forEach(function (r) { if (S.open[r.k]) histDraw(r); });
   }
+  /* 단지 실거래 전체 기간: 최근 13개월은 카운터 Worker(/apt?all=1), 그 이전(2006년~)은 data/apt_hist/<시군구>/<연도>.json */
+  var histIdx = null, yearFiles = {};
+  function loadIdx() { return histIdx || (histIdx = fetch('data/apt_hist/index.json?v=' + Math.floor(Date.now() / 36e5)).then(function (x) { return x.ok ? x.json() : null; }).catch(function () { return null; })); }
+  function loadYear(sgg, y) {
+    var k = sgg + '/' + y;
+    return yearFiles[k] || (yearFiles[k] = fetch('data/apt_hist/' + k + '.json?v=' + Math.floor(Date.now() / 36e5)).then(function (x) { return x.ok ? x.json() : null; }).catch(function () { return null; }));
+  }
+  function loadAll(r, base) {
+    var recent = fetch(base.replace(/\/$/, '') + '/apt?all=1&sgg=' + r.sgg + '&seq=' + encodeURIComponent(r.k)).then(function (x) { return x.json(); });
+    return Promise.all([recent, loadIdx()]).then(function (a) {
+      var j = a[0], idx = a[1];
+      if (!j || !j.deals) throw new Error((j && j.error) || 'no data');
+      var from = j.from || '999999', years = ((idx && idx.sgg && idx.sgg[r.sgg]) || []).filter(function (y) { return y <= from.slice(0, 4); });
+      return Promise.all(years.map(function (y) { return loadYear(r.sgg, y).then(function (f) { return [y, f]; }); })).then(function (fs) {
+        var old = [];
+        fs.forEach(function (yf) {
+          var y = yf[0], f = yf[1]; if (!f) return;
+          var ki = f.k.indexOf(r.k); if (ki < 0) return;
+          f.d.forEach(function (d) { if (d[0] === ki && (y + d[1].slice(0, 2)) < from) old.push([y + '-' + d[1].slice(0, 2) + '-' + d[1].slice(2), d[2], d[3], d[4]]); });
+        });
+        return { deals: old.concat(j.deals).sort(function (p, q) { return p[0] < q[0] ? -1 : p[0] > q[0] ? 1 : 0; }), idx: idx };
+      });
+    });
+  }
+  var RANGE = [['1', 1], ['3', 3], ['5', 5], ['10', 10], ['all', 0]];
   function histDraw(r) {
     var box = $('ap-h-' + hid(r.k)); if (!box) return;
-    var h = hist[r.k];
-    if (!h) {
-      box.innerHTML = '<div class="ap-hist-msg">1년 실거래를 불러오는 중…</div>';
-      var ep = window.__counterEP;
+    var H = hist[r.k];
+    if (!H) {
+      box.innerHTML = '<div class="ap-hist-msg">전체 기간 실거래를 불러오는 중…</div>';
       var go = function (base) {
         if (!base) { box.innerHTML = '<div class="ap-hist-msg">실거래 그래프를 불러오지 못했습니다.</div>'; return; }
-        fetch(base.replace(/\/$/, '') + '/apt?sgg=' + r.sgg + '&seq=' + encodeURIComponent(r.k)).then(function (x) { return x.json(); }).then(function (j) {
-          if (!j || !j.deals) throw new Error((j && j.error) || 'no data');
-          hist[r.k] = j.deals; histDraw(r);
-        }).catch(function () { box.innerHTML = '<div class="ap-hist-msg">실거래 그래프를 불러오지 못했습니다. 잠시 뒤 다시 눌러 주세요.</div>'; delete S.open[r.k]; });
+        loadAll(r, base).then(function (x) { hist[r.k] = { deals: x.deals, idx: x.idx, range: 'all' }; histDraw(r); })
+          .catch(function () { box.innerHTML = '<div class="ap-hist-msg">실거래 그래프를 불러오지 못했습니다. 잠시 뒤 다시 눌러 주세요.</div>'; delete S.open[r.k]; });
       };
-      if (ep) go(ep); else (window.mdLoad ? window.mdLoad('counter.json') : Promise.resolve(null)).then(function (c) { window.__counterEP = c && c.endpoint; go(window.__counterEP); });
+      if (window.__counterEP) go(window.__counterEP); else (window.mdLoad ? window.mdLoad('counter.json') : Promise.resolve(null)).then(function (c) { window.__counterEP = c && c.endpoint; go(window.__counterEP); });
       return;
     }
-    if (!h.length) { box.innerHTML = '<div class="ap-hist-msg">최근 1년 거래 자료가 없습니다.</div>'; return; }
+    var all = H.deals, yrs = H.range === 'all' ? 0 : +H.range;
+    var cutD = yrs ? new Date(Date.now() + 9 * 3600e3 - yrs * 365.25 * 864e5).toISOString().slice(0, 10) : '';
+    var h = all.filter(function (d) { return !cutD || d[0] >= cutD; });
+    var span = all.length ? Math.ceil((Date.now() - Date.parse(all[0][0])) / (365.25 * 864e5)) : 0;
+    var tabs = '<div class="chart-tabs ap-range" role="group" aria-label="기간">' + RANGE.filter(function (x) { return !x[1] || x[1] < span + 1; }).map(function (x) {
+      return '<button type="button" class="chart-tab' + (H.range === x[0] ? ' active' : '') + '" data-range="' + x[0] + '" data-k="' + esc(r.k) + '">' + (x[1] ? x[1] + '년' : '전체') + '</button>';
+    }).join('') + '</div>';
+    var ix = H.idx, prog = ix && ix.total && ix.done < ix.total ? '<span class="ap-prog">과거 자료 채우는 중 ' + Math.floor(ix.done / ix.total * 100) + '% (2006년~' + ix.to.slice(0, 4) + '.' + ix.to.slice(4) + ')</span>' : '';
+    if (!h.length) { box.innerHTML = '<div class="ap-hist-head">' + tabs + prog + '</div><div class="ap-hist-msg">이 기간에는 거래 자료가 없습니다.</div>'; return; }
     var areas = {}; h.forEach(function (d) { var k = Math.round(d[2]); (areas[k] = areas[k] || []).push(d); });
     var keys = Object.keys(areas).sort(function (a, b) { return areas[b].length - areas[a].length; });
     var hi = h.reduce(function (m, d) { return d[1] > m[1] ? d : m; }), lo = h.reduce(function (m, d) { return d[1] < m[1] ? d : m; });
     var id = 'ap-c-' + hid(r.k);
-    box.innerHTML = '<div class="ap-hist-top"><span>최근 1년 매매 <b>' + h.length + '건</b></span><span>최고 <b>' + man(hi[1]) + '</b> <small>(' + hi[2] + '㎡ · ' + md(hi[0]) + ')</small></span><span>최저 <b>' + man(lo[1]) + '</b> <small>(' + lo[2] + '㎡ · ' + md(lo[0]) + ')</small></span></div>' +
-      '<div class="ap-chart"><canvas id="' + id + '" aria-label="' + esc(r.n) + ' 1년 실거래가 그래프"></canvas></div>';
+    box.innerHTML = '<div class="ap-hist-head">' + tabs + prog + '</div><div class="ap-hist-top"><span>' + (yrs ? '최근 ' + yrs + '년' : h[0][0].slice(0, 4) + '년~') + ' 매매 <b>' + h.length.toLocaleString('ko-KR') + '건</b></span><span>최고 <b>' + man(hi[1]) + '</b> <small>(' + hi[2] + '㎡ · ' + ymd(hi[0]) + ')</small></span><span>최저 <b>' + man(lo[1]) + '</b> <small>(' + lo[2] + '㎡ · ' + ymd(lo[0]) + ')</small></span></div>' +
+      '<div class="ap-chart"><canvas id="' + id + '" aria-label="' + esc(r.n) + ' 실거래가 그래프"></canvas></div>';
     if (typeof Chart === 'undefined') return;
     var pal = ['#3182f6', '#f04452', '#fe9800', '#22c55e', '#a855f7', '#14b8a6'], tick = cssVar('--text3', '#888'), grid = 'rgba(' + cssVar('--fg-rgb', '255,255,255') + ',0.06)';
     var ds = keys.slice(0, 6).map(function (k, i) {
       return { label: '전용 ' + k + '㎡', data: areas[k].map(function (d) { return { x: Date.parse(d[0] + 'T00:00:00+09:00'), y: d[1], f: d[3], a: d[2] }; }).sort(function (p, q) { return p.x - q.x; }),
-               borderColor: pal[i], backgroundColor: pal[i], showLine: areas[k].length > 1, borderWidth: 1.5, pointRadius: 3.5, pointHoverRadius: 6, tension: 0 };
+               borderColor: pal[i], backgroundColor: pal[i], showLine: areas[k].length > 1, borderWidth: h.length > 300 ? 1 : 1.5, pointRadius: h.length > 300 ? 2 : 3.5, pointHoverRadius: 6, tension: 0 };
     });
     if (keys.length > 6) ds.push({ label: '기타 면적', data: [].concat.apply([], keys.slice(6).map(function (k) { return areas[k]; })).map(function (d) { return { x: Date.parse(d[0] + 'T00:00:00+09:00'), y: d[1], f: d[3], a: d[2] }; }), borderColor: '#888', backgroundColor: '#888', showLine: false, pointRadius: 3 });
     var narrow = window.innerWidth < 600;
@@ -15625,6 +15659,8 @@ var TAX = (function () {
     if (c) { S.sido = c.getAttribute('data-sido'); S.page = 1; render(); return; }
     var pgb = e.target.closest('#ap-pager .dv-pg');
     if (pgb && !pgb.disabled) { S.page = +pgb.getAttribute('data-pg'); table(); var top = $('ap-body').closest('.dv-card'); if (top) top.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+    var rg = e.target.closest('.ap-range .chart-tab');
+    if (rg) { var hk = rg.getAttribute('data-k'), rr = S.rows.find(function (x) { return x.k === hk; }); if (hist[hk] && rr) { hist[hk].range = rg.getAttribute('data-range'); if (charts[hk]) { charts[hk].destroy(); delete charts[hk]; } histDraw(rr); } return; }
     var row = e.target.closest('tr.dv-row');
     if (row && row.closest('#ap-body')) { var k = row.getAttribute('data-k'); if (S.open[k]) delete S.open[k]; else S.open[k] = 1; table(); }
   });
