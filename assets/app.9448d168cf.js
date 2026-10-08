@@ -11856,3 +11856,207 @@ var DVC = (function () {
   sw('dca', st.dca); sw('tax', st.tax);
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', update); else update();
 })();
+
+/* ════════════════════════════════════════
+   [FIRE] 파이어족 계산기 — 순수 계산 FIRE.calc
+   · 매달 초 저축액 투입 → 한 달 수익률 (1+연 수익률)^(1/12) − 1 · 저축액은 해마다 '저축액 증가율'만큼 늘어남
+   · 물가: 생활비·부업소득·연금은 현재 가치로 입력 → 매달 (1+물가상승률)^(개월/12) 를 곱한 명목 금액으로 계산
+   · 목표 자산
+       swr  (인출률 · 4% 룰): (월 생활비 − 은퇴 후 월 소득) × 12 ÷ 인출률  — 그 시점 물가로 환산
+       life (기대수명까지): 은퇴 후 매달 (생활비 − 은퇴 후 소득 − 연금) 을 빼고 은퇴 후 수익률로 굴려 기대수명까지 0원 아래로 내려가지 않는 최소 자산
+   · 은퇴(FIRE) 시점: 매달 초 자산이 그 달의 목표 자산 이상이 되는 첫 달 → 그 뒤로는 저축을 멈추고 생활비를 인출
+════════════════════════════════════════ */
+var FIRE = (function () {
+  var MAXM = 100 * 12;
+  function mr(a) { return Math.pow(1 + (a || 0), 1 / 12) - 1; }
+  function prep(o) {
+    var c = {};
+    for (var k in o) c[k] = o[k];
+    c.age = Math.max(0, +o.age || 0); c.life = Math.max(c.age + 1, +o.life || 90);
+    c.rm = mr(o.ret); c.rp = mr(o.retPost != null ? o.retPost : o.ret);
+    c.inf = 1 + (o.infl || 0);
+    c.need = Math.max(0, (o.spend || 0) - (o.side || 0));      /* 은퇴 후 매달 자산에서 꺼낼 돈 (현재 가치, 연금 전) */
+    c.endM = Math.round((c.life - c.age) * 12);               /* 기대수명이 되는 달 (지금부터) */
+    return c;
+  }
+  function P(c, k) { return Math.pow(c.inf, k / 12); }          /* k개월 뒤 물가 지수 */
+  function withdraw(c, k) {                                     /* k개월째(지금 기준) 은퇴 후 인출액 (명목, 음수면 남는 돈) */
+    var age = c.age + k / 12;
+    var pen = c.pension > 0 && age >= (c.pensionAge || 65) ? c.pension : 0;
+    return (c.spend - (c.side || 0) - pen) * P(c, k);
+  }
+  /* k개월째 자산 A 로 은퇴했을 때 기대수명까지 버티는지 · 소진되면 그 달 */
+  function drawdown(c, k, A) {
+    for (var t = k; t < c.endM; t++) {
+      A -= withdraw(c, t);
+      if (A < -0.5) return { ok: false, out: t, left: A };
+      A *= 1 + c.rp;
+    }
+    return { ok: true, left: A };
+  }
+  /* life 방식: k개월째 필요한 최소 자산 (명목) — 뒤에서부터 need[t] = max(0, 인출[t] + need[t+1] ÷ (1+수익률)) */
+  function lifeTable(c) {
+    var need = new Array(c.endM + 1); need[c.endM] = 0;
+    for (var t = c.endM - 1; t >= 0; t--) need[t] = Math.max(0, withdraw(c, t) + need[t + 1] / (1 + c.rp));
+    return need;
+  }
+  function lifeNeed(c, k) { if (!c.need_) c.need_ = lifeTable(c); return k >= c.endM ? 0 : c.need_[k]; }
+  function target(c, k) { return c.mode === 'life' ? lifeNeed(c, k) : (c.swr > 0 ? c.need * 12 / c.swr * P(c, k) : Infinity); }
+  /* 저축 단계: 매달 초 목표 확인 → 저축 → 수익. 달성한 달(fireM) 반환 */
+  function accumulate(c, monthly, limit) {
+    var A = c.assets || 0, g = 1 + (c.saveGrowth || 0);
+    for (var k = 0; k <= limit; k++) {
+      if (A >= target(c, k) - 0.5) return { m: k, A: A };
+      A += monthly * Math.pow(g, Math.floor(k / 12));
+      A *= 1 + c.rm;
+    }
+    return { m: -1, A: A };
+  }
+  function calc(o) {
+    var c = prep(o), r = { c: c };
+    r.target0 = target(c, 0);                                   /* 지금 은퇴한다면 필요한 자산 */
+    var lim = Math.min(MAXM, Math.max(c.endM - 1, 0));
+    var f = accumulate(c, c.monthly || 0, lim);
+    r.fireM = f.m; r.reached = f.m >= 0;
+    r.fireAge = r.reached ? c.age + f.m / 12 : null;
+    r.fireAssets = r.reached ? f.A : null;
+    r.fireTarget = r.reached ? target(c, f.m) : null;
+    r.fireTargetReal = r.reached ? r.fireTarget / P(c, f.m) : null;
+    /* 목표 나이에 은퇴하려면 필요한 월 저축액 (첫해 기준, 이후 증가율 반영) */
+    var tm = Math.round(((+o.targetAge || 0) - c.age) * 12);
+    r.targetM = tm;
+    if (tm >= 0 && tm < c.endM) {
+      if (accumulate(c, 0, tm).m >= 0) r.needMonthly = 0;
+      else {
+        var lo = 0, hi = 1e6;
+        while (accumulate(c, hi, tm).m < 0 && hi < 1e12) hi *= 4;
+        for (var i = 0; i < 60 && hi - lo > 1; i++) { var mid = (lo + hi) / 2; if (accumulate(c, mid, tm).m >= 0) hi = mid; else lo = mid; }
+        r.needMonthly = hi < 1e12 ? hi : null;
+      }
+    } else r.needMonthly = null;
+    /* 코스트 FIRE: 더 저축하지 않아도 일반 은퇴 나이에 목표에 닿는 지금 자산 */
+    var cm = Math.round(((+o.coastAge || 65) - c.age) * 12);
+    if (cm > 0 && cm < c.endM) { r.coastM = cm; r.coast = target(c, cm) / Math.pow(1 + c.rm, cm); r.coastOk = (c.assets || 0) >= r.coast; }
+    /* 연도별 흐름 (지금 ~ 기대수명) */
+    var A = c.assets || 0, g = 1 + (c.saveGrowth || 0), rows = [], y = null, out = null, retired = false;
+    for (var k = 0; k < c.endM; k++) {
+      if (k % 12 === 0) { y = { k: k, age: c.age + k / 12, start: A, save: 0, gain: 0, wd: 0, P: P(c, k), tgt: target(c, k) }; rows.push(y); }
+      if (!retired && r.reached && k >= r.fireM) retired = true;
+      if (!retired) { var s = (c.monthly || 0) * Math.pow(g, Math.floor(k / 12)); A += s; y.save += s; }
+      else {
+        var w = withdraw(c, k);
+        if (w > A) { if (out == null && w - A > 0.5) out = k; w = Math.max(0, A); }   /* 자산이 바닥나면 있는 만큼만 */
+        A -= w; y.wd += w;
+      }
+      var gain = A > 0 ? A * (retired ? c.rp : c.rm) : 0;
+      A += gain; y.gain += gain;
+      y.end = A; y.retired = retired; y.Pend = P(c, k + 1);
+    }
+    r.rows = rows; r.endAssets = A;
+    r.depleteAge = out != null ? c.age + out / 12 : null;
+    if (r.reached) {
+      r.firstWd = withdraw(c, r.fireM);                         /* 은퇴 첫 달 인출액 (명목) */
+      r.firstWdReal = r.firstWd / P(c, r.fireM);
+      r.wdRate = r.fireAssets > 0 ? r.firstWd * 12 / r.fireAssets : 0;
+    }
+    r.saveRate = o.income > 0 ? (c.monthly || 0) / o.income : null;
+    return r;
+  }
+  return { calc: calc, mr: mr };
+})();
+
+/* [FIRE] 화면 — 입력(data-fc="fire")·억/만/원 단위·버튼은 [FC-UI] 공통 처리 */
+(function () {
+  if (!document.getElementById('page-fire')) return;   /* 도구별 페이지 분리: 파이어족 계산기 화면이 있는 페이지에서만 */
+  function $(id) { return document.getElementById(id); }
+  function setT(id, v) { var e = $(id); if (e) e.textContent = v; }
+  function setH(id, v) { var e = $(id); if (e) e.innerHTML = v; }
+  function numOf(id) { var e = $(id); return e ? (parseFloat(String(e.value).replace(/,/g, '')) || 0) : 0; }
+  var UNIT = { eok: 1e8, man: 1e4, won: 1 };
+  function amt(id) { var e = $(id); return Math.round(numOf(id) * (UNIT[e && e.getAttribute('data-unit')] || 1)); }
+  function won(n) { return (n < 0 ? '−' : '') + Math.round(Math.abs(n)).toLocaleString('ko-KR') + '원'; }
+  function eok(n) {
+    var neg = n < 0; n = Math.round(Math.abs(n) / 1e4) * 1e4;
+    var e = Math.floor(n / 1e8), m = Math.round((n - e * 1e8) / 1e4), s;
+    if (!e) s = m.toLocaleString('ko-KR') + '만원'; else s = e.toLocaleString('ko-KR') + '억' + (m ? ' ' + m.toLocaleString('ko-KR') + '만원' : '원');
+    return (neg ? '−' : '') + s;
+  }
+  function pct(v, d) { return (v * 100).toFixed(d == null ? 1 : d) + '%'; }
+  function seg(name) { var b = document.querySelector('.fc-seg[data-name="' + name + '"] .mode-btn.active'); return b ? b.getAttribute('data-v') : null; }
+  function ym(months) { var y = Math.floor(months / 12), m = Math.round(months - y * 12); if (m === 12) { y++; m = 0; } return (y ? y + '년' : '') + (m ? (y ? ' ' : '') + m + '개월' : (y ? '' : '0개월')); }
+  function ageTxt(a) { var y = Math.floor(a + 1e-9), m = Math.round((a - y) * 12); if (m === 12) { y++; m = 0; } return y + '세' + (m ? ' ' + m + '개월' : ''); }
+  var chart = null;
+  function render() {
+    var mode = seg('fire-mode') || 'swr', real = (seg('fire-view') || 'real') === 'real';
+    var o = {
+      mode: mode, age: numOf('fire-age'), life: numOf('fire-life'), assets: amt('fire-assets'), income: amt('fire-income'),
+      monthly: amt('fire-monthly'), saveGrowth: numOf('fire-sg') / 100, spend: amt('fire-spend'), side: amt('fire-side'),
+      pension: amt('fire-pension'), pensionAge: numOf('fire-page') || 65, swr: numOf('fire-swr') / 100,
+      ret: numOf('fire-ret') / 100, retPost: numOf('fire-retp') / 100, infl: numOf('fire-infl') / 100,
+      targetAge: numOf('fire-tage'), coastAge: numOf('fire-cage') || 65
+    };
+    $('fire-swr-f').style.display = mode === 'swr' ? '' : 'none';
+    if (!(o.age > 0) || !(o.life > o.age)) { setT('fire-age-out', '—'); setT('fire-sub', '현재 나이와 기대 수명(현재 나이보다 많게)을 넣어 주세요'); return; }
+    var r = FIRE.calc(o), c = r.c;
+    /* 결과 카드 */
+    if (r.reached) {
+      setT('fire-label', r.fireM === 0 ? '이미 경제적 자유를 달성했습니다' : 'FIRE 달성 예상 나이');
+      setT('fire-age-out', ageTxt(r.fireAge));
+      setT('fire-sub', (r.fireM === 0 ? '지금 자산 ' + eok(o.assets) + '이 목표 자산 ' + eok(r.target0) + ' 이상입니다' : '지금부터 ' + ym(r.fireM) + ' 뒤 · 그때 자산 ' + eok(r.fireAssets) + (o.infl ? ' (현재 가치 ' + eok(r.fireAssets / Math.pow(1 + o.infl, r.fireM / 12)) + ')' : ''))
+        + ' · 은퇴 첫 달 생활비 인출 ' + won(Math.max(0, r.firstWd)) + (o.infl ? ' (현재 가치 ' + won(Math.max(0, r.firstWdReal)) + ')' : ''));
+    } else {
+      setT('fire-label', 'FIRE 달성 예상 나이');
+      setT('fire-age-out', '기대 수명 안에 어려움');
+      setT('fire-sub', '지금 조건으로는 ' + ageTxt(o.life) + ' 전에 목표 자산에 닿지 못합니다 — 저축액·수익률을 높이거나 생활비를 낮춰 보세요');
+    }
+    setT('fire-k1', eok(r.target0));
+    setT('fire-k1-l', mode === 'swr' ? '목표 자산 (현재 가치)' : '지금 은퇴 시 필요 자산');
+    setT('fire-k2', r.needMonthly == null ? '—' : r.needMonthly === 0 ? '0원 (이미 충분)' : won(Math.ceil(r.needMonthly / 1e4) * 1e4));
+    setT('fire-k2-l', Math.round(o.targetAge) + '세 은퇴에 필요한 월 저축');
+    setT('fire-k3', r.coast != null ? eok(r.coast) : '—');
+    setT('fire-k3-l', '코스트 FIRE (' + Math.round(o.coastAge) + '세 기준)');
+    /* 상세 */
+    var lines = [];
+    if (mode === 'swr') lines.push(['목표 자산 <small>(월 생활비 ' + won(o.spend) + (o.side ? ' − 은퇴 후 소득 ' + won(o.side) : '') + ') × 12 ÷ 인출률 ' + pct(o.swr, 2).replace(/\.?0+%$/, '%') + '</small>', eok(r.target0), 'fc-total']);
+    else lines.push(['지금 은퇴하면 필요한 자산 <small>(' + ageTxt(o.life) + '까지 매달 생활비를 꺼내 쓰고 은퇴 후 수익률 ' + pct(o.retPost) + '로 굴릴 때 0원이 되는 금액)</small>', eok(r.target0), 'fc-total']);
+    if (r.reached && r.fireM > 0) {
+      lines.push(['FIRE 시점 목표 자산 <small>(물가 ' + pct(o.infl) + ' 반영 · 그때 금액)</small>', eok(r.fireTarget)]);
+      lines.push(['FIRE 시점 실제 자산', eok(r.fireAssets)]);
+    }
+    if (r.reached) lines.push(['은퇴 첫해 실제 인출률 <small>(첫 달 인출액 × 12 ÷ 은퇴 자산)</small>', pct(r.wdRate, 2)]);
+    if (r.saveRate != null) lines.push(['저축률 <small>(월 저축 ÷ 월 세후 소득)</small>', pct(r.saveRate)]);
+    lines.push(['연 수익률 실질 환산 <small>(은퇴 전 · 물가 차감)</small>', pct((1 + o.ret) / (1 + o.infl) - 1, 2)]);
+    if (r.coast != null) lines.push(['코스트 FIRE <small>(더 저축하지 않아도 ' + Math.round(o.coastAge) + '세에 목표에 닿는 지금 자산)</small>', r.coastOk ? '달성 ✓ (지금 ' + eok(o.assets) + ')' : eok(r.coast - o.assets) + ' 부족']);
+    if (r.reached) lines.push(r.depleteAge != null
+      ? ['자산 소진 나이 <small>(은퇴 후 생활비를 꺼내 쓰다 0원이 되는 때)</small>', '<span style="color:#f04452;">' + ageTxt(r.depleteAge) + '</span>', '']
+      : [ageTxt(o.life) + ' 때 남는 자산 <small>(현재 가치)</small>', eok(r.endAssets / Math.pow(1 + o.infl, (o.life - o.age)))]);
+    if (o.pension > 0) lines.push(['연금 <small>(' + Math.round(o.pensionAge) + '세부터 월 ' + won(o.pension) + ', 현재 가치)</small>', mode === 'swr' ? '목표 자산엔 미반영 · 은퇴 후 흐름에 반영' : '목표 자산·흐름에 반영']);
+    setH('fire-table', lines.map(function (x) { return '<tr' + (x[2] ? ' class="' + x[2] + '"' : '') + '><td>' + x[0] + '</td><td style="text-align:right;">' + x[1] + '</td></tr>'; }).join(''));
+    /* 연도별 */
+    var dv = function (v, row, end) { return real ? v / (end ? row.Pend : row.P) : v; };
+    setH('fire-years', r.rows.map(function (y) {
+      var fireRow = r.reached && r.fireM >= y.k && r.fireM < y.k + 12;
+      return '<tr' + (fireRow ? ' class="fc-hl"' : '') + '><td>' + Math.floor(y.age + 1e-9) + '세' + (fireRow ? ' 🔥' : '') + '</td><td>' + (y.save ? eok(dv(y.save, y, true)) : '—') + '</td><td>' + eok(dv(y.gain, y, true)) + '</td><td>' + (y.wd ? '<span style="color:#f04452;">−' + eok(dv(y.wd, y, true)) + '</span>' : '—') + '</td><td>' + eok(dv(y.end, y, true)) + '</td></tr>';
+    }).join(''));
+    setT('fire-years-note', real ? '금액은 모두 현재 가치(물가 ' + pct(o.infl) + '를 빼서 지금 돈으로 환산)입니다.' : '금액은 그해 실제 금액(미래 금액)입니다.');
+    /* 차트 */
+    if (typeof Chart === 'undefined') return;
+    var labels = [], A = [], T = [];
+    r.rows.forEach(function (y) { labels.push(Math.floor(y.age + 1e-9) + '세'); A.push(Math.round(dv(y.start, y))); T.push(!r.reached || y.k <= r.fireM ? Math.round(dv(y.tgt, y)) : null); });
+    var last = r.rows[r.rows.length - 1]; labels.push(Math.round(o.life) + '세'); A.push(Math.round(dv(last.end, last, true))); T.push(null);
+    var ds = [
+      { label: '자산', data: A, borderColor: '#3182f6', backgroundColor: 'rgba(49,130,246,0.12)', fill: true, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, tension: 0.2 },
+      { label: '목표 자산', data: T, borderColor: '#fe9800', borderDash: [6, 4], fill: false, pointRadius: 0, pointHoverRadius: 3, borderWidth: 1.6, spanGaps: false }
+    ];
+    var opts = {
+      responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false }, tooltip: { backgroundColor: '#202027', borderColor: fgA(0.1), borderWidth: 1, titleColor: '#9e9ea4', bodyColor: '#e4e4e5', padding: 12,
+        callbacks: { label: function (x) { return x.parsed.y == null ? null : ' ' + x.dataset.label + ': ' + eok(x.parsed.y); } } } },
+      scales: { x: { ticks: { color: '#6d6d76', font: { size: 11 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 }, grid: { display: false }, border: { display: false } },
+        y: { beginAtZero: true, ticks: { color: '#6d6d76', font: { size: 11 }, callback: function (v) { return fmt(v, true); } }, grid: { color: fgA(0.04) }, border: { display: false } } }
+    };
+    if (chart) { chart.data.labels = labels; chart.data.datasets = ds; chart.options = opts; chart.update('none'); }
+    else chart = new Chart($('fire-chart'), { type: 'line', data: { labels: labels, datasets: ds }, options: opts });
+  }
+  window.fcRegister('fire', render, 'fire');
+})();
