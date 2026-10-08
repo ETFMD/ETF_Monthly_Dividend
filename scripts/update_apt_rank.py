@@ -24,6 +24,7 @@ API = 'https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrad
 API_DEV = 'https://apis.data.go.kr/1613000/RTMSDataSvcAptTradeDev/getRTMSDataSvcAptTradeDev'   # 상세 자료 — 같은 키로 활용신청하면 하루 한도가 따로 있어 과거 자료 채우기에 씀
 HIST = os.path.join(ROOT, 'data', 'apt_hist')
 FIRST_YM = '200601'                                                              # 국토교통부 아파트 매매 실거래 공개 시작
+API_DOWN = {'ok': 0, 'fail': 0}                                                   # 공공 API 장애(시간 초과 등)면 처음 24건 실패 뒤 나머지는 건너뜀
 CPLX_PAGE = 'https://www.data.go.kr/data/15106861/fileData.do'
 DOWN = 'https://www.data.go.kr/cmm/cmm/fileDownload.do?atchFileId=%s&fileDetailSn=%s&insertDataPrcus=N'
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36'
@@ -226,8 +227,9 @@ def backfill(sggs, window):
         hist_add(s, ym, json.load(open(os.path.join(CACHE, '%s_%s.json' % (s, ym)), encoding='utf-8'))); done += 1
     rest = [t for t in todo if t not in set(cached)][:budget]
     def run(t):
-        try: return t, fetch_month(t[0], t[1], api)
-        except Exception as e: return t, None
+        if API_DOWN['fail'] >= 24 and API_DOWN['ok'] == 0: return t, None
+        try: r = fetch_month(t[0], t[1], api); API_DOWN['ok'] += 1; return t, r
+        except Exception as e: API_DOWN['fail'] += 1; return t, None
     with cf.ThreadPoolExecutor(8) as ex:
         for (s, ym), rows in ex.map(run, rest):
             if rows is not None: hist_add(s, ym, rows); done += 1
@@ -259,16 +261,20 @@ def main():
     fails, done = [], []
     def run(job):
         s, ym = job
+        if API_DOWN['fail'] >= 24 and API_DOWN['ok'] == 0: return ('err', '%s %s: 건너뜀 (API 장애)' % (s, ym))
         try:
             rows = fetch_month(s, ym)
             p = os.path.join(CACHE, '%s_%s.json' % (s, ym))
             old = open(p, encoding='utf-8').read() if os.path.exists(p) else None
             new = json.dumps(rows, ensure_ascii=False, separators=(',', ':'))
+            API_DOWN['ok'] += 1
             if new != old:
                 with open(p, 'w', encoding='utf-8') as f: f.write(new)
                 return ('chg', s, ym, rows)
             return None
-        except Exception as e: return ('err', '%s %s: %s' % (s, ym, e))
+        except Exception as e:
+            API_DOWN['fail'] += 1
+            return ('err', '%s %s: %s' % (s, ym, e))
     t0 = time.time()
     with cf.ThreadPoolExecutor(8) as ex:
         for r in ex.map(run, jobs):
@@ -281,8 +287,10 @@ def main():
         if len(fails) > max(10, len(jobs) * 0.2): sys.exit('실패가 너무 많아 저장하지 않음')
     ok, n = upload(sggs, yms)                                                  # 단지 그래프용 (바뀐 달·못 올린 달만)
     if n: print('Worker 업로드 %d/%d' % (ok, n))
-    try: backfill(sggs, yms)                                                     # 과거 전체 기간 (조금씩)
-    except Exception as e: print('과거 자료 채우기 실패:', e, file=sys.stderr)
+    if API_DOWN['ok'] == 0 and API_DOWN['fail']: print('공공 API 응답 없음 — 과거 자료 채우기는 다음 실행에', file=sys.stderr)
+    else:
+      try: backfill(sggs, yms)                                                     # 과거 전체 기간 (조금씩)
+      except Exception as e: print('과거 자료 채우기 실패:', e, file=sys.stderr)
     # 단지별 모으기
     cut = (kst_today() - datetime.timedelta(days=366)).isoformat()
     apts = {}
