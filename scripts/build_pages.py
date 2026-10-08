@@ -342,7 +342,7 @@ def main():
         if 'en' in r:
             urls += f'  <url><loc>{esc(url_of(r, "en"))}</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>\n'
     # 탭이 아닌 독립 페이지(개인정보처리방침 등): 폴더에 index.html 이 있을 때만 sitemap 에 포함
-    for extra in ('privacy',):
+    for extra in ('about', 'terms', 'disclaimer', 'privacy'):
         if os.path.isfile(os.path.join(ROOT, extra, 'index.html')):
             urls += f'  <url><loc>{esc(SITE + extra + "/")}</loc><lastmod>{today}</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>\n'
     sitemap = f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n'

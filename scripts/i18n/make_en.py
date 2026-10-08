@@ -15,7 +15,7 @@ TEXT = {
     '한국어': '한국어', 'Language / 언어': 'Language',   # 언어 선택 목록은 각 언어 이름 그대로
     '카카오 오픈채팅': 'KakaoTalk open chat (Korean)',
     'ETF 커버드콜 + 배당투자 + 성장주 함께 장기투자를 위한 오픈톡방 가기': 'Join our Korean-language community for long-term investing in covered-call ETFs, dividends and growth stocks',
-    '전체 도구': 'All tools', '공포 & 탐욕 지수': 'Fear & Greed Index', '디코딩 자본주의': 'Decoding Capitalism', '디코딩 자본주의 홈': 'Decoding Capitalism home', '사이트 검색': 'Site search', '검색 결과': 'Search results',
+    '전체 도구': 'All tools', '소개': 'About', '이용약관': 'Terms', '투자 면책': 'Disclaimer', '공포 & 탐욕 지수': 'Fear & Greed Index', '디코딩 자본주의': 'Decoding Capitalism', '디코딩 자본주의 홈': 'Decoding Capitalism home', '사이트 검색': 'Site search', '검색 결과': 'Search results',
     '계산기·자료 검색 (예: 연봉, 취득세, 배당)': 'Search tools (e.g. salary, tax, dividend)',
     '돈': 'Money', '주식·ETF': 'Stocks & ETFs', '부동산': 'Real estate', '패시브인컴': 'Passive income', '커버드콜 분배 시뮬레이터': 'Covered-call simulators',
     'ETF 월분배 및 배당 달력': 'Korean ETF distribution calendar', '국내 나의 아파트 시세 순위': 'Korean apartment price ranking', '국내 나의 연봉 순위': 'My salary rank in Korea',
@@ -284,6 +284,34 @@ GUIDES['cagr'] = guide('cagr', 'How CAGR (compound annual growth rate) is calcul
      ('Why does the Rule of 72 give a slightly different answer?', '<p>72 ÷ 12.47 ≈ 5.8 years is a quick estimate; the calculator uses logarithms and shows 5.9 years. The rule works best for rates around 6–10%.</p>'),
      ('Can CAGR be negative?', '<p>Yes. If the ending value is below the starting value, CAGR is negative and the doubling times are not shown.</p>'),
      ('Can I see the CAGR of stock indices?', '<p>Yes. The S&amp;P 500, Nasdaq, Dow and semiconductor index pages calculate CAGR from each index’s base date to today, along with recent 5–30 year periods.</p>')])
+
+GUIDES['fear'] = guide('fear', 'How to read the Fear &amp; Greed Index',
+    'The Fear &amp; Greed Index is CNN’s single score for U.S. stock-market sentiment, from <b>0 (extreme fear) to 100 (extreme greed)</b>. It shows at a glance whether investors are unusually scared or euphoric.',
+    '<ul class="g-list"><li>Each of the <b>seven indicators</b> above (momentum, 52-week highs vs lows, breadth, put/call ratio, VIX, safe-haven demand, junk-bond demand) is scored 0–100 against its usual range.</li>'
+    '<li>The index is the <b>equal-weighted average</b> of the seven scores.</li>'
+    '<li>This page pulls CNN’s data every <b>15 minutes</b> and shows the current value, the values a day, week, month and year ago, and the last 90 days.</li></ul>',
+    tbl(['Score', 'Zone', 'Common reading'], [['0–25', 'Extreme fear', 'Panic selling; contrarians start paying attention'], ['25–45', 'Fear', 'Risk-off mood'],
+        ['45–55', 'Neutral', 'No strong tilt'], ['55–75', 'Greed', 'Risk-on mood'], ['75–100', 'Extreme greed', 'Overheating; beware of chasing']],
+        'Zone boundaries follow this site’s display; readings are for reference only.'),
+    [('Should I buy when the score is low?', '<p>It is widely used as a contrarian gauge, but it is not a timing signal. Extreme fear has lasted for weeks at times, so use it only as an input to a gradual buying plan.</p>'),
+     ('Does it apply to Korean stocks?', '<p>No. All seven indicators are U.S. market data, so the mood of the KOSPI can differ. It is most useful when investing in U.S. stocks and ETFs.</p>'),
+     ('Why compare with a day, week, month and year ago?', '<p>The direction often matters more than the level. A score of 20 that rose from 10 a week ago means fear is easing; one that fell from 40 means fear is growing.</p>'),
+     ('How often does it change?', '<p>The indicators use intraday prices, so the score moves while U.S. markets are open. This page fetches new values every 15 minutes and rechecks every 5 minutes while it is open.</p>'),
+     ('Where does the data come from?', '<p>CNN Business’s Fear &amp; Greed Index. This site only displays the values; CNN defines the method.</p>')])
+
+GUIDES['etfcagr'] = guide('etfcagr', 'How the ETF CAGR comparison is calculated',
+    'This chart compares how the <b>compound annual growth rate (CAGR)</b> of 12 U.S. ETFs tracking the same indices at 1×, 2× and 3× changes over time. Use it to check whether leveraged ETFs really deliver 2× or 3× over the long run.',
+    '<ul class="g-list"><li><b>CAGR</b> on each trading day t = (close on t ÷ base close)<sup>1/years elapsed</sup> − 1</li>'
+    '<li><b>With distributions</b>: total return assuming distributions are reinvested at the ex-date close</li>'
+    '<li>Very short periods annualize wildly, so each line starts after a quarter of the selected period (max 1 year, min 20 days).</li>'
+    '<li>Leveraged ETFs rebalance every day to target 2× or 3× of the <b>daily</b> return.</li></ul>',
+    tbl(['Index move', '1×', '2×', '3×'], [['Day 1: +10%', '110', '120', '130'], ['Day 2: −10%', '99', '96', '91'], ['Two-day return', '−1%', '−4%', '−9%']],
+        'Starting from 100. The index fell 1%, but the 3× ETF fell 9%, not 3%. The bigger the swings, the more this volatility drag accumulates. CAGR example: 100 growing to 250 in 10 years is 2.5<sup>1/10</sup> − 1 = <b>9.6% a year</b>.'),
+    [('Do leveraged ETFs return exactly 2× or 3× over the long run?', '<p>No. Because they rebalance daily, long-run returns are not an exact multiple of the index. They fall well short in choppy markets and can exceed the multiple in steady uptrends.</p>'),
+     ('What is the difference between “Price” and “With distributions”?', '<p>Price shows price change only; with distributions assumes payouts are reinvested. Leveraged ETFs pay little, so the gap is small, while for dividend payers like SPY the gap compounds every year.</p>'),
+     ('Why do the period buttons (5Y, 10Y, 15Y, MAX) change the result so much?', '<p>CAGR depends heavily on whether the start date is just after a crash or at a peak. Look at several periods to make sure one lucky window is not driving the result.</p>'),
+     ('Are expense ratios included?', '<p>Yes. Fees are deducted from the ETF price every day, so CAGR based on closing prices already reflects them.</p>'),
+     ('How often is the data updated?', '<p>Yahoo Finance daily prices are collected every 6 hours. Closes are adjusted for stock splits.</p>')])
 
 json.dump({'text': TEXT, 'guides': GUIDES}, open(OUT, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 print('저장', OUT, len(TEXT), '개 문구 ·', len(GUIDES), '개 설명글')

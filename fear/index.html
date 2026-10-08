@@ -567,6 +567,18 @@
         </p>
       </div><!-- /acc-body fear-main-body -->
     </div><!-- /card -->
+
+    <!-- [GUIDE:fear] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
+    <section class="guide" aria-labelledby="g-fear-h">
+      <h2 id="g-fear-h">공포 &amp; 탐욕 지수는 이렇게 읽습니다</h2>
+      <p class="g-lead">공포 &amp; 탐욕 지수는 CNN이 미국 주식시장의 투자 심리를 <b>0(극단적 공포)~100(극단적 탐욕)</b> 점수 하나로 나타낸 지표입니다. 시장이 지나치게 겁먹었는지, 들떠 있는지를 한눈에 보는 데 씁니다.</p>
+      <div class="g-grid">
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li>위의 <b>7개 지표</b>(주가 모멘텀, 52주 신고가·신저가, 상승·하락 거래량, 풋/콜 비율, VIX, 안전자산 수요, 정크본드 수요)를 각각 평소 범위와 비교해 0~100점으로 바꿉니다.</li><li>7개 점수를 <b>같은 비중으로 평균</b>한 값이 지수입니다.</li><li>이 페이지는 CNN 자료를 <b>15분 간격</b>으로 받아 현재 값과 전일·1주·1달·1년 전 값, 최근 90일 추이를 보여 줍니다.</li></ul></article>
+        <article class="g-card"><h3>점수 구간</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>점수</th><th>구간</th><th>흔한 해석</th></tr></thead><tbody><tr><td>0~25</td><td>극단적 공포</td><td>투매가 나오는 국면. 역발상 매수 관점에서 주목</td></tr><tr><td>25~45</td><td>공포</td><td>위험 회피가 우세</td></tr><tr><td>45~55</td><td>중립</td><td>뚜렷한 쏠림 없음</td></tr><tr><td>55~75</td><td>탐욕</td><td>위험 선호가 우세</td></tr><tr><td>75~100</td><td>극단적 탐욕</td><td>과열 신호. 추격 매수 주의</td></tr></tbody></table></div><p class="g-cap">구간 경계는 이 사이트 화면 기준이며, 해석은 참고용입니다.</p></article>
+      </div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>점수가 낮으면 사야 하나요?</summary><div class="g-ans"><p>"남들이 두려워할 때"를 찾는 역발상 지표로 많이 쓰이지만, 매수 시점을 알려 주는 신호는 아닙니다. 극단적 공포가 몇 주씩 이어진 때도 있으므로 분할 매수 계획의 참고 자료로만 쓰세요.</p></div></details><details class="g-faq"><summary>한국 주식시장에도 그대로 맞나요?</summary><div class="g-ans"><p>아닙니다. 7개 지표 모두 미국 시장 자료라 코스피 분위기와 다를 수 있습니다. 미국 주식·ETF에 투자할 때 시장 심리를 확인하는 용도가 가장 적합합니다.</p></div></details><details class="g-faq"><summary>전일·1주·1달·1년 전 값은 왜 함께 보나요?</summary><div class="g-ans"><p>현재 점수보다 <b>방향</b>이 더 중요할 때가 많습니다. 예를 들어 20점이어도 1주 전 10점에서 올라온 것이면 공포가 풀리는 중이고, 40점에서 내려온 것이면 공포가 커지는 중입니다.</p></div></details><details class="g-faq"><summary>얼마나 자주 바뀌나요?</summary><div class="g-ans"><p>구성 지표가 장중 시세로 계산되므로 미국 장이 열려 있는 동안 계속 바뀝니다. 이 페이지는 15분마다 새 값을 받아 오고, 화면을 열어 둔 동안 5분마다 다시 확인합니다.</p></div></details><details class="g-faq"><summary>자료 출처는 어디인가요?</summary><div class="g-ans"><p>CNN Business의 Fear &amp; Greed Index입니다. 이 사이트는 값을 받아 보여 줄 뿐이며, 계산 방식은 CNN이 정합니다.</p></div></details></div>
+    </section>
+    <!-- [/GUIDE:fear] -->
   </div><!-- /page-fear -->
 
   <!-- ───────────────────────────────────────────── page-moneyspeed ── -->
@@ -648,7 +660,7 @@
 
   <!-- [FOOTER] 모든 화면 하단 공통: 저작권 · 개인정보처리방침 · 문의 -->
   <footer class="site-footer"><!--FOOTMAP--><nav class="sf-map" aria-label="전체 도구"><div class="sf-col"><p class="sf-h">돈</p><a href="loan/">대출 이자 계산기</a><a href="compound/">복리 계산기</a><a href="cagr/">CAGR 계산기</a><a href="fx/">환율 계산기</a><a href="health/">건강보험료 계산기</a><a href="salary/">연봉 실수령액 계산기</a><a href="severance/">퇴직금 계산기</a><a href="incometax/">종합소득세 계산기</a><a href="gift/">증여세·상속세 계산기</a><a href="moneyspeed/">돈, 자산, 노동의 가치 속도</a><a href="salary-rank/">국내 나의 연봉 순위</a><a href="asset-rank/">국내 나의 자산 순위</a></div><div class="sf-col"><p class="sf-h">주식·ETF</p><a href="stocktax/">해외주식 양도소득세 계산기</a><a href="fear/">공포 &amp; 탐욕 지수</a><a href="muhan/">무한매수법 기록</a><a href="etfcagr/">ETF CAGR 비교</a><a href="marketcap/">전세계 시가총액 TOP 100</a><a href="kospi/">코스피 성장률</a><a href="kospi200/">코스피 200 성장률</a><a href="kosdaq/">코스닥 성장률</a><a href="nasdaq/">나스닥 종합 성장률</a><a href="nasdaq100/">나스닥 100 성장률</a><a href="dowjones/">다우존스 성장률</a><a href="sp500/">S&amp;P 500 성장률</a><a href="sox/">필라델피아 반도체 성장률</a><a href="djsemi/">다우존스 반도체 성장률</a><a href="n225/">닛케이 225 성장률</a><a href="topix/">TOPIX 성장률</a><a href="sse/">상해종합지수 성장률</a><a href="csi300/">CSI 300 성장률</a><a href="szse/">선전성분지수 성장률</a><a href="chinext/">창업판지수 성장률</a><a href="star50/">과창판50 성장률</a><a href="hsi/">항셍지수 성장률</a><a href="hscei/">홍콩H지수 성장률</a><a href="hstech/">항셍테크지수 성장률</a><a href="taiex/">대만 가권지수 성장률</a></div><div class="sf-col"><p class="sf-h">부동산</p><a href="mortgage/">주담대 LTV·DSR 한도 계산기</a><a href="brokerage/">부동산 중개수수료 계산기</a><a href="acquisition/">부동산 취득세 계산기</a><a href="apt-rank/">국내 나의 아파트 시세 순위</a></div><div class="sf-col"><p class="sf-h">패시브인컴</p><a href="kodex/">KODEX 200타겟위클리커버드콜</a><a href="sol/">SOL 200타겟위클리커버드콜</a><a href="tiger/">TIGER 200타겟위클리커버드콜</a><a href="tigerdiv/">TIGER 배당커버드콜액티브</a><a href="tigersemi/">TIGER 반도체TOP10커버드콜액티브</a><a href="dividend-calendar/">ETF 월분배 및 배당 달력</a><a href="dividend/">배당소득세 계산기</a><a href="pension/">연금저축·IRP 세액공제 계산기</a></div></nav><!--/FOOTMAP--><div class="sf-in">
-    <a href="privacy/">개인정보처리방침</a><span class="sf-dot">·</span><a href="mailto:gusrudgma@gmail.com">문의</a><span class="sf-dot">·</span><span>© 디코딩 자본주의</span>
+    <a href="about/">소개</a><span class="sf-dot">·</span><a href="terms/">이용약관</a><span class="sf-dot">·</span><a href="disclaimer/">투자 면책</a><span class="sf-dot">·</span><a href="privacy/">개인정보처리방침</a><span class="sf-dot">·</span><a href="mailto:gusrudgma@gmail.com">문의</a><span class="sf-dot">·</span><span>© 디코딩 자본주의</span>
     <p class="sf-note">이 사이트의 모든 계산 결과와 자료는 참고용이며 투자 판단의 책임은 이용자 본인에게 있습니다.</p>
   </div></footer>
 
