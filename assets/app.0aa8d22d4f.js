@@ -11066,15 +11066,24 @@ if (typeof module !== 'undefined') module.exports = MHE;
 
 
 /* ════════════════════════════════════════
-   [CORP-TAX] 법인세 계산기 — 내국 영리법인 각 사업연도 소득에 대한 법인세 (순수 계산 CT.calc + 화면)
-   · 세율: 법인세법 제55조 (2026.1.1. 이후 개시 사업연도 10·20·22·25%, 2023~2025년 개시 9·19·21·24%)
-           소규모 성실신고확인대상 법인(제55조 ②, 2025년 개시분부터): 200억 이하 19%(2026년~ 20%) — 2억 이하 낮은 세율 없음
-   · 사업연도 1년 미만: 과세표준 × 12/월수 에 세율을 적용한 세액 × 월수/12 (월수의 1개월 미만은 1개월)
-   · 기부금(법인세법 제24조, 조특법 제88조의4): 기준소득금액 − 이월결손금(공제한도 내)을 기준으로
-       특례 50% → 우리사주조합 30% → 일반 10% 순서, 이월된 기부금(10년)을 당기분보다 먼저 손금산입
-   · 이월결손금(제13조): 각 사업연도 소득의 100%(중소기업) / 80%(그 밖의 법인)까지
-   · 최저한세(조특법 제132조): 중소기업 7% · 졸업 후 3년 8%·그다음 2년 9% · 일반 100억 이하 10%·1,000억 이하 12%·초과 17%
-   · 법인지방소득세(지방세법 제103조의20): 같은 과세표준에 법인세율의 1/10 (2026년~ 1·2·2.2·2.5%)
+   [CORP-TAX] 법인세 계산기 — 순수 계산 CT.calc(개별 법인) · CT.group(연결납세) + 화면
+   근거(2026-10 현행 원문 확인: 법인세법·시행령·시행규칙 서식, 조특법·시행령, 농특세법·시행령, 지방세법·지특법)
+   · 세율 법인세법 §55: 2026.1.1. 이후 개시 사업연도 10·20·22·25% (2023~2025년 개시 9·19·21·24%)
+       §60의2①1호 소규모 성실신고확인 법인(2025년 개시분부터): 200억 이하 19%(2026~ 20%)·22%·25%
+       사업연도 1년 미만: 세율(과세표준 × 12/월수) × 월수/12 (1개월 미만은 1개월)
+   · 기부금 §24·조특법 §88의4⑬·서식 별지 21호: 기준소득금액 − 이월결손금(공제한도 내)
+       특례 50% → 우리사주 30% → 일반 10%(사회적기업 2026년 개시분부터 30%, 그 전 20%), 이월분(10년) 먼저
+   · 고유목적사업준비금 §29(비영리): 이자·배당 100% + 그 밖의 수익사업소득 50%(장학 공익법인 80%, 조특법 §74 대상 100%)
+   · 이월결손금 §13·§91: 소득의 100%(중소기업·조특법 §74 대상 비영리) / 80%(그 밖, 외국법인)
+   · 토지 등 양도소득 §55의2: 주택·별장·입주권·분양권 20%, 비사업용 토지 10%, 미등기 40% — 차손은 같은 세율 → 다른 세율 순 상계
+   · 미환류소득 조특법 §100의32(상호출자제한기업집단): 2026년~ 투자포함 80%·투자제외 30%(배당 공제), 그 전 70%·15% × 세율 20%
+   · 최저한세 조특법 §132·령 §126: 감면 전 과세표준 × (중소 7% · 졸업 후 1~3년 8% · 4~5년 9% · 일반 100억 10%·1천억 12%·초과 17%)
+       배제 순서(령 §126⑤): 손금산입 → 세액공제(조문 순) → 세액감면 → 소득공제·비과세 / 창업감면 100%·중소기업 R&D 공제는 적용 제외
+   · 중소기업 특별세액감면 한도 §7①3: 1억원(상시근로자 감소 시 1명당 500만원 차감)
+   · 농어촌특별세 농특세법 §5: 실제 공제·감면받은 조특법 감면세액 × 20% (§6·§7·§10·§30의4 등 비과세, 외국납부세액공제·손금산입은 대상 아님)
+   · 지점세 §96: (소득금액 − 법인세 − 법인지방소득세 − 재투자 자본 증가 − 과소자본 손금불산입 + 자본 감소) × 조약세율(기본 20%)
+   · 법인지방소득세 지방세법 §103의19~23·§103의31: 과세표준(외국납부 법인세액 차감)에 법인세율의 1/10, 토지 등 1/10, 미환류 법인세의 10%
+       법인세 감면 연동 없음 · 최저한세 없음 · 지특법 §167의5 인구감소지역 고용 공제(1명 45만원, 중소 70만원) · 분납 100만원 초과
    금액 단위: 원 · 세액은 원 미만 버림
 ════════════════════════════════════════ */
 var CT = (function () {
@@ -11084,121 +11093,302 @@ var CT = (function () {
     '2025': [[2e8, 0.09], [200e8, 0.19], [3000e8, 0.21], [INF, 0.24]],
     '2024': [[2e8, 0.09], [200e8, 0.19], [3000e8, 0.21], [INF, 0.24]]
   };
-  var SMALL = {   /* 소규모 성실신고확인대상 법인 — 2025.1.1. 이후 개시 사업연도부터 */
-    '2026': [[200e8, 0.20], [3000e8, 0.22], [INF, 0.25]],
-    '2025': [[200e8, 0.19], [3000e8, 0.21], [INF, 0.24]]
-  };
+  var SMALL = { '2026': [[200e8, 0.20], [3000e8, 0.22], [INF, 0.25]], '2025': [[200e8, 0.19], [3000e8, 0.21], [INF, 0.24]] };
   var MIN_LARGE = [[100e8, 0.10], [1000e8, 0.12], [INF, 0.17]];
   var MIN_FLAT = { sme: 0.07, grad3: 0.08, grad5: 0.09 };
-  function floor(x) { return Math.floor(x + 1e-7); }
+  function floor(x) { return Math.floor(x + 1e-6); }
+  function pos(x) { return x > 0 ? x : 0; }
   function brackets(year, small) { return small && SMALL[year] ? SMALL[year] : RATES[year] || RATES['2026']; }
-  /* 누진 세액 (사업연도 1년 미만이면 연 환산 후 월수 비례) */
+  /* 누진 세액 · m < 12 이면 연 환산(법 §55②, 지방세법 §103의21②) */
   function prog(T, br, m, scale) {
     if (!(T > 0)) return 0;
+    m = m || 12;
     var Ta = T * 12 / m, prev = 0, t = 0;
     for (var i = 0; i < br.length; i++) {
-      var hi = br[i][0];
-      if (Ta > prev) t += (Math.min(Ta, hi) - prev) * br[i][1] * (scale || 1);
-      prev = hi;
+      if (Ta > prev) t += (Math.min(Ta, br[i][0]) - prev) * br[i][1] * (scale || 1);
+      prev = br[i][0];
     }
     return floor(t * m / 12);
   }
+  /* 토지 등 양도소득(§55의2, 령 §92의2⑨) — 자산별 양도소득, 차손은 같은 세율 그룹 → 다른 세율 그룹 순 */
+  function landTax(items) {
+    var RATE = { house: 0.2, right: 0.2, nonbiz: 0.1, unreg: 0.4 };
+    var g = { 0.1: { gain: 0, loss: 0 }, 0.2: { gain: 0, loss: 0 }, 0.4: { gain: 0, loss: 0 } };
+    (items || []).forEach(function (it) {
+      var v = (it.sale || 0) - (it.book || 0), r = RATE[it.type];
+      if (!r || (!it.sale && !it.book)) return;
+      if (v >= 0) g[r].gain += v; else g[r].loss += -v;
+    });
+    var keys = [0.4, 0.2, 0.1], net = {};
+    keys.forEach(function (k) { var d = Math.min(g[k].gain, g[k].loss); net[k] = g[k].gain - d; g[k].loss -= d; });
+    /* 남은 차손은 다른 세율 자산의 양도소득에서 차감 — 둘 이상이면 양도소득 비율로 안분(소득세법 시행령 §167② 준용) */
+    var base0 = {}; keys.forEach(function (k) { base0[k] = net[k]; });
+    keys.forEach(function (k) {
+      var L = g[k].loss; if (!(L > 0)) return;
+      var others = keys.filter(function (j) { return j !== k && base0[j] > 0; });
+      var sum = others.reduce(function (a, j) { return a + base0[j]; }, 0);
+      if (!(sum > 0)) return;
+      var take = Math.min(L, others.reduce(function (a, j) { return a + net[j]; }, 0));
+      others.forEach(function (j) { net[j] = pos(net[j] - take * base0[j] / sum); });
+    });
+    var tax = 0, local = 0, rows = [];
+    keys.forEach(function (k) { if (net[k] > 0) { var t = floor(net[k] * k); tax += t; local += floor(net[k] * k / 10); rows.push([k, net[k], t]); } });
+    return { tax: tax, local: local, rows: rows, gain: g[0.1].gain + g[0.2].gain + g[0.4].gain };
+  }
+  /* 미환류소득(조특법 §100의32) */
+  function unreturned(u, year) {
+    if (!u || !u.on) return { tax: 0, local: 0 };
+    var newRule = year === '2026';
+    var ratioA = newRule ? 0.8 : 0.7, ratioB = newRule ? 0.3 : 0.15;
+    var income = Math.min(3000e8, pos(u.corpIncome || 0));
+    var common = (newRule ? (u.dividend || 0) : 0) + (u.wage || 0) + (u.coop || 0) * 3;
+    var amt = u.method === 'B' ? income * ratioB - common : income * ratioA - (u.invest || 0) - common;
+    var un = pos(amt), over = pos(-amt);
+    var base = pos(un - (u.reserve || 0) - (u.carryExcess || 0));
+    var tax = floor(base * 0.2);
+    return { tax: tax, local: floor(tax * 0.1), unret: floor(un), over: floor(over), base: floor(base), ratio: u.method === 'B' ? ratioB : ratioA, income: income };
+  }
   function calc(o) {
-    var r = { notes: [] };
+    var r = { notes: [] }, N = function (k) { return +o[k] || 0; };
     var year = String(o.year || '2026'), m = Math.min(12, Math.max(1, Math.round(o.months || 12)));
-    var small = !!o.small && year !== '2024';
+    var entity = o.entity || 'dom';
+    var small = !!o.small && year !== '2024' && entity !== 'for';
     if (o.small && year === '2024') r.notes.push('2024년 이전 개시 사업연도에는 소규모 성실신고확인대상 법인 특례세율이 없어 일반 세율로 계산했습니다.');
     var kind = o.kind || 'sme';
     if (small && kind !== 'large') { kind = 'large'; r.notes.push('소규모 성실신고확인대상 법인은 조세특례제한법상 중소기업에서 제외되어 일반기업 기준(이월결손금 80%·최저한세 10%~·중소기업 감면 불가)으로 계산했습니다.'); }
     var sme = kind === 'sme';
-    r.year = year; r.m = m; r.small = small; r.kind = kind; r.sme = sme;
+    r.year = year; r.m = m; r.small = small; r.kind = kind; r.sme = sme; r.entity = entity;
     r.br = brackets(year, small);
-    var lossRate = sme ? 1 : 0.8;
+    var np74 = entity === 'np' && +o.npRate === 1;
+    var lossRate = entity === 'for' ? 0.8 : (sme || np74) ? 1 : 0.8;
     r.lossRate = lossRate;
-    /* 1) 세무조정 → 차가감소득금액 */
-    var NI = o.ni || 0;
-    r.ni = NI;
-    r.add = (o.addIn || 0) + (o.nonDesig || 0);
-    r.ded = o.dedIn || 0;
-    var R = NI + r.add - r.ded;
+    /* 1) 세무조정 */
+    r.ni = N('ni'); r.add = N('addIn') + N('nonDesig'); r.ded = N('dedIn');
+    r.npSep = entity === 'np' ? N('npSep') : 0;
+    var R = r.ni + r.add - r.ded - r.npSep;
     r.pre = R;
-    /* 2) 기부금 한도 (기준소득금액 = 차가감소득금액 + 손금에 넣은 특례·일반·우리사주조합 기부금) */
-    var spCur = o.spCur || 0, spCarry = o.spCarry || 0, genCur = o.genCur || 0, genCarry = o.genCarry || 0, esCur = o.esCur || 0;
+    /* 2) 기부금 */
+    var spCur = N('spCur'), spCarry = N('spCarry'), genCur = N('genCur'), genCarry = N('genCarry'), esCur = N('esCur');
+    var genRate = o.social ? (year === '2026' ? 0.3 : 0.2) : 0.1;
     var S = R + spCur + genCur + esCur;
-    var Lfor = Math.min(o.carryLoss || 0, Math.max(0, S) * lossRate);
-    var A = Math.max(0, S - Lfor) * 0.5;
-    var spCarryUsed = Math.min(spCarry, A), spCurOk = Math.min(spCur, Math.max(0, A - spCarryUsed));
-    var spDed = spCarryUsed + spCurOk;
-    var B = Math.max(0, S - Lfor - spDed) * 0.3;
-    var esOk = Math.min(esCur, B);
-    var C = Math.max(0, S - Lfor - spDed - esOk) * 0.1;
-    var genCarryUsed = Math.min(genCarry, C), genCurOk = Math.min(genCur, Math.max(0, C - genCarryUsed));
-    r.don = { S: S, Lfor: Lfor, A: A, B: B, C: C,
+    var Lfor = Math.min(N('carryLoss'), pos(S) * lossRate);
+    var A = pos(S - Lfor) * 0.5;
+    var spCarryUsed = Math.min(spCarry, A), spCurOk = Math.min(spCur, pos(A - spCarryUsed)), spDed = spCarryUsed + spCurOk;
+    var B = pos(S - Lfor - spDed) * 0.3, esOk = Math.min(esCur, B);
+    var C = pos(S - Lfor - spDed - esOk) * genRate;
+    var genCarryUsed = Math.min(genCarry, C), genCurOk = Math.min(genCur, pos(C - genCarryUsed));
+    var D = { S: S, Lfor: Lfor, A: A, B: B, C: C, genRate: genRate,
       spCarryUsed: floor(spCarryUsed), spExcess: floor(spCur - spCurOk), esExcess: floor(esCur - esOk),
-      genCarryUsed: floor(genCarryUsed), genExcess: floor(genCur - genCurOk),
+      genCarryUsed: floor(genCarryUsed), genExcess: floor(genCur - genCurOk), spDed: floor(spDed),
       spCarryLeft: floor(spCarry - spCarryUsed), genCarryLeft: floor(genCarry - genCarryUsed),
       any: spCur + spCarry + genCur + genCarry + esCur > 0 };
-    var I = R + r.don.spExcess + r.don.esExcess + r.don.genExcess - r.don.spCarryUsed - r.don.genCarryUsed;
+    r.don = D;
+    var I = R + D.spExcess + D.esExcess + D.genExcess - D.spCarryUsed - D.genCarryUsed;
+    /* 3) 고유목적사업준비금 (비영리) */
+    r.reserve = 0;
+    if (entity === 'np' && N('npReserve') > 0) {
+      var intDiv = Math.min(N('npInt'), pos(I));
+      var lossLim = Math.min(N('carryLoss'), pos(I) * lossRate);
+      var other = I - intDiv - lossLim - D.spDed;
+      var rate = +o.npRate || 0.5;
+      var lim = other >= 0 ? intDiv + other * rate : pos(intDiv + other);
+      r.reserveLimit = floor(lim);
+      r.reserve = floor(Math.min(N('npReserve'), lim));
+      r.reserveExcess = N('npReserve') - r.reserve;
+      I -= r.reserve;
+    }
     r.income = I;
-    /* 3) 과세표준 = 각 사업연도 소득 − 이월결손금 − 비과세소득 − 소득공제 */
-    var rest = Math.max(0, I);
     r.lossNow = I < 0 ? -I : 0;
-    r.carryLoss = o.carryLoss || 0;
+    /* 4) 과세표준 — 이월결손금 → 비과세 → 소득공제 (조특법 해당분은 최저한세 대상) */
+    var rest = pos(I);
+    r.carryLoss = N('carryLoss');
     r.lossDed = floor(Math.min(r.carryLoss, rest * lossRate)); rest -= r.lossDed;
     r.lossLeft = r.carryLoss - r.lossDed;
-    r.nontax = Math.min(o.nontax || 0, rest); rest -= r.nontax;
-    r.incDed = Math.min(o.incDed || 0, rest); rest -= r.incDed;
+    r.ntLaw = Math.min(N('nontax'), rest); rest -= r.ntLaw;
+    r.ntCt = Math.min(N('nontaxCt'), rest); rest -= r.ntCt;
+    r.idLaw = Math.min(N('incDed'), rest); rest -= r.idLaw;
+    r.idCt = Math.min(N('incDedCt'), rest); rest -= r.idCt;
     var T = floor(rest);
-    r.base = T;
-    /* 4) 산출세액 */
-    r.tax = prog(T, r.br, m);
-    r.topRate = 0;
-    var Ta = T * 12 / m, prev = 0;
-    r.br.forEach(function (b) { if (Ta > prev) r.topRate = b[1]; prev = b[0]; });
-    /* 5) 세액감면 (감면세액 = 산출세액 × 감면대상소득 ÷ 과세표준 × 감면율) */
-    function share(x) { return T > 0 ? Math.min(1, Math.max(0, x || 0) / T) : 0; }
-    var st = 0, sp = 0;
-    if ((o.stIncome > 0 || o.spcIncome > 0) && !sme) r.notes.push('창업중소기업 감면·중소기업 특별세액감면은 중소기업만 받을 수 있어 0원으로 계산했습니다.');
-    if (sme) {
-      st = floor(r.tax * share(o.stIncome) * (o.stRate || 0));
-      sp = Math.min(1e8, floor(r.tax * share(o.spcIncome) * (o.spcRate || 0)));   /* 중소기업 특별세액감면 한도 1억원 */
-      if (st > 0 && sp > 0) {   /* 같은 사업연도에 두 감면은 중복 적용 불가(조특법 제127조) → 큰 쪽만 */
-        r.notes.push('창업중소기업 감면과 중소기업 특별세액감면은 함께 받을 수 없어 감면액이 큰 ' + (st >= sp ? '창업중소기업 감면' : '중소기업 특별세액감면') + '만 반영했습니다.');
-        if (st >= sp) sp = 0; else st = 0;
+    var ctLoss = Math.min(N('ctDed'), r.ded);          /* 조특법 손금산입·익금불산입 (최저한세 대상) */
+    var T0 = T + ctLoss + r.ntCt + r.idCt;              /* 감면 전 과세표준 */
+    r.T0 = T0;
+    /* 5) 최저한세 대상 / 제외 감면·공제 */
+    var stRate = +o.stRate || 0, spcRate = +o.spcRate || 0;
+    var stExempt = stRate >= 1;
+    r.spcCap = pos(1e8 - N('empDrop') * 5e6);
+    var smeOnly = N('stIncome') > 0 || N('spcIncome') > 0;
+    if (smeOnly && !sme) r.notes.push('창업중소기업 감면·중소기업 특별세액감면은 중소기업만 받을 수 있어 0원으로 계산했습니다.');
+    function reductions(Tx, taxx) {
+      if (!sme || !(Tx > 0)) return { st: 0, sp: 0 };
+      var sh = function (x) { return Math.min(1, pos(x) / Tx); };
+      var st = floor(taxx * sh(N('stIncome')) * stRate);
+      var sp = Math.min(r.spcCap, floor(taxx * sh(N('spcIncome')) * spcRate));
+      if (st > 0 && sp > 0) { if (st >= sp) sp = 0; else st = 0; }   /* 조특법 §127④ 중복 지원 배제 → 큰 쪽 */
+      return { st: st, sp: sp };
+    }
+    /* 세액공제 (조문 순: §10 R&D → §24 투자 → §29의7·8 고용 → §30의4 사회보험료 → 기타) */
+    var credits = [
+      { k: 'rnd', name: '연구·인력개발비 세액공제', v: N('crRnd'), min: !sme, nt: false },
+      { k: 'inv', name: '통합투자세액공제', v: N('crInv'), min: true, nt: true },
+      { k: 'emp', name: '통합고용·고용증대 세액공제', v: N('crEmp'), min: true, nt: true },
+      { k: 'soc', name: '중소기업 사회보험료 세액공제', v: sme ? N('crSoc') : 0, min: true, nt: false },
+      { k: 'oth', name: '그 밖의 공제·감면 (최저한세 대상)', v: N('crOthMin'), min: true, nt: !!o.crOthMinNt },
+      { k: 'othx', name: '그 밖의 공제·감면 (최저한세 제외)', v: N('crOthEx'), min: false, nt: !!o.crOthExNt }
+    ];
+    if (!sme && N('crSoc') > 0) r.notes.push('중소기업 사회보험료 세액공제는 중소기업만 받을 수 있어 0원으로 계산했습니다.');
+    /* 6) 최저한세 배제 계산 */
+    var minTax = MIN_FLAT[kind] != null ? floor(T0 * MIN_FLAT[kind]) : floor(prog(T0, MIN_LARGE, 12));
+    r.minRateText = MIN_FLAT[kind] != null ? Math.round(MIN_FLAT[kind] * 100) + '%' : '10~17%';
+    r.minTax = minTax;
+    function state(x1, x4) {   /* x1: 배제한 손금산입, x4: 배제한 소득공제·비과세 → 과세표준·산출세액·감면 */
+      var Tx = T + x1 + x4, taxx = prog(Tx, r.br, m), red = reductions(Tx, taxx);
+      return { T: Tx, tax: taxx, red: red };
+    }
+    function subjTotal(s, crEx, redEx) {
+      var c = credits.filter(function (x) { return x.min; }).reduce(function (a, x) { return a + x.v; }, 0) - crEx;
+      var rd = (stExempt ? 0 : s.red.st) + s.red.sp - redEx;
+      return c + rd;
+    }
+    var x1 = 0, x4 = 0, crEx = 0, redEx = 0, st = state(0, 0);
+    function after(s) { return s.tax - subjTotal(s, crEx, redEx); }   /* 음수 그대로 — 배제액 = 최저한세 − (산출세액 − 감면·공제) */
+    if (after(st) < minTax) {
+      /* ① 손금산입·익금불산입 */
+      if (ctLoss > 0) {
+        var lo = 0, hi = ctLoss;
+        if (after(state(hi, 0)) < minTax) lo = hi; else { while (hi - lo > 1) { var mid = Math.floor((lo + hi) / 2); if (after(state(mid, 0)) >= minTax) hi = mid; else lo = mid; } lo = hi; }
+        x1 = lo; st = state(x1, 0);
+      }
+      /* ② 세액공제 */
+      var cMin = credits.filter(function (x) { return x.min; }).reduce(function (a, x) { return a + x.v; }, 0);
+      if (after(st) < minTax) crEx = Math.min(cMin, minTax - after(st));
+      /* ③ 세액감면 */
+      var rMin = (stExempt ? 0 : st.red.st) + st.red.sp;
+      if (after(st) < minTax) redEx = Math.min(rMin, minTax - after(st));
+      /* ④ 소득공제·비과세 (조특법) */
+      var ctInc = r.ntCt + r.idCt;
+      if (after(st) < minTax && ctInc > 0) {
+        var lo4 = 0, hi4 = ctInc;
+        var f = function (x) { var s = state(x1, x); return s.tax - (cMin - crEx) - ((stExempt ? 0 : s.red.st) + s.red.sp - redEx); };
+        if (f(hi4) < minTax) lo4 = hi4; else { while (hi4 - lo4 > 1) { var md = Math.floor((lo4 + hi4) / 2); if (f(md) >= minTax) hi4 = md; else lo4 = md; } lo4 = hi4; }
+        x4 = lo4; st = state(x1, x4);
       }
     }
-    r.startup = st; r.special = sp;
-    /* 6) 최저한세 */
-    r.minCredit = o.minCredit || 0;
-    var subj = st + sp + r.minCredit;
-    r.minRateText = MIN_FLAT[kind] != null ? Math.round(MIN_FLAT[kind] * 100) + '%' : '10~17%';
-    r.minTax = MIN_FLAT[kind] != null ? floor(T * MIN_FLAT[kind]) : prog(T, MIN_LARGE, m);
-    var after = Math.max(0, r.tax - subj);
-    r.minExcl = after < r.minTax ? Math.min(subj, r.minTax - after) : 0;
-    r.subjApplied = subj - r.minExcl;
-    /* 7) 최저한세 적용 제외 공제 — 외국납부세액공제(한도: 산출세액 × 국외원천소득 ÷ 과세표준) 등 */
-    r.foreignLimit = floor(r.tax * share(o.foreignIncome));
-    r.foreign = Math.min(o.foreignPaid || 0, r.foreignLimit);
-    r.exCredit = o.exCredit || 0;
-    var reduce = r.subjApplied + r.foreign + r.exCredit;
-    r.taxAfter = Math.max(0, r.tax - reduce);
-    r.unused = Math.max(0, reduce - r.tax);
-    r.penalty = o.penalty || 0; r.addBack = o.addBack || 0;
-    r.total = r.taxAfter + r.penalty + r.addBack;   /* 총부담세액 */
-    r.prepaid = o.prepaid || 0;
-    r.pay = r.total - r.prepaid;   /* 차감 납부할 세액 (음수면 환급) */
-    /* 8) 분납 (가산세·감면분 추가납부세액 제외 금액이 1천만원 초과) */
-    var instBase = Math.max(0, r.pay - r.penalty - r.addBack);
+    r.minEx = { loss: x1, credit: crEx, red: redEx, income: x4 };
+    r.minExTotal = x1 + x4 > 0 || crEx + redEx > 0;
+    T = st.T; r.base = T; r.tax = st.tax;
+    var Ta = T * 12 / m, prev = 0; r.topRate = 0;
+    r.br.forEach(function (b) { if (Ta > prev) r.topRate = b[1]; prev = b[0]; });
+    /* 감면 배분: 배제는 §6 → §7 순 */
+    var stA = st.red.st, spA = st.red.sp, rx = redEx;
+    if (!stExempt) { var d1 = Math.min(stA, rx); stA -= d1; rx -= d1; }
+    var d2 = Math.min(spA, rx); spA -= d2;
+    r.startup = stA; r.special = spA; r.stExempt = stExempt;
+    if (st.red.st === 0 && st.red.sp === 0 && N('stIncome') > 0 && N('spcIncome') > 0 && sme) {}
+    if (sme && N('stIncome') > 0 && N('spcIncome') > 0) r.notes.push('창업중소기업 감면과 중소기업 특별세액감면은 같은 사업연도에 함께 받을 수 없어(조특법 §127) 감면액이 큰 쪽만 반영했습니다.');
+    /* 공제 배분: 배제는 조문 순 */
+    var cx = crEx;
+    credits.forEach(function (c) { c.applied = c.v; if (c.min && cx > 0) { var d = Math.min(c.v, cx); c.applied -= d; cx -= d; c.excluded = d; } });
+    r.credits = credits;
+    /* 7) 법인세법 공제: 외국납부세액(§57) · 재해손실(§58) */
+    var sh = function (x) { return T > 0 ? Math.min(1, pos(x) / T) : 0; };
+    r.foreignLimit = floor(r.tax * sh(N('foreignIncome')));
+    r.foreign = Math.min(N('foreignPaid'), r.foreignLimit);
+    r.foreignCarry = N('foreignPaid') - r.foreign;
+    /* 적용 순서(법 §59): 세액감면 → 이월공제 안 되는 공제(재해손실) → 이월공제 되는 공제(외국납부·조특법 공제, 조문 순) */
+    var room = r.tax;
+    var takeR = function (v) { var d = Math.min(pos(v), room); room -= d; return d; };
+    r.startupReq = r.startup; r.specialReq = r.special;
+    r.startup = takeR(r.startup); r.special = takeR(r.special);
+    r.redLost = r.startupReq + r.specialReq - r.startup - r.special;   /* 감면은 이월되지 않음 */
+    var others = r.foreign + credits.reduce(function (a, c) { return a + c.applied; }, 0);
+    r.disaster = 0;
+    var lostRatio = N('assetsBefore') > 0 ? N('assetsLost') / N('assetsBefore') : 0;
+    if (lostRatio >= 0.2) r.disaster = takeR(Math.min(N('assetsLost'), floor(pos(room - others) * Math.min(1, lostRatio))));
+    else if (N('assetsLost') > 0) r.notes.push('재해손실세액공제는 사업용 자산의 20% 이상을 잃은 경우에만 받을 수 있어 반영하지 않았습니다.');
+    r.lostRatio = lostRatio;
+    var fReq = r.foreign; r.foreign = takeR(fReq); r.foreignCarry += fReq - r.foreign;
+    r.unused = 0;
+    credits.forEach(function (c) { var want = c.applied; c.applied = takeR(want); c.carry = want - c.applied; r.unused += c.carry; });
+    r.taxAfter = room;   /* 각 사업연도 소득에 대한 결정세액 */
+    /* 8) 토지 등 양도소득 · 미환류소득 */
+    r.land = landTax(o.land);
+    r.unret = unreturned(o.unret, year);
+    r.penalty = N('penalty'); r.addBack = N('addBack');
+    /* 9) 지점세 (외국법인) */
+    r.branch = 0;
+    /* 10) 법인지방소득세 */
+    r.localForeign = r.foreign > 0 ? N('foreignPaid') : 0;   /* 외국납부세액공제를 받으면 외국법인세액을 과세표준에서 차감 */
+    r.localBase = pos(T - r.localForeign);
+    r.localForeignCarry = pos(r.localForeign - T);
+    r.localTax = prog(r.localBase, r.br, m, 0.1);
+    r.localPop = Math.min(r.localTax, N('popWorkers') * (sme ? 700000 : 450000));
+    r.localTotal = r.localTax - r.localPop + r.land.local + r.unret.local + floor(r.penalty * 0.1);
+    r.localPrepaid = N('localPrepaid');
+    r.localPay = r.localTotal - r.localPrepaid;
+    var lb = pos(r.localPay - floor(r.penalty * 0.1));
+    r.localInst = lb > 2e6 ? floor(lb / 2) : lb > 1e6 ? lb - 1e6 : 0;
+    if (entity === 'for' && o.branchOn) {
+      var bBase = I - (r.taxAfter + r.land.tax + r.penalty + r.addBack) - r.localTotal - N('capInc') - N('thinCap') + Math.min(N('capDec'), N('unRet'));
+      r.branchBase = floor(pos(bBase));
+      r.branchRate = o.branchRate != null && o.branchRate !== '' ? +o.branchRate : 0.2;
+      r.branch = floor(r.branchBase * r.branchRate);
+    }
+    r.total = r.taxAfter + r.land.tax + r.unret.tax + r.branch + r.penalty + r.addBack;   /* 총부담세액 */
+    r.prepaid = N('prepaid');
+    r.pay = r.total - r.prepaid;
+    var instBase = pos(r.pay - r.penalty - r.addBack);
     r.inst = instBase > 2e7 ? floor(instBase / 2) : instBase > 1e7 ? instBase - 1e7 : 0;
     r.instMonths = sme ? 2 : 1;
-    /* 9) 법인지방소득세 (같은 과세표준 × 법인세율의 1/10) */
-    r.local = prog(T, r.br, m, 0.1);
-    r.grand = Math.max(0, r.pay) + r.local;
+    /* 11) 농어촌특별세 — 실제 받은 조특법 감면세액 × 20% (손금산입·외국납부·§6·§7·§10·§30의4 제외) */
+    var ntCredit = credits.reduce(function (a, c) { return a + (c.nt ? c.applied : 0); }, 0);
+    var ntIncome = (r.ntCt + r.idCt - x4) > 0 ? prog(T + (r.ntCt + r.idCt - x4), r.br, m) - r.tax : 0;
+    r.ruralBase = ntCredit + ntIncome; r.ruralIncome = ntIncome;
+    r.rural = floor(r.ruralBase * 0.2);
+    r.grand = pos(r.pay) + r.rural + pos(r.localPay);
     r.eff = T > 0 ? r.taxAfter / T : 0;
-    r.effAll = I > 0 ? (r.taxAfter + r.local) / I : 0;
+    r.effAll = I > 0 ? (r.taxAfter + r.rural + r.localTax - r.localPop) / I : 0;
     return r;
   }
-  return { calc: calc, prog: prog, RATES: RATES, SMALL: SMALL, MIN_LARGE: MIN_LARGE, MIN_FLAT: MIN_FLAT };
+  /* 연결납세(§76의13~15, 령 §120의22) — rows: [{name, income, preLoss, ntDed, credit, prepaid, sme}] */
+  function group(o) {
+    var year = String(o.year || '2026'), m = Math.min(12, Math.max(1, Math.round(o.months || 12)));
+    var br = brackets(year, false), rows = (o.rows || []).filter(function (x) { return x.income || x.preLoss || x.ntDed || x.credit || x.prepaid; });
+    var res = { rows: rows, year: year, m: m, br: br };
+    rows.forEach(function (x) {
+      x.rate = x.sme ? 1 : 0.8;
+      x.inc = x.income || 0;
+      x.preDed = Math.min(x.preLoss || 0, pos(x.inc) * x.rate);   /* 연결 전 결손금은 자기 소득에서만 */
+    });
+    var posSum = rows.reduce(function (a, x) { return a + pos(x.inc); }, 0);
+    var negSum = rows.reduce(function (a, x) { return a + pos(-x.inc); }, 0);
+    res.income = posSum - negSum;
+    /* 당기 결손 법인의 결손금 → 소득 법인의 개별귀속소득 비율로 배분 */
+    rows.forEach(function (x) { x.lossIn = x.inc > 0 && posSum > 0 ? negSum * x.inc / posSum : 0; x.after = pos(x.inc) - Math.min(pos(x.inc), x.lossIn); });
+    /* 연결 이월결손금(연결 후 발생) — 한도: 개별귀속액 × 80%(중소 100%) − 연결 전 결손금 공제액 */
+    var cap = rows.map(function (x) { return pos(Math.min(x.after, pos(x.inc) * x.rate) - x.preDed); });
+    var capSum = cap.reduce(function (a, b) { return a + b; }, 0);
+    var gl = Math.min(o.groupLoss || 0, capSum);
+    rows.forEach(function (x, i) {
+      x.preDed = Math.min(x.preDed, x.after);
+      x.grpDed = capSum > 0 ? gl * cap[i] / capSum : 0;
+      x.base = pos(x.after - x.preDed - x.grpDed - (x.ntDed || 0));
+    });
+    res.base = floor(rows.reduce(function (a, x) { return a + x.base; }, 0));
+    res.tax = prog(res.base, br, m);
+    res.rate = res.base > 0 ? res.tax / res.base : 0;
+    rows.forEach(function (x) {
+      x.tax = floor(x.base * res.rate);
+      x.final = pos(x.tax - (x.credit || 0));
+      x.pay = x.final - (x.prepaid || 0);
+      x.settle = x.inc < 0 ? floor(-x.inc * res.rate) : 0;   /* 결손 법인이 받을 정산금(결손금 × 연결세율) */
+      x.local = floor(x.base * res.rate / 10);
+    });
+    res.groupLoss = floor(gl); res.groupLossLeft = (o.groupLoss || 0) - floor(gl);
+    res.final = rows.reduce(function (a, x) { return a + x.final; }, 0);
+    res.local = prog(res.base, br, m, 0.1);
+    return res;
+  }
+  return { calc: calc, group: group, prog: prog, landTax: landTax, unreturned: unreturned, RATES: RATES, SMALL: SMALL, MIN_LARGE: MIN_LARGE, MIN_FLAT: MIN_FLAT };
 })();
 
 /* [CORP-TAX] 화면 — 입력(data-fc="ct")·억/만/원 단위·버튼 토글은 [FC-UI] 공통 처리 */
@@ -11220,6 +11410,7 @@ var CT = (function () {
   function pct(v, d) { var t = (v * 100).toFixed(d == null ? 2 : d); if (t.indexOf('.') >= 0) t = t.replace(/\.?0+$/, ''); return t + '%'; }
   function seg(name) { var b = document.querySelector('.fc-seg[data-name="' + name + '"] .mode-btn.active'); return b ? b.getAttribute('data-v') : null; }
   function chk(id) { var e = $(id); return !!(e && e.checked); }
+  function show(id, on) { var e = $(id); if (e) e.style.display = on ? '' : 'none'; }
   function minus(n) { return n ? '−' + won(n) : '0원'; }
   function plus(n) { return n ? '+' + won(n) : '0원'; }
   function rows(list) {
@@ -11231,93 +11422,204 @@ var CT = (function () {
     var d = e.closest('.inc-sec'); if (d) d.classList.toggle('has-v', !!txt);
   }
   var KIND = { sme: '중소기업', grad3: '중소기업 졸업 후 1~3년차', grad5: '중소기업 졸업 후 4~5년차', large: '일반기업' };
-  function brText(br, small) {
+  var KIND_S = { sme: '중소', grad3: '졸업 1~3년', grad5: '졸업 4~5년', large: '일반' }, ENT_S = { np: '비영리', 'for': '외국법인' };
+  function yShort(y) { return y === '2026' ? '2026년~' : y === '2025' ? '2025년' : '2023~24년'; }
+  var ENT = { dom: '내국 영리법인', np: '비영리법인', 'for': '외국법인 국내사업장' };
+  var LAND = { 0.4: '미등기 토지 등 (40%)', 0.2: '주택·별장·입주권·분양권 (20%)', 0.1: '비사업용 토지 (10%)' };
+  function brText(br) {
     var prev = 0;
     return br.map(function (b) {
       var lo = prev, hi = b[0]; prev = hi;
-      var label = hi === Infinity ? eok(lo) + ' 초과' : (lo ? eok(lo) + ' 초과 ~ ' : '') + eok(hi) + (lo ? '' : ' 이하');
-      return [label, b[1]];
+      return [hi === Infinity ? eok(lo) + ' 초과' : (lo ? eok(lo) + ' 초과 ~ ' : '') + eok(hi) + (lo ? '' : ' 이하'), b[1]];
     });
   }
+  function yearText(y) { return y === '2026' ? '2026년 이후 개시 사업연도' : y === '2025' ? '2025년 개시 사업연도' : '2023~2024년 개시 사업연도'; }
+  function rateTable(br, base, m, small, y) {
+    var Ta = base * 12 / m, prev = 0;
+    setT('ct-rate-title', '법인세율 — ' + yearText(y) + (small ? ' · 소규모 성실신고확인대상 법인' : ''));
+    setH('ct-rates', brText(br).map(function (b, i) {
+      var lo = prev; prev = br[i][0];
+      return '<tr' + (Ta > lo && base > 0 ? ' class="fc-hl"' : '') + '><td>' + b[0] + '</td><td>' + pct(b[1], 0) + '</td><td>' + pct(b[1] / 10, 1) + '</td></tr>';
+    }).join(''));
+  }
+  function notes(list) { setH('ct-notes', list.map(function (t) { return '<p class="fc-note" style="margin:8px 0 0;">※ ' + t + '</p>'; }).join('')); }
+
+  /* ── 연결납세 ── */
+  function renderGroup() {
+    var y = $('ct-year').value, m = +$('ct-months').value, list = [];
+    for (var i = 1; i <= 5; i++) {
+      list.push({ no: i, income: ($('ct-g' + i + '-sign').value === 'loss' ? -1 : 1) * amt('ct-g' + i + '-inc'), preLoss: amt('ct-g' + i + '-pre'),
+        ntDed: amt('ct-g' + i + '-nt'), credit: amt('ct-g' + i + '-cr'), prepaid: amt('ct-g' + i + '-pp'), sme: chk('ct-g' + i + '-sme') });
+    }
+    var g = CT.group({ year: y, months: m, rows: list, groupLoss: amt('ct-gloss') });
+    var pay = g.rows.reduce(function (a, x) { return a + x.pay; }, 0), settle = g.rows.reduce(function (a, x) { return a + x.settle; }, 0);
+    var local = g.rows.reduce(function (a, x) { return a + x.local; }, 0);
+    setT('ct-label', '연결법인 전체 — 납부할 법인세 + 법인지방소득세');
+    setT('ct-pay', won(Math.max(0, pay) + local));
+    setT('ct-pay-sub', g.base > 0 ? '연결 법인세 ' + won(pay) + ' (모회사가 일괄 신고·납부) + 법인지방소득세 ' + won(local) + ' (각 법인이 따로 신고) · ' + yearText(y) : '연결과세표준이 0원이라 낼 법인세가 없습니다');
+    setT('ct-k1', won(g.income)); setT('ct-k2', won(g.base)); setT('ct-k3', g.base > 0 ? pct(g.rate) : '—');
+    sum('base', yShort(y) + ' · ' + m + '개월 · 연결 ' + g.rows.length + '개 법인');
+    sum('grp', g.rows.length ? '연결소득 ' + eok(g.income) : '');
+    var head = '<tr class="fc-total"><td>법인</td><td style="text-align:right;">개별귀속 과세표준 · 법인세 · 납부(환급)</td></tr>';
+    var per = g.rows.map(function (x) {
+      return ['<b>' + (x.no === 1 ? '모회사' : '자회사 ' + (x.no - 1)) + '</b> <small>' + (x.inc < 0 ? '결손 ' + won(-x.inc) + ' → 정산금 ' + won(x.settle) + ' 받음' : '소득 ' + won(x.inc) + (x.lossIn ? ' − 결손 배분 ' + won(Math.round(x.lossIn)) : '') + (x.preDed ? ' − 연결 전 결손금 ' + won(Math.round(x.preDed)) : '') + (x.grpDed ? ' − 연결 이월결손금 ' + won(Math.round(x.grpDed)) : '') + (x.ntDed ? ' − 비과세·소득공제 ' + won(x.ntDed) : '')) + ' · 지방소득세 ' + won(x.local) + '</small>',
+        won(Math.round(x.base)) + ' · ' + won(x.tax) + (x.credit ? ' − 공제 ' + won(Math.min(x.credit, x.tax)) : '') + ' → <b>' + won(x.pay) + '</b>'];
+    });
+    setH('ct-table', head + rows([
+      ['소득 법인의 소득 합계', won(g.rows.reduce(function (a, x) { return a + Math.max(0, x.inc); }, 0))],
+      ['결손 법인의 결손금 합계 <small>(소득 법인에 소득 비율로 배분)</small>', minus(g.rows.reduce(function (a, x) { return a + Math.max(0, -x.inc); }, 0))],
+      ['<b>연결소득금액</b>', won(g.income), 'fc-total'],
+      ['연결 전 이월결손금 <small>(그 법인 소득에서만, 80% · 중소 100%)</small>', minus(Math.round(g.rows.reduce(function (a, x) { return a + x.preDed; }, 0)))],
+      ['연결 이월결손금' + (g.groupLossLeft > 0 ? ' <small>(남은 ' + won(g.groupLossLeft) + ')</small>' : ''), minus(g.groupLoss)],
+      ['비과세·소득공제', minus(g.rows.reduce(function (a, x) { return a + (x.ntDed || 0); }, 0))],
+      ['<b>연결과세표준</b>', won(g.base), 'fc-total'],
+      ['<b>연결산출세액</b> <small>(연결세율 ' + (g.base > 0 ? pct(g.rate, 4) : '—') + ')</small>', won(g.tax), 'fc-total']
+    ].concat(per).concat([
+      ['<b>연결법인 납부 합계</b>' + (settle ? ' <small>(결손 법인에 줄 정산금 합계 ' + won(settle) + ')</small>' : ''), won(pay), 'fc-hl'],
+      ['법인지방소득세 합계 <small>(개별귀속 과세표준 × 연결세율의 1/10)</small>', won(local)]
+    ])));
+    rateTable(g.br, g.base, m, false, y);
+    notes(['연결 모회사가 연결과세표준·연결산출세액을 일괄 신고·납부하고, 각 법인의 감면·공제·기납부세액은 법인별로 빼서 계산합니다. 법인별 최저한세·감면 한도는 각 법인 감면·공제 칸에 반영한 금액으로 넣으세요.']);
+  }
+
   function render() {
+    var mode = seg('ct-mode') || 'one';
+    var entity = $('ct-entity').value, group = mode === 'group';
+    ['ct-sec-adj', 'ct-sec-don', 'ct-sec-ded', 'ct-sec-red', 'ct-sec-cr', 'ct-sec-land', 'ct-sec-unret', 'ct-sec-local', 'ct-sec-etc'].forEach(function (id) { show(id, !group); });
+    show('ct-sec-np', !group && entity === 'np'); show('ct-sec-branch', !group && entity === 'for'); show('ct-sec-grp', group);
+    show('ct-entity-f', !group); show('ct-kind-row', !group); show('ct-small-f', !group && entity !== 'for'); show('ct-social-f', !group && entity === 'dom');
+    if (group) return renderGroup();
+    var land = [
+      { type: 'house', sale: amt('ct-l-house-s'), book: amt('ct-l-house-b') }, { type: 'right', sale: amt('ct-l-right-s'), book: amt('ct-l-right-b') },
+      { type: 'nonbiz', sale: amt('ct-l-nonbiz-s'), book: amt('ct-l-nonbiz-b') }, { type: 'unreg', sale: amt('ct-l-unreg-s'), book: amt('ct-l-unreg-b') }
+    ];
     var o = {
-      year: $('ct-year').value, months: +$('ct-months').value, kind: $('ct-kind').value, small: chk('ct-small'),
-      ni: (seg('ct-sign') === 'loss' ? -1 : 1) * amt('ct-ni'), addIn: amt('ct-add'), dedIn: amt('ct-ded'), nonDesig: amt('ct-nondesig'),
+      year: $('ct-year').value, months: +$('ct-months').value, kind: $('ct-kind').value, small: chk('ct-small'), entity: entity, social: entity === 'dom' && chk('ct-social'),
+      ni: (seg('ct-sign') === 'loss' ? -1 : 1) * amt('ct-ni'), addIn: amt('ct-add'), dedIn: amt('ct-ded'), ctDed: amt('ct-ctded'), nonDesig: amt('ct-nondesig'),
+      npSep: amt('ct-np-sep'), npInt: amt('ct-np-int'), npRate: +$('ct-np-rate').value, npReserve: amt('ct-np-res'),
       spCur: amt('ct-spcur'), spCarry: amt('ct-spcarry'), genCur: amt('ct-gencur'), genCarry: amt('ct-gencarry'), esCur: amt('ct-escur'),
-      carryLoss: amt('ct-loss'), nontax: amt('ct-nontax'), incDed: amt('ct-incded'),
-      stIncome: amt('ct-st-inc'), stRate: +$('ct-st-rate').value, spcIncome: amt('ct-spc-inc'), spcRate: +$('ct-spc-rate').value,
-      minCredit: amt('ct-mincr'), exCredit: amt('ct-excr'), foreignPaid: amt('ct-fpaid'), foreignIncome: amt('ct-finc'),
+      carryLoss: amt('ct-loss'), nontax: amt('ct-nontax'), nontaxCt: amt('ct-nontax-ct'), incDed: amt('ct-incded'), incDedCt: amt('ct-incded-ct'),
+      stIncome: amt('ct-st-inc'), stRate: +$('ct-st-rate').value, spcIncome: amt('ct-spc-inc'), spcRate: +$('ct-spc-rate').value, empDrop: numOf($('ct-empdrop')),
+      crRnd: amt('ct-cr-rnd'), crInv: amt('ct-cr-inv'), crEmp: amt('ct-cr-emp'), crSoc: amt('ct-cr-soc'),
+      crOthMin: amt('ct-cr-othmin'), crOthMinNt: chk('ct-cr-othmin-nt'), crOthEx: amt('ct-cr-othex'), crOthExNt: chk('ct-cr-othex-nt'),
+      foreignPaid: amt('ct-fpaid'), foreignIncome: amt('ct-finc'), assetsLost: amt('ct-dis-lost'), assetsBefore: amt('ct-dis-before'),
+      land: land,
+      unret: { on: chk('ct-ur-on'), method: seg('ct-ur-method') || 'A', corpIncome: amt('ct-ur-inc'), invest: amt('ct-ur-inv'), wage: amt('ct-ur-wage'),
+        coop: amt('ct-ur-coop'), dividend: amt('ct-ur-div'), reserve: amt('ct-ur-res'), carryExcess: amt('ct-ur-carry') },
+      branchOn: entity === 'for' && chk('ct-br-on'), branchRate: +$('ct-br-rate').value, capInc: amt('ct-br-inc'), capDec: amt('ct-br-dec'), unRet: amt('ct-br-unret'), thinCap: amt('ct-br-thin'),
+      popWorkers: numOf($('ct-pop')), localPrepaid: amt('ct-lprepaid'),
       penalty: amt('ct-penalty'), addBack: amt('ct-addback'), prepaid: amt('ct-prepaid')
     };
-    var r = CT.calc(o), m = r.m, D = r.don;
-    var yearTxt = r.year === '2026' ? '2026년 이후 개시 사업연도' : r.year === '2025' ? '2025년 개시 사업연도' : '2023~2024년 개시 사업연도';
+    show('ct-ur-inv-f', o.unret.method === 'A'); show('ct-ur-div-f', o.year === '2026'); show('ct-ur-box', o.unret.on); show('ct-br-box', o.branchOn);
+    var r = CT.calc(o), m = r.m, D = r.don, yt = yearText(r.year);
     /* 접은 항목 요약 */
-    sum('base', yearTxt.replace(' 사업연도', '') + ' · ' + m + '개월 · ' + KIND[r.kind] + (r.small ? ' · 성실신고 소규모' : ''));
+    sum('base', yShort(r.year) + ' · ' + m + '개월 · ' + (entity === 'dom' ? '' : ENT_S[entity] + ' · ') + KIND_S[r.kind] + (r.small ? ' · 소규모' : '') + (o.social ? ' · 사회적기업' : ''));
     sum('adj', '차가감소득 ' + eok(r.pre));
-    sum('don', D.any ? (D.spExcess + D.esExcess + D.genExcess ? '한도초과 ' + eok(D.spExcess + D.esExcess + D.genExcess) : '한도 내') : '');
-    sum('ded', r.lossDed + r.nontax + r.incDed ? '공제 ' + eok(r.lossDed + r.nontax + r.incDed) : '');
-    sum('red', r.startup + r.special ? '감면 ' + won(r.startup + r.special) : '');
-    sum('cr', r.minCredit + r.foreign + r.exCredit ? '공제 ' + won(r.minCredit + r.foreign + r.exCredit) : '');
+    sum('np', r.reserve ? '준비금 ' + eok(r.reserve) : o.npSep ? '분리과세 ' + eok(o.npSep) : '');
+    var dx = D.spExcess + D.esExcess + D.genExcess;
+    sum('don', D.any ? (dx ? '한도초과 ' + eok(dx) : '한도 내') : '');
+    var dd = r.lossDed + r.ntLaw + r.ntCt + r.idLaw + r.idCt;
+    sum('ded', dd ? '공제 ' + eok(dd) : '');
+    sum('red', r.startup + r.special ? '감면 ' + won(r.startup + r.special) : (o.stIncome || o.spcIncome ? '감면 0원' : ''));
+    var crSum = r.credits.reduce(function (a, c) { return a + c.applied; }, 0) + r.foreign + r.disaster;
+    sum('cr', crSum ? '공제 ' + won(crSum) : '');
+    sum('land', r.land.tax ? '추가 ' + won(r.land.tax) : r.land.gain ? '차손 상계 0원' : '');
+    sum('unret', o.unret.on ? '법인세 ' + won(r.unret.tax) : '');
+    sum('branch', o.branchOn ? '지점세 ' + won(r.branch) : '');
+    sum('local', o.popWorkers || o.localPrepaid ? '공제·기납부 ' + won(r.localPop + o.localPrepaid) : '');
     sum('etc', r.penalty + r.addBack + r.prepaid ? '기납부 ' + eok(r.prepaid) + (r.penalty + r.addBack ? ' · 가산 ' + eok(r.penalty + r.addBack) : '') : '');
     /* 결과 */
     var refund = r.pay < 0;
-    setT('ct-label', refund ? '돌려받을 법인세 (지방소득세는 별도)' : '납부할 법인세 + 법인지방소득세');
-    setT('ct-pay', refund ? won(-r.pay) : won(r.grand));
-    setT('ct-pay-sub', r.base > 0
-      ? (refund ? '이미 낸 세금(' + won(r.prepaid) + ')이 총부담세액(' + won(r.total) + ')보다 많습니다 · 법인지방소득세 ' + won(r.local) + '은 별도 납부'
-        : '법인세 ' + won(Math.max(0, r.pay)) + ' + 법인지방소득세 ' + won(r.local) + ' · ' + yearTxt + (m < 12 ? ' (' + m + '개월)' : ''))
+    setT('ct-label', '납부할 법인세 + 농어촌특별세 + 법인지방소득세');
+    setT('ct-pay', won(r.grand));
+    setT('ct-pay-sub', r.total > 0 || r.localTotal > 0
+      ? (refund ? '법인세 환급 ' + won(-r.pay) + ' (따로 돌려받음) · ' : '법인세 ' + won(Math.max(0, r.pay)) + ' + ') + (r.rural ? '농어촌특별세 ' + won(r.rural) + ' + ' : '') + '법인지방소득세 ' + won(Math.max(0, r.localPay)) + (r.localPay < 0 ? ' (지방소득세 환급 ' + won(-r.localPay) + ')' : '') + ' · ' + yt + (m < 12 ? ' (' + m + '개월)' : '')
       : r.income < 0 ? '이번 사업연도는 결손금 ' + won(r.lossNow) + '이 생겨 낼 법인세가 없습니다 — 다음 사업연도부터 15년간 이월결손금으로 공제'
       : '과세표준이 0원이라 낼 법인세가 없습니다');
     setT('ct-k1', won(r.income)); setT('ct-k2', won(r.base));
     setT('ct-k3', r.base > 0 ? pct(r.eff) : '—');
     var don = D.any ? [
       ['<b>기부금 한도 계산</b> <small>기준소득금액 ' + won(Math.floor(D.S)) + (D.Lfor ? ' − 이월결손금 ' + won(Math.floor(D.Lfor)) : '') + '</small>', ''],
-      ['특례기부금 한도 <small>(50%) ' + won(Math.floor(D.A)) + '</small>', D.spCarryUsed ? '이월분 손금산입 ' + minus(D.spCarryUsed) : '', ''],
+      ['특례기부금 한도 <small>(50%) ' + won(Math.floor(D.A)) + '</small>', D.spCarryUsed ? '이월분 손금산입 ' + minus(D.spCarryUsed) : ''],
       D.spExcess ? ['특례기부금 한도초과 <small>(손금불산입 · 10년 이월)</small>', plus(D.spExcess)] : null,
       o.esCur ? ['우리사주조합기부금 한도 <small>(30%) ' + won(Math.floor(D.B)) + '</small>', D.esExcess ? plus(D.esExcess) + ' 한도초과' : '한도 내'] : null,
-      ['일반기부금 한도 <small>(10%) ' + won(Math.floor(D.C)) + '</small>', D.genCarryUsed ? '이월분 손금산입 ' + minus(D.genCarryUsed) : ''],
+      ['일반기부금 한도 <small>(' + pct(D.genRate, 0) + (o.social ? ' · 사회적기업' : '') + ') ' + won(Math.floor(D.C)) + '</small>', D.genCarryUsed ? '이월분 손금산입 ' + minus(D.genCarryUsed) : ''],
       D.genExcess ? ['일반기부금 한도초과 <small>(손금불산입 · 10년 이월)</small>', plus(D.genExcess)] : null
+    ] : [];
+    var np = entity === 'np' && (o.npReserve || o.npSep) ? [
+      o.npReserve ? ['고유목적사업준비금 손금산입 <small>(한도 ' + won(r.reserveLimit) + (r.reserveExcess ? ' · 한도초과 ' + won(r.reserveExcess) + ' 손금불산입' : '') + ')</small>', minus(r.reserve)] : null
+    ] : [];
+    var crRows = r.credits.filter(function (c) { return c.v; }).map(function (c) {
+      var ex = (c.excluded ? ' · 최저한세로 ' + won(c.excluded) + ' 배제' : '') + (c.carry ? ' · 세액 부족 ' + won(c.carry) + ' 이월' : '');
+      return [c.name + ' <small>(' + (c.min ? '최저한세 대상' : '최저한세 제외') + (c.nt ? ' · 농특세 과세' : '') + ex + ')</small>', minus(c.applied)];
+    });
+    var mx = r.minEx, minRows = r.minExTotal ? [
+      ['<b>최저한세로 적용 배제</b> <small>(령 §126⑤ 순서: 손금산입 → 세액공제 → 세액감면 → 소득공제·비과세)</small>', ''],
+      mx.loss ? ['조특법 손금산입 배제 → 과세표준에 다시 더함', plus(mx.loss)] : null,
+      mx.credit ? ['세액공제 배제 <small>(이월 가능한 공제는 다음 사업연도로)</small>', won(mx.credit)] : null,
+      mx.red ? ['세액감면 배제 <small>(소멸)</small>', won(mx.red)] : null,
+      mx.income ? ['조특법 비과세·소득공제 배제 → 과세표준에 다시 더함', plus(mx.income)] : null
+    ] : [];
+    var landRows = r.land.rows.length || r.land.gain ? [['<b>토지 등 양도소득에 대한 법인세</b> <small>(§55의2 · 각 사업연도 소득과 별도 추가)</small>', '']].concat(r.land.rows.map(function (x) {
+      return [LAND[x[0]] + ' <small>양도소득 ' + won(x[1]) + '</small>', plus(x[2])];
+    })).concat(r.land.rows.length ? [] : [['양도차익이 차손과 상계되어 과세할 소득 없음', '0원']]) : [];
+    var U = r.unret;
+    var urRows = o.unret.on ? [
+      ['<b>미환류소득에 대한 법인세</b> <small>(조특법 §100의32 · ' + (o.unret.method === 'B' ? '투자 제외' : '투자 포함') + ' ' + pct(U.ratio, 0) + ')</small>', ''],
+      ['기업소득 <small>(한도 3,000억원)</small> × ' + pct(U.ratio, 0) + ' − 환류액', U.unret ? won(U.unret) + ' 미환류' : won(U.over) + ' 초과환류 (2년 이월)'],
+      U.unret ? ['과세 대상 <small>(차기환류적립금·이월 초과환류액 차감 후)</small> × 20%', plus(U.tax)] : null
+    ] : [];
+    var brRows = o.branchOn ? [
+      ['<b>지점세</b> <small>(§96 · 과세표준 ' + won(r.branchBase) + ' × ' + pct(r.branchRate, 1) + ')</small>', plus(r.branch)]
     ] : [];
     setH('ct-table', rows([
       ['결산서상 당기순' + (r.ni < 0 ? '손실' : '이익'), won(r.ni)],
       ['익금산입·손금불산입' + (o.nonDesig ? ' <small>(비지정기부금 ' + won(o.nonDesig) + ' 포함)</small>' : ''), plus(r.add)],
-      ['손금산입·익금불산입', minus(r.ded)],
+      ['손금산입·익금불산입' + (o.ctDed ? ' <small>(조특법 ' + won(Math.min(o.ctDed, r.ded)) + ' 포함)</small>' : ''), minus(r.ded)],
+      r.npSep ? ['분리과세 이자소득 <small>(원천징수로 끝, 과세표준에서 제외)</small>', minus(r.npSep)] : null,
       ['차가감소득금액', won(r.pre), 'fc-total']
-    ].concat(don).concat([
+    ].concat(don).concat(np).concat([
       ['<b>각 사업연도 소득금액</b>', won(r.income), 'fc-total'],
       ['이월결손금 <small>(한도: 소득의 ' + (r.lossRate * 100) + '%' + (r.lossLeft > 0 ? ' · 남은 ' + won(r.lossLeft) : '') + ')</small>', minus(r.lossDed)],
-      ['비과세소득', minus(r.nontax)],
-      ['소득공제', minus(r.incDed)],
+      r.ntLaw ? ['비과세소득 (법인세법)', minus(r.ntLaw)] : null,
+      r.ntCt ? ['비과세소득 (조특법 · 최저한세 대상)', minus(r.ntCt)] : null,
+      r.idLaw ? ['소득공제 (법인세법)', minus(r.idLaw)] : null,
+      r.idCt ? ['소득공제 (조특법 · 최저한세 대상)', minus(r.idCt)] : null,
+      mx.loss + mx.income ? ['최저한세로 배제되어 다시 더한 금액', plus(mx.loss + mx.income)] : null,
       ['<b>과세표준</b>', won(r.base), 'fc-total'],
       ['세율' + (m < 12 ? ' <small>(과세표준 × 12/' + m + ' 로 연 환산 후 × ' + m + '/12)</small>' : ''), r.base > 0 ? '최고 ' + pct(r.topRate, 0) : '—'],
       ['<b>산출세액</b>', won(r.tax), 'fc-total'],
-      r.startup ? ['창업중소기업 등 세액감면', minus(r.startup)] : null,
-      r.special ? ['중소기업 특별세액감면', minus(r.special)] : null,
-      r.minCredit ? ['세액공제 (최저한세 대상)', minus(r.minCredit)] : null,
-      ['최저한세 <small>(과세표준 × ' + r.minRateText + ')</small>', won(r.minTax)],
-      r.minExcl ? ['최저한세로 줄어든 감면·공제 <small>(이월 가능한 공제는 다음 사업연도로)</small>', plus(r.minExcl), 'fc-red'] : null,
-      r.foreign ? ['외국납부세액공제 <small>(한도 ' + won(r.foreignLimit) + ')</small>', minus(r.foreign)] : (o.foreignPaid ? ['외국납부세액공제 <small>(국외원천소득을 넣어야 한도 계산)</small>', '0원'] : null),
-      r.exCredit ? ['세액공제 (최저한세 적용 제외)', minus(r.exCredit)] : null,
-      r.unused ? ['산출세액을 넘어 공제받지 못한 금액', won(r.unused)] : null,
+      ['최저한세 <small>(감면 전 과세표준 ' + won(r.T0) + ' × ' + r.minRateText + ')</small>', won(r.minTax)]
+    ]).concat(minRows).concat([
+      r.startup || r.startupReq ? ['창업중소기업 등 세액감면' + (r.stExempt ? ' <small>(100% · 최저한세 제외)</small>' : ''), minus(r.startup)] : null,
+      r.special || r.specialReq ? ['중소기업 특별세액감면 <small>(한도 ' + won(r.spcCap) + ')</small>', minus(r.special)] : null,
+      r.disaster ? ['재해손실세액공제 <small>(상실비율 ' + pct(r.lostRatio, 1) + ')</small>', minus(r.disaster)] : null,
+      r.foreign ? ['외국납부세액공제 <small>(한도 ' + won(r.foreignLimit) + (r.foreignCarry ? ' · 이월 ' + won(r.foreignCarry) : '') + ')</small>', minus(r.foreign)] : (o.foreignPaid ? ['외국납부세액공제 <small>(국외원천소득을 넣어야 한도 계산)</small>', '0원'] : null)
+    ]).concat(crRows).concat([
+      ['<b>각 사업연도 소득에 대한 결정세액</b>', won(r.taxAfter), 'fc-total']
+    ]).concat(landRows).concat(urRows).concat(brRows).concat([
       r.penalty ? ['가산세', plus(r.penalty)] : null,
       r.addBack ? ['감면분 추가납부세액', plus(r.addBack)] : null,
       ['<b>총부담세액</b> <small>(실효세율 ' + (r.base > 0 ? pct(r.eff) : '—') + ')</small>', won(r.total), 'fc-total'],
       ['기납부세액 <small>(중간예납·원천징수)</small>', minus(r.prepaid)],
-      ['<b>' + (r.pay < 0 ? '환급받을 세액' : '차감 납부할 법인세') + '</b>', won(Math.abs(r.pay)), 'fc-hl'],
+      ['<b>' + (r.pay < 0 ? '환급받을 법인세' : '차감 납부할 법인세') + '</b>', won(Math.abs(r.pay)), 'fc-hl'],
       r.inst ? ['분납 가능 금액 <small>(납부기한 후 ' + r.instMonths + '개월 안에)</small>', won(r.inst)] : null,
       r.inst ? ['신고 때 먼저 낼 금액', won(r.pay - r.inst)] : null,
-      ['법인지방소득세 <small>(과세표준 × 법인세율의 1/10, 공제·감면 전)</small>', won(r.local)],
-      ['법인세 + 지방소득세 부담 <small>(각 사업연도 소득 대비 ' + (r.income > 0 ? pct(r.effAll) : '—') + ')</small>', won(r.taxAfter + r.local), 'fc-hl']
+      ['<b>농어촌특별세</b> <small>(조특법 감면세액 ' + won(r.ruralBase) + ' × 20%' + (r.ruralIncome ? ' · 비과세·소득공제분 ' + won(r.ruralIncome) + ' 포함' : '') + ')</small>', won(r.rural), r.rural ? 'fc-hl' : ''],
+      ['<b>법인지방소득세</b>', '', 'fc-total'],
+      ['과세표준' + (r.localForeign ? ' <small>(법인세 과세표준 − 외국법인세액 ' + won(r.localForeign) + ')</small>' : ' <small>(법인세 과세표준과 같음)</small>'), won(r.localBase)],
+      ['산출세액 <small>(법인세율의 1/10' + (m < 12 ? ' · 연 환산' : '') + ' · 법인세 감면·공제는 연동 안 됨)</small>', won(r.localTax)],
+      r.localPop ? ['인구감소지역 고용 세액공제 <small>(지특법 §167의5 · ' + o.popWorkers + '명)</small>', minus(r.localPop)] : null,
+      r.land.local ? ['토지 등 양도소득분', plus(r.land.local)] : null,
+      r.unret.local ? ['미환류소득분 <small>(법인세의 10%)</small>', plus(r.unret.local)] : null,
+      r.penalty ? ['가산세 <small>(법인세 가산세의 10%)</small>', plus(Math.floor(r.penalty * 0.1))] : null,
+      r.localPrepaid ? ['특별징수세액', minus(r.localPrepaid)] : null,
+      ['<b>' + (r.localPay < 0 ? '환급받을 법인지방소득세' : '납부할 법인지방소득세') + '</b>', won(Math.abs(r.localPay)), 'fc-hl'],
+      r.localInst ? ['지방소득세 분납 가능 금액 <small>(1개월 · 중소기업 2개월)</small>', won(r.localInst)] : null,
+      ['법인세 + 농특세 + 지방소득세 부담 <small>(각 사업연도 소득 대비 ' + (r.income > 0 ? pct(r.effAll) : '—') + ')</small>', won(r.taxAfter + r.rural + r.localTax - r.localPop), 'fc-total']
     ])));
-    /* 세율표 (선택한 사업연도·법인 유형) */
-    var Ta = r.base * 12 / m, prev = 0;
-    setT('ct-rate-title', '법인세율 — ' + yearTxt + (r.small ? ' · 소규모 성실신고확인대상 법인' : ''));
-    setH('ct-rates', brText(r.br).map(function (b, i) {
-      var lo = prev; prev = r.br[i][0];
-      var on = Ta > lo && r.base > 0;
-      return '<tr' + (on ? ' class="fc-hl"' : '') + '><td>' + b[0] + '</td><td>' + pct(b[1], 0) + '</td><td>' + pct(b[1] / 10, 1) + '</td></tr>';
-    }).join(''));
-    setH('ct-notes', r.notes.map(function (t) { return '<p class="fc-note" style="margin:8px 0 0;">※ ' + t + '</p>'; }).join(''));
+    rateTable(r.br, r.base, m, r.small, r.year);
+    notes(r.notes);
   }
   window.fcRegister('ct', render, 'corptax');
 })();
