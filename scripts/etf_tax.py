@@ -13,7 +13,8 @@ ETF 1좌당 과세표준액 — 운용사별 공개 자료 (scripts/update_etfdi
   삼성액티브(KoAct)·그 밖 · 위에서 못 받은 종목 ... FunETF etfdividend (taxDividAmt)      ISIN (종목코드로 계산)
   KB(RISE) .......... kbam.co.kr /api/products/etfs/{상품코드}/dividend (tax_standard_amount)  종목명 → 상품코드 (/api/products/etfs/overview)
                       해외 접속 차단 → 한국 PC 수집기(scripts/kr_agent.ps1)가 받아 둔 것을 카운터 Worker(/kr)에서 읽음
-    ※ HANARO·1Q·DAISHIN·FOCUS 는 운용사 사이트·FunETF 어디에도 과세표준이 없어, FunETF 에 올라오는 대로 자동 반영
+  대신(DAISHIN) ..... asset.daishin.com 분배금 팝업 MD_divide.php (주당과세표준액)      상세 페이지의 [종목코드:A……] · 한국 PC 수집기 경유
+    ※ HANARO·1Q·FOCUS 는 운용사 사이트(한국 IP 로도 확인)·FunETF 어디에도 과세표준이 없어, FunETF 에 올라오는 대로 자동 반영
 반환: {종목코드: [[기준일 'YYYY-MM-DD', 분배금, 주당 과세표준액], ...]}  · 실패한 종목은 빠짐 (호출한 쪽이 직전 값 유지)
 """
 import json, re, ssl, sys, time, urllib.parse, urllib.request, concurrent.futures as cf
@@ -282,12 +283,13 @@ def funetf(tickers):
 
 
 # ───── KB RISE (한국 PC 수집기가 받아 둔 응답 · Worker /kr) ─────
-def _kr(url, relay):
+def _kr(url, relay, as_json=True):
     """Worker 에 저장된 응답 (없으면 None — 요청 표시만 남기고 다음 실행 때 읽음)"""
     q = urllib.request.Request(relay.rstrip('/') + '/kr?u=' + urllib.parse.quote(url, safe=''), headers={'User-Agent': UA})
     with urllib.request.urlopen(q, timeout=30) as r:
         if r.status != 200 or r.headers.get('X-KR-Status') != '200': return None
-        return json.loads(r.read().decode('utf-8'))
+        t = r.read().decode('utf-8')
+        return json.loads(t) if as_json else t
 
 
 def rise(tickers, names, relay, cache):
@@ -317,7 +319,35 @@ def rise(tickers, names, relay, cache):
     return _pool(one, tickers, 4)
 
 
-# 과세표준을 찾아보는 브랜드 (HANARO·1Q·DAISHIN·FOCUS 는 FunETF 에 올라오면 반영)
+# ───── 대신 DAISHIN (한국 PC 수집기 · Worker /kr) ─────
+def daishin(tickers, relay, cache):
+    if not relay: return {}
+    B = 'https://asset.daishin.com/ko/'
+    fc = cache.setdefault('daishinFund', {})              # 종목코드 → [FUND_CODE, DI_DATE]
+    if any(t not in fc for t in tickers):
+        try:
+            lst = _kr(B + '?pages=etf&sub=etf5010', relay, False) or ''
+            for code in sorted(set(re.findall(r"goview\('(\d+)'\)", lst))):
+                if code in [v[0] for v in fc.values()]: continue
+                h = _kr(B + '?pages=etf&sub=etf5010&m=view&FUND_CODE=' + code, relay, False) or ''
+                m, d = re.search(r'종목코드\s*:\s*A(\w{6})', h), re.search(r"openDivide\('(\d+)',\s*'(\d{8})'\)", h)
+                if m and d: fc[m.group(1)] = [d.group(1), d.group(2)]
+        except Exception as e: print('DAISHIN 목록 실패:', e, file=sys.stderr)
+    def one(t):
+        if t not in fc: return t, None
+        try:
+            h = _kr(B + 'pages/etf/MD_divide.php?FUND_CODE=%s&DI_DATE=%s' % tuple(fc[t]), relay, False)
+            if not h: return t, None
+            res = {}
+            for r in re.findall(r'<tr[^>]*>(.*?)</tr>', h, re.S):
+                tds = [re.sub(r'<[^>]+>', '', x).strip() for x in re.findall(r'<td[^>]*>(.*?)</td>', r, re.S)]
+                if len(tds) >= 4 and _ymd(tds[0]) and _num(tds[3]) is not None: res[_ymd(tds[0])] = [_ymd(tds[0]), _num(tds[2]), _num(tds[3])]
+            return t, sorted(res.values(), reverse=True)[:12]
+        except Exception: return t, None
+    return _pool(one, tickers, 2)
+
+
+# 과세표준을 찾아보는 브랜드 (HANARO·1Q·FOCUS 는 FunETF 에 올라오면 반영)
 BRANDS = ('KODEX', 'TIGER', 'ACE', 'SOL', 'PLUS', 'KIWOOM', 'WON', 'TIME', 'KoAct', 'HANARO', '1Q', 'DAISHIN', 'FOCUS', 'RISE')
 
 
@@ -326,7 +356,8 @@ def collect(by_brand, names, months, relay, cache, sig=None):
     out = {}
     jobs = {'KODEX': lambda L: kodex(L, cache), 'TIGER': lambda L: tiger(L, months, relay), 'ACE': lambda L: ace(L, cache),
             'SOL': lambda L: sol(L, cache), 'PLUS': lambda L: plus(L, sig or {}, cache, relay), 'KIWOOM': kiwoom,
-            'WON': lambda L: won(L, cache), 'TIME': lambda L: time_(L, cache), 'RISE': lambda L: rise(L, names, relay, cache)}
+            'WON': lambda L: won(L, cache), 'TIME': lambda L: time_(L, cache), 'RISE': lambda L: rise(L, names, relay, cache),
+            'DAISHIN': lambda L: daishin(L, relay, cache)}
     for b, L in by_brand.items():
         if not L or b not in jobs: continue
         try:
