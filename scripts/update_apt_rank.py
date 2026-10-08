@@ -183,14 +183,15 @@ def supply_fill(need):
         return len(r["p"]) < min(r["n"], 12) and any(not has_area(r, a) for a in areas)
     todo = [p for p, ar in need.items() if p and missing(p, ar)]
     todo.sort(key=lambda p: p in sup)                                               # 처음 보는 필지 먼저, 그다음 덜 찾은 필지
-    left, calls, t0, stop = BLD_BUDGET, [0], time.time(), []
+    left, calls, t0, stop, bad = BLD_BUDGET, [0], time.time(), [], [0]
     lock = __import__('threading').Lock()
 
     def work(pnu):
         nonlocal left
         r = sup.get(pnu) or {'t': [], 'u': {}, 'p': [], 'n': 0}
         for _ in range(8):                                                          # 한 번에 필지당 최대 8쪽
-            if stop or time.time() - t0 > 1200: break
+            if stop or time.time() - t0 > 900: break
+            if bad[0] >= 8 and not calls[0]: stop.append('응답 없음 (8건 연속 실패)'); break
             if r['n'] and (len(r["p"]) >= min(r["n"], 12) or all(has_area(r, a) for a in need[pnu])): break
             page = next((p for p in probe_order(r['n']) if p not in r['p']), None) if r['n'] else 1
             if page is None: break
@@ -200,7 +201,7 @@ def supply_fill(need):
             try: items, total = bld_page(pnu, page)
             except BldStop as e: stop.append(str(e)); break
             except Exception as e:
-                print('건축물대장 %s %d쪽 실패: %s' % (pnu, page, e), file=sys.stderr); break
+                bad[0] += 1; print('건축물대장 %s %d쪽 실패: %s' % (pnu, page, e), file=sys.stderr); break
             calls[0] += 1
             r['n'] = max(1, -(-total // 100)); r['p'].append(page)
             for ex_, sp in bld_units(items, page == 1, page >= r['n']):
@@ -213,7 +214,7 @@ def supply_fill(need):
 
     with cf.ThreadPoolExecutor(4) as ex:
         list(ex.map(work, todo[:max(1, BLD_BUDGET)]))
-    if stop: print('건축물대장(공급면적) 조회 안 됨: %s — 공공데이터포털 「국토교통부_건축HUB_건축물대장정보 서비스」 활용신청 확인' % stop[0], file=sys.stderr)
+    if stop: print('건축물대장(공급면적) 조회 안 됨: %s%s' % (stop[0], '' if '응답 없음' in stop[0] else ' — 공공데이터포털 「국토교통부_건축HUB_건축물대장정보 서비스」 활용신청 확인'), file=sys.stderr)
     if calls[0]:
         for r in sup.values(): r['p'].sort()
         with open(SUPPLY, 'w', encoding='utf-8') as f:                            # 한 줄에 한 필지 → 바뀐 줄만 git 에 남음
