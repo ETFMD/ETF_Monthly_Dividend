@@ -1489,7 +1489,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .ap-sub { font-size:11.5px; color:var(--text3); padding-left:12px; }
   .ap-tbl th.ap-c-n, .ap-tbl td.ap-c-n { text-align:left; font-family:var(--font); white-space:normal; min-width:190px; }
   .ap-tbl th.ap-c-addr, .ap-tbl td.ap-c-addr { text-align:left; font-family:var(--font); white-space:normal; min-width:150px; }
-  .ap-tbl th.ap-c-p, .ap-tbl td.ap-c-p, .ap-tbl th.ap-c-hh, .ap-tbl td.ap-c-hh { text-align:right; }
+  .ap-tbl th.ap-c-p, .ap-tbl td.ap-c-p, .ap-tbl th.ap-c-hh, .ap-tbl td.ap-c-hh, .ap-tbl th.ap-c-py, .ap-tbl td.ap-c-py, .ap-tbl th.ap-c-pz, .ap-tbl td.ap-c-pz { text-align:right; }
+  .ap-tbl td.ap-c-py { color:var(--text); }
+  .ap-tbl th small { font-size:10px; }
   .ap-tbl td.ap-c-r { color:var(--text); font-weight:700; width:52px; }
   .ap-tbl td.ap-c-r.top { color:var(--accent2); }
   .ap-tbl td.ap-c-p b { display:block; color:var(--text); font-size:13px; font-weight:700; }
@@ -1503,13 +1505,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   @media (max-width: 860px) {
     .ap-tbl tr.dv-row { grid-template-columns:1fr 1fr; }
     .ap-tbl tr.dv-row td.ap-c-n { grid-column:1 / 2; order:-2; min-width:0; }
-    .ap-tbl tr.dv-row td.ap-c-r { order:-1; align-items:flex-end; width:auto; }
+    .ap-tbl tr.dv-row td.ap-c-r { order:-1; flex-direction:row; align-items:baseline; justify-content:flex-end; gap:1px; width:auto; }
     .ap-tbl tbody tr.dv-row:hover td { background:none; }
     .ap-tbl tr.dv-row td.ap-c-r::after { content:'위'; font-size:11px; font-weight:400; color:var(--text3); }
     .ap-sort { width:100%; } .ap-sort .chart-tab { flex:1; white-space:nowrap; padding-left:4px; padding-right:4px; font-size:12px; }
     .ap-tbl tr.dv-row td.ap-c-n::before, .ap-tbl tr.dv-row td.ap-c-r::before { display:none; }
-    .ap-tbl tr.dv-row td.ap-c-addr { grid-column:1 / -1; order:5; min-width:0; }
-    .ap-tbl tr.dv-row td.ap-c-p { order:1; } .ap-tbl tr.dv-row td.ap-c-hh { order:2; } .ap-tbl tr.dv-row td.ap-c-sido { order:3; } .ap-tbl tr.dv-row td.ap-c-gu { order:4; }
+    .ap-tbl tr.dv-row td.ap-c-addr { grid-column:1 / -1; min-width:0; }
+    .ap-tbl tr.dv-row td.ap-c-p { order:1; } .ap-tbl tr.dv-row td.ap-c-py { order:2; } .ap-tbl tr.dv-row td.ap-c-pz { order:3; } .ap-tbl tr.dv-row td.ap-c-hh { order:4; }
+    .ap-tbl tr.dv-row td.ap-c-sido { order:5; } .ap-tbl tr.dv-row td.ap-c-gu { order:6; } .ap-tbl tr.dv-row td.ap-c-addr { order:7; }
     .ap-sub { padding-left:0; }
   }
   /* [MCAP] 전세계 시가총액 TOP 100 */
@@ -9526,10 +9529,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <div class="dv-tbl-wrap">
         <table class="dv-tbl ap-tbl">
           <thead><tr>
-            <th class="ap-c-r">순위</th><th class="ap-c-n">아파트명</th><th class="ap-c-p">실거래가</th><th class="ap-c-hh">세대수</th>
+            <th class="ap-c-r">순위</th><th class="ap-c-n">아파트명</th><th class="ap-c-p">실거래가</th><th class="ap-c-py" title="실거래가 ÷ 전용면적 평수 (1평 = 3.3058㎡)">평당가</th><th class="ap-c-pz" title="전용면적 ÷ 3.3058 — 분양 광고의 공급면적 평수(예: 84㎡ → 34평형)보다 작게 나옵니다">평수 <small>(전용)</small></th><th class="ap-c-hh">세대수</th>
             <th class="ap-c-addr">주소</th><th class="ap-c-sido">지역</th><th class="ap-c-gu">구</th>
           </tr></thead>
-          <tbody id="ap-body"><tr><td colspan="7" class="dv-empty">데이터를 불러오는 중…</td></tr></tbody>
+          <tbody id="ap-body"><tr><td colspan="9" class="dv-empty">데이터를 불러오는 중…</td></tr></tbody>
         </table>
       </div>
       <nav class="dv-pager" id="ap-pager" aria-label="페이지" hidden></nav>
@@ -9541,7 +9544,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <h2 id="g-aptrank-h">아파트 시세 순위는 이렇게 매깁니다</h2>
       <p class="g-lead">아파트를 사고팔면 계약일로부터 30일 안에 실거래 신고를 해야 하고, 국토교통부는 이 신고 자료를 공개합니다. 이 페이지는 최근 1년 동안 한 번이라도 매매된 전국 아파트 단지를 모아, 단지마다 가장 최근 실거래 금액이 높은 순서로 순위를 매깁니다.</p>
       <div class="g-grid">
-        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>실거래가</b> = 그 단지에서 가장 최근에 계약된 매매 금액 (계약이 해제된 거래는 뺌)</li><li><b>순위</b> = 실거래가가 높은 순 · 같은 금액이면 같은 순위</li><li><b>평당가</b> = 실거래가 ÷ (전용면적 ÷ 3.3058) — 공급면적이 아닌 전용면적 기준</li><li><b>세대수</b> = 한국부동산원 공동주택 단지 식별정보의 단지 세대수 (필지번호로 연결)</li></ul></article>
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>실거래가</b> = 그 단지에서 가장 최근에 계약된 매매 금액 (계약이 해제된 거래는 뺌)</li><li><b>순위</b> = 실거래가가 높은 순 · 같은 금액이면 같은 순위</li><li><b>평당가</b> = 실거래가 ÷ (전용면적 ÷ 3.3058) · <b>평수</b> = 전용면적 ÷ 3.3058 — 실거래 신고에는 전용면적만 있어 공급면적(분양 평형)이 아닌 전용 기준</li><li><b>세대수</b> = 한국부동산원 공동주택 단지 식별정보의 단지 세대수 (필지번호로 연결)</li></ul></article>
         <article class="g-card"><h3>자료와 갱신</h3><ul class="g-list"><li>자료: 국토교통부 아파트 매매 실거래가 (공공데이터포털) · 한국부동산원 공동주택 단지 식별정보</li><li>2시간마다 이번 달·지난달 신고분을 전국 252개 시군구에서 다시 받아 순위를 새로 매기고, 새벽에는 그 전달까지 확인합니다 (늦은 신고·계약 해제 반영).</li><li>계약 후 신고까지 최대 30일이 걸려 최근 몇 주 거래는 나중에 더 들어올 수 있습니다.</li></ul></article>
       </div>
       <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>왜 같은 단지인데 평형에 따라 순위가 크게 달라지나요?</summary><div class="g-ans"><p>순위는 단지에서 '가장 최근에 계약된 한 건'의 금액이라, 그 거래가 작은 평형이면 낮게, 큰 평형이면 높게 나옵니다. 면적과 관계없이 비교하려면 '평당가순'으로 정렬해 보세요. 단지를 누르면 1년 동안의 모든 거래를 면적별로 볼 수 있습니다.</p></div></details><details class="g-faq"><summary>우리 아파트가 목록에 없어요.</summary><div class="g-ans"><p>최근 1년 동안 매매 거래가 한 건도 신고되지 않은 단지는 순위에 들어가지 않습니다. 분양권·입주권 거래와 전월세 거래도 포함되지 않습니다.</p></div></details><details class="g-faq"><summary>세대수가 비어 있는 단지가 있어요.</summary><div class="g-ans"><p>실거래 신고의 지번과 공동주택 단지 정보의 대표 지번이 다르면 자동으로 연결되지 않을 수 있습니다. 이런 단지는 세대수를 '—'로 표시합니다.</p></div></details><details class="g-faq"><summary>실거래가가 시세와 다른데요?</summary><div class="g-ans"><p>실거래가는 실제 계약된 금액이라 층·향·수리 상태나 가족 간 거래 등에 따라 그 시점의 호가·시세와 다를 수 있습니다. 그래프에서 최근 여러 거래를 함께 보면 흐름을 판단하는 데 도움이 됩니다.</p></div></details></div>
@@ -15534,12 +15537,14 @@ var TAX = (function () {
         '<td class="ap-c-r' + (r.rank <= 10 ? ' top' : '') + '" data-l="순위">' + r.rank.toLocaleString('ko-KR') + '</td>' +
         '<td class="ap-c-n"><span class="dv-nm">' + esc(r.n) + '</span><span class="dv-tk">' + (r.by ? esc(r.by) + '년 · ' : '') + '1년 ' + r.cnt + '건 거래</span></td>' +
         '<td class="ap-c-p" data-l="실거래가"><b>' + man(r.p) + '</b><small>' + r.a + '㎡ · ' + md(r.d) + (r.f ? ' · ' + esc(r.f) + '층' : '') + '</small></td>' +
+        '<td class="ap-c-py" data-l="평당가">' + (r.py ? man(Math.round(r.py)) : '<span class="dv-dim">—</span>') + '</td>' +
+        '<td class="ap-c-pz" data-l="평수(전용)">' + (r.a ? (r.a / 3.3058).toFixed(1) + '평' : '<span class="dv-dim">—</span>') + '</td>' +
         '<td class="ap-c-hh" data-l="세대수">' + (r.hh ? r.hh.toLocaleString('ko-KR') : '<span class="dv-dim">—</span>') + '</td>' +
         '<td class="ap-c-addr" data-l="주소">' + esc(r.addr) + (r.road ? '<small>' + esc(r.road) + '</small>' : '') + '</td>' +
         '<td class="ap-c-sido" data-l="지역">' + esc(r.sido) + '</td>' +
         '<td class="ap-c-gu" data-l="구">' + esc(r.gu) + '</td></tr>' +
-        (open ? '<tr class="dv-hist"><td colspan="7"><div id="ap-h-' + hid(r.k) + '"></div></td></tr>' : '');
-    }).join('') : '<tr><td colspan="7" class="dv-empty">' + (S.q ? '‘' + esc(S.q) + '’에 맞는 아파트가 없습니다.' : '자료가 없습니다.') + '</td></tr>';
+        (open ? '<tr class="dv-hist"><td colspan="9"><div id="ap-h-' + hid(r.k) + '"></div></td></tr>' : '');
+    }).join('') : '<tr><td colspan="9" class="dv-empty">' + (S.q ? '‘' + esc(S.q) + '’에 맞는 아파트가 없습니다.' : '자료가 없습니다.') + '</td></tr>';
     pager(all.length, pages);
     rows.forEach(function (r) { if (S.open[r.k]) histDraw(r); });
   }
@@ -15602,10 +15607,10 @@ var TAX = (function () {
     if (S.loading || !window.mdLoad) return; S.loading = true;
     window.mdLoad('apt_rank.json').then(function (d) {
       S.loading = false;
-      if (!d || !d.rows || !d.rows.length) { $('ap-body').innerHTML = '<tr><td colspan="7" class="dv-empty">아파트 실거래 자료를 준비하고 있습니다. 잠시 뒤 다시 열어 주세요.</td></tr>'; return; }
+      if (!d || !d.rows || !d.rows.length) { $('ap-body').innerHTML = '<tr><td colspan="9" class="dv-empty">아파트 실거래 자료를 준비하고 있습니다. 잠시 뒤 다시 열어 주세요.</td></tr>'; return; }
       S.data = d; S.rows = prep(d);
       var pg = $('page-aptrank'); if (pg && pg.classList.contains('active')) render();
-    }).catch(function () { S.loading = false; $('ap-body').innerHTML = '<tr><td colspan="7" class="dv-empty">자료를 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.</td></tr>'; });
+    }).catch(function () { S.loading = false; $('ap-body').innerHTML = '<tr><td colspan="9" class="dv-empty">자료를 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.</td></tr>'; });
   }
   window.apRender = function () { var pg = $('page-aptrank'); if (pg && pg.classList.contains('active')) render(); };
 
