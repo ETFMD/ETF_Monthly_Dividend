@@ -730,8 +730,8 @@ function setChartTab(tab, btn) {
    · 슬라이더: oninput="simOnSlider(this)"   (슬라이더 값은 항상 원 단위)
    · 단위버튼: onclick="setFancyUnit(field, unit, this)"  (unit: eok|man|won|joo)
 ════════════════════════════════════════════════════════════ */
-var SIM_PREFIX = { 'page-simulator': '', 'page-sol': 'sol-', 'page-tiger': 'tiger-', 'page-tigerdiv': 'tigerdiv-', 'page-tigersemi': 'tigersemi-' };
-var SIM_UPDATE = { 'page-simulator': 'update', 'page-sol': 'solUpdate', 'page-tiger': 'tigerUpdate', 'page-tigerdiv': 'tigerdivUpdate', 'page-tigersemi': 'tigersemiUpdate' };
+var SIM_PREFIX = { 'page-simulator': '', 'page-sol': 'sol-', 'page-tiger': 'tiger-', 'page-tigerdiv': 'tigerdiv-', 'page-tigersemi': 'tigersemi-', 'page-divcalc': 'divcalc-' };
+var SIM_UPDATE = { 'page-simulator': 'update', 'page-sol': 'solUpdate', 'page-tiger': 'tigerUpdate', 'page-tigerdiv': 'tigerdivUpdate', 'page-tigersemi': 'tigersemiUpdate', 'page-divcalc': 'divcalcUpdate' };
 var fancyUnit = {};
 let cpdMode = 'simple'; let cpdTaxOn = false;   /* 세금 설정 기본값: OFF */ let cpdChart = null; let cpdChartTab = 'val';
 const cpdUnit = { principal: 'won', monthly: 'won' };
@@ -11622,4 +11622,237 @@ var CT = (function () {
     notes(r.notes);
   }
   window.fcRegister('ct', render, 'corptax');
+})();
+
+/* ════════════════════════════════════════
+   [DIV-CALC] 배당금 계산기 — 배당 지급 주기(월·분기·반년·연) 선택 · 수령/재투자/일부 재투자 · 적립식 · 배당소득세
+   · 배당은 매달 (적립 후 잔고 × 연 배당률 ÷ 12)씩 쌓이다가 지급월(주기의 마지막 달)에 한꺼번에 지급 → 재투자도 지급월에만
+     (지급 주기가 길수록 재투자 복리가 늦게 붙음 · 적립식 중간 납입분은 보유한 달수만큼만 배당)
+   · 주가 변동: 매달 잔고 × (1 + 연간 주가 변동률)^(1/12)
+   · 세금: 그 해 세전 배당 합계로 실효세율을 정해 그 해 지급분마다 적용 (종합과세는 TAX.financial — Gross-up·비교과세 반영)
+════════════════════════════════════════ */
+var DVC = (function () {
+  /* taxRateOf(연간 세전 배당) → 실효세율 (0~1) */
+  function sim(o) {
+    var p = [1, 3, 6, 12].indexOf(+o.period) >= 0 ? +o.period : 3;
+    var years = Math.max(1, Math.min(50, Math.round(o.years || 1)));
+    var mRate = (o.rate || 0) / 12, mGrow = Math.pow(1 + (o.growth || 0), 1 / 12) - 1;
+    var reinvestShare = o.mode === 'reinvest' ? 1 : o.mode === 'partial' ? Math.min(1, Math.max(0, o.partial || 0)) : 0;
+    var taxRateOf = o.taxRateOf || function () { return 0; };
+    var monthly = Math.max(0, o.monthly || 0);
+    var port = Math.max(0, o.amount || 0), pending = 0, invest = port, totNet = 0, totTax = 0, totGross = 0, rows = [];
+    for (var y = 1; y <= years; y++) {
+      /* 그 해 세전 배당 합계에 맞는 실효세율 — 재투자로 세율이 배당액에 영향을 주므로 몇 번 맞춰 봄 */
+      var rate = taxRateOf(0), run = null;
+      for (var it = 0; it < 4; it++) {
+        run = year(port, pending, rate);
+        var nr = taxRateOf(run.gross);
+        if (Math.abs(nr - rate) < 1e-12) break;
+        rate = nr;
+      }
+      run = year(port, pending, rate);
+      port = run.port; pending = run.pending;
+      invest += run.deposit; totNet += run.net; totTax += run.tax; totGross += run.gross;
+      run.label = y + '년차'; run.y = y; run.taxRate = rate; run.totNet = totNet; run.invest = invest;
+      rows.push(run);
+    }
+    function year(port0, pend0, rate) {
+      var P = port0, pend = pend0, r = { portStart: port0, deposit: 0, gross: 0, tax: 0, net: 0, reinvest: 0, price: 0, months: [] };
+      for (var m = 1; m <= 12; m++) {
+        var mo = { m: m, start: P, deposit: monthly };
+        P += monthly; r.deposit += monthly;
+        mo.after = P;
+        pend += P * mRate;                              /* 이달 몫 배당 적립 */
+        var pay = m % p === 0;
+        mo.pay = pay; mo.gross = 0; mo.tax = 0; mo.net = 0; mo.reinvest = 0;
+        if (pay) {
+          mo.gross = pend; mo.tax = pend * rate; mo.net = pend - mo.tax; pend = 0;
+          mo.reinvest = mo.net * reinvestShare;
+          P += mo.reinvest;
+        }
+        var before = P;
+        P *= 1 + mGrow;
+        mo.price = P - before; mo.end = P;
+        r.gross += mo.gross; r.tax += mo.tax; r.net += mo.net; r.reinvest += mo.reinvest; r.price += mo.price;
+        r.months.push(mo);
+      }
+      r.port = P; r.pending = pend;
+      return r;
+    }
+    var last = rows[rows.length - 1];
+    return { rows: rows, period: p, years: years, invest: invest, totNet: totNet, totTax: totTax, totGross: totGross, final: last.port, pending: last.pending };
+  }
+  return { sim: sim };
+})();
+
+/* [DIV-CALC] 화면 — 입력·단위·슬라이더는 [SIM-UNIT] 공용(simOnInput·setFancyUnit), 표 펼치기는 toggleAllYears 공용 */
+(function () {
+  if (!document.getElementById('page-divcalc')) return;   /* 도구별 페이지 분리: 배당금 계산기 화면이 있는 페이지에서만 */
+  var PG = 'page-divcalc';
+  var st = { mode: 'reinvest', period: 3, dca: false, tax: true, taxMode: 'wh', chart: 'annual' };
+  var chart = null, cache = null;
+  var FREQ = { 1: '월', 3: '분기', 6: '반년', 12: '연' }, FREQ_N = { 1: '매월', 3: '분기마다', 6: '반년마다', 12: '1년에 한 번' };
+  function $(id) { return document.getElementById('divcalc-' + id); }
+  function setT(id, v) { var e = $(id); if (e) e.textContent = v; }
+  function num(id) { var e = $(id); return e ? parseFloat(String(e.value).replace(/,/g, '')) : NaN; }
+  function won(f) { return simReadWon(PG, f); }
+  function pct(v, d) { return (v * 100).toFixed(d == null ? 2 : d) + '%'; }
+  function seg(box, btn) { box.querySelectorAll('.mode-btn,.tax-mode-tab').forEach(function (b) { b.classList.toggle('active', b === btn); }); }
+  function sw(id, on) {
+    var s = $(id + '-switch'); if (s) s.classList.toggle('on', on);
+    var off = $(id + '-off-label'), onl = $(id + '-on-label');
+    if (off) off.style.color = on ? 'var(--text3)' : 'var(--text2)';
+    if (onl) onl.style.color = on ? 'var(--accent)' : 'var(--text3)';
+    var b = $(id + '-block'); if (b) { b.style.opacity = on ? '1' : '0.3'; b.style.pointerEvents = on ? 'auto' : 'none'; }
+  }
+
+  /* ── 세금: 그 해 세전 배당 → 실효세율 ── */
+  function taxRateOf(gross) {
+    if (!st.tax) return 0;
+    if (st.taxMode === 'manual') return Math.min(1, Math.max(0, (num('ni-tax') || 0) / 100));
+    if (st.taxMode === 'wh' || !(gross > 0)) return 0.154;
+    var kind = $('divkind').value, o = { other: won('otherincome'), interest: won('otherfin') };
+    o[kind] = gross;
+    var r = TAX.financial(o), base = TAX.financial({ other: o.other, interest: o.interest });
+    return Math.max(0, (r.finTax - base.finTax) / gross);   /* 다른 금융소득에 붙는 세금은 빼고 이 배당 몫만 */
+  }
+
+  function update() {
+    var amount = won('amount'), years = Math.round(num('ni-years')), rate = num('ni-rate') / 100, growth = num('ni-growth') / 100;
+    if ([years, rate, growth].some(isNaN)) return;
+    var monthly = st.dca ? won('monthly') : 0;
+    setT('dca-annual-label', fmt(won('monthly') * 12) + ' / 년');
+    var partial = (num('ni-partial') || 50) / 100;
+    $('partial-block').style.display = st.mode === 'partial' ? '' : 'none';
+    setT('partial-desc', '배당금의 ' + Math.round(partial * 100) + '%는 재투자, ' + (100 - Math.round(partial * 100)) + '%는 수령');
+    $('tax-panel-manual').style.display = st.taxMode === 'manual' ? '' : 'none';
+    $('tax-panel-comp').style.display = st.taxMode === 'comp' ? '' : 'none';
+    $('tax-panel-wh').style.display = st.taxMode === 'wh' ? '' : 'none';
+    if (amount <= 0 && monthly <= 0) {
+      ['s-annual', 's-final', 's-total', 's-port', 's-cagr'].forEach(function (k) { setT(k, '0원'); });
+      ['s-annual-sub', 's-final-sub', 's-total-sub', 's-port-sub', 's-cagr-sub'].forEach(function (k) { setT(k, ''); });
+      $('tbody').innerHTML = ''; cache = null; if (chart) { chart.destroy(); chart = null; }
+      return;
+    }
+    var r = DVC.sim({ amount: amount, monthly: monthly, years: years, rate: rate, growth: growth, period: st.period, mode: st.mode, partial: partial, taxRateOf: taxRateOf });
+    var R = r.rows, first = R[0], last = R[R.length - 1], p = r.period, perYear = 12 / p;
+    var sfx = st.tax ? ' (세후)' : '';
+    var payOf = function (row, i) { var a = row.months.filter(function (m) { return m.pay; }); return a[i == null ? a.length - 1 : i]; };
+    setT('s-annual-label', '1년차 연간 배당금' + sfx);
+    setT('s-annual', fmt(first.net));
+    setT('s-annual-sub', (p === 12 ? '연 1회' : FREQ[p] + ' 지급 · 연 ' + perYear + '회') + ' · 첫 회 ' + fmt(payOf(first, 0).net));
+    setT('s-final-label', r.years + '년차 연간 배당금' + sfx);
+    setT('s-final', fmt(last.net));
+    setT('s-final-sub', '월 평균 ' + fmt(last.net / 12) + ' · 마지막 회 ' + fmt(payOf(last).net));
+    setT('s-total-label', '누적 배당금' + sfx);
+    setT('s-total', fmt(r.totNet));
+    setT('s-total-sub', '총 투입 대비 ' + (r.invest > 0 ? (r.totNet / r.invest * 100).toFixed(1) : '0.0') + '%');
+    setT('s-port-label', r.years + '년차 종료 자산');
+    setT('s-port', fmt(r.final));
+    setT('s-port-sub', '총 투입 ' + fmt(r.invest) + ' 대비 ' + (r.invest > 0 ? (r.final / r.invest).toFixed(2) : '0') + '배');
+    var cg = simAssetCagr(amount, monthly, r.years, r.final);
+    if (cg == null) { setT('s-cagr', '—'); setT('s-cagr-sub', ''); }
+    else { var cm = Math.pow(1 + cg, 1 / 12) - 1; setT('s-cagr', (cg >= 0 ? '+' : '') + (cg * 100).toFixed(2) + '%'); setT('s-cagr-sub', '월 평균 ' + (cm >= 0 ? '+' : '') + (cm * 100).toFixed(3) + '%'); }
+    /* 세금 요약 */
+    setT('tax-first-label', fmt(first.tax));
+    setT('tax-total-label', fmt(r.totTax));
+    setT('tax-eff-label', first.gross > 0 ? pct(first.tax / first.gross) : '—');
+    if (st.taxMode === 'comp') {
+      var kindTxt = $('divkind').selectedOptions[0].textContent;
+      setT('comp-note', '1년차 세전 배당 ' + fmt(first.gross) + (first.gross + won('otherfin') > 2e7 ? ' → 금융소득 2,000만원 초과, 종합과세' : ' → 2,000만원 이하, 15.4%로 끝') + ' (' + kindTxt + ')');
+    }
+    /* 목표 역산 */
+    var tgt = won('target'), need = rate > 0 ? tgt * 12 / rate : 0;
+    setT('target-result', rate > 0 ? fmt(need) : '—');
+    setT('target-sub', '세전 · 배당률 ' + (rate * 100).toFixed(2).replace(/\.?0+$/, '') + '% 기준 · ' + FREQ_N[p] + ' 약 ' + fmt(tgt * p) + ' 지급'
+      + (st.tax && rate > 0 ? ' · 세후로 받으려면 약 ' + fmt(need / Math.max(0.01, 1 - (first.gross > 0 ? first.tax / first.gross : 0.154))) : ''));
+    cache = r;
+    renderTable(r);
+    try { renderChart(); } catch (e) { console.error('divcalc chart', e); }
+  }
+
+  function renderTable(r) {
+    var tb = $('tbody'); if (!tb) return;
+    try { saveOpenYears(tb); } catch (e) {}
+    var price = num('ni-price') || 0, growth = num('ni-growth') / 100, tax = st.tax, dca = st.dca;
+    $('th-deposit').classList.toggle('col-hidden', !dca);
+    $('th-gross').style.display = tax ? '' : 'none';
+    $('th-tax').style.display = tax ? '' : 'none';
+    $('th-shares').style.display = price > 0 ? '' : 'none';
+    setT('th-net', tax ? '배당금 (세후)' : '배당금');
+    var B = 'border-top:1px solid rgba(var(--fg-rgb),0.06);', html = '';
+    var pc = function (v, s) { v = Math.round(v); if (Math.abs(v) <= 2) v = 0; return '<td style="' + (s || '') + 'color:' + (v >= 0 ? '#3182f6' : '#f04452') + ';">' + (v >= 0 ? '+' : '') + fmt(v) + '</td>'; };
+    var dash = '<span style="color:var(--text3);">—</span>';
+    r.rows.forEach(function (row, yi) {
+      var lastY = yi === r.rows.length - 1;
+      html += '<tr class="yr-acc-hdr" data-yr="' + row.y + '">'
+        + '<td style="' + B + '"><span style="display:flex;align-items:center;gap:8px;"><span class="yr-acc-arrow" style="font-size:11px;color:var(--text3);transition:transform 0.15s;">▶</span><span>' + row.label + '</span></span></td>'
+        + '<td style="' + B + '">' + fmt(row.portStart) + '</td>'
+        + '<td class="' + (dca ? '' : 'col-hidden') + '" style="' + B + 'color:var(--accent);">' + fmt(row.deposit) + '</td>'
+        + (tax ? '<td style="' + B + 'color:#fe9800;">' + fmt(row.gross) + '</td><td style="' + B + 'color:#f04452;">' + fmt(row.tax) + '</td>' : '')
+        + '<td style="' + B + '">' + fmt(row.net) + '</td>'
+        + pc(row.price, B)
+        + '<td style="' + B + '">' + fmt(row.port) + '</td>'
+        + (price > 0 ? '<td style="' + B + '">' + fmtShares(calcShares(row.port, price, growth, row.y * 12)) + '</td>' : '')
+        + '</tr>';
+      row.months.forEach(function (m, mi) {
+        var n = (row.y - 1) * 12 + m.m;
+        html += '<tr data-yr-row="' + row.y + '" style="display:none;"' + (lastY && mi === 11 ? ' class="highlight"' : '') + '>'
+          + '<td style="color:var(--text3);">' + n + '개월' + (m.pay ? ' <span style="color:var(--accent);font-size:10px;">지급</span>' : '') + '</td>'
+          + '<td>' + fmt(m.start) + '</td>'
+          + '<td class="' + (dca ? '' : 'col-hidden') + '">' + (m.deposit > 0 ? '<span style="color:var(--accent);">+' + fmt(m.deposit) + '</span>' : dash) + '</td>'
+          + (tax ? '<td style="color:#fe9800;">' + (m.pay ? fmt(m.gross) : dash) + '</td><td style="color:#f04452;">' + (m.pay ? fmt(m.tax) : dash) + '</td>' : '')
+          + '<td>' + (m.pay ? fmt(m.net) : dash) + '</td>'
+          + pc(m.price)
+          + '<td>' + fmt(m.end) + '</td>'
+          + (price > 0 ? '<td>' + fmtShares(calcShares(m.end, price, growth, n)) + '</td>' : '')
+          + '</tr>';
+      });
+    });
+    tb.innerHTML = html;
+    tb.querySelectorAll('.yr-acc-hdr').forEach(function (h) { h.onclick = function () { toggleYearGroup(this); }; });
+    try { restoreOpenYears(tb); } catch (e) {}
+  }
+
+  function renderChart() {
+    if (!cache || typeof Chart === 'undefined') return;
+    var r = cache, annual = st.chart === 'annual', labels = [], data = [], titles = [];
+    if (annual) r.rows.forEach(function (row) { labels.push(row.label); data.push(Math.round(row.net)); titles.push(row.label); });
+    else r.rows.forEach(function (row) {
+      var k = 0;
+      row.months.forEach(function (m) { if (!m.pay) return; labels.push(k === 0 ? row.label : ''); data.push(Math.round(m.net)); titles.push(row.label + ' ' + m.m + '월 지급'); k++; });
+    });
+    var lbl = annual ? '연간 배당금' : (FREQ[r.period] + ' 배당금');
+    setT('leg-label', lbl + (st.tax ? ' (세후)' : ''));
+    var line = !annual && r.period === 1;
+    var ds = line ? { label: lbl, data: data, borderColor: '#3182f6', backgroundColor: 'rgba(49,130,246,0.12)', fill: true, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, tension: 0.2 }
+      : { label: lbl, data: data, backgroundColor: 'rgba(49,130,246,0.7)', borderRadius: annual || data.length <= 40 ? 5 : 2, borderSkipped: false };
+    var opts = {
+      responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false }, tooltip: { backgroundColor: '#202027', borderColor: fgA(0.1), borderWidth: 1, titleColor: '#9e9ea4', bodyColor: '#e4e4e5', padding: 12,
+        callbacks: { title: function (it) { return titles[it[0].dataIndex]; }, label: function (c) { return ' ' + c.dataset.label + ': ' + fmt(c.parsed.y); } } } },
+      scales: {
+        x: { ticks: { color: '#6d6d76', font: { size: 11 }, maxRotation: 0, autoSkip: annual, callback: function (v, i) { var l = this.getLabelForValue(i); return l !== '' ? l : null; } }, grid: { display: false }, border: { display: false } },
+        y: { ticks: { color: '#6d6d76', font: { size: 11 }, callback: function (v) { return fmt(v, true); } }, grid: { color: fgA(0.04) }, border: { display: false }, beginAtZero: true }
+      }
+    };
+    if (chart) chart.destroy();
+    chart = new Chart($('chart'), { type: line ? 'line' : 'bar', data: { labels: labels, datasets: [ds] }, options: opts });
+  }
+
+  /* ── 화면 조작 (HTML onclick 에서 호출) ── */
+  window.divcalcUpdate = update;
+  window.divcalcSetMode = function (m, btn) { st.mode = m; seg(btn.parentNode, btn); update(); };
+  window.divcalcSetFreq = function (p, btn) { st.period = p; seg(btn.parentNode, btn); update(); };
+  window.divcalcToggle = function (k) { st[k] = !st[k]; sw(k, st[k]); update(); };
+  window.divcalcSetTaxMode = function (m, btn) { st.taxMode = m; seg(btn.parentNode, btn); update(); };
+  window.divcalcSetChart = function (t, btn) { st.chart = t; seg(btn.parentNode, btn); btn.parentNode.querySelectorAll('.chart-tab').forEach(function (b) { b.classList.toggle('active', b === btn); }); renderChart(); };
+  window.divcalcSync = function (f, fromSlider) {   /* 숫자 입력(년·%) ↔ 슬라이더 */
+    var n = $('ni-' + f), s = $('sl-' + f);
+    if (fromSlider) n.value = s.value; else if (n.value !== '' && !isNaN(+n.value)) s.value = Math.min(Math.max(+n.value, +s.min), +s.max);
+    update();
+  };
+  window.divcalcTaxPreset = function (v, btn) { $('ni-tax').value = v; btn.parentNode.querySelectorAll('.preset-btn').forEach(function (b) { b.classList.toggle('active', b === btn); }); update(); };
+  sw('dca', st.dca); sw('tax', st.tax);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', update); else update();
 })();
