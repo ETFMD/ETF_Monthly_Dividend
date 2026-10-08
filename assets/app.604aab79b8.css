@@ -1521,6 +1521,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   html[data-theme="light"] .fc-field select, html[data-theme="light"] .fc-date { color-scheme:light; }
   .fc-field input[type=range] { width:100%; accent-color:var(--accent); }
   .fc-row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .fc-row2 > .fc-field > .fc-input, .fc-row2 > .fc-field > .fc-amt, .fc-row2 > .fc-field > select, .fc-row2 > .fc-field > .fc-seg { margin-top:auto; }   /* 라벨이 두 줄이 돼도 옆 칸과 입력칸 높이 맞춤 */
   .fc-seg { width:100%; }
   .fc-seg .mode-btn { padding:8px 6px; font-size:12px; }
   .fc-hint { line-height:1.6; margin-left:0 !important; }
