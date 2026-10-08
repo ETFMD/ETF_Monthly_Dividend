@@ -11064,3 +11064,260 @@ if (typeof module !== 'undefined') module.exports = MHE;
 })();
 
 
+
+/* ════════════════════════════════════════
+   [CORP-TAX] 법인세 계산기 — 내국 영리법인 각 사업연도 소득에 대한 법인세 (순수 계산 CT.calc + 화면)
+   · 세율: 법인세법 제55조 (2026.1.1. 이후 개시 사업연도 10·20·22·25%, 2023~2025년 개시 9·19·21·24%)
+           소규모 성실신고확인대상 법인(제55조 ②, 2025년 개시분부터): 200억 이하 19%(2026년~ 20%) — 2억 이하 낮은 세율 없음
+   · 사업연도 1년 미만: 과세표준 × 12/월수 에 세율을 적용한 세액 × 월수/12 (월수의 1개월 미만은 1개월)
+   · 기부금(법인세법 제24조, 조특법 제88조의4): 기준소득금액 − 이월결손금(공제한도 내)을 기준으로
+       특례 50% → 우리사주조합 30% → 일반 10% 순서, 이월된 기부금(10년)을 당기분보다 먼저 손금산입
+   · 이월결손금(제13조): 각 사업연도 소득의 100%(중소기업) / 80%(그 밖의 법인)까지
+   · 최저한세(조특법 제132조): 중소기업 7% · 졸업 후 3년 8%·그다음 2년 9% · 일반 100억 이하 10%·1,000억 이하 12%·초과 17%
+   · 법인지방소득세(지방세법 제103조의20): 같은 과세표준에 법인세율의 1/10 (2026년~ 1·2·2.2·2.5%)
+   금액 단위: 원 · 세액은 원 미만 버림
+════════════════════════════════════════ */
+var CT = (function () {
+  var INF = Infinity;
+  var RATES = {
+    '2026': [[2e8, 0.10], [200e8, 0.20], [3000e8, 0.22], [INF, 0.25]],
+    '2025': [[2e8, 0.09], [200e8, 0.19], [3000e8, 0.21], [INF, 0.24]],
+    '2024': [[2e8, 0.09], [200e8, 0.19], [3000e8, 0.21], [INF, 0.24]]
+  };
+  var SMALL = {   /* 소규모 성실신고확인대상 법인 — 2025.1.1. 이후 개시 사업연도부터 */
+    '2026': [[200e8, 0.20], [3000e8, 0.22], [INF, 0.25]],
+    '2025': [[200e8, 0.19], [3000e8, 0.21], [INF, 0.24]]
+  };
+  var MIN_LARGE = [[100e8, 0.10], [1000e8, 0.12], [INF, 0.17]];
+  var MIN_FLAT = { sme: 0.07, grad3: 0.08, grad5: 0.09 };
+  function floor(x) { return Math.floor(x + 1e-7); }
+  function brackets(year, small) { return small && SMALL[year] ? SMALL[year] : RATES[year] || RATES['2026']; }
+  /* 누진 세액 (사업연도 1년 미만이면 연 환산 후 월수 비례) */
+  function prog(T, br, m, scale) {
+    if (!(T > 0)) return 0;
+    var Ta = T * 12 / m, prev = 0, t = 0;
+    for (var i = 0; i < br.length; i++) {
+      var hi = br[i][0];
+      if (Ta > prev) t += (Math.min(Ta, hi) - prev) * br[i][1] * (scale || 1);
+      prev = hi;
+    }
+    return floor(t * m / 12);
+  }
+  function calc(o) {
+    var r = { notes: [] };
+    var year = String(o.year || '2026'), m = Math.min(12, Math.max(1, Math.round(o.months || 12)));
+    var small = !!o.small && year !== '2024';
+    if (o.small && year === '2024') r.notes.push('2024년 이전 개시 사업연도에는 소규모 성실신고확인대상 법인 특례세율이 없어 일반 세율로 계산했습니다.');
+    var kind = o.kind || 'sme';
+    if (small && kind !== 'large') { kind = 'large'; r.notes.push('소규모 성실신고확인대상 법인은 조세특례제한법상 중소기업에서 제외되어 일반기업 기준(이월결손금 80%·최저한세 10%~·중소기업 감면 불가)으로 계산했습니다.'); }
+    var sme = kind === 'sme';
+    r.year = year; r.m = m; r.small = small; r.kind = kind; r.sme = sme;
+    r.br = brackets(year, small);
+    var lossRate = sme ? 1 : 0.8;
+    r.lossRate = lossRate;
+    /* 1) 세무조정 → 차가감소득금액 */
+    var NI = o.ni || 0;
+    r.ni = NI;
+    r.add = (o.addIn || 0) + (o.nonDesig || 0);
+    r.ded = o.dedIn || 0;
+    var R = NI + r.add - r.ded;
+    r.pre = R;
+    /* 2) 기부금 한도 (기준소득금액 = 차가감소득금액 + 손금에 넣은 특례·일반·우리사주조합 기부금) */
+    var spCur = o.spCur || 0, spCarry = o.spCarry || 0, genCur = o.genCur || 0, genCarry = o.genCarry || 0, esCur = o.esCur || 0;
+    var S = R + spCur + genCur + esCur;
+    var Lfor = Math.min(o.carryLoss || 0, Math.max(0, S) * lossRate);
+    var A = Math.max(0, S - Lfor) * 0.5;
+    var spCarryUsed = Math.min(spCarry, A), spCurOk = Math.min(spCur, Math.max(0, A - spCarryUsed));
+    var spDed = spCarryUsed + spCurOk;
+    var B = Math.max(0, S - Lfor - spDed) * 0.3;
+    var esOk = Math.min(esCur, B);
+    var C = Math.max(0, S - Lfor - spDed - esOk) * 0.1;
+    var genCarryUsed = Math.min(genCarry, C), genCurOk = Math.min(genCur, Math.max(0, C - genCarryUsed));
+    r.don = { S: S, Lfor: Lfor, A: A, B: B, C: C,
+      spCarryUsed: floor(spCarryUsed), spExcess: floor(spCur - spCurOk), esExcess: floor(esCur - esOk),
+      genCarryUsed: floor(genCarryUsed), genExcess: floor(genCur - genCurOk),
+      spCarryLeft: floor(spCarry - spCarryUsed), genCarryLeft: floor(genCarry - genCarryUsed),
+      any: spCur + spCarry + genCur + genCarry + esCur > 0 };
+    var I = R + r.don.spExcess + r.don.esExcess + r.don.genExcess - r.don.spCarryUsed - r.don.genCarryUsed;
+    r.income = I;
+    /* 3) 과세표준 = 각 사업연도 소득 − 이월결손금 − 비과세소득 − 소득공제 */
+    var rest = Math.max(0, I);
+    r.lossNow = I < 0 ? -I : 0;
+    r.carryLoss = o.carryLoss || 0;
+    r.lossDed = floor(Math.min(r.carryLoss, rest * lossRate)); rest -= r.lossDed;
+    r.lossLeft = r.carryLoss - r.lossDed;
+    r.nontax = Math.min(o.nontax || 0, rest); rest -= r.nontax;
+    r.incDed = Math.min(o.incDed || 0, rest); rest -= r.incDed;
+    var T = floor(rest);
+    r.base = T;
+    /* 4) 산출세액 */
+    r.tax = prog(T, r.br, m);
+    r.topRate = 0;
+    var Ta = T * 12 / m, prev = 0;
+    r.br.forEach(function (b) { if (Ta > prev) r.topRate = b[1]; prev = b[0]; });
+    /* 5) 세액감면 (감면세액 = 산출세액 × 감면대상소득 ÷ 과세표준 × 감면율) */
+    function share(x) { return T > 0 ? Math.min(1, Math.max(0, x || 0) / T) : 0; }
+    var st = 0, sp = 0;
+    if ((o.stIncome > 0 || o.spcIncome > 0) && !sme) r.notes.push('창업중소기업 감면·중소기업 특별세액감면은 중소기업만 받을 수 있어 0원으로 계산했습니다.');
+    if (sme) {
+      st = floor(r.tax * share(o.stIncome) * (o.stRate || 0));
+      sp = Math.min(1e8, floor(r.tax * share(o.spcIncome) * (o.spcRate || 0)));   /* 중소기업 특별세액감면 한도 1억원 */
+      if (st > 0 && sp > 0) {   /* 같은 사업연도에 두 감면은 중복 적용 불가(조특법 제127조) → 큰 쪽만 */
+        r.notes.push('창업중소기업 감면과 중소기업 특별세액감면은 함께 받을 수 없어 감면액이 큰 ' + (st >= sp ? '창업중소기업 감면' : '중소기업 특별세액감면') + '만 반영했습니다.');
+        if (st >= sp) sp = 0; else st = 0;
+      }
+    }
+    r.startup = st; r.special = sp;
+    /* 6) 최저한세 */
+    r.minCredit = o.minCredit || 0;
+    var subj = st + sp + r.minCredit;
+    r.minRateText = MIN_FLAT[kind] != null ? Math.round(MIN_FLAT[kind] * 100) + '%' : '10~17%';
+    r.minTax = MIN_FLAT[kind] != null ? floor(T * MIN_FLAT[kind]) : prog(T, MIN_LARGE, m);
+    var after = Math.max(0, r.tax - subj);
+    r.minExcl = after < r.minTax ? Math.min(subj, r.minTax - after) : 0;
+    r.subjApplied = subj - r.minExcl;
+    /* 7) 최저한세 적용 제외 공제 — 외국납부세액공제(한도: 산출세액 × 국외원천소득 ÷ 과세표준) 등 */
+    r.foreignLimit = floor(r.tax * share(o.foreignIncome));
+    r.foreign = Math.min(o.foreignPaid || 0, r.foreignLimit);
+    r.exCredit = o.exCredit || 0;
+    var reduce = r.subjApplied + r.foreign + r.exCredit;
+    r.taxAfter = Math.max(0, r.tax - reduce);
+    r.unused = Math.max(0, reduce - r.tax);
+    r.penalty = o.penalty || 0; r.addBack = o.addBack || 0;
+    r.total = r.taxAfter + r.penalty + r.addBack;   /* 총부담세액 */
+    r.prepaid = o.prepaid || 0;
+    r.pay = r.total - r.prepaid;   /* 차감 납부할 세액 (음수면 환급) */
+    /* 8) 분납 (가산세·감면분 추가납부세액 제외 금액이 1천만원 초과) */
+    var instBase = Math.max(0, r.pay - r.penalty - r.addBack);
+    r.inst = instBase > 2e7 ? floor(instBase / 2) : instBase > 1e7 ? instBase - 1e7 : 0;
+    r.instMonths = sme ? 2 : 1;
+    /* 9) 법인지방소득세 (같은 과세표준 × 법인세율의 1/10) */
+    r.local = prog(T, r.br, m, 0.1);
+    r.grand = Math.max(0, r.pay) + r.local;
+    r.eff = T > 0 ? r.taxAfter / T : 0;
+    r.effAll = I > 0 ? (r.taxAfter + r.local) / I : 0;
+    return r;
+  }
+  return { calc: calc, prog: prog, RATES: RATES, SMALL: SMALL, MIN_LARGE: MIN_LARGE, MIN_FLAT: MIN_FLAT };
+})();
+
+/* [CORP-TAX] 화면 — 입력(data-fc="ct")·억/만/원 단위·버튼 토글은 [FC-UI] 공통 처리 */
+(function () {
+  if (!document.getElementById('page-corptax')) return;   /* 도구별 페이지 분리: 법인세 화면이 있는 페이지에서만 */
+  function $(id) { return document.getElementById(id); }
+  function setT(id, v) { var e = $(id); if (e) e.textContent = v; }
+  function setH(id, v) { var e = $(id); if (e) e.innerHTML = v; }
+  function numOf(e) { return e ? (parseFloat(String(e.value).replace(/,/g, '')) || 0) : 0; }
+  var UNIT = { eok: 1e8, man: 1e4, won: 1 };
+  function amt(id) { var e = $(id); return Math.round(numOf(e) * (UNIT[e && e.getAttribute('data-unit')] || 1)); }
+  function won(n) { return (n < 0 ? '−' : '') + Math.round(Math.abs(n)).toLocaleString('ko-KR') + '원'; }
+  function eok(n) {
+    var neg = n < 0; n = Math.round(Math.abs(n) / 1e4) * 1e4;
+    var e = Math.floor(n / 1e8), m = Math.round((n - e * 1e8) / 1e4), s;
+    if (!e) s = m.toLocaleString('ko-KR') + '만원'; else s = e.toLocaleString('ko-KR') + '억' + (m ? ' ' + m.toLocaleString('ko-KR') + '만원' : '원');
+    return (neg ? '−' : '') + s;
+  }
+  function pct(v, d) { var t = (v * 100).toFixed(d == null ? 2 : d); if (t.indexOf('.') >= 0) t = t.replace(/\.?0+$/, ''); return t + '%'; }
+  function seg(name) { var b = document.querySelector('.fc-seg[data-name="' + name + '"] .mode-btn.active'); return b ? b.getAttribute('data-v') : null; }
+  function chk(id) { var e = $(id); return !!(e && e.checked); }
+  function minus(n) { return n ? '−' + won(n) : '0원'; }
+  function plus(n) { return n ? '+' + won(n) : '0원'; }
+  function rows(list) {
+    return list.filter(Boolean).map(function (r) { return '<tr' + (r[2] ? ' class="' + r[2] + '"' : '') + '><td>' + r[0] + '</td><td style="text-align:right;">' + r[1] + '</td></tr>'; }).join('');
+  }
+  function sum(key, txt) {
+    var e = $('ct-sum-' + key); if (!e) return;
+    e.textContent = txt || '입력 없음'; e.classList.toggle('on', !!txt);
+    var d = e.closest('.inc-sec'); if (d) d.classList.toggle('has-v', !!txt);
+  }
+  var KIND = { sme: '중소기업', grad3: '중소기업 졸업 후 1~3년차', grad5: '중소기업 졸업 후 4~5년차', large: '일반기업' };
+  function brText(br, small) {
+    var prev = 0;
+    return br.map(function (b) {
+      var lo = prev, hi = b[0]; prev = hi;
+      var label = hi === Infinity ? eok(lo) + ' 초과' : (lo ? eok(lo) + ' 초과 ~ ' : '') + eok(hi) + (lo ? '' : ' 이하');
+      return [label, b[1]];
+    });
+  }
+  function render() {
+    var o = {
+      year: $('ct-year').value, months: +$('ct-months').value, kind: $('ct-kind').value, small: chk('ct-small'),
+      ni: (seg('ct-sign') === 'loss' ? -1 : 1) * amt('ct-ni'), addIn: amt('ct-add'), dedIn: amt('ct-ded'), nonDesig: amt('ct-nondesig'),
+      spCur: amt('ct-spcur'), spCarry: amt('ct-spcarry'), genCur: amt('ct-gencur'), genCarry: amt('ct-gencarry'), esCur: amt('ct-escur'),
+      carryLoss: amt('ct-loss'), nontax: amt('ct-nontax'), incDed: amt('ct-incded'),
+      stIncome: amt('ct-st-inc'), stRate: +$('ct-st-rate').value, spcIncome: amt('ct-spc-inc'), spcRate: +$('ct-spc-rate').value,
+      minCredit: amt('ct-mincr'), exCredit: amt('ct-excr'), foreignPaid: amt('ct-fpaid'), foreignIncome: amt('ct-finc'),
+      penalty: amt('ct-penalty'), addBack: amt('ct-addback'), prepaid: amt('ct-prepaid')
+    };
+    var r = CT.calc(o), m = r.m, D = r.don;
+    var yearTxt = r.year === '2026' ? '2026년 이후 개시 사업연도' : r.year === '2025' ? '2025년 개시 사업연도' : '2023~2024년 개시 사업연도';
+    /* 접은 항목 요약 */
+    sum('base', yearTxt.replace(' 사업연도', '') + ' · ' + m + '개월 · ' + KIND[r.kind] + (r.small ? ' · 성실신고 소규모' : ''));
+    sum('adj', '차가감소득 ' + eok(r.pre));
+    sum('don', D.any ? (D.spExcess + D.esExcess + D.genExcess ? '한도초과 ' + eok(D.spExcess + D.esExcess + D.genExcess) : '한도 내') : '');
+    sum('ded', r.lossDed + r.nontax + r.incDed ? '공제 ' + eok(r.lossDed + r.nontax + r.incDed) : '');
+    sum('red', r.startup + r.special ? '감면 ' + won(r.startup + r.special) : '');
+    sum('cr', r.minCredit + r.foreign + r.exCredit ? '공제 ' + won(r.minCredit + r.foreign + r.exCredit) : '');
+    sum('etc', r.penalty + r.addBack + r.prepaid ? '기납부 ' + eok(r.prepaid) + (r.penalty + r.addBack ? ' · 가산 ' + eok(r.penalty + r.addBack) : '') : '');
+    /* 결과 */
+    var refund = r.pay < 0;
+    setT('ct-label', refund ? '돌려받을 법인세 (지방소득세는 별도)' : '납부할 법인세 + 법인지방소득세');
+    setT('ct-pay', refund ? won(-r.pay) : won(r.grand));
+    setT('ct-pay-sub', r.base > 0
+      ? (refund ? '이미 낸 세금(' + won(r.prepaid) + ')이 총부담세액(' + won(r.total) + ')보다 많습니다 · 법인지방소득세 ' + won(r.local) + '은 별도 납부'
+        : '법인세 ' + won(Math.max(0, r.pay)) + ' + 법인지방소득세 ' + won(r.local) + ' · ' + yearTxt + (m < 12 ? ' (' + m + '개월)' : ''))
+      : r.income < 0 ? '이번 사업연도는 결손금 ' + won(r.lossNow) + '이 생겨 낼 법인세가 없습니다 — 다음 사업연도부터 15년간 이월결손금으로 공제'
+      : '과세표준이 0원이라 낼 법인세가 없습니다');
+    setT('ct-k1', won(r.income)); setT('ct-k2', won(r.base));
+    setT('ct-k3', r.base > 0 ? pct(r.eff) : '—');
+    var don = D.any ? [
+      ['<b>기부금 한도 계산</b> <small>기준소득금액 ' + won(Math.floor(D.S)) + (D.Lfor ? ' − 이월결손금 ' + won(Math.floor(D.Lfor)) : '') + '</small>', ''],
+      ['특례기부금 한도 <small>(50%) ' + won(Math.floor(D.A)) + '</small>', D.spCarryUsed ? '이월분 손금산입 ' + minus(D.spCarryUsed) : '', ''],
+      D.spExcess ? ['특례기부금 한도초과 <small>(손금불산입 · 10년 이월)</small>', plus(D.spExcess)] : null,
+      o.esCur ? ['우리사주조합기부금 한도 <small>(30%) ' + won(Math.floor(D.B)) + '</small>', D.esExcess ? plus(D.esExcess) + ' 한도초과' : '한도 내'] : null,
+      ['일반기부금 한도 <small>(10%) ' + won(Math.floor(D.C)) + '</small>', D.genCarryUsed ? '이월분 손금산입 ' + minus(D.genCarryUsed) : ''],
+      D.genExcess ? ['일반기부금 한도초과 <small>(손금불산입 · 10년 이월)</small>', plus(D.genExcess)] : null
+    ] : [];
+    setH('ct-table', rows([
+      ['결산서상 당기순' + (r.ni < 0 ? '손실' : '이익'), won(r.ni)],
+      ['익금산입·손금불산입' + (o.nonDesig ? ' <small>(비지정기부금 ' + won(o.nonDesig) + ' 포함)</small>' : ''), plus(r.add)],
+      ['손금산입·익금불산입', minus(r.ded)],
+      ['차가감소득금액', won(r.pre), 'fc-total']
+    ].concat(don).concat([
+      ['<b>각 사업연도 소득금액</b>', won(r.income), 'fc-total'],
+      ['이월결손금 <small>(한도: 소득의 ' + (r.lossRate * 100) + '%' + (r.lossLeft > 0 ? ' · 남은 ' + won(r.lossLeft) : '') + ')</small>', minus(r.lossDed)],
+      ['비과세소득', minus(r.nontax)],
+      ['소득공제', minus(r.incDed)],
+      ['<b>과세표준</b>', won(r.base), 'fc-total'],
+      ['세율' + (m < 12 ? ' <small>(과세표준 × 12/' + m + ' 로 연 환산 후 × ' + m + '/12)</small>' : ''), r.base > 0 ? '최고 ' + pct(r.topRate, 0) : '—'],
+      ['<b>산출세액</b>', won(r.tax), 'fc-total'],
+      r.startup ? ['창업중소기업 등 세액감면', minus(r.startup)] : null,
+      r.special ? ['중소기업 특별세액감면', minus(r.special)] : null,
+      r.minCredit ? ['세액공제 (최저한세 대상)', minus(r.minCredit)] : null,
+      ['최저한세 <small>(과세표준 × ' + r.minRateText + ')</small>', won(r.minTax)],
+      r.minExcl ? ['최저한세로 줄어든 감면·공제 <small>(이월 가능한 공제는 다음 사업연도로)</small>', plus(r.minExcl), 'fc-red'] : null,
+      r.foreign ? ['외국납부세액공제 <small>(한도 ' + won(r.foreignLimit) + ')</small>', minus(r.foreign)] : (o.foreignPaid ? ['외국납부세액공제 <small>(국외원천소득을 넣어야 한도 계산)</small>', '0원'] : null),
+      r.exCredit ? ['세액공제 (최저한세 적용 제외)', minus(r.exCredit)] : null,
+      r.unused ? ['산출세액을 넘어 공제받지 못한 금액', won(r.unused)] : null,
+      r.penalty ? ['가산세', plus(r.penalty)] : null,
+      r.addBack ? ['감면분 추가납부세액', plus(r.addBack)] : null,
+      ['<b>총부담세액</b> <small>(실효세율 ' + (r.base > 0 ? pct(r.eff) : '—') + ')</small>', won(r.total), 'fc-total'],
+      ['기납부세액 <small>(중간예납·원천징수)</small>', minus(r.prepaid)],
+      ['<b>' + (r.pay < 0 ? '환급받을 세액' : '차감 납부할 법인세') + '</b>', won(Math.abs(r.pay)), 'fc-hl'],
+      r.inst ? ['분납 가능 금액 <small>(납부기한 후 ' + r.instMonths + '개월 안에)</small>', won(r.inst)] : null,
+      r.inst ? ['신고 때 먼저 낼 금액', won(r.pay - r.inst)] : null,
+      ['법인지방소득세 <small>(과세표준 × 법인세율의 1/10, 공제·감면 전)</small>', won(r.local)],
+      ['법인세 + 지방소득세 부담 <small>(각 사업연도 소득 대비 ' + (r.income > 0 ? pct(r.effAll) : '—') + ')</small>', won(r.taxAfter + r.local), 'fc-hl']
+    ])));
+    /* 세율표 (선택한 사업연도·법인 유형) */
+    var Ta = r.base * 12 / m, prev = 0;
+    setT('ct-rate-title', '법인세율 — ' + yearTxt + (r.small ? ' · 소규모 성실신고확인대상 법인' : ''));
+    setH('ct-rates', brText(r.br).map(function (b, i) {
+      var lo = prev; prev = r.br[i][0];
+      var on = Ta > lo && r.base > 0;
+      return '<tr' + (on ? ' class="fc-hl"' : '') + '><td>' + b[0] + '</td><td>' + pct(b[1], 0) + '</td><td>' + pct(b[1] / 10, 1) + '</td></tr>';
+    }).join(''));
+    setH('ct-notes', r.notes.map(function (t) { return '<p class="fc-note" style="margin:8px 0 0;">※ ' + t + '</p>'; }).join(''));
+  }
+  window.fcRegister('ct', render, 'corptax');
+})();
