@@ -408,8 +408,10 @@ def main():
     print('받기 %.0f초 · 바뀐 달 %d · 실패 %d' % (time.time() - t0, len(done), len(fails)))
     if fails:
         print('실패 예: %s' % fails[0], file=sys.stderr)
-        if len(fails) > max(10, len(jobs) * 0.2):                              # 공공 API 장애 → 직전 자료 유지 (실행은 정상 종료)
-            print('::warning::공공 API 실패 %d건 — 저장하지 않고 직전 자료 유지' % len(fails)); return
+        miss = [f for f in fails if not os.path.exists(os.path.join(CACHE, '%s_%s.json' % tuple(f.split(':')[0].split())))]
+        if len(miss) > max(10, len(sggs) * len(yms) * 0.02):                    # 캐시도 없는 달이 많으면 순위가 비므로 저장 안 함 (실행은 정상 종료)
+            print('::warning::공공 API 실패 %d건 (캐시 없는 달 %d) — 저장하지 않고 직전 자료 유지' % (len(fails), len(miss))); return
+        print('::warning::공공 API 실패 %d건 — 그 달은 직전 캐시로 계산하고 다음 실행에 다시 받음' % len(fails))
     ok, n = upload(sggs, yms)                                                  # 단지 그래프용 (바뀐 달·못 올린 달만)
     if n: print('Worker 업로드 %d/%d' % (ok, n))
     if API_DOWN['ok'] == 0 and API_DOWN['fail']: print('공공 API 응답 없음 — 과거 자료 채우기는 다음 실행에', file=sys.stderr)
