@@ -1938,7 +1938,8 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   @media (max-width: 600px) {
     .top-bar { flex-wrap:wrap; }
     .brand { font-size:16px; }
-    .site-search { order:3; width:100%; }
+    .site-search { order:3; flex:1 1 200px; width:auto; min-width:0; }   /* 둘째 줄: 검색칸 + 방문자 수 */
+    .top-bar .visit-bar { order:4; }
     .app-nav .tab-group-btn { padding:10px 11px; font-size:13.5px; }
     .app-nav .tab-group-btn > svg, .app-nav .tab-group-btn .tab-group-arrow { display:none !important; }   /* 좁은 화면: 영역 5개가 한 줄에 들어가게 아이콘·화살표 숨김 */
   }
@@ -14794,8 +14795,7 @@ var TAX = (function () {
     set('visit-total', f(d.total)); set('visit-total2', f(d.total)); set('visit-today', f(d.today));
     set('visit-yday', f(d.yesterday)); set('visit-max', f(d.max));
     set('visit-maxday', /^\d{4}-\d\d-\d\d$/.test(d.maxDay || '') ? (+d.maxDay.slice(5, 7)) + '/' + (+d.maxDay.slice(8)) : '');   /* 최대였던 날 (월/일) */
-    /* 방문자 수는 계속 세되 화면에는 표시하지 않음 (초기 사이트에서 작은 숫자는 신뢰를 떨어뜨림) — 다시 보이려면 아래 줄 주석 해제 */
-    /* document.getElementById('visit-bar').hidden = false; */
+    document.getElementById('visit-bar').hidden = false;
   }
   async function run() {
     if (!/^https?:$/.test(location.protocol) || !window.mdLoad) return;
