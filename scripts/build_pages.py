@@ -91,6 +91,8 @@ def head_block(r, lang='ko'):
         'name': (BRAND_EN if en else BRAND) if not r['path'] else (r['en']['short'] if en else r['short']),
         'url': url, 'description': desc, 'inLanguage': 'en' if en else 'ko-KR',
     }
+    ld['publisher'] = {'@type': 'Organization', 'name': BRAND_EN if en else BRAND, 'url': SITE,
+                       'logo': {'@type': 'ImageObject', 'url': SITE + 'assets/logo-512.png', 'width': 512, 'height': 512}}
     if r['path']:
         ld.update({'applicationCategory': 'FinanceApplication', 'operatingSystem': 'Web',
                    'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'KRW'},
