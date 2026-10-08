@@ -1917,6 +1917,8 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .brand-mark { flex-shrink:0; display:block; }
   .brand:hover .brand-name { color:var(--accent); }
   .site-search { position:relative; width:min(340px, 36vw); }
+  /* 상단 줄 순서: 로고 · 방문자 수 · 검색 · 테마 · 언어 */
+  .top-bar .visit-bar { order:1; } .top-bar .site-search { order:2; } .top-bar .theme-sw { order:3; } .top-bar #lang-sw { order:4; }
   .site-search .ss-ico { position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--text3); pointer-events:none; }
   #ss-input { width:100%; height:34px; padding:0 12px 0 32px; font:inherit; font-size:13px; color:var(--text); background:rgba(var(--fg-rgb),0.04);
     border:1px solid rgba(var(--fg-rgb),0.10); border-radius:10px; outline:none; -webkit-appearance:none; appearance:none; }
@@ -1935,8 +1937,11 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   @media (max-width: 600px) {
     .top-bar { flex-wrap:wrap; }
     .brand { font-size:16px; }
-    .site-search { order:3; flex:1 1 200px; width:auto; min-width:0; }   /* 둘째 줄: 검색칸 + 방문자 수 */
-    .top-bar .visit-bar { order:4; }
+    /* 좁은 화면: 첫 줄 로고·테마·언어, 둘째 줄 방문자 수 + 검색칸 */
+    .top-bar .theme-sw, .top-bar #lang-sw { order:1; }
+    .top-bar .visit-bar { order:2; }
+    .top-bar .visit-pop { right:auto; left:0; }   /* 왼쪽 끝에 있으므로 목록은 오른쪽으로 펼침 */
+    .top-bar .site-search { order:3; flex:1 1 200px; width:auto; min-width:0; }
     .app-nav .tab-group-btn { padding:10px 11px; font-size:13.5px; }
     .app-nav .tab-group-btn > svg, .app-nav .tab-group-btn .tab-group-arrow { display:none !important; }   /* 좁은 화면: 영역 5개가 한 줄에 들어가게 아이콘·화살표 숨김 */
   }
