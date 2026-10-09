@@ -12934,13 +12934,13 @@ var JBX = (function () {
     st.spec = spec || currentSpec();
     st.lastFocus = document.activeElement;
     sync(); prepare(); sdk();                                          /* 카드가 없는 화면도 카카오 공유는 쓰므로 SDK 는 항상 미리 */
-    st.el.hidden = false; st.openedAt = Date.now();
+    st.el.hidden = false; st.scrim.hidden = false; st.openedAt = Date.now();
     st.fab.classList.add('on'); st.fab.setAttribute('aria-expanded', 'true'); st.fab.setAttribute('aria-label', '공유 닫기'); st.fab.innerHTML = ICON.x;
     var f = st.el.querySelector('[data-a="copy"]'); if (f) f.focus({ preventScroll: true });
   }
   function closePanel(back) {
     if (!st.el || st.el.hidden) return;
-    st.el.hidden = true;
+    st.el.hidden = true; st.scrim.hidden = true;
     st.fab.classList.remove('on'); st.fab.setAttribute('aria-expanded', 'false'); st.fab.setAttribute('aria-label', '공유하기'); st.fab.innerHTML = ICON.share;
     if (back && st.lastFocus && st.lastFocus.focus) st.lastFocus.focus({ preventScroll: true });
   }
@@ -12958,8 +12958,9 @@ var JBX = (function () {
       '<button type="button" class="dsh-b dsh-kakao" data-a="kakao">' + ICON.kakao + '<span>카카오톡 공유</span></button>' +
       '<button type="button" class="dsh-b" data-a="card">' + ICON.card + '<span>카드 이미지 저장</span></button>' +
       '<button type="button" class="dsh-b" data-a="more">' + ICON.more + '<span>다른 앱으로 공유</span></button>';
-    document.body.appendChild(el); document.body.appendChild(fab);
-    st.el = el; st.fab = fab;
+    var scrim = document.createElement('div'); scrim.className = 'dsh-scrim'; scrim.hidden = true;   /* 뒤 화면을 어둡게 (누르면 닫힘) */
+    document.body.appendChild(scrim); document.body.appendChild(el); document.body.appendChild(fab);
+    st.el = el; st.fab = fab; st.scrim = scrim;
     fab.addEventListener('click', function () { if (el.hidden) openPanel(); else closePanel(true); });
     el.addEventListener('change', function (e) {
       var o = e.target.closest('[data-o]'); if (!o) return;
