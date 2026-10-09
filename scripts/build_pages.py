@@ -358,6 +358,31 @@ def section_span(src, tab):
     sys.exit(f'page-{tab} 닫는 태그를 찾지 못했습니다')
 
 
+def check_structure(src):
+    """원본 HTML 구조 검사 — 화면(app-page)마다 여는·닫는 태그 짝이 맞고, 화면끼리 형제로 나란히 있어야 함.
+    닫는 </div> 가 하나라도 남으면 바깥 .container 가 일찍 닫혀 그 뒤 모든 화면이 화면 폭 전체로 퍼짐(2026-10 재산세 FAQ 사고)."""
+    body = re.sub(r'<script\b.*?</script>|<style\b.*?</style>', lambda m: ' ' * len(m.group(0)), src, flags=re.S)
+    starts = [m for m in re.finditer(r'<div class="app-page[^"]*" id="page-([a-z0-9]+)">', body)]
+    errs = []
+    for k, m in enumerate(starts):
+        tab = m.group(1)
+        a, b = section_span(body, tab)
+        nxt = starts[k + 1].start() if k + 1 < len(starts) else None
+        gap = body[b:nxt] if nxt is not None else body[b:body.index('</div>', b) + 6]
+        rest = re.sub(r'<!--.*?-->|\s', '', gap, flags=re.S)
+        if nxt is not None and rest:
+            errs.append(f'page-{tab}: 화면이 일찍 닫힘(짝 없는 </div>) — 뒤에 남은 내용: {rest[:80]}')
+        if nxt is None and rest != '</div>':
+            errs.append(f'page-{tab}(마지막): 화면 묶음(.container) 닫힘이 맞지 않음 — {rest[:80]}')
+        seg = body[a:b]
+        for t in ('details', 'section', 'table', 'label', 'summary', 'article', 'nav', 'ul', 'ol', 'p'):
+            o, c = len(re.findall(r'<%s\b' % t, seg)), len(re.findall(r'</%s>' % t, seg))
+            if o != c:
+                errs.append(f'page-{tab}: <{t}> 여는 {o}개 · 닫는 {c}개')
+    if errs:
+        sys.exit('원본 HTML 구조 오류:\n  ' + '\n  '.join(errs))
+
+
 def english_page(html):
     out = html.replace('<html lang="ko">', '<html lang="en">', 1)
     # 영어판이 있는 도구 화면: 설명글은 영어판으로 통째로, 나머지 글자는 사전으로
@@ -392,6 +417,7 @@ def write_if_changed(path, text):
 
 def main():
     src = open(SRC, encoding='utf-8').read()
+    check_structure(src)
     load_nav_labels(src)
     load_drop_tree(src)
     # 원본에 이미 들어 있는 하위 페이지 표시(앞선 빌드 결과)가 있으면 루트 기준으로 되돌린 뒤 시작
