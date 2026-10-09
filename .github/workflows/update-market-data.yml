@@ -6,6 +6,11 @@ on:
     - cron: '*/15 13-21 * * 1-5'  # 미국장  (KST 22:00~06:59)
     - cron: '7 */3 * * *'         # 그 외 3시간마다 (환율·공포탐욕·주말)
   workflow_dispatch:              # Actions 탭에서 수동 실행
+    inputs:
+      history:
+        description: '지수 과거 주봉(history.json)을 지금 다시 수집 (평소엔 20시간마다)'
+        type: boolean
+        default: false
   push:                           # 수집 스크립트·워크플로가 바뀌면 바로 한 번 실행
     branches: [main]
     paths: ['scripts/update_market_data.py', 'scripts/update_etfdiv.py', 'scripts/etf_tax.py', '.github/workflows/update-market-data.yml']
@@ -24,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: 시세 수집
-        run: python3 scripts/update_market_data.py
+        run: python3 scripts/update_market_data.py ${{ inputs.history && '--history' || '' }}
       - name: ETF 월분배 달력 (거래소 분배금 공시 확인)
         run: python3 scripts/update_etfdiv.py || echo "::warning::ETF 분배 달력 갱신 실패 — 직전 자료 유지"
       - name: 변경된 경우에만 커밋
