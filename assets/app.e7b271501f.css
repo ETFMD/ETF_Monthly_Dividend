@@ -1612,6 +1612,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .av-ladder b { font-family:var(--mono); font-weight:600; color:var(--text); }
   .av-ladder em { font-style:normal; font-family:var(--mono); font-size:12px; text-align:right; color:var(--text3); }
   .av-tbl small { color:var(--text3); }
+  /* [CGT] 양도소득세 */
+  .cgt-cq { align-items:center; flex-wrap:wrap; }
+  .cgt-cq small { font-size:11px; color:var(--text3); }
+  .fc-seg[data-name="cgt-type"] .mode-btn { font-size:12px; padding-left:4px; padding-right:4px; white-space:nowrap; }
   .fc-sec-title { font-size:12px; font-weight:600; color:var(--text); margin:6px 0 10px; padding-top:12px; border-top:1px solid var(--card-border); }
   .fc-note { font-size:11px; line-height:1.7; color:var(--text3); margin-top:4px; }
   .fc-hero { padding:24px 26px; }

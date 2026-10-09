@@ -14168,6 +14168,243 @@ var AVG = (function () {
 })();
 
 /* ════════════════════════════════════════
+   [CGT] 부동산 양도소득세 계산기 — 2026년 현행 소득세법 기준 (거주자)
+   근거(2026-10 확인)
+   · 양도차익 = 양도가액 − 취득가액 − 필요경비(취득세·중개·법무 등 취득 부대비용, 자본적 지출, 양도 비용)
+   · 1세대 1주택 비과세(소득세법 §89, 시행령 §154): 2년 이상 보유(취득 당시 조정대상지역이면 2년 거주도) · 양도가액 12억원 이하 전액 비과세
+       12억원 초과(고가주택): 과세 양도차익 = 양도차익 × (양도가액 − 12억) ÷ 양도가액 (시행령 §160)
+       일시적 2주택: 종전 주택을 신규 주택 취득일부터 3년 안에 팔고 종전 주택이 비과세 요건을 갖추면 1주택처럼 비과세
+   · 장기보유특별공제(§95②): 3년 이상 보유한 토지·건물 — 표1 연 2%(15년 30%)
+       1세대 1주택(2년 이상 거주) 표2: 보유 연 4%(최대 40%) + 거주 연 4%(최대 40%, 2~3년 8%) — 최대 80%
+       다주택 중과 대상 주택 · 분양권 · 미등기: 공제 없음
+   · 기본공제(§103) 250만원(사람별 연 1회) · 지방소득세 = 양도소득세의 10%
+   · 세율(§104)
+       기본세율 6~45%: 1,400만 6% · 5,000만 15% · 8,800만 24% · 1.5억 35% · 3억 38% · 5억 40% · 10억 42% · 초과 45%
+       주택·조합원입주권: 1년 미만 70% · 2년 미만 60%    분양권: 1년 미만 70% · 1년 이상 60%
+       토지·건물(주택 외): 1년 미만 50% · 2년 미만 40%    비사업용 토지: 기본세율 + 10%p (단기는 큰 세액)
+       다주택 중과(§104⑦): 조정대상지역 주택 — 1세대 2주택 +20%p · 3주택 이상 +30%p, 단기 세율과 비교해 큰 세액
+         2022.5.10~2026.5.9 양도분은 중과 한시 배제 → 연장 없이 종료, 2026.5.10 양도분부터 중과 재개
+         경과조치(시행령 2026.3.1): 2026.5.9까지 계약·계약금 지급 + 계약일부터 4개월(기존 조정)·6개월(신규 조정) 안에 양도하면 배제
+         조정대상지역(2025.10.16~): 서울 25개 구 전역 · 경기 과천·광명·의왕·하남, 성남 분당·수정·중원, 수원 영통·장안·팔달, 안양 동안, 용인 수지
+   · 양도 시기: 잔금 청산일과 등기 접수일 중 빠른 날 · 예정신고: 양도일이 속한 달의 말일부터 2개월 이내
+════════════════════════════════════════ */
+var CGT = (function () {
+  var HIGH = 12e8, BASIC_DED = 250e4, SURCHARGE_FROM = '2026-05-10';
+  var BR = [[14e6, 0.06, 0], [50e6, 0.15, 126e4], [88e6, 0.24, 576e4], [150e6, 0.35, 1544e4], [300e6, 0.38, 1994e4], [500e6, 0.40, 2594e4], [1e9, 0.42, 3594e4], [Infinity, 0.45, 6594e4]];
+  function basicTax(tb) { if (!(tb > 0)) return 0; for (var i = 0; i < BR.length; i++) if (tb <= BR[i][0]) return tb * BR[i][1] - BR[i][2]; return 0; }
+  function marginal(tb) { for (var i = 0; i < BR.length; i++) if (tb <= BR[i][0]) return BR[i][1]; return 0.45; }
+  function parse(d) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d || ''); return m ? { y: +m[1], m: +m[2], d: +m[3] } : null; }
+  function iso(x) { return x.y + '-' + String(x.m).padStart(2, '0') + '-' + String(x.d).padStart(2, '0'); }
+  /* 만 보유 연수 — 취득일 다음 날부터 셈(초일 불산입): 취득일의 n년 뒤 같은 날 이후면 n년 */
+  function years(a, b) { var y = b.y - a.y; if (b.m < a.m || (b.m === a.m && b.d < a.d)) y--; return Math.max(0, y); }
+  function addYears(a, n) { var y = a.y + n, m = a.m, d = a.d; if (m === 2 && d === 29 && !(y % 4 === 0 && (y % 100 !== 0 || y % 400 === 0))) d = 28; return { y: y, m: m, d: d }; }
+  function dueDate(s) { var y = s.y, m = s.m + 2; if (m > 12) { m -= 12; y++; } return { y: y, m: m, d: new Date(Date.UTC(y, m, 0)).getUTCDate() }; }
+  /* o: {type 'house'|'presale'|'land'|'nonbiz', sell, buy, costAcq, costSell, acq 'YYYY-MM-DD', sale 'YYYY-MM-DD', reside(년),
+         houses 1|2|3, adjusted(양도 주택이 조정대상지역), adjAtAcq(취득 당시 조정대상지역 — 비과세 2년 거주 요건), temp2(일시적 2주택 특례),
+         exclude(중과 배제 주택), transition(2026.5.9 이전 계약 경과조치), owners 1|2} */
+  function calc(o) {
+    var a = parse(o.acq), s = parse(o.sale);
+    if (!a || !s || iso(s) < iso(a)) return { err: 'date' };
+    var hold = years(a, s), reside = Math.max(0, Math.floor((o.reside || 0) + 1e-9)), type = o.type || 'house', n = o.owners === 2 ? 2 : 1;
+    var cost = (o.costAcq || 0) + (o.costSell || 0), gain = o.sell - o.buy - cost;
+    var r = { hold: hold, reside: reside, gain: gain, cost: cost, type: type, due: iso(dueDate(s)), owners: n };
+    if (!(gain > 0)) { r.zero = true; r.tax = r.local = r.total = 0; r.taxGain = 0; return r; }
+    var oneHouse = type === 'house' && (o.houses === 1 || o.temp2);
+    var exemptOk = oneHouse && hold >= 2 && (!o.adjAtAcq || reside >= 2);
+    r.oneHouse = oneHouse; r.exemptOk = exemptOk;
+    var taxGain = gain;
+    if (exemptOk) {
+      if (o.sell <= HIGH) { r.exempt = 'full'; r.taxGain = 0; r.tax = r.local = r.total = 0; r.saved = null; return r; }
+      taxGain = gain * (o.sell - HIGH) / o.sell; r.exempt = 'high';
+    }
+    r.taxGain = taxGain;
+    /* 중과 여부 */
+    var sur = 0;
+    if (type === 'house' && !oneHouse && o.houses >= 2 && o.adjusted && !o.exclude) {
+      if (iso(s) >= SURCHARGE_FROM && !o.transition) sur = o.houses >= 3 ? 0.3 : 0.2;
+      else r.deferred = true;                                          /* 유예 기간 또는 경과조치 → 기본세율 */
+    }
+    r.sur = sur;
+    /* 장기보유특별공제 */
+    var ltd = 0, table = '';
+    if (hold >= 3 && type !== 'presale' && !sur) {
+      if (exemptOk && reside >= 2) { ltd = Math.min(0.4, 0.04 * hold) + (reside >= 3 ? Math.min(0.4, 0.04 * reside) : 0.08); table = '1세대 1주택 (보유 ' + Math.round(Math.min(40, 4 * hold)) + '% + 거주 ' + Math.round(reside >= 3 ? Math.min(40, 4 * reside) : 8) + '%)'; }
+      else { ltd = Math.min(0.3, 0.02 * hold); table = '일반 (보유 ' + hold + '년 × 2%)'; }
+    }
+    r.ltdRate = ltd; r.ltdTable = table; r.ltd = taxGain * ltd;
+    r.income = taxGain - r.ltd;                                        /* 양도소득금액 */
+    var each = r.income / n, base = Math.max(0, each - BASIC_DED);
+    r.basicDed = Math.min(each, BASIC_DED) * n; r.taxBase = base * n;
+    /* 세율 — 단기 보유 세율과 (중과·비사업용 가산) 누진세율 중 큰 세액 (§104 ⑦·①) */
+    var short = type === 'presale' ? (hold < 1 ? 0.7 : 0.6) : type === 'house' ? (hold < 1 ? 0.7 : hold < 2 ? 0.6 : null) : (hold < 1 ? 0.5 : hold < 2 ? 0.4 : null);
+    var add = type === 'nonbiz' ? 0.1 : sur, prog = basicTax(base) + add * base, t, rule, rate;
+    var addTxt = type === 'nonbiz' ? '기본세율 + 10%p (비사업용 토지)' : '기본세율 + ' + add * 100 + '%p (' + (o.houses >= 3 ? '3주택 이상' : '2주택') + ' 중과)';
+    if (type === 'presale') { t = base * short; rule = '분양권 ' + short * 100 + '% (보유 ' + (hold < 1 ? '1년 미만' : '1년 이상') + ')'; rate = short; }
+    else if (short != null) {
+      var st = base * short;
+      if (add && prog > st) { t = prog; rule = addTxt + ' — 단기 ' + short * 100 + '%보다 큼'; rate = marginal(base) + add; }
+      else { t = st; rule = '단기 보유 ' + short * 100 + '% (' + (hold < 1 ? '1년 미만' : '2년 미만') + ')' + (add ? ' — ' + addTxt.split(' (')[0] + '보다 큼' : ''); rate = short; }
+    } else { t = prog; rule = add ? addTxt : '기본세율 6~45%'; rate = marginal(base) + add; }
+    r.rule = rule; r.marginal = rate;
+    r.taxEach = Math.floor(t); r.tax = r.taxEach * n;                  /* 원 단위 아래 버림 */
+    r.localEach = Math.floor(r.taxEach * 0.1); r.local = r.localEach * n;
+    r.total = r.tax + r.local; r.eff = r.total / gain;
+    return r;
+  }
+  /* 같은 거래를 다른 날 팔았다면 — 보유 1·2·3년, 다음 보유·거주 연수가 차는 날 */
+  function laterDates(o) {
+    var a = parse(o.acq), s = parse(o.sale); if (!a || !s) return [];
+    var cand = [], hold = years(a, s);
+    for (var k = hold + 1; k <= Math.min(hold + 3, 16); k++) cand.push(addYears(a, k));
+    return cand.map(function (d) { var p = {}; for (var k in o) p[k] = o[k]; p.sale = iso(d); p.reside = o.resideGrows ? (o.reside || 0) + years(s, d) : o.reside; return { date: p.sale, r: calc(p) }; });
+  }
+  return { calc: calc, basicTax: basicTax, years: years, laterDates: laterDates, parse: parse, iso: iso, HIGH: HIGH, SURCHARGE_FROM: SURCHARGE_FROM };
+})();
+
+/* [CGT] 화면 — 입력(data-fc="cgt")은 [FC-UI] 공통 처리 */
+(function () {
+  if (!document.getElementById('page-cgt')) return;
+  function $(id) { return document.getElementById(id); }
+  function setT(id, v) { var e = $(id); if (e) e.textContent = v; }
+  function setH(id, v) { var e = $(id); if (e) e.innerHTML = v; }
+  function numOf(id) { var e = $(id); return e ? (parseFloat(String(e.value).replace(/,/g, '')) || 0) : 0; }
+  var UNIT = { eok: 1e8, man: 1e4, won: 1 };
+  function amt(id) { var e = $(id); return Math.round(numOf(id) * (UNIT[e && e.getAttribute('data-unit')] || 1)); }
+  function seg(name) { var b = document.querySelector('.fc-seg[data-name="' + name + '"] .mode-btn.active'); return b ? b.getAttribute('data-v') : null; }
+  function won(n) { return (n < 0 ? '−' : '') + Math.round(Math.abs(n)).toLocaleString('ko-KR') + '원'; }
+  function eok(n) {
+    var neg = n < 0; n = Math.round(Math.abs(n) / 1e4) * 1e4;
+    var e = Math.floor(n / 1e8), m = Math.round((n - e * 1e8) / 1e4), s;
+    if (!e) s = m.toLocaleString('ko-KR') + '만원'; else s = e.toLocaleString('ko-KR') + '억' + (m ? ' ' + m.toLocaleString('ko-KR') + '만원' : '원');
+    return (neg ? '−' : '') + s;
+  }
+  function both(n) { return n >= 1e6 ? won(n) + ' <small>(' + eok(n) + ')</small>' : won(n); }
+  function pct(v, d) { return (v * 100).toFixed(d == null ? 1 : d).replace(/\.0+$/, '') + '%'; }
+  function dot(d) { return d.replace(/-/g, '.'); }
+  function today() { var k = new Date(Date.now() + 9 * 3600e3); return k.toISOString().slice(0, 10); }
+  if (!$('cgt-sale').value) { $('cgt-sale').value = today(); }
+  var share = null;
+  function input() {
+    var type = seg('cgt-type') || 'house', houses = +(seg('cgt-houses') || 1);
+    return { type: type, sell: amt('cgt-sell'), buy: amt('cgt-buy'), costAcq: amt('cgt-cacq'), costSell: amt('cgt-csell'), acq: $('cgt-acq').value, sale: $('cgt-sale').value,
+      reside: type === 'house' ? numOf('cgt-reside') : 0, houses: type === 'house' ? houses : 1, adjusted: $('cgt-adj').checked, adjAtAcq: $('cgt-adjacq').checked,
+      temp2: houses === 2 && $('cgt-temp2').checked, exclude: $('cgt-excl').checked, transition: $('cgt-trans').checked, owners: +(seg('cgt-own') || 1) };
+  }
+  function ruleOf(r) {
+    if (r.zero) return '양도차익 없음';
+    if (r.exempt === 'full') return '1세대 1주택 비과세';
+    return r.rule + (r.ltdRate ? ' · 장특공 ' + pct(r.ltdRate, 0) : '');
+  }
+  function clear(msg) {
+    setT('cgt-val', '—'); setT('cgt-sub', msg); ['cgt-k1', 'cgt-k2', 'cgt-k3'].forEach(function (k) { setT(k, '—'); });
+    ['cgt-table', 'cgt-scen', 'cgt-later', 'cgt-tips'].forEach(function (k) { setH(k, ''); });
+    share = null; (window.dcShareSpec = window.dcShareSpec || {})['capital-gains-tax'] = null;
+  }
+  function render() {
+    var o = input(), house = o.type === 'house';
+    $('cgt-house-box').style.display = house ? '' : 'none';
+    $('cgt-temp2-f').style.display = o.houses === 2 ? '' : 'none';
+    $('cgt-adj-f').style.display = o.houses >= 2 ? '' : 'none';
+    var surPossible = house && o.houses >= 2 && o.adjusted && !o.temp2;
+    $('cgt-excl-f').style.display = surPossible ? '' : 'none';
+    $('cgt-trans-f').style.display = surPossible && !o.exclude && o.sale >= CGT.SURCHARGE_FROM ? '' : 'none';
+    if (o.houses < 2) { o.adjusted = false; }
+    if (!surPossible) { o.exclude = false; }
+    if (!(surPossible && o.sale >= CGT.SURCHARGE_FROM)) o.transition = false;
+    var err = !(o.sell > 0) ? '양도가액을 넣어 주세요.' : !(o.buy >= 0) ? '취득가액을 넣어 주세요.' : !CGT.parse(o.acq) || !CGT.parse(o.sale) ? '취득일과 양도일을 넣어 주세요.' : o.sale < o.acq ? '양도일이 취득일보다 빠릅니다.' : '';
+    if (err) return clear(err);
+    var r = CGT.calc(o);
+    if (r.err) return clear('날짜를 확인해 주세요.');
+    /* 히어로 */
+    var label = r.exempt === 'full' ? '비과세' : r.zero ? '0원' : won(r.total);
+    setT('cgt-val', label); $('cgt-val').style.color = r.exempt === 'full' || r.zero ? '#22a06b' : '';
+    if (r.zero) setH('cgt-sub', '양도차익이 ' + won(r.gain) + '로 없어서 낼 양도소득세가 없습니다');
+    else if (r.exempt === 'full') setH('cgt-sub', '1세대 1주택 비과세 — 양도가액 12억원 이하, 보유 ' + r.hold + '년' + (o.adjAtAcq ? ' · 거주 ' + r.reside + '년' : '') + ' · 양도차익 <b>' + eok(r.gain) + '</b> 전부 비과세');
+    else setH('cgt-sub', '양도차익 ' + eok(r.gain) + '의 <b>' + pct(r.eff) + '</b> · ' + ruleOf(r) + ' · 신고 기한 ' + dot(r.due));
+    setT('cgt-k1', r.exempt === 'full' || r.zero ? '0원' : won(r.tax)); setT('cgt-k2', r.exempt === 'full' || r.zero ? '0원' : won(r.local));
+    setT('cgt-k3', r.zero ? won(r.gain) : eok(r.gain - (r.total || 0)));
+    /* 계산 과정 */
+    var L = [
+      ['양도가액', both(o.sell)], ['− 취득가액', both(o.buy)], ['− 필요경비 <small>(취득 부대비용 + 양도 비용·수리비)</small>', both(r.cost)],
+      ['= 양도차익', both(r.gain), 'fc-total']
+    ];
+    if (!r.zero && r.exempt === 'full') L.push(['1세대 1주택 비과세 <small>(12억원 이하)</small>', '전액 비과세', 'fc-hl']);
+    else if (!r.zero) {
+      if (r.exempt === 'high') L.push(['× 고가주택 과세 비율 <small>((양도가액 − 12억) ÷ 양도가액 = ' + pct((o.sell - CGT.HIGH) / o.sell, 2) + ')</small>', both(r.taxGain)]);
+      L.push(['− 장기보유특별공제 <small>(' + (r.ltdRate ? r.ltdTable + ' = ' + pct(r.ltdRate, 0) : r.sur ? '다주택 중과 대상은 공제 없음' : o.type === 'presale' ? '분양권은 공제 없음' : '보유 3년 미만') + ')</small>', both(r.ltd)]);
+      L.push(['= 양도소득금액', both(r.income)]);
+      L.push(['− 기본공제 <small>(' + (r.owners === 2 ? '250만원 × 2명' : '연 1회 250만원') + ')</small>', both(r.basicDed)]);
+      L.push(['= 과세표준' + (r.owners === 2 ? ' <small>(2명 합계 · 1명당 ' + eok(r.taxBase / 2) + ')</small>' : ''), both(r.taxBase), 'fc-total']);
+      L.push(['적용 세율', r.rule + (r.marginal ? ' <small>(최고 구간 ' + pct(r.marginal, 0) + ')</small>' : '')]);
+      L.push(['양도소득세' + (r.owners === 2 ? ' <small>(1명당 ' + won(r.taxEach) + ')</small>' : ''), won(r.tax)]);
+      L.push(['지방소득세 <small>(양도소득세의 10%)</small>', won(r.local)]);
+      L.push(['<b>납부할 세금 합계</b>', '<b>' + won(r.total) + '</b>', 'fc-hl']);
+      L.push(['예정신고·납부 기한 <small>(양도일이 속한 달 말일부터 2개월)</small>', dot(r.due)]);
+    }
+    L.push(['보유 기간' + (house ? ' · 거주 기간' : ''), r.hold + '년' + (house ? ' · ' + r.reside + '년' : '') + ' <small>(' + dot(o.acq) + ' → ' + dot(o.sale) + ')</small>']);
+    setH('cgt-table', L.map(function (x) { return '<tr' + (x[2] ? ' class="' + x[2] + '"' : '') + '><td>' + x[0] + '</td><td style="text-align:right;">' + x[1] + '</td></tr>'; }).join(''));
+    /* 주택 수·지역별 */
+    if (house && !r.zero) {
+      $('cgt-scen-card').style.display = '';
+      var base = { exclude: false, transition: false, temp2: false }, cases = [
+        ['1세대 1주택 <small>(비과세 요건 충족 가정)</small>', { houses: 1 }],
+        ['2주택 · 비조정대상지역', { houses: 2, adjusted: false }],
+        ['2주택 · 조정대상지역', { houses: 2, adjusted: true }],
+        ['3주택 이상 · 조정대상지역', { houses: 3, adjusted: true }]
+      ];
+      setH('cgt-scen', cases.map(function (c) {
+        var p = {}; for (var k in o) p[k] = o[k]; for (k in base) p[k] = base[k]; for (k in c[1]) p[k] = c[1][k];
+        if (c[1].houses === 1) { p.adjAtAcq = false; }
+        var x = CGT.calc(p), mine = p.houses === o.houses && (p.houses === 1 || p.adjusted === o.adjusted) && !o.temp2 && !o.exclude;
+        return '<tr' + (mine ? ' class="fc-hl"' : '') + '><td>' + c[0] + (mine ? ' <small>← 지금 입력</small>' : '') + '</td><td><small>' + (x.exempt === 'full' ? '비과세' : ruleOf(x)) + (x.deferred ? ' · 중과 유예기간 양도' : '') + '</small></td><td style="text-align:right;">' + (x.exempt === 'full' ? '0원' : won(x.total)) + '</td></tr>';
+      }).join(''));
+    } else $('cgt-scen-card').style.display = 'none';
+    /* 더 갖고 있다가 */
+    var later = r.zero || r.exempt === 'full' ? [] : CGT.laterDates(Object.assign({}, o, { resideGrows: house && o.reside >= r.hold && o.reside > 0 }));
+    var better = later.filter(function (x) { return !x.r.err && x.r.total < r.total; });
+    $('cgt-later-card').style.display = later.length ? '' : 'none';
+    setH('cgt-later', later.map(function (x) {
+      var t = x.r.exempt === 'full' ? 0 : x.r.total, d = t - r.total;
+      return '<tr><td>' + dot(x.date) + '</td><td>' + x.r.hold + '년</td><td><small>' + (x.r.exempt === 'full' ? '비과세' : ruleOf(x.r)) + '</small></td><td style="text-align:right;">' + won(t) + '</td><td style="text-align:right;' + (d < 0 ? 'color:#22a06b;' : '') + '">' + (d < 0 ? '−' + won(-d) : d > 0 ? '+' + won(d) : '같음') + '</td></tr>';
+    }).join(''));
+    /* 체크 포인트 */
+    var tips = [];
+    if (r.exempt === 'full') tips.push('비과세여도 양도가액이 12억원 이하면 신고 의무는 없지만, 비과세 요건(1세대·2년 보유' + (o.adjAtAcq ? '·2년 거주' : '') + ')을 양도일 기준으로 다시 확인하세요.');
+    if (house && o.houses === 1 && !r.exemptOk && !r.zero) tips.push(r.hold < 2 ? '보유 2년이 안 돼 1세대 1주택 비과세를 받을 수 없습니다. ' + dot(CGT.iso({ y: CGT.parse(o.acq).y + 2, m: CGT.parse(o.acq).m, d: CGT.parse(o.acq).d })) + ' 이후에 양도하면 요건을 갖춥니다.' : '취득 당시 조정대상지역이라 2년 거주 요건이 있는데 거주가 ' + r.reside + '년이라 비과세를 받지 못합니다.');
+    if (r.sur) tips.push('2026.5.10부터 조정대상지역 다주택 중과가 재개돼 +' + r.sur * 100 + '%p가 붙고 장기보유특별공제를 받지 못합니다. 비조정대상지역 주택을 먼저 팔거나 중과 배제 요건(지방 3억 이하·장기임대 등)을 확인해 보세요.');
+    if (r.deferred) tips.push('다주택이지만 중과 유예기간(2022.5.10~2026.5.9) 양도 또는 경과조치에 해당해 기본세율과 장기보유특별공제가 적용됐습니다.');
+    if (better.length) {                                               /* 가장 많이 줄어드는 금액의 90% 이상을 얻는 가장 이른 날 */
+      var most = Math.max.apply(null, better.map(function (x) { return r.total - x.r.total; }));
+      var bst = better.filter(function (x) { return r.total - x.r.total >= most * 0.9; })[0];
+      tips.push(dot(bst.date) + '(보유 ' + bst.r.hold + '년) 이후에 팔면 세금이 <b>' + won(r.total - bst.r.total) + '</b> 줄어듭니다' + (bst.r.exempt === 'full' ? ' — 비과세' : '') + '.');
+    }
+    if (r.owners === 1 && !r.zero && r.exempt !== 'full' && r.taxBase > 14e6) {
+      var co = CGT.calc(Object.assign({}, o, { owners: 2 }));
+      if (co.total < r.total) tips.push('부부 공동명의(50:50)였다면 세금이 ' + won(co.total) + '으로 <b>' + won(r.total - co.total) + '</b> 적었을 것입니다 (명의는 취득 때 정해지며, 지금 증여로 바꾸면 증여세·취득세가 따로 듭니다).');
+    }
+    if (!r.zero && r.exempt !== 'full' && r.cost === 0) tips.push('취득세·중개수수료·확장 공사비 같은 필요경비를 넣으면 세금이 줄어듭니다. 증빙(영수증·계좌이체)이 있어야 인정됩니다.');
+    if (!r.zero && r.exempt !== 'full') tips.push('양도일이 속한 달의 말일부터 2개월 안(' + dot(r.due) + '까지) 예정신고·납부해야 하며, 늦으면 신고불성실·납부지연 가산세가 붙습니다.');
+    setH('cgt-tips', tips.map(function (t) { return '<li>' + t + '</li>'; }).join(''));
+    /* 공유 카드 */
+    var tname = { house: '주택', presale: '분양권', land: '토지·상가', nonbiz: '비사업용 토지' }[o.type];
+    share = { key: 'capital-gains-tax', chip: '양도소득세 계산기', title: tname + ' ' + eok(o.sell) + '에 팔면 양도세는?',
+      label: (house ? (o.houses === 1 ? '1주택' : o.houses === 2 ? '2주택' : '3주택 이상') + (o.houses >= 2 ? (o.adjusted ? ' · 조정대상지역' : ' · 비조정') : '') + ' · ' : '') + '보유 ' + r.hold + '년' + (house ? ' · 거주 ' + r.reside + '년' : '') + (r.owners === 2 ? ' · 공동명의' : ''),
+      big: label, bigSecret: !(r.exempt === 'full' || r.zero), sub: r.zero ? '양도차익 없음' : r.exempt === 'full' ? '1세대 1주택 비과세' : '차익의 ' + pct(r.eff) + ' · ' + ruleOf(r),
+      rows: r.zero || r.exempt === 'full' ? [['양도차익', eok(r.gain), true]] : [['양도차익', eok(r.gain), true], ['장기보유특별공제', r.ltdRate ? pct(r.ltdRate, 0) : '없음'], ['과세표준', eok(r.taxBase), true], ['세금 내고 남는 차익', eok(r.gain - r.total), true]],
+      source: '2026년 소득세법 · 다주택 중과(2026.5.10~) · 지방소득세 포함' };
+    (window.dcShareSpec = window.dcShareSpec || {})['capital-gains-tax'] = share;   /* 오른쪽 아래 공유 창이 이 카드를 씀 */
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.cgt-cq button'); if (!b) return;
+    var t = $('cgt-cacq'), v = Math.round(amt('cgt-buy') * (+b.getAttribute('data-k')) / 100);
+    t.setAttribute('data-unit', 'won'); t.value = v.toLocaleString('ko-KR');
+    document.querySelectorAll('.unit-btn[data-fc-unit="cgt-cacq"]').forEach(function (u) { u.classList.toggle('active', u.getAttribute('data-unit') === 'won'); });
+    render();
+  });
+  window.fcRegister('cgt', render, 'cgt');
+})();
+
+/* ════════════════════════════════════════
    [AUTH] 간편 로그인(카카오·네이버·구글) · 내 저장함 — 서버는 방문자 카운터 Worker(worker/src/auth.js)
    · /auth/config 에 켜진 제공자가 하나도 없으면 로그인 버튼 자체를 숨김 (키 등록 전에는 사이트 변화 없음)
    · 로그인: 제공자 로그인 창 → https://d-capitalism.com/auth/callback/ (state·PKCE 확인, 첫 가입이면 약관·개인정보·만 14세 동의) → 토큰을 localStorage 'dc_auth' 에 보관
