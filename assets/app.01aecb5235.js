@@ -13632,6 +13632,265 @@ var RTC = (function () {
 })();
 
 /* ════════════════════════════════════════
+   [NPR] 국민연금 손익 계산기 — 낸 돈 대비 받는 돈 · 세대별 손익 (2025년 개정 국민연금법, 2026.1.1 시행)
+   근거(2026-10 확인)
+   · 보험료율(직장 = 근로자·사용자 절반씩): 1988~92년 3% · 1993~97년 6%(근로자 2 · 사용자 2 · 퇴직금전환금 2)
+       · 1998.1~1999.3 9%(3 · 3 · 3) · 1999.4~2025년 9%(4.5 · 4.5)
+       · 개정: 2026년 9.5% → 해마다 0.5%p → 2033년~ 13%   (개정 전 제도: 9% 유지)
+     지역가입자: 1995.7 3% → 2000.7부터 해마다 7월 1%p ↑ → 2005.7~ 9% (전액 본인 부담) · 1995.7 이전은 가입 대상 아님
+   · 기본연금액(월) = Σ(가입 월마다 비례상수 × (A + B)) ÷ 2,880   … 법 제51조 산식(×(1+0.05×20년 초과 연수), 20년 미만 ×(0.5+0.05×10년 초과 연수))과 같은 값
+       비례상수: 1988~98년 2.4 (A + 0.75B) · 1999~2007년 1.8 · 2008년 1.5 → 매년 0.015 ↓ → 2025년 1.245
+       개정: 2026년~ 1.29 (소득대체율 43%) · 개정 전 제도: 2026년 1.23 · 2027년 1.215 · 2028년~ 1.2 (40%)
+   · A값(2026년) 3,193,511원(보건복지부 고시 제2026-12호) · 기준소득월액 41만~659만원(2026.7~)
+   · 가입 10년(120개월) 미만: 연금 없음 → 반환일시금(낸 보험료 + 이자)
+   · 수급 개시: 1952년생 이전 60세 · 53~56년생 61세 · 57~60년생 62세 · 61~64년생 63세 · 65~68년생 64세 · 69년생~ 65세
+     조기 1년당 −6%(최대 5년) · 연기 1년당 +7.2%(최대 5년) · 받는 동안 매년 물가만큼 인상
+   · 크레딧(노령연금 받을 때 가입기간에 더함, 본인 부담 없음)
+       군복무: 인정소득 A값의 1/2 — 2008년 이후 입대 6개월 · 2026년 전역 12개월(개정) · 2027년 이후 전역 복무기간 전체(2026.10 국회 통과, 육군 18개월)
+       출산·입양: 인정소득 A값 — 둘째 12 · 셋째부터 18개월씩(2008년 이후, 최대 50개월) · 개정: 첫째 12개월 신설·50개월 상한 폐지(2026년~) · 2027년 이후 둘째 15개월(2026.10 국회 통과)
+   · 기대여명: 국가데이터처 2024년 생명표 — 65세 남 19.5년 · 여 23.7년
+   · 모든 금액은 2026년 임금 수준(지금 돈 가치): 지난 보험료도 국민연금 재평가처럼 임금 상승만큼 올려서 셈, 소득은 평생 같은 위치(A값 대비 비율)로 가정
+════════════════════════════════════════ */
+var NPR = (function () {
+  var A = 3193511, BMIN = 41e4, BMAX = 659e4, LIFE65 = { m: 19.5, f: 23.7 };
+  function pensionAge(b) { return b <= 1952 ? 60 : b <= 1956 ? 61 : b <= 1960 ? 62 : b <= 1964 ? 63 : b <= 1968 ? 64 : 65; }
+  /* 보험료율(%) — [전체, 본인] · 0 이면 그달은 가입 대상 아님 */
+  function rate(y, m, law, kind) {
+    if (y < 1988) return [0, 0];
+    var t;
+    if (y >= 2026) t = law === 'old' ? 9 : Math.min(13, 9 + 0.5 * (y - 2025));
+    if (kind === 'local') {
+      if (y < 2026) {
+        if (y < 1995 || (y === 1995 && m < 7)) return [0, 0];
+        t = y < 2000 || (y === 2000 && m < 7) ? 3 : Math.min(9, 4 + (y - 2000) - (m < 7 ? 1 : 0));
+      }
+      return [t, t];
+    }
+    if (y < 2026) {
+      if (y <= 1992) return [3, 1.5];
+      if (y <= 1997) return [6, 2];
+      if (y === 1998 || (y === 1999 && m < 4)) return [9, 3];
+      return [9, 4.5];
+    }
+    return [t, t / 2];
+  }
+  function coef(y, law) {
+    if (y <= 1998) return 2.4;
+    if (y <= 2007) return 1.8;
+    if (y <= 2025) return 1.5 - 0.015 * (y - 2008);
+    if (law === 'old') return y === 2026 ? 1.23 : y === 2027 ? 1.215 : 1.2;
+    return 1.29;
+  }
+  function clampB(v) { return Math.min(BMAX, Math.max(BMIN, v)); }
+  /* 크레딧 개월 — mil: 'none' | 'p08'(2025년 이전 전역) | 'y26'(2026년 전역) | 'y27'(2027년 이후 전역) · kids: 자녀 수 · era: 'p25' | 'y26' | 'y27' (출생·입양 시기) */
+  function credits(o, law) {
+    var mil = { none: 0, p08: 6, y26: 12, y27: 18 }[o.mil || 'none'] || 0;
+    if (law === 'old') mil = Math.min(mil, 6);
+    var k = Math.max(0, Math.min(10, Math.round(o.kids || 0))), kid = 0;
+    for (var i = 1; i <= k; i++) {
+      if (law === 'old' || o.era === 'p25') kid += i === 1 ? 0 : i === 2 ? 12 : 18;
+      else kid += i === 1 ? 12 : i === 2 ? (o.era === 'y27' ? 15 : 12) : 18;
+    }
+    if (law === 'old' || o.era === 'p25') kid = Math.min(50, kid);
+    return { mil: mil, kid: kid };
+  }
+  /* o: {birth, sex 'm'|'f', kind 'work'|'local', income(월, 지금 돈), startAge, endAge, gap(개월), claim(나이·없으면 정상), life(몇 세까지·없으면 기대여명), mil, kids, era, basis 'mine'|'total'}
+     law: 'new'(2026 개정) | 'old'(개정 전 9%·40%) */
+  function calc(o, law) {
+    law = law || 'new';
+    var base = pensionAge(o.birth), claim = Math.max(base - 5, Math.min(base + 5, Math.round(o.claim || base)));
+    var B = clampB(o.income || 0), kind = o.kind === 'local' ? 'local' : 'work';
+    var endAge = Math.min(o.endAge, claim, 65);                    /* 받기 시작하면 더 낼 수 없음 · 임의계속가입은 65세까지 */
+    var y0 = o.birth + Math.round(o.startAge), y1 = o.birth + Math.round(endAge);
+    var gap = Math.max(0, Math.round(o.gap || 0));
+    var N = 0, sumC = 0, payTot = 0, payMine = 0, byAge = {}, lastY = 0;
+    for (var y = Math.max(1988, y0); y < y1; y++) {
+      for (var m = 1; m <= 12; m++) {
+        var r = rate(y, m, law, kind);
+        if (!r[0]) continue;
+        if (gap > 0) { gap--; continue; }                           /* 내지 않은 기간은 앞쪽(사회 초년)에서 뺌 */
+        N++; lastY = y;
+        sumC += y <= 1998 ? 2.4 * (A + 0.75 * B) : coef(y, law) * (A + B);
+        var t = r[0] / 100 * B, mi = r[1] / 100 * B, age = y - o.birth;
+        payTot += t; payMine += mi;
+        byAge[age] = byAge[age] || [0, 0]; byAge[age][0] += t; byAge[age][1] += mi;
+      }
+    }
+    var cr = credits(o, law), cC = coef(Math.max(2028, o.birth + claim), law);   /* 크레딧은 받을 때(수급권 취득) 제도의 상수로 */
+    var Nc = N + cr.mil + cr.kid;
+    var res = { law: law, base: base, claim: claim, B: B, A: A, N: N, Nc: Nc, credits: cr, payTot: payTot, payMine: payMine, byAge: byAge,
+                avgRate: N ? payTot / N / B * 100 : 0 };
+    res.pay = o.basis === 'total' || kind === 'local' ? payTot : payMine;
+    var lifeAge = o.life > 0 ? o.life : 65 + LIFE65[o.sex === 'f' ? 'f' : 'm'];
+    res.lifeAge = lifeAge;
+    if (Nc < 120) {                                                 /* 10년 미만: 반환일시금 (지금 돈 가치로는 낸 돈만큼 + 이자) */
+      res.short = true; res.monthly = 0; res.recv = payTot; res.months = 0;
+      res.ratio = res.pay ? res.recv / res.pay : 0; res.gain = res.recv - res.pay; res.breakeven = null;
+      return res;
+    }
+    sumC += cC * (A + A / 2) * cr.mil + cC * (A + A) * cr.kid;
+    var full = sumC / 2880, adj = claim < base ? 1 - 0.06 * (base - claim) : 1 + 0.072 * (claim - base);
+    res.full = full; res.adj = adj; res.monthly = full * adj;
+    res.replace = res.monthly / B;                                   /* 내 소득 대비 */
+    res.months = Math.max(0, Math.round((lifeAge - claim) * 12));
+    res.recv = res.monthly * res.months;
+    res.ratio = res.pay ? res.recv / res.pay : 0;
+    res.gain = res.recv - res.pay;
+    res.breakeven = res.monthly > 0 ? claim + res.pay / res.monthly / 12 : null;
+    return res;
+  }
+  /* 세대별: 같은 소득·가입 나이·성별·유형으로 출생연도만 바꿔 개정 후/개정 전 비교 (크레딧·공백 제외, 정상 수령) */
+  function cohorts(o, years) {
+    return years.map(function (b) {
+      var p = { birth: b, sex: o.sex, kind: o.kind, income: o.income, startAge: o.startAge, endAge: Math.min(o.endAge, 60), gap: 0, claim: 0, life: o.life, mil: 'none', kids: 0, basis: o.basis };
+      var n = calc(p, 'new'), d = calc(p, 'old');
+      return { birth: b, now: n, old: d };
+    });
+  }
+  return { calc: calc, cohorts: cohorts, rate: rate, coef: coef, pensionAge: pensionAge, A: A, BMIN: BMIN, BMAX: BMAX, LIFE65: LIFE65 };
+})();
+
+/* [NPR] 화면 — 입력(data-fc="np")은 [FC-UI] 공통 처리 */
+(function () {
+  if (!document.getElementById('page-npsroi')) return;
+  function $(id) { return document.getElementById(id); }
+  function setT(id, v) { var e = $(id); if (e) e.textContent = v; }
+  function setH(id, v) { var e = $(id); if (e) e.innerHTML = v; }
+  function numOf(id) { var e = $(id); return e ? (parseFloat(String(e.value).replace(/,/g, '')) || 0) : 0; }
+  var UNIT = { eok: 1e8, man: 1e4, won: 1 };
+  function amt(id) { var e = $(id); return Math.round(numOf(id) * (UNIT[e && e.getAttribute('data-unit')] || 1)); }
+  function seg(name) { var b = document.querySelector('.fc-seg[data-name="' + name + '"] .mode-btn.active'); return b ? b.getAttribute('data-v') : null; }
+  function won(n) { return (n < 0 ? '−' : '') + Math.round(Math.abs(n)).toLocaleString('ko-KR') + '원'; }
+  function man(n) { var v = Math.round(n / 1e3) / 10; return (n < 0 ? '−' : '') + (Math.abs(v) >= 100 ? Math.round(Math.abs(v)).toLocaleString('ko-KR') : Math.abs(v).toLocaleString('ko-KR')) + '만원'; }
+  function eok(n) {
+    var neg = n < 0; n = Math.round(Math.abs(n) / 1e4) * 1e4;
+    var e = Math.floor(n / 1e8), m = Math.round((n - e * 1e8) / 1e4), s;
+    if (!e) s = m.toLocaleString('ko-KR') + '만원'; else s = e.toLocaleString('ko-KR') + '억' + (m ? ' ' + m.toLocaleString('ko-KR') + '만원' : '원');
+    return (neg ? '−' : '') + s;
+  }
+  function signed(n, f) { return (n > 0 ? '+' : n < 0 ? '−' : '') + f(Math.abs(n)); }
+  function x2(v) { return (Math.round(v * 100) / 100).toFixed(2) + '배'; }
+  function ym(m) { var y = Math.floor(m / 12), r = m % 12; return (y ? y + '년' : '') + (r ? (y ? ' ' : '') + r + '개월' : '') || '0개월'; }
+  function ageTxt(a) { var y = Math.floor(a + 1e-9), mo = Math.min(11, Math.round((a - y) * 12)); return y + '세' + (mo ? ' ' + mo + '개월' : ''); }
+  var chartG = null, chartC = null, lastBase = null, share = null;
+  function claimOpts(base) {   /* 받기 시작 나이: 정상 나이 ± 5년 — 정상 나이를 고른 상태였으면 새 정상 나이로 */
+    if (lastBase === base) return;
+    var sel = $('np-claim'), prev = lastBase, cur = +sel.value, h = '';
+    for (var a = base - 5; a <= base + 5; a++) h += '<option value="' + a + '">' + a + '세' + (a < base ? ' (조기 수령 ' + (6 * (base - a)) + '% 감액)' : a > base ? ' (연기 +' + (7.2 * (a - base)).toFixed(1) + '%)' : ' (정상 수령)') + '</option>';
+    sel.innerHTML = h;
+    sel.value = String(!cur || cur === prev ? base : Math.max(base - 5, Math.min(base + 5, cur)));
+    lastBase = base;
+  }
+  function chartOpts(yFmt, stacked) {
+    return { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: true, position: 'bottom', labels: { color: '#9e9ea4', boxWidth: 10, boxHeight: 10, font: { size: 11 } } },
+        tooltip: { backgroundColor: '#202027', borderColor: fgA(0.1), borderWidth: 1, titleColor: '#9e9ea4', bodyColor: '#e4e4e5', padding: 12,
+          callbacks: { label: function (c) { return ' ' + c.dataset.label + ': ' + yFmt(c.parsed.y, true); } } } },
+      scales: { x: { ticks: { color: '#6d6d76', font: { size: 11 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 }, grid: { display: false }, border: { display: false } },
+                y: { beginAtZero: true, ticks: { color: '#6d6d76', font: { size: 11 }, callback: function (v) { return yFmt(v); } }, grid: { color: fgA(0.04) }, border: { display: false } } } };
+  }
+  function clearOut(msg) {
+    setT('np-val', '—'); setT('np-sub', msg); ['np-k1', 'np-k2', 'np-k3'].forEach(function (k) { setT(k, '—'); });
+    setH('np-reform', ''); setH('np-table', ''); setT('np-gen-note', '');
+    share = null; (window.dcShareSpec = window.dcShareSpec || {})['national-pension'] = null;
+  }
+  function render() {
+    var birth = Math.round(numOf('np-birth')), sex = seg('np-sex') || 'm', kind = seg('np-kind') || 'work';
+    var basis = kind === 'local' ? 'total' : (seg('np-basis') || 'mine');
+    $('np-basis-f').style.display = kind === 'local' ? 'none' : '';
+    var okBirth = birth >= 1940 && birth <= 2010;
+    var base = NPR.pensionAge(okBirth ? birth : 1990);
+    claimOpts(base);
+    var o = { birth: birth, sex: sex, kind: kind, income: amt('np-income'), startAge: numOf('np-start'), endAge: numOf('np-end'), gap: numOf('np-gap'),
+              claim: +$('np-claim').value, life: +$('np-life').value, mil: $('np-mil').value, kids: +$('np-kids').value, era: $('np-era').value, basis: basis };
+    var err = !okBirth ? '출생 연도를 넣어 주세요 (1940~2010년).' : !(o.income > 0) ? '월 소득을 넣어 주세요.' : !(o.startAge >= 18 && o.startAge < 65) ? '가입 시작 나이는 18~64세로 넣어 주세요.'
+      : !(o.endAge > o.startAge && o.endAge <= 65) ? '납부 끝 나이는 시작 나이보다 많고 65세 이하여야 합니다.' : o.life && o.life <= o.claim ? '받는 기간이 없습니다 — 몇 세까지 받는지를 늘려 주세요.' : '';
+    if (err) return clearOut(err);
+    var r = NPR.calc(o, 'new'), d = NPR.calc(o, 'old');
+    var payWord = basis === 'mine' ? '내가 낸 돈' : '낸 보험료(회사 몫 포함)';
+    /* 히어로 */
+    if (r.short) {
+      setT('np-val', '연금 없음'); $('np-val').style.color = '#f04452';
+      setH('np-sub', '가입기간 ' + ym(r.Nc) + ' — 10년(120개월)이 안 돼 연금 대신 <b>반환일시금</b>(낸 보험료 ' + eok(r.payTot) + ' + 이자)을 받습니다');
+      setT('np-k1', '0원'); setT('np-k2', '반환일시금'); setT('np-k3', '해당 없음');
+    } else {
+      setT('np-val', x2(r.ratio)); $('np-val').style.color = r.ratio >= 1 ? '' : '#f04452';
+      setH('np-sub', payWord + ' <b>' + eok(r.pay) + '</b> → 평생 받는 돈 <b>' + eok(r.recv) + '</b> <small>(' + r.claim + '세부터 ' + ageTxt(r.lifeAge) + '까지 · 지금 돈 가치)</small>');
+      setT('np-k1', won(Math.round(r.monthly / 10) * 10));
+      setT('np-k2', signed(r.gain, eok)); $('np-k2').style.color = r.gain >= 0 ? '' : '#f04452';
+      setT('np-k3', r.breakeven != null && r.breakeven <= r.lifeAge ? ageTxt(r.breakeven) : '기대수명 안에는 어려움');
+    }
+    /* 개혁 전 vs 후 */
+    var rows = [
+      [basis === 'mine' ? '낸 돈 <small>(본인)</small>' : '낸 돈 <small>(회사 몫 포함)</small>', eok(d.pay), eok(r.pay), signed(r.pay - d.pay, eok), r.pay > d.pay],
+      ['월 연금', r.short ? '—' : man(d.monthly), r.short ? '—' : man(r.monthly), r.short ? '—' : signed(r.monthly - d.monthly, man), false],
+      ['평생 받는 돈', eok(d.recv), eok(r.recv), signed(r.recv - d.recv, eok), false],
+      ['평생 손익', signed(d.gain, eok), signed(r.gain, eok), signed(r.gain - d.gain, eok), r.gain < d.gain],
+      ['<b>수익비</b> <small>(받는 돈 ÷ 낸 돈)</small>', x2(d.ratio), x2(r.ratio), signed(Math.round((r.ratio - d.ratio) * 100) / 100, function (v) { return v.toFixed(2) + '배'; }), r.ratio < d.ratio]
+    ];
+    if (r.credits.mil + r.credits.kid !== d.credits.mil + d.credits.kid) rows.push(['크레딧 인정', ym(d.credits.mil + d.credits.kid), ym(r.credits.mil + r.credits.kid), '+' + ym(r.credits.mil + r.credits.kid - d.credits.mil - d.credits.kid), false]);
+    setH('np-reform', rows.map(function (x) { return '<tr><td>' + x[0] + '</td><td style="text-align:right;">' + x[1] + '</td><td style="text-align:right;">' + x[2] + '</td><td style="text-align:right;' + (x[4] ? 'color:#f04452;' : '') + '">' + x[3] + '</td></tr>'; }).join(''));
+    /* 계산 내역 */
+    var cap = o.income > NPR.BMAX ? ' <small>(상한 적용)</small>' : o.income < NPR.BMIN ? ' <small>(하한 적용)</small>' : '';
+    var cur = NPR.rate(2026, 10, 'new', kind)[0];
+    var lines = [
+      ['기준소득월액' + cap, won(r.B)],
+      ['보험료 낸 기간', ym(r.N) + (o.gap > 0 ? ' <small>(안 낸 ' + ym(Math.round(o.gap)) + ' 제외)</small>' : '')],
+      r.credits.mil || r.credits.kid ? ['크레딧', [r.credits.mil ? '군복무 ' + r.credits.mil + '개월' : '', r.credits.kid ? '출산 ' + r.credits.kid + '개월' : ''].filter(Boolean).join(' · ')] : null,
+      ['연금 가입기간 합계', ym(r.Nc), r.short ? 'fc-hl' : ''],
+      ['지금(2026년) 월 보험료', won(Math.round(r.B * cur / 100)) + (kind === 'work' ? ' <small>(내 몫 ' + won(Math.round(r.B * cur / 200)) + ' · 회사 ' + won(Math.round(r.B * cur / 200)) + ')</small>' : '') + ' <small>· 요율 ' + cur + '%</small>'],
+      ['평생 보험료 <small>(본인 부담)</small>', eok(r.payMine)],
+      kind === 'work' ? ['평생 보험료 <small>(회사 부담 포함)</small>', eok(r.payTot)] : null,
+      ['평균 보험료율 <small>(전체 기간)</small>', r.avgRate.toFixed(2) + '%'],
+      r.short ? null : ['월 예상 연금 <small>(' + r.claim + '세부터' + (r.adj !== 1 ? ' · ' + (r.adj < 1 ? '조기 ' : '연기 ') + ((r.adj - 1) * 100).toFixed(1) + '%' : '') + ')</small>', won(Math.round(r.monthly / 10) * 10)],
+      r.short ? null : ['내 소득 대비 연금 <small>(소득대체율)</small>', (r.replace * 100).toFixed(1) + '%'],
+      r.short ? null : ['받는 기간', ym(r.months) + ' <small>(' + ageTxt(r.lifeAge) + '까지)</small>'],
+      ['평생 받는 돈', eok(r.recv), 'fc-total'],
+      kind === 'work' && !r.short ? ['낸 돈 대비 받는 돈 <small>(본인 부담 기준 / 회사 몫 포함)</small>', x2(r.recv / r.payMine) + ' / ' + x2(r.recv / r.payTot), 'fc-hl'] : ['낸 돈 대비 받는 돈', x2(r.ratio), 'fc-hl']
+    ];
+    setH('np-table', lines.filter(Boolean).map(function (x) { return '<tr' + (x[2] ? ' class="' + x[2] + '"' : '') + '><td>' + x[0] + '</td><td style="text-align:right;">' + x[1] + '</td></tr>'; }).join(''));
+    /* 세대별 */
+    var years = [1960, 1965, 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005];
+    if (years.indexOf(birth) < 0) { years.push(birth); years.sort(function (a, b) { return a - b; }); }
+    var gens = NPR.cohorts(o, years);
+    var gNew = gens.map(function (g) { return g.now.short ? 0 : Math.round(g.now.ratio * 100) / 100; }), gOld = gens.map(function (g) { return g.old.short ? 0 : Math.round(g.old.ratio * 100) / 100; });
+    var first = gens[0], last = gens[gens.length - 1];
+    setH('np-gen-note', '같은 월 소득 ' + man(r.B) + ' · ' + Math.round(o.startAge) + '세부터 ' + Math.min(60, Math.round(o.endAge)) + '세까지 낸다고 하면 ' + first.birth + '년생은 낸 돈의 <b>' + x2(first.now.ratio) + '</b>, ' + last.birth + '년생은 <b>' + x2(last.now.ratio) + '</b>를 받습니다. 개혁 전 제도였다면 ' + last.birth + '년생은 ' + x2(last.old.ratio) + '였습니다. <small>(정상 수령 · 크레딧·안 낸 기간 제외 · 기대수명은 모든 세대에 2024 생명표 적용)</small>');
+    if (typeof Chart !== 'undefined') {
+      var colors = gens.map(function (g) { return g.birth === birth ? '#fe9800' : '#3182f6'; });
+      var gopt = chartOpts(function (v, tip) { return tip ? (Math.round(v * 100) / 100).toFixed(2) + '배' : v + '배'; });
+      gopt.plugins.tooltip.callbacks.title = function (it) { return it[0].label + (gens[it[0].dataIndex].birth === birth ? ' (나)' : ''); };
+      var gdata = { labels: gens.map(function (g) { return g.birth + '년생'; }), datasets: [
+        { type: 'bar', label: '개혁 후 (2026~)', data: gNew, backgroundColor: colors, borderRadius: 4, order: 2 },
+        { type: 'line', label: '개혁 전 제도였다면', data: gOld, borderColor: '#9e9ea4', backgroundColor: '#9e9ea4', borderDash: [5, 4], borderWidth: 1.6, pointRadius: 2.5, fill: false, order: 1 } ] };
+      if (chartG) chartG.destroy();
+      chartG = new Chart($('np-gen'), { type: 'bar', data: gdata, options: gopt });
+      /* 누적 */
+      var a0 = Math.round(o.startAge), a1 = Math.ceil(r.lifeAge), labels = [], cp = [], cr = [], sp = 0, sr = 0;
+      for (var a = a0; a <= a1; a++) {
+        var row = r.byAge[a]; if (row) sp += basis === 'mine' && kind === 'work' ? row[1] : row[0];
+        if (!r.short && a >= r.claim) sr += r.monthly * 12 * Math.max(0, Math.min(1, r.lifeAge - a));
+        labels.push(a + '세'); cp.push(Math.round(sp)); cr.push(Math.round(sr));
+      }
+      var copt = chartOpts(function (v, tip) { return tip ? eok(v) : Math.round(v / 1e6) / 100 + '억'; });
+      var cdata = { labels: labels, datasets: [
+        { type: 'line', label: basis === 'mine' && kind === 'work' ? '누적 낸 돈 (본인)' : '누적 낸 보험료', data: cp, borderColor: '#f04452', backgroundColor: 'rgba(240,68,82,0.08)', borderWidth: 2, pointRadius: 0, fill: true, tension: 0.15 },
+        { type: 'line', label: '누적 받는 연금', data: cr, borderColor: '#3182f6', backgroundColor: 'rgba(49,130,246,0.10)', borderWidth: 2, pointRadius: 0, fill: true, tension: 0.15 } ] };
+      if (chartC) chartC.destroy();
+      chartC = new Chart($('np-chart'), { type: 'line', data: cdata, options: copt });
+    }
+    /* 공유 카드 */
+    share = { key: 'national-pension', chip: '국민연금 손익', title: birth + '년생 국민연금 손익',
+      label: (kind === 'work' ? '직장' : '지역·임의') + '가입자 · ' + Math.round(o.startAge) + '~' + Math.round(Math.min(o.endAge, r.claim)) + '세 납부 · ' + r.claim + '세부터 수령' + (basis === 'total' ? ' · 회사 몫 포함' : ''),
+      big: r.short ? '연금 없음' : x2(r.ratio), sub: r.short ? '가입 10년 미만 — 반환일시금' : payWord + ' ' + eok(r.pay) + ' → 받는 돈 ' + eok(r.recv), subSecret: true,
+      rows: r.short ? [['가입기간', ym(r.Nc)]] : [['월 예상 연금', man(r.monthly), true], ['평생 손익', signed(r.gain, eok), true], ['본전 뽑는 나이', r.breakeven != null && r.breakeven <= r.lifeAge ? ageTxt(r.breakeven) : '—'], ['개혁 전이었다면', x2(d.ratio)]],
+      source: '국민연금법(2025 개정 · 2026 시행) · A값 3,193,511원 · 2024 생명표 · 지금 돈 가치' };
+    (window.dcShareSpec = window.dcShareSpec || {})['national-pension'] = share;   /* 오른쪽 아래 공유 창이 이 카드를 씀 */
+  }
+  window.fcRegister('np', render, 'npsroi');
+})();
+
+/* ════════════════════════════════════════
    [AUTH] 간편 로그인(카카오·네이버·구글) · 내 저장함 — 서버는 방문자 카운터 Worker(worker/src/auth.js)
    · /auth/config 에 켜진 제공자가 하나도 없으면 로그인 버튼 자체를 숨김 (키 등록 전에는 사이트 변화 없음)
    · 로그인: 제공자 로그인 창 → https://d-capitalism.com/auth/callback/ (state·PKCE 확인, 첫 가입이면 약관·개인정보·만 14세 동의) → 토큰을 localStorage 'dc_auth' 에 보관
