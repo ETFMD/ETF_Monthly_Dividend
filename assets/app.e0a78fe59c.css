@@ -1545,7 +1545,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   @keyframes dshIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
   .dsh-card { background:var(--bg2); border:1px solid var(--card-border); border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.28); }
   .dsh-prev-wrap { padding:8px; }
-  .dsh-prev { display:block; width:100%; aspect-ratio:1200/630; border-radius:11px; background:#0f131b; object-fit:cover; }
+  .dsh-prev { display:block; height:236px; width:auto; aspect-ratio:1080/1350; margin:0 auto; border-radius:11px; background:#0f131b; object-fit:contain; }
   .dsh-prev:not([src]) { visibility:hidden; }
   .dsh-opts { padding:14px 16px 6px; }
   .dsh-h { font-size:12px; font-weight:700; color:var(--text3); letter-spacing:.06em; margin:0 0 4px; }

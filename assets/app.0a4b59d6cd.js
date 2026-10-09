@@ -12466,7 +12466,7 @@ var JBX = (function () {
 /* ════════════════════════════════════════
    [SHARE] 공유 — 오른쪽 아래 공유 버튼 하나로: 공개 설정 · 링크 복사 · 카카오톡 공유 · 카드 이미지 저장 · 다른 앱으로 공유
    · 결과 링크: 화면 입력값 가운데 기본값과 달라진 것만 주소 ?s= 에 담음 → 받은 사람이 열면 같은 계산이 그대로 보임
-   · 카카오톡: 결과 카드(1200×630)를 카카오 서버에 올려 피드 메시지로 보냄 — [결과 보기][나도 해보기] 버튼
+   · 카카오톡: 결과 카드(세로 1080×1350)를 카카오 서버에 올려 피드 메시지 이미지로 — [결과 보기][나도 해보기] 버튼
      (자바스크립트 키는 Worker /auth/config 의 kakao_js · 없으면 휴대폰 공유창 / 링크 복사로 대신)
    · 카드 내용: 계산기가 직접 넘겨 주는 카드가 있으면 그것을, 없으면 화면의 큰 결과·요약 칸을 읽어 만듦
    window.shareCard.open({
@@ -12590,53 +12590,6 @@ var JBX = (function () {
     fit(ctx, 'd-capitalism.com/' + o.key, CW * 0.48, 30, 500, 20); ctx.fillText('d-capitalism.com/' + o.key, W - X, fy - 4);
     ctx.textAlign = 'left';
     if (o.source) { fit(ctx, '자료: ' + o.source, CW, 24, 400, 16); ctx.fillStyle = '#6a707c'; ctx.fillText('자료: ' + o.source, X, H - 40); }
-    return c;
-  }
-  /* 카카오톡·미리보기용 가로 카드 1200×630 (카카오 피드 이미지 비율) */
-  function drawWide(o, hide) {
-    var WW = 1200, HH = 630, X = 64, CW = WW - X * 2;
-    var BIG = hide && o.bigSecret ? '금액 비공개' : o.big, SUB = hide && o.subSecret ? '' : o.sub;
-    var c = document.createElement('canvas'); c.width = WW; c.height = HH;
-    var ctx = c.getContext('2d');
-    var g = ctx.createLinearGradient(0, 0, WW * 0.6, HH); g.addColorStop(0, '#141925'); g.addColorStop(1, '#0b0d12');
-    ctx.fillStyle = g; ctx.fillRect(0, 0, WW, HH);
-    var rg = ctx.createRadialGradient(WW, 0, 0, WW, 0, 700); rg.addColorStop(0, 'rgba(49,130,246,0.28)'); rg.addColorStop(1, 'rgba(49,130,246,0)');
-    ctx.fillStyle = rg; ctx.fillRect(0, 0, WW, HH);
-    var sg = ctx.createLinearGradient(900, 200, WW, 40); sg.addColorStop(0, 'rgba(49,130,246,0.03)'); sg.addColorStop(1, 'rgba(49,130,246,0.32)');
-    ctx.strokeStyle = sg; ctx.lineWidth = 16; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    ctx.beginPath(); ctx.moveTo(930, 196); ctx.lineTo(990, 196); ctx.lineTo(990, 150); ctx.lineTo(1050, 150); ctx.lineTo(1050, 104); ctx.lineTo(1110, 104); ctx.lineTo(1110, 58); ctx.lineTo(1170, 58); ctx.stroke();
-    /* 머리: 로고 · 사이트 이름 · 분류 칩 */
-    mark(ctx, X, 44, 52);
-    ctx.textBaseline = 'middle'; ctx.fillStyle = '#e8eaee'; ctx.font = font(700, 30); ctx.fillText('디코딩 자본주의', X + 68, 71);
-    var bw = ctx.measureText('디코딩 자본주의').width;
-    if (o.chip) {
-      ctx.font = font(500, 22); var cw = ctx.measureText(o.chip).width + 34, cx = X + 68 + bw + 18;
-      rr(ctx, cx, 53, cw, 36, 18); ctx.fillStyle = 'rgba(49,130,246,0.16)'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(49,130,246,0.55)'; ctx.stroke();
-      ctx.fillStyle = '#9cc2ff'; ctx.fillText(o.chip, cx + 17, 72);
-    }
-    ctx.textBaseline = 'alphabetic';
-    var y = 178;
-    fit(ctx, o.title, CW - 120, 44, 700, 24); ctx.fillStyle = '#f2f3f5'; ctx.fillText(o.title, X, y, CW - 120);
-    if (o.label) { y += 44; fit(ctx, o.label, CW, 26, 400, 16); ctx.fillStyle = '#8b919d'; ctx.fillText(o.label, X, y, CW); }
-    y += 122;
-    var bs = fit(ctx, BIG, CW, 108, 700, 44);
-    var bg = ctx.createLinearGradient(X, y - bs, X + ctx.measureText(BIG).width, y); bg.addColorStop(0, '#5aa0ff'); bg.addColorStop(1, '#2f7bf5');
-    ctx.fillStyle = hide && o.bigSecret ? '#6f7582' : bg; ctx.fillText(BIG, X - 3, y);
-    if (SUB) { y += 50; ctx.font = font(500, 28); ctx.fillStyle = '#c9cdd4'; ctx.fillText(wrap(ctx, SUB, CW, 1)[0], X, y); }
-    /* 숫자 칸 (최대 3개) */
-    var rows = (o.rows || []).filter(function (r) { return r && r[1] != null && r[1] !== ''; }).slice(0, 3);
-    if (rows.length) {
-      var top = Math.max(y + 30, 448), gap = 14, bw2 = (CW - gap * (rows.length - 1)) / rows.length, bh = 86;
-      rows.forEach(function (r, i) {
-        var bx = X + i * (bw2 + gap);
-        rr(ctx, bx, top, bw2, bh, 18); ctx.fillStyle = 'rgba(255,255,255,0.05)'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.stroke();
-        fit(ctx, r[0], bw2 - 36, 21, 400, 14); ctx.fillStyle = '#a5abb6'; ctx.fillText(r[0], bx + 18, top + 34, bw2 - 36);
-        var v = hide && r[2] ? '비공개' : String(r[1]);
-        fit(ctx, v, bw2 - 36, 30, 700, 16); ctx.fillStyle = hide && r[2] ? '#6f7582' : '#f2f3f5'; ctx.fillText(v, bx + 18, top + 70, bw2 - 36);
-      });
-    }
-    ctx.font = font(500, 22); ctx.fillStyle = '#7d8390'; ctx.textAlign = 'right';
-    ctx.fillText('d-capitalism.com' + (o.key ? '/' + o.key : ''), WW - X, HH - 26); ctx.textAlign = 'left';
     return c;
   }
   /* 카드에 쓸 글자의 한글 글꼴 조각까지 받아 둔 뒤 그림 (구글 한글 글꼴은 글자 범위별로 나뉨) */
@@ -12852,8 +12805,9 @@ var JBX = (function () {
     }
     fontsReady(o).then(function () {
       if (sig() !== k) return;
-      blobOf(drawWide(o, hide)).then(function (b) {
+      blobOf(draw(o, hide)).then(function (b) {                      /* 세로 카드 하나로: 미리보기 · 저장 · 카카오 메시지 이미지 · 공유창 첨부 */
         if (sig() !== k || !b) return;
+        st.pblob[k] = b;
         if (st.prevUrl) URL.revokeObjectURL(st.prevUrl);
         st.prevUrl = URL.createObjectURL(b); img.src = st.prevUrl;
         if (!st.kimg[k] && !st.kup[k]) {
@@ -12866,7 +12820,6 @@ var JBX = (function () {
           }).catch(function () {}).then(function () { delete st.kup[k]; });
         }
       });
-      if (!st.pblob[k]) blobOf(draw(o, hide)).then(function (b) { if (b) st.pblob[k] = b; });
     });
   }
   function ogImg(key) { return SITE + 'assets/og/' + (key && route(key) ? key : 'home') + '.png'; }
@@ -12892,7 +12845,7 @@ var JBX = (function () {
       var img = st.spec && st.kimg[sig()];
       try {
         K.Share.sendDefault({ objectType: 'feed',
-          content: { title: m.title, description: m.desc, imageUrl: img || ogImg(key), imageWidth: 1200, imageHeight: 630, link: { mobileWebUrl: L.result, webUrl: L.result } },
+          content: { title: m.title, description: m.desc, imageUrl: img || ogImg(key), imageWidth: img ? W : 1200, imageHeight: img ? H : 630, link: { mobileWebUrl: L.result, webUrl: L.result } },
           buttons: btns });
         return;
       } catch (e) {}
@@ -12970,14 +12923,14 @@ var JBX = (function () {
     var el = document.createElement('div');
     el.id = 'dsh-pop'; el.className = 'dsh-pop'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', '공유하기'); el.hidden = true;
     el.innerHTML =
-      '<div class="dsh-card dsh-prev-wrap"><img class="dsh-prev" alt="카카오톡에 보이는 결과 카드 미리보기"></div>' +
+      '<div class="dsh-card dsh-prev-wrap"><img class="dsh-prev" alt="공유되는 결과 카드 미리보기"></div>' +
       '<div class="dsh-card dsh-opts"><p class="dsh-h">공유 시 공개 설정</p>' +
         '<label class="dsh-opt" data-o="inp"><span>내 입력값 공개<small>링크를 연 사람에게 내 계산이 그대로 보여요</small></span><input type="checkbox"></label>' +
         '<label class="dsh-opt" data-o="amt"><span>금액 공개<small>끄면 카드에 금액 대신 ‘비공개’로 표시해요</small></span><input type="checkbox"></label></div>' +
       '<button type="button" class="dsh-b" data-a="copy">' + ICON.link + '<span>링크 복사</span></button>' +
       '<button type="button" class="dsh-b dsh-kakao" data-a="kakao">' + ICON.kakao + '<span>카카오톡 공유</span></button>' +
       '<button type="button" class="dsh-b" data-a="card">' + ICON.card + '<span>카드 이미지 저장</span></button>' +
-      '<button type="button" class="dsh-b" data-a="more">' + ICON.more + '<span>카드와 함께 공유하기</span></button>';
+      '<button type="button" class="dsh-b" data-a="more">' + ICON.more + '<span>다른 앱으로 공유</span></button>';
     document.body.appendChild(el); document.body.appendChild(fab);
     st.el = el; st.fab = fab;
     fab.addEventListener('click', function () { if (el.hidden) openPanel(); else closePanel(true); });
@@ -13024,7 +12977,7 @@ var JBX = (function () {
     n.querySelector('button').addEventListener('click', function () { n.remove(); });
     host.appendChild(n);
   }
-  window.shareCard = { open: open, draw: draw, drawWide: drawWide, spec: function () { return currentSpec(); } };
+  window.shareCard = { open: open, draw: draw, spec: function () { return currentSpec(); } };
   if (typeof SITE_EN !== 'undefined' && SITE_EN) return;                 /* 영어 페이지는 공유 버튼 없음 */
   State.capture();
   function init() {
