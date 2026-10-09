@@ -278,10 +278,27 @@ def cnbc_history(symbol, resolution='1W'):
     return [[k, out[k]] for k in sorted(out)]
 
 
+EM_HIS_HOSTS = ['push2his.eastmoney.com', '7.push2his.eastmoney.com', '63.push2his.eastmoney.com',
+                '33.push2his.eastmoney.com', '91.push2his.eastmoney.com', '17.push2his.eastmoney.com']
+
+
 def em_history(secid):
-    """동방재부(EastMoney) 주봉 → [[일수, 종가], ...]  예: em_history('1.000300') (CSI300, 2005년~)"""
-    d = get_json(f'https://push2his.eastmoney.com/api/qt/stock/kline/get?secid={secid}&fields1=f1,f2,f3'
-                 f'&fields2=f51,f53&klt=102&fqt=0&beg=19900101&end=20500101&lmt=100000', tries=4)   # 요청마다 끊기기도 해 여러 번 시도
+    """동방재부(EastMoney) 주봉 → [[일수, 종가], ...]  예: em_history('1.000300') (CSI300, 2005년~)
+    과거 시세 서버(push2his)는 러너·호스트에 따라 응답 없이 연결을 끊기도 함 (2026-10 Actions 점검: 같은 시각에
+    push2his·7.push2his 는 성공, 33·91·17 은 끊김, 63 은 Referer 를 붙이면 성공) → 여러 호스트를 Referer 와 함께 차례로 시도"""
+    d, err = None, None
+    for host in EM_HIS_HOSTS:
+        try:
+            d = get_json(f'https://{host}/api/qt/stock/kline/get?secid={secid}&fields1=f1,f2,f3'
+                         f'&fields2=f51,f53&klt=102&fqt=0&beg=19900101&end=20500101&lmt=100000', tries=2,
+                         headers={'Referer': 'https://quote.eastmoney.com/'})
+            if ((d or {}).get('data') or {}).get('klines'):
+                break
+        except Exception as e:
+            err = e
+            print(f'    EastMoney {host} 실패: {e}')
+    if not ((d or {}).get('data') or {}).get('klines'):
+        raise err or ValueError('EastMoney 과거 시세 없음')
     out = []
     for k in ((d.get('data') or {}).get('klines') or []):
         try:

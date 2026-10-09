@@ -98,7 +98,10 @@ var SITE_EN = (document.documentElement.getAttribute('lang') || '').indexOf('en'
         return loadFile('history.json').then(function (h) {
           var s = h && h.series && h.series[y.sym];
           var pts = (s || []).map(function (p) { return [p[0] * 86400, p[1]]; }).concat(q ? q.daily : []);
-          if (!pts.length || mid < pts[0][0] - 14 * 86400) return null;
+          if (!pts.length) return null;
+          /* 보관 자료(수집기가 31년치를 이미 여러 출처에서 모은 것)보다 앞선 시점의 값: 프록시로 다시 물어도 자료가 없으므로
+             '값 없음' 응답을 바로 돌려줌 → 화면은 내장 추정값·안내로 처리 (실패하는 외부 요청을 만들지 않음) */
+          if (mid < pts[0][0] - 14 * 86400) return s && s.length > 50 && p2 - p1 <= 40 * 86400 ? chartResponse(y.sym, q || { price: null }, []) : null;   /* 특정 시점 조회(창 40일 이하)만 — 긴 구간 요청은 그대로 */
           var hit = pts.filter(function (p) { return p[0] >= p1 && p[0] <= p2; });
           if (!hit.length) {                                     /* 창 밖이면 가장 가까운 한 점 */
             var best = pts.reduce(function (a, b) { return Math.abs(b[0] - mid) < Math.abs(a[0] - mid) ? b : a; });
@@ -120,13 +123,13 @@ var SITE_EN = (document.documentElement.getAttribute('lang') || '').indexOf('en'
     }).catch(function () { return null; });
   }
 
-  /* JSON에 없을 때만: 프록시 3곳 동시 요청, 먼저 성공한 응답 사용 */
+  /* JSON에 없을 때만: 공개 CORS 프록시로 야후 직접 조회
+     2026-10 점검(브라우저·Actions 러너): corsproxy.io 는 API 키 없이 항상 401/403(keyless 중단) · codetabs 는 522(서버 다운)
+     → 실패만 남기는 두 곳은 빼고, 가끔 522 가 나지만 대부분 응답하는 allorigins 만 사용 */
   function fromProxies(y) {
     var c = live[y.url];
     if (c && Date.now() - c.t < 60000) return c.p.then(function (txt) { return new Response(txt, { status: 200 }); });
-    var urls = ['https://corsproxy.io/?url=' + encodeURIComponent(y.url),
-                'https://api.allorigins.win/raw?url=' + encodeURIComponent(y.url),
-                'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(y.url)];
+    var urls = ['https://api.allorigins.win/raw?url=' + encodeURIComponent(y.url)];
     var p = new Promise(function (resolve, reject) {
       var left = urls.length;
       urls.forEach(function (u) {
@@ -7257,7 +7260,7 @@ function calcKosdaqRates(currentVal, asOfDate, periodYears, startVal, histDateSt
     if (!sv) return;
     startDate = new Date(sy, now.getMonth(), now.getDate());
     periodLabel = histDateStr
-      ? '최근 ' + periodYears + '년 (' + histDateStr + ' ~ 현재) (Yahoo)'
+      ? '최근 ' + periodYears + '년 (' + histDateStr + ' ~ 현재) (' + (((_kosdaqHistCache['kosdaq_' + periodYears] || {}).src) || 'Yahoo') + ')'   /* 실제로 받은 과거 값의 출처 (data/history.json 의 src, 예: 네이버·Yahoo) */
       : '최근 ' + periodYears + '년 (' + sy + '년 추정 ~ 현재) (내장)';
   }
   if (!sv || sv <= 0) return;
@@ -7529,6 +7532,7 @@ async function setKospiPeriod(indexId, years, btn) {
       startDate = result.date;
       _histCache[cacheKey]     = startVal;
       _histCache[cacheDateKey] = startDate;
+      _histCache[cacheKey + '_src'] = result.src || null;   /* 과거 값의 실제 출처 (예: 네이버·Yahoo) */
     } else {
       startVal  = getFallbackVal(indexId, startYear);
       startDate = null; /* fallback: 날짜 없음 */
@@ -7559,7 +7563,7 @@ function calcIndexRatesByPeriod(indexId, currentVal, asOfDate, periodYears, star
     const cachedDate = histDateStr || _histCache[ck+'_date'];
     if (cachedDate) {
       /* 실제 조회 날짜 표시 */
-      periodLabel = '최근 ' + periodYears + '년 (' + cachedDate + ' ~ 현재) (Yahoo)';
+      periodLabel = '최근 ' + periodYears + '년 (' + cachedDate + ' ~ 현재) (' + (_histCache[ck + '_src'] || 'Yahoo') + ')';
     } else {
       /* fallback: 연도만 표시 */
       periodLabel = '최근 ' + periodYears + '년 (' + (now.getFullYear()-periodYears) + '년 추정 ~ 현재) (내장)';
@@ -8740,17 +8744,42 @@ function indexNoData(id, msg, msgEn) {
   if (ds) ds.textContent = L('CAGR의 일 환산', 'CAGR converted to a daily rate');
 }
 
-/* 지수가 생기기 전으로 거슬러 가는 '최근 N년' 버튼은 끔 (since 또는 기준일 기준, 날짜가 지나면 자동으로 켜짐) */
-function indexPeriodGuard(id) {
+/* 계산할 수 없는 '최근 N년' 버튼은 끔 — 날짜가 지나거나 자료가 채워지면 자동으로 다시 켜짐
+   ① 지수가 생기기 전 (since 또는 기준일)
+   ② 과거 값을 data/history.json 에서만 받는 지수(histSrc): 보관한 주간 종가가 N년 전까지 없으면
+      (예: 수집 서버 장애로 항셍테크가 2020년부터만 있을 때 '최근 10년') — 화면에 오류 대신 꺼진 버튼으로
+   지금 고른 기간이 꺼지면 켜진 기간 중 가장 긴 것(그보다 짧은 것)으로 옮김 */
+async function indexPeriodGuard(id) {
   const cfg = INDEX_CONFIG[id], since = cfg.since || cfg.baseDate;
-  if (!since) return;
-  const now = new Date(), s0 = new Date(since);
-  document.querySelectorAll('#' + id + '-period-tabs .period-btn').forEach(b => {
+  const now = new Date(), s0 = since ? new Date(since) : null;
+  let d0 = null;
+  if (cfg.histSrc) {
+    try {
+      const h = window.mdLoad ? await window.mdLoad('history.json') : null;
+      const s = h && h.series && h.series[decodeURIComponent(cfg.ticker)];
+      if (s && s.length) d0 = new Date(s[0][0] * 86400000);
+    } catch (e) {}
+  }
+  const ym = d => d.getUTCFullYear() + '.' + String(d.getUTCMonth() + 1).padStart(2, '0');
+  const btns = [...document.querySelectorAll('#' + id + '-period-tabs .period-btn')];
+  btns.forEach(b => {
     const m = /setIndexPeriod\('[^']+',(\d+)/.exec(b.getAttribute('onclick') || ''), y = m ? +m[1] : 0;
-    const off = y > 0 && new Date(now.getFullYear() - y, now.getMonth(), now.getDate()) < s0;
-    b.disabled = off;
-    b.title = off ? L('이 지수는 ' + since.slice(0, 4) + '년부터 있어 계산할 수 없습니다', 'This index starts in ' + since.slice(0, 4)) : '';
+    const target = new Date(now.getFullYear() - y, now.getMonth(), now.getDate());
+    const preIndex = y > 0 && s0 && target < s0;
+    const noData = y > 0 && !preIndex && d0 && target - d0 < -31 * 86400000;
+    b.disabled = !!(preIndex || noData);
+    b.title = preIndex ? L('이 지수는 ' + since.slice(0, 4) + '년부터 있어 계산할 수 없습니다', 'This index starts in ' + since.slice(0, 4))
+            : noData ? L('보관한 지수 자료가 ' + ym(d0) + '부터라 최근 ' + y + '년은 계산할 수 없습니다', 'Stored data starts ' + ym(d0)) : '';
   });
+  const cur = _indexPeriod[id] || 0, yOf = b => +((/setIndexPeriod\('[^']+',(\d+)/.exec(b.getAttribute('onclick') || '') || [0, 0])[1]);
+  const curBtn = btns.find(b => yOf(b) === cur);
+  if (cur > 0 && curBtn && curBtn.disabled) {
+    const alt = btns.filter(b => !b.disabled && yOf(b) > 0 && yOf(b) < cur).sort((a, b) => yOf(b) - yOf(a))[0] || btns.find(b => yOf(b) === 0);
+    if (alt) {
+      _indexPeriod[id] = yOf(alt);
+      btns.forEach(b => b.classList.toggle('active', b === alt));
+    }
+  }
 }
 
 /* 기간 선택 버튼 클릭 */
@@ -8873,7 +8902,7 @@ async function fetchIndex(id) {
   btn.disabled = true; icon.textContent = '⏳'; load.style.display = 'block';
   document.getElementById(id+'-date-label').textContent   = '조회 중...';
   document.getElementById(id+'-source-label').textContent = '';
-  indexPeriodGuard(id);
+  await indexPeriodGuard(id);   /* 계산할 수 없는 기간을 끄고(필요하면 기간을 옮기고) 나서 값 계산 */
   try {
     const p = await tryYahooIndex(id);
     if (p && applyIndexValue(id, p, _indexSrc[id] || 'Yahoo Finance')) return;
