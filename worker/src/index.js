@@ -121,17 +121,36 @@ function corsHeaders(env, origin) {
     },
   };
 }
+/* ── 실시간 접속 ──
+ * 사이트를 보고 있는 브라우저가 45초마다 POST /live {id} (id: 브라우저별 무작위 번호 · IP 는 쓰지 않음)
+ * 최근 LIVE_SEC 초 안에 신호를 보낸 브라우저 수 = 실시간 · 탭을 닫거나 숨기면 {id, bye:1} 로 바로 빠짐 */
+const LIVE_SEC = 100;
+async function live(req, env, cors, json, day) {
+  let b = {};
+  try { b = JSON.parse(await req.text()); } catch (e) {}
+  const id = String(b.id || '');
+  const ua = req.headers.get('User-Agent') || '';
+  if (cors.ok && /^[a-f0-9]{16,40}$/.test(id) && ua && !BOT.test(ua)) {
+    const now = Math.floor(Date.now() / 1000);
+    if (b.bye) await env.DB.prepare('DELETE FROM live WHERE s = ?').bind(id).run();
+    else await env.DB.prepare('INSERT INTO live (s, t) VALUES (?, ?) ON CONFLICT(s) DO UPDATE SET t = excluded.t').bind(id, now).run();
+    if (Math.random() < 0.05) await env.DB.prepare('DELETE FROM live WHERE t < ?').bind(now - 600).run();   /* 오래된 기록 정리 */
+  }
+  if (b.bye) return new Response(null, { status: 204, headers: cors.headers });
+  return json(await counts(env, day));
+}
 async function counts(env, day) {
   const yday = kstDay(Date.parse(day + 'T00:00:00+09:00') - 86400e3);
-  const [t, y, s, m] = await env.DB.batch([
+  const [t, y, s, m, l] = await env.DB.batch([
     env.DB.prepare('SELECT n FROM daily WHERE day = ?').bind(day),
     env.DB.prepare('SELECT n FROM daily WHERE day = ?').bind(yday),
     env.DB.prepare('SELECT COALESCE(SUM(n), 0) AS n FROM daily'),
     env.DB.prepare('SELECT day, n FROM daily ORDER BY n DESC, day DESC LIMIT 1'),   // 하루 최대 방문자 (같으면 최근 날)
+    env.DB.prepare('SELECT COUNT(*) AS n FROM live WHERE t > ?').bind(Math.floor(Date.now() / 1000) - LIVE_SEC),   // 실시간 접속 (최근 신호)
   ]);
   const one = (r) => (r && r.results && r.results[0]) || null;
-  const T = one(t), Y = one(y), S = one(s), M = one(m);
-  return { day, today: T ? T.n : 0, yesterday: Y ? Y.n : 0, total: S ? S.n : 0, max: M ? M.n : 0, maxDay: M ? M.day : null };
+  const T = one(t), Y = one(y), S = one(s), M = one(m), L = one(l);
+  return { day, today: T ? T.n : 0, yesterday: Y ? Y.n : 0, total: S ? S.n : 0, max: M ? M.n : 0, maxDay: M ? M.day : null, live: L ? L.n : 0 };
 }
 
 /* ── 아파트 실거래 (단지 상세 그래프) ──
@@ -247,6 +266,7 @@ export default {
         return json(await counts(env, day));
       }
       if (url.pathname === '/' && req.method === 'GET') return json(await counts(env, day));
+      if (url.pathname === '/live' && req.method === 'POST') return await live(req, env, cors, json, day);
       /* GET /geo → 접속 국가 (Cloudflare 가 IP 로 판별한 ISO 국가 코드) — 사이트 기본 언어 선택용, 저장하지 않음 */
       if (url.pathname === '/geo' && req.method === 'GET') return json({ country: (req.cf && req.cf.country) || null });
       if (url.pathname === '/status' && req.method === 'GET') {

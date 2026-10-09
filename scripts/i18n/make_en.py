@@ -11,7 +11,7 @@ OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'en.json')
 
 TEXT = {
     # ── 상단 줄 · 메뉴 ──
-    '오늘': 'Today', '명': '', '전체': 'Total', '방문자 수': 'Visitors', '어제': 'Yesterday', '최대': 'Peak day',
+    '실시간': 'Online now', '오늘': 'Today', '명': '', '전체': 'Total', '방문자 수': 'Visitors', '어제': 'Yesterday', '최대': 'Peak day',
     '한국어': '한국어', 'Language / 언어': 'Language',   # 언어 선택 목록은 각 언어 이름 그대로
     '카카오 오픈채팅': 'KakaoTalk open chat (Korean)',
     'ETF 커버드콜 + 배당투자 + 성장주 함께 장기투자를 위한 오픈톡방 가기': 'Join our Korean-language community for long-term investing in covered-call ETFs, dividends and growth stocks',

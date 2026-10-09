@@ -1880,6 +1880,12 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .visit-row { display:flex; justify-content:space-between; align-items:baseline; gap:16px; padding:6px 8px; font-size:12px; color:var(--text3); white-space:nowrap; }
   .visit-row b { font-size:12px; }
   .visit-row small { font-size:10px; opacity:.75; margin-right:6px; font-family:var(--mono); }
+  .visit-row-live { margin-bottom:4px; padding-bottom:8px; border-bottom:1px solid var(--card-border); }
+  .visit-row-live span:first-child { display:inline-flex; align-items:center; gap:6px; color:var(--text2); }
+  .visit-row-live b { color:#22c55e; }
+  .visit-live-dot { width:7px; height:7px; border-radius:50%; background:#22c55e; box-shadow:0 0 0 0 rgba(34,197,94,.6); animation:liveDot 1.8s ease-out infinite; }
+  @keyframes liveDot { 0% { box-shadow:0 0 0 0 rgba(34,197,94,.55); } 70% { box-shadow:0 0 0 6px rgba(34,197,94,0); } 100% { box-shadow:0 0 0 0 rgba(34,197,94,0); } }
+  @media (prefers-reduced-motion: reduce) { .visit-live-dot { animation:none; } }
   .visit-row-total { margin-top:4px; padding-top:8px; border-top:1px solid var(--card-border); }
   .visit-row-total span:first-child { color:var(--text2); }
   @media (max-width: 600px) { .top-bar { margin:-8px 0 8px; gap:8px; } }

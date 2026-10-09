@@ -5175,13 +5175,38 @@ var TAX = (function () {
    [VISITS] 맨 위 방문자 수 — Cloudflare Worker(worker/)가 같은 IP를 하루(한국 시간) 1번만 셈
    · 주소는 data/counter.json (Actions '방문자 수 카운터 배포'가 저장) — 없으면 표시하지 않음
    · 이 브라우저가 오늘 이미 센 경우에는 세지 않고 숫자만 받아 옴 (서버도 IP로 다시 한 번 중복 확인)
+   · 실시간: 화면을 보고 있는 동안 45초마다 POST /live {id} (브라우저별 무작위 번호) — 숨기거나 닫으면 바로 빠짐
 ════════════════════════════════════════ */
 (function () {
+  var EP = '', LID = '';
+  function liveId() {
+    if (LID) return LID;
+    try { LID = localStorage.getItem('dc_live_id') || ''; } catch (e) {}
+    if (!/^[a-f0-9]{32}$/.test(LID)) {
+      var a = new Uint8Array(16); crypto.getRandomValues(a);
+      LID = Array.prototype.map.call(a, function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+      try { localStorage.setItem('dc_live_id', LID); } catch (e) {}
+    }
+    return LID;
+  }
+  function ping() {                                                   /* 글 형식(text/plain)이라 사전 확인(preflight) 없이 한 번에 */
+    if (!EP || document.hidden) return Promise.resolve();
+    return fetch(EP + '/live', { method: 'POST', mode: 'cors', cache: 'no-store', body: JSON.stringify({ id: liveId() }) })
+      .then(function (r) { return r.ok ? r.json() : null; }).then(show).catch(function () {});
+  }
+  function bye() { if (!EP) return; try { navigator.sendBeacon(EP + '/live', new Blob([JSON.stringify({ id: liveId(), bye: 1 })], { type: 'text/plain' })); } catch (e) {} }
+  function startLive() {
+    ping();
+    setInterval(ping, 45000);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) bye(); else ping(); });
+    window.addEventListener('pagehide', bye);
+  }
   function kstDay() { return new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10); }
   function show(d) {
     if (!d || typeof d.today !== 'number') return;
     var f = function (v) { return typeof v === 'number' ? v.toLocaleString('ko-KR') : '—'; }, set = function (id, v) { document.getElementById(id).textContent = v; };
     set('visit-total', f(d.total)); set('visit-total2', f(d.total)); set('visit-today', f(d.today));
+    if (typeof d.live === 'number') set('visit-live', f(Math.max(1, d.live)));   /* 지금 보고 있는 나도 포함 */
     set('visit-yday', f(d.yesterday)); set('visit-max', f(d.max));
     set('visit-maxday', /^\d{4}-\d\d-\d\d$/.test(d.maxDay || '') ? (+d.maxDay.slice(5, 7)) + '/' + (+d.maxDay.slice(8)) : '');   /* 최대였던 날 (월/일) */
     document.getElementById('visit-bar').hidden = false;
@@ -5192,13 +5217,15 @@ var TAX = (function () {
     try { cfg = await window.mdLoad('counter.json'); } catch (e) {}
     if (!cfg || !/^https:\/\//.test(cfg.endpoint || '')) return;
     var day = kstDay(), seen = false;
+    EP = cfg.endpoint.replace(/\/$/, '');
     try { seen = localStorage.getItem('etfmd-visit-day') === day; } catch (e) {}
     try {
-      var r = await fetch(cfg.endpoint.replace(/\/$/, '') + (seen ? '/' : '/hit'), { method: seen ? 'GET' : 'POST', mode: 'cors', cache: 'no-store' });
-      if (!r.ok) return;
-      show(await r.json());
-      if (!seen) { try { localStorage.setItem('etfmd-visit-day', day); } catch (e) {} }
+      if (!seen) {                                                    /* 오늘 첫 방문만 세고, 숫자는 실시간 신호의 답으로 받음 */
+        var r = await fetch(EP + '/hit', { method: 'POST', mode: 'cors', cache: 'no-store' });
+        if (r.ok) { show(await r.json()); try { localStorage.setItem('etfmd-visit-day', day); } catch (e) {} }
+      }
     } catch (e) {}
+    startLive();
   }
   /* 휴대폰(마우스 없음)·키보드: 누르면 열고 닫기, 바깥 누르거나 Esc 면 닫기 */
   function bindPop() {
