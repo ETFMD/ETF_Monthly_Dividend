@@ -5728,7 +5728,7 @@ var TAX = (function () {
     var med = Q(50);
     setT('sr-k-med', eok(med)); setT('sr-k-avg', eok(M.mean)); setT('sr-k-mon', x > 0 ? money(x / 12) : '—');
     if (x <= 0) {
-      setT('sr-rank', '—'); setT('sr-rank-sub', '연봉을 넣으면 전체 근로자 가운데 내 위치를 보여 줍니다.'); setT('sr-next', '');
+      setT('sr-rank', '—'); setT('sr-rank-sub', '연봉을 넣으면 전체 근로자 가운데 내 위치를 보여 줍니다.'); setT('sr-next', ''); share = null; $('sr-share').hidden = true;
       $('sr-gauge-mk').style.left = '0%'; draw(0); table(null); return;
     }
     var p = Math.min(100, Math.max(0, P(x))), rank = Math.max(1, Math.round(p / 100 * M.total));
@@ -5739,6 +5739,12 @@ var TAX = (function () {
     for (var i = 0; i < goals.length; i++) if (goals[i] < Math.min(p, shown) - 1e-9) { g = goals[i]; break; }
     if (g != null) { var need = Q(g) - x; setH('sr-next', '상위 ' + pctTxt(g) + '에 들려면 연 <b>' + money(need) + '</b> 더 (월 약 ' + money(need / 12) + ')'); }
     else setT('sr-next', '국세청 자료의 가장 높은 구간(상위 0.1%) 안에 듭니다.');
+    share = { key: 'salary-rank', chip: '연봉 순위', title: '국내 나의 연봉 순위', label: '전체 근로소득자 ' + Math.round(M.total / 1e4).toLocaleString('ko-KR') + '만 명 중 · 세전 총급여 기준',
+      big: '상위 ' + pctTxt(p), sub: '근로소득자 ' + M.total.toLocaleString('ko-KR') + '명 중 약 ' + rank.toLocaleString('ko-KR') + '번째', gauge: 100 - p, shareText: '연봉 ' + money(x),
+      rows: [['내 연봉', money(x), true], ['중위 연봉 대비', (x / med).toFixed(2) + '배'], ['월 환산 (세전)', money(x / 12), true],
+             g != null ? ['상위 ' + pctTxt(g) + '까지', '연 ' + money(Q(g) - x) + ' 더', true] : ['국세청 자료 최고 구간', '상위 0.1% 안']],
+      source: '국세청 「근로소득 백분위(천분위) 자료」' + (M.yr ? ' ' + M.yr + '년 귀속' : '') };
+    $('sr-share').hidden = false;
     draw(x); table(p);
   }
   function table(myP) {
@@ -5755,12 +5761,14 @@ var TAX = (function () {
   function load() {
     if (loading) return; loading = true;
     (window.mdLoad ? window.mdLoad('salary_rank.json') : fetch('data/salary_rank.json').then(function (r) { return r.json(); })).then(function (d) {
-      M = build(d);
+      M = build(d); M.yr = d.year;
       setT('sr-subtitle', '국세청 근로소득 천분위 자료(' + d.year + '년 귀속·' + d.filed + '년 신고)로 근로자 ' + (Math.round(d.total / 1e4)).toLocaleString('ko-KR') + '만 명 가운데 내 연봉이 상위 몇 %인지 계산합니다');
       setH('sr-src', '자료: 국세청 「근로소득 백분위(천분위) 자료」 <b>' + d.year + '년 귀속</b> (' + d.filed + '년 신고) · 근로소득자 ' + d.total.toLocaleString('ko-KR') + '명 · <a href="' + d.source + '" target="_blank" rel="noopener">공공데이터포털</a>');
       var pg = $('page-srank'); if (pg && pg.classList.contains('active')) render();
     }).catch(function () { loading = false; setT('sr-src', '자료를 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.'); });
   }
+  var share = null;
+  document.addEventListener('click', function (e) { if (share && e.target.closest && e.target.closest('#sr-share')) window.shareCard.open(share); });
   window.fcRegister('srk', render, 'srank');
 })();
 
@@ -5858,7 +5866,7 @@ var TAX = (function () {
     setT('ar-k-age', age ? eok(age[2] * 1e4) : '연령대를 고르세요');
     var empty = !amt('ar-asset') && !amt('ar-debt');
     if (empty) {
-      setT('ar-rank', '—'); setT('ar-rank-sub', '자산과 부채를 넣으면 전체 가구 가운데 우리 집 위치를 보여 줍니다.'); setT('ar-next', '');
+      setT('ar-rank', '—'); setT('ar-rank-sub', '자산과 부채를 넣으면 전체 가구 가운데 우리 집 위치를 보여 줍니다.'); setT('ar-next', ''); share = null; $('ar-share').hidden = true;
       $('ar-gauge-mk').style.left = '0%'; draw(null); table(null); ages(null); return;
     }
     var p = Math.min(100, Math.max(0, P(x))), low = p > 90;
@@ -5870,6 +5878,13 @@ var TAX = (function () {
     for (var i = 0; i < goals.length; i++) if (goals[i] < Math.min(p, shown) - 1e-9) { g = goals[i]; break; }
     if (g != null) { var need = Q(g) - x; setH('ar-next', '상위 ' + pctTxt(g) + '에 들려면 순자산 <b>' + money(need) + '</b> 더' + (g < 10 ? ' <small>(상위 10% 안은 추정)</small>' : '')); }
     else setT('ar-next', '상위 1% 안에 듭니다 (상위 10% 안은 추정값).');
+    share = { key: 'asset-rank', chip: '자산 순위', title: '국내 나의 자산 순위', label: '전체 가구 기준 · 순자산(자산 − 부채)',
+      big: rankTxt(p), sub: '100가구 중 ' + Math.max(1, Math.min(100, Math.ceil(p - 1e-9))) + '번째쯤' + (x <= 0 ? ' · 순자산 0원 이하' : ''), gauge: 100 - p, shareText: '순자산 ' + money(x),
+      rows: [['우리 집 순자산', money(x), true], ['순자산 중앙값 대비', x > 0 ? (x / M.median).toFixed(2) + '배' : '—'],
+             age ? [age[0] + ' 중앙값 대비', x > 0 ? (x / (age[2] * 1e4)).toFixed(2) + '배' : '—'] : null,
+             g != null ? ['상위 ' + pctTxt(g) + '까지', money(Q(g) - x) + ' 더', true] : ['통계 최고 구간', '상위 1% 안']],
+      source: '통계청 가계금융복지조사' + (M.yr ? ' ' + M.yr + '년' : '') + (p < 10 ? ' · 상위 10% 안은 추정' : '') };
+    $('ar-share').hidden = false;
     draw(p); table(p); ages(x);
   }
   function table(myP) {
@@ -5895,12 +5910,14 @@ var TAX = (function () {
   function load() {
     if (loading) return; loading = true;
     (window.mdLoad ? window.mdLoad('asset_rank.json') : fetch('data/asset_rank.json').then(function (r) { return r.json(); })).then(function (d) {
-      M = build(d);
+      M = build(d); M.yr = d.year;
       setT('ar-subtitle', '통계청 가계금융복지조사(' + d.base + ' 기준)로 전체 가구 가운데 우리 집 순자산이 상위 몇 %인지 계산합니다');
       setH('ar-src', '자료: ' + d.title + ' <b>' + d.year + '년</b> (' + d.base + ' 기준 자산·부채) · <a href="' + d.source + '" target="_blank" rel="noopener">KOSIS 국가통계포털</a>');
       var pg = $('page-arank'); if (pg && pg.classList.contains('active')) render();
     }).catch(function () { loading = false; setT('ar-src', '자료를 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.'); });
   }
+  var share = null;
+  document.addEventListener('click', function (e) { if (share && e.target.closest && e.target.closest('#ar-share')) window.shareCard.open(share); });
   window.fcRegister('ark', render, 'arank');
 })();
 
@@ -6024,13 +6041,14 @@ var TAX = (function () {
   var RANGE = [['1', 1], ['3', 3], ['5', 5], ['10', 10], ['all', 0]];
   function histDraw(r) {
     var box = $('ap-h-' + hid(r.k)); if (!box) return;
+    var shareBtn = '<button type="button" class="shc-open ap-share" data-k="' + esc(r.k) + '"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v8M4.8 5.2 8 2l3.2 3.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 9.5V13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>순위 공유 카드</button>';
     var H = hist[r.k];
     if (!H) {
-      box.innerHTML = '<div class="ap-hist-msg">전체 기간 실거래를 불러오는 중…</div>';
+      box.innerHTML = '<div class="ap-hist-head">' + shareBtn + '</div><div class="ap-hist-msg">전체 기간 실거래를 불러오는 중…</div>';
       var go = function (base) {
-        if (!base) { box.innerHTML = '<div class="ap-hist-msg">실거래 그래프를 불러오지 못했습니다.</div>'; return; }
+        if (!base) { box.innerHTML = '<div class="ap-hist-head">' + shareBtn + '</div><div class="ap-hist-msg">실거래 그래프를 불러오지 못했습니다.</div>'; return; }
         loadAll(r, base).then(function (x) { hist[r.k] = { deals: x.deals, idx: x.idx, range: 'all' }; histDraw(r); })
-          .catch(function () { box.innerHTML = '<div class="ap-hist-msg">실거래 그래프를 불러오지 못했습니다. 잠시 뒤 다시 눌러 주세요.</div>'; delete S.open[r.k]; });
+          .catch(function () { box.innerHTML = '<div class="ap-hist-head">' + shareBtn + '</div><div class="ap-hist-msg">실거래 그래프를 불러오지 못했습니다. 잠시 뒤 다시 눌러 주세요.</div>'; delete S.open[r.k]; });
       };
       if (window.__counterEP) go(window.__counterEP); else (window.mdLoad ? window.mdLoad('counter.json') : Promise.resolve(null)).then(function (c) { window.__counterEP = c && c.endpoint; go(window.__counterEP); });
       return;
@@ -6043,12 +6061,12 @@ var TAX = (function () {
       return '<button type="button" class="chart-tab' + (H.range === x[0] ? ' active' : '') + '" data-range="' + x[0] + '" data-k="' + esc(r.k) + '">' + (x[1] ? x[1] + '년' : '전체') + '</button>';
     }).join('') + '</div>';
     var ix = H.idx, prog = ix && ix.total && ix.done < ix.total ? '<span class="ap-prog">과거 자료 채우는 중 ' + Math.floor(ix.done / ix.total * 100) + '% (2006년~' + ix.to.slice(0, 4) + '.' + ix.to.slice(4) + ')</span>' : '';
-    if (!h.length) { box.innerHTML = '<div class="ap-hist-head">' + tabs + prog + '</div><div class="ap-hist-msg">이 기간에는 거래 자료가 없습니다.</div>'; return; }
+    if (!h.length) { box.innerHTML = '<div class="ap-hist-head">' + tabs + prog + shareBtn + '</div><div class="ap-hist-msg">이 기간에는 거래 자료가 없습니다.</div>'; return; }
     var areas = {}; h.forEach(function (d) { var k = Math.round(d[2]); (areas[k] = areas[k] || []).push(d); });
     var keys = Object.keys(areas).sort(function (a, b) { return areas[b].length - areas[a].length; });
     var hi = h.reduce(function (m, d) { return d[1] > m[1] ? d : m; }), lo = h.reduce(function (m, d) { return d[1] < m[1] ? d : m; });
     var id = 'ap-c-' + hid(r.k);
-    box.innerHTML = '<div class="ap-hist-head">' + tabs + prog + '</div><div class="ap-hist-top"><span>' + (yrs ? '최근 ' + yrs + '년' : h[0][0].slice(0, 4) + '년~') + ' 매매 <b>' + h.length.toLocaleString('ko-KR') + '건</b></span><span>최고 <b>' + man(hi[1]) + '</b> <small>(' + hi[2] + '㎡ · ' + ymd(hi[0]) + ')</small></span><span>최저 <b>' + man(lo[1]) + '</b> <small>(' + lo[2] + '㎡ · ' + ymd(lo[0]) + ')</small></span></div>' +
+    box.innerHTML = '<div class="ap-hist-head">' + tabs + prog + shareBtn + '</div><div class="ap-hist-top"><span>' + (yrs ? '최근 ' + yrs + '년' : h[0][0].slice(0, 4) + '년~') + ' 매매 <b>' + h.length.toLocaleString('ko-KR') + '건</b></span><span>최고 <b>' + man(hi[1]) + '</b> <small>(' + hi[2] + '㎡ · ' + ymd(hi[0]) + ')</small></span><span>최저 <b>' + man(lo[1]) + '</b> <small>(' + lo[2] + '㎡ · ' + ymd(lo[0]) + ')</small></span></div>' +
       '<div class="ap-chart"><canvas id="' + id + '" aria-label="' + esc(r.n) + ' 실거래가 그래프"></canvas></div>';
     if (typeof Chart === 'undefined') return;
     var pal = ['#3182f6', '#f04452', '#fe9800', '#22c55e', '#a855f7', '#14b8a6'], tick = cssVar('--text3', '#888'), grid = 'rgba(' + cssVar('--fg-rgb', '255,255,255') + ',0.06)';
@@ -6091,6 +6109,18 @@ var TAX = (function () {
       var pg = $('page-aptrank'); if (pg && pg.classList.contains('active')) render();
     }).catch(function () { S.loading = false; $('ap-body').innerHTML = '<tr><td colspan="9" class="dv-empty">자료를 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.</td></tr>'; });
   }
+  /* [SHARE-CARD] 단지 순위 공유 — 전국·시도·시군구 순위 (가장 최근 실거래가 기준, 같은 금액은 같은 순위) */
+  function shareApt(r) {
+    var R = S.rows, n = R.length;
+    function rankIn(f) { var a = R.filter(f); return [a.filter(function (x) { return x.p > r.p; }).length + 1, a.length]; }
+    var sd = rankIn(function (x) { return x.sido === r.sido; }), gu = rankIn(function (x) { return x.sgg === r.sgg; });
+    var top = r.rank / n * 100, topTxt = (top < 1 ? top.toFixed(2) : top < 10 ? top.toFixed(1) : Math.round(top)) + '%';
+    window.shareCard.open({ key: 'apt-rank', chip: '아파트 시세 순위', title: r.n, label: r.sido + ' ' + r.gu + ' ' + r.addr + (r.by ? ' · ' + r.by + '년' : ''),
+      big: '전국 ' + r.rank.toLocaleString('ko-KR') + '위', sub: '최근 1년 거래된 ' + n.toLocaleString('ko-KR') + '개 단지 중 상위 ' + topTxt, gauge: 100 - top,
+      rows: [['최근 실거래가', man(r.p) + ' · ' + r.a + '㎡'], [r.sido + ' 순위', sd[0].toLocaleString('ko-KR') + '위 / ' + sd[1].toLocaleString('ko-KR') + '개'],
+             [r.gu + ' 순위', gu[0].toLocaleString('ko-KR') + '위 / ' + gu[1].toLocaleString('ko-KR') + '개'], r.py ? ['평당가 (전용)', man(Math.round(r.py))] : null],
+      source: '국토교통부 아파트 매매 실거래가 · 계약 ' + ymd(r.d) + ' 기준' });
+  }
   window.apRender = function () { var pg = $('page-aptrank'); if (pg && pg.classList.contains('active')) render(); };
 
   document.addEventListener('click', function (e) {
@@ -6101,6 +6131,8 @@ var TAX = (function () {
     if (c) { S.sido = c.getAttribute('data-sido'); S.page = 1; render(); return; }
     var pgb = e.target.closest('#ap-pager .dv-pg');
     if (pgb && !pgb.disabled) { S.page = +pgb.getAttribute('data-pg'); table(); var top = $('ap-body').closest('.dv-card'); if (top) top.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+    var sh = e.target.closest('.ap-share');
+    if (sh) { var sr = S.rows.find(function (x) { return x.k === sh.getAttribute('data-k'); }); if (sr) shareApt(sr); return; }
     var rg = e.target.closest('.ap-range .chart-tab');
     if (rg) { var hk = rg.getAttribute('data-k'), rr = S.rows.find(function (x) { return x.k === hk; }); if (hist[hk] && rr) { hist[hk].range = rg.getAttribute('data-range'); if (charts[hk]) { charts[hk].destroy(); delete charts[hk]; } histDraw(rr); } return; }
     var row = e.target.closest('tr.dv-row');
@@ -12430,4 +12462,207 @@ var JBX = (function () {
   }
   if (PT) window.fcRegister('ptx', renderPT, 'proptax');
   if (JB) window.fcRegister('jbx', renderJB, 'jongbu');
+})();
+
+/* ════════════════════════════════════════
+   [SHARE-CARD] 결과 공유 카드 — 순위 결과를 1080×1350 이미지로 그려 저장·공유(카카오톡 등)·링크 복사
+   window.shareCard.open({
+     key: 'salary-rank',            // 주소(경로) — 공유 링크 https://d-capitalism.com/<key>/ · 파일 이름
+     chip: '연봉 순위', title: '국내 나의 연봉 순위', label: '전체 근로소득자 기준',
+     big: '상위 12.3%', sub: '근로소득자 2,085만 명 중 약 256만 번째',
+     gauge: 87.7,                   // 0(하위)~100(상위) 막대 위 내 위치 · 없으면 생략
+     rows: [['내 연봉', '5,000만원', true], …],   // [이름, 값, 숨김 가능(금액)] 최대 4줄
+     source: '국세청 근로소득 천분위 자료 2024년 귀속'
+   })
+════════════════════════════════════════ */
+(function () {
+  var SITE = 'https://d-capitalism.com/', W = 1080, H = 1350, FONT = '"Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif';
+  var st = { o: null, hide: false, blob: null, url: null, el: null, lastFocus: null };
+  function font(w, s) { return w + ' ' + s + 'px ' + FONT; }
+  function fit(ctx, text, maxW, size, weight, min) {          /* 너비에 맞게 글자 크기 줄이기 */
+    var s = size; ctx.font = font(weight, s);
+    while (s > (min || 12) && ctx.measureText(text).width > maxW) { s -= 2; ctx.font = font(weight, s); }
+    return s;
+  }
+  function wrap(ctx, text, maxW, maxLines) {                  /* 한글은 글자 단위로, 공백 우선 줄바꿈 */
+    var words = String(text).split(' '), lines = [], cur = '';
+    words.forEach(function (w) {
+      var t = cur ? cur + ' ' + w : w;
+      if (ctx.measureText(t).width <= maxW) { cur = t; return; }
+      if (cur) lines.push(cur);
+      cur = w;
+      while (ctx.measureText(cur).width > maxW) {             /* 한 단어가 너무 길면 글자 단위로 자름 */
+        var i = cur.length; while (i > 1 && ctx.measureText(cur.slice(0, i)).width > maxW) i--;
+        lines.push(cur.slice(0, i)); cur = cur.slice(i);
+      }
+    });
+    if (cur) lines.push(cur);
+    if (lines.length > maxLines) { lines = lines.slice(0, maxLines); var l = lines[maxLines - 1]; while (l.length > 1 && ctx.measureText(l + '…').width > maxW) l = l.slice(0, -1); lines[maxLines - 1] = l + '…'; }
+    return lines;
+  }
+  function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+  function mark(ctx, x, y, n) {                               /* 로고: 파란 둥근 사각형 + 흰 계단 (assets/favicon.svg) */
+    var k = n / 30;
+    ctx.save(); ctx.translate(x, y); ctx.scale(k, k);
+    ctx.fillStyle = '#3182f6'; rr(ctx, 0, 0, 30, 30, 8); ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(7.5, 22); ctx.lineTo(12, 22); ctx.lineTo(12, 17.5); ctx.lineTo(16.5, 17.5); ctx.lineTo(16.5, 13); ctx.lineTo(21, 13); ctx.lineTo(21, 8.5); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(17.8, 8.5); ctx.lineTo(21, 8.5); ctx.lineTo(21, 11.7); ctx.stroke();
+    ctx.restore();
+  }
+  function draw(o, hide) {
+    var c = document.createElement('canvas'); c.width = W; c.height = H;
+    var ctx = c.getContext('2d'), X = 84, CW = W - X * 2;
+    /* 배경 */
+    var g = ctx.createLinearGradient(0, 0, W * 0.5, H); g.addColorStop(0, '#141925'); g.addColorStop(1, '#0b0d12');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    var rg = ctx.createRadialGradient(W, 0, 0, W, 0, 900); rg.addColorStop(0, 'rgba(49,130,246,0.26)'); rg.addColorStop(1, 'rgba(49,130,246,0)');
+    ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H);
+    /* 오른쪽 위로 올라가는 계단 (노동자 → 자본가) — 글자·숫자 상자와 겹치지 않는 머리 오른쪽에 은은하게 */
+    var sg = ctx.createLinearGradient(700, 380, W, 150); sg.addColorStop(0, 'rgba(49,130,246,0.03)'); sg.addColorStop(1, 'rgba(49,130,246,0.32)');
+    ctx.strokeStyle = sg; ctx.lineWidth = 22; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(740, 372); ctx.lineTo(830, 372); ctx.lineTo(830, 304); ctx.lineTo(920, 304); ctx.lineTo(920, 236); ctx.lineTo(1010, 236); ctx.lineTo(1010, 168); ctx.lineTo(1100, 168); ctx.stroke();
+    /* 머리: 로고 · 사이트 이름 · 분류 칩 */
+    mark(ctx, X, 76, 68);
+    ctx.fillStyle = '#e8eaee'; ctx.font = font(700, 38); ctx.textBaseline = 'middle'; ctx.fillText('디코딩 자본주의', X + 88, 111);
+    var bw = ctx.measureText('디코딩 자본주의').width;
+    if (o.chip) {
+      ctx.font = font(500, 28); var cw = ctx.measureText(o.chip).width + 44, cx = X + 88 + bw + 24;
+      if (cx + cw > W - X) cx = W - X - cw;
+      rr(ctx, cx, 88, cw, 46, 23); ctx.fillStyle = 'rgba(49,130,246,0.16)'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(49,130,246,0.55)'; ctx.stroke();
+      ctx.fillStyle = '#9cc2ff'; ctx.fillText(o.chip, cx + 22, 112);
+    }
+    ctx.textBaseline = 'alphabetic';
+    /* 제목 · 기준 */
+    var y = 290;
+    fit(ctx, o.title, CW, 54, 700, 30); ctx.fillStyle = '#f2f3f5'; ctx.fillText(o.title, X, y);
+    if (o.label) { y += 56; fit(ctx, o.label, CW, 32, 400, 16); ctx.fillStyle = '#8b919d'; ctx.fillText(o.label, X, y); }
+    /* 큰 결과 */
+    y += 190;
+    var bs = fit(ctx, o.big, CW, 168, 700, 60);
+    var bg = ctx.createLinearGradient(X, y - bs, X + ctx.measureText(o.big).width, y); bg.addColorStop(0, '#5aa0ff'); bg.addColorStop(1, '#2f7bf5');
+    ctx.fillStyle = bg; ctx.fillText(o.big, X - 4, y);
+    /* 설명 */
+    if (o.sub) {
+      ctx.font = font(500, 36); ctx.fillStyle = '#c9cdd4';
+      wrap(ctx, o.sub, CW, 2).forEach(function (l, i) { y += i ? 52 : 74; ctx.fillText(l, X, y); });
+    }
+    /* 위치 막대 (하위 ← → 상위) */
+    if (o.gauge != null && isFinite(o.gauge)) {
+      y += 64;
+      var gx = X, gw = CW, gh = 20, pos = Math.max(0, Math.min(100, o.gauge));
+      rr(ctx, gx, y, gw, gh, gh / 2); ctx.fillStyle = 'rgba(255,255,255,0.08)'; ctx.fill();
+      var fg = ctx.createLinearGradient(gx, 0, gx + gw, 0); fg.addColorStop(0, 'rgba(49,130,246,0.25)'); fg.addColorStop(1, '#3182f6');
+      rr(ctx, gx, y, Math.max(gh, gw * pos / 100), gh, gh / 2); ctx.fillStyle = fg; ctx.fill();
+      var mx = gx + gw * pos / 100;
+      ctx.beginPath(); ctx.arc(Math.max(gx + 16, Math.min(gx + gw - 16, mx)), y + gh / 2, 22, 0, Math.PI * 2); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.lineWidth = 7; ctx.strokeStyle = '#3182f6'; ctx.stroke();
+      y += gh + 48; ctx.font = font(500, 26); ctx.fillStyle = '#7d8390';
+      ctx.textAlign = 'left'; ctx.fillText('하위', gx, y); ctx.textAlign = 'center'; ctx.fillText('중위', gx + gw / 2, y); ctx.textAlign = 'right'; ctx.fillText('상위', gx + gw, y); ctx.textAlign = 'left';
+    }
+    /* 숫자 상자 */
+    var rows = (o.rows || []).filter(function (r) { return r && r[1] != null && r[1] !== ''; }).slice(0, 4);
+    if (rows.length) {
+      var rh = 76, top = Math.max(y + 46, 900 - (rows.length - 3) * 40), bh = rows.length * rh + 28;
+      if (top + bh > H - 170) top = H - 170 - bh;
+      rr(ctx, X, top, CW, bh, 26); ctx.fillStyle = 'rgba(255,255,255,0.045)'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.stroke();
+      rows.forEach(function (r, i) {
+        var ry = top + 14 + i * rh + rh / 2 + 12;
+        if (i) { ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.fillRect(X + 32, top + 14 + i * rh, CW - 64, 2); }
+        ctx.font = font(400, 32); ctx.fillStyle = '#a5abb6'; ctx.textAlign = 'left';
+        var lw = Math.min(ctx.measureText(r[0]).width, CW * 0.5); ctx.fillText(r[0], X + 36, ry, CW * 0.5);
+        var v = hide && r[2] ? '비공개' : String(r[1]);
+        ctx.textAlign = 'right'; fit(ctx, v, CW - 72 - lw - 30, 38, 700, 22); ctx.fillStyle = hide && r[2] ? '#6f7582' : '#f2f3f5'; ctx.fillText(v, W - X - 36, ry);
+        ctx.textAlign = 'left';
+      });
+    }
+    /* 바닥: 나도 해보기 · 주소 · 출처 */
+    var fy = H - 104;
+    ctx.font = font(700, 34); ctx.fillStyle = '#ffffff';
+    rr(ctx, X, fy - 48, ctx.measureText('나도 계산해 보기 →').width + 52, 70, 35); ctx.fillStyle = '#3182f6'; ctx.fill();
+    ctx.fillStyle = '#ffffff'; ctx.fillText('나도 계산해 보기 →', X + 26, fy);
+    ctx.font = font(500, 30); ctx.fillStyle = '#c3c7cf'; ctx.textAlign = 'right';
+    fit(ctx, 'd-capitalism.com/' + o.key, CW * 0.48, 30, 500, 20); ctx.fillText('d-capitalism.com/' + o.key, W - X, fy - 4);
+    ctx.textAlign = 'left';
+    if (o.source) { fit(ctx, '자료: ' + o.source, CW, 24, 400, 16); ctx.fillStyle = '#6a707c'; ctx.fillText('자료: ' + o.source, X, H - 40); }
+    return c;
+  }
+  function linkOf(o) { return SITE + o.key + '/'; }
+  function textOf(o, hide) { return o.title + ' — ' + o.big + (o.shareText && !hide ? ' (' + o.shareText + ')' : '') + '\n나도 계산해 보기 👉 ' + linkOf(o); }
+  function render() {
+    var o = st.o, c = draw(o, st.hide), img = st.el.querySelector('.shc-img');
+    st.blob = null;
+    if (st.url) { URL.revokeObjectURL(st.url); st.url = null; }
+    c.toBlob(function (b) { st.blob = b; st.url = URL.createObjectURL(b); img.src = st.url; }, 'image/png');
+  }
+  function msg(t) { var m = st.el.querySelector('.shc-msg'); m.textContent = t; clearTimeout(msg.t); msg.t = setTimeout(function () { m.textContent = ''; }, 3200); }
+  function fileOf() { return new File([st.blob], 'd-capitalism-' + st.o.key + '.png', { type: 'image/png' }); }
+  function save() {
+    if (!st.blob) return;
+    var a = document.createElement('a'); a.href = st.url; a.download = 'd-capitalism-' + st.o.key + '.png';
+    document.body.appendChild(a); a.click(); a.remove();
+    msg(/iPhone|iPad|iPod/.test(navigator.userAgent) ? '이미지가 열리면 길게 눌러 "사진에 저장"을 누르세요.' : '이미지를 저장했습니다.');
+  }
+  function copy(text, done) {
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, function () { legacy(); });
+    else legacy();
+    function legacy() {
+      var t = document.createElement('textarea'); t.value = text; t.setAttribute('readonly', ''); t.style.position = 'fixed'; t.style.opacity = '0';
+      document.body.appendChild(t); t.select(); var ok = false; try { ok = document.execCommand('copy'); } catch (e) {} t.remove();
+      if (ok) done(); else msg('복사하지 못했습니다. 주소: ' + text);
+    }
+  }
+  function share() {
+    var o = st.o, text = textOf(o, st.hide);
+    if (!st.blob) return;
+    var f = fileOf();
+    if (navigator.canShare && navigator.canShare({ files: [f] })) {
+      navigator.share({ files: [f], title: o.title, text: text }).catch(function (e) { if (e && e.name !== 'AbortError') msg('공유하지 못했습니다. 이미지 저장 후 직접 올려 주세요.'); });
+    } else if (navigator.share) {
+      navigator.share({ title: o.title, text: text, url: linkOf(o) }).catch(function () {});
+    } else copy(text, function () { msg('결과와 주소를 복사했습니다. 카카오톡·커뮤니티에 붙여 넣으세요.'); });
+  }
+  function close() {
+    if (!st.el) return;
+    st.el.classList.remove('open'); document.documentElement.classList.remove('shc-lock');
+    if (st.url) { URL.revokeObjectURL(st.url); st.url = null; }
+    if (st.lastFocus && st.lastFocus.focus) st.lastFocus.focus();
+  }
+  function build() {
+    var el = document.createElement('div');
+    el.className = 'shc-ov'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', '결과 공유 카드');
+    el.innerHTML = '<div class="shc-box"><div class="shc-head"><b>결과 공유 카드</b><button type="button" class="shc-x" aria-label="닫기">✕</button></div>' +
+      '<div class="shc-prev"><img class="shc-img" alt="공유 카드 미리보기"></div>' +
+      '<label class="shc-hide"><input type="checkbox" class="shc-hide-in"> 금액 숨기기 <small>(순위만 공유)</small></label>' +
+      '<div class="shc-btns"><button type="button" class="shc-b shc-share">공유하기</button><button type="button" class="shc-b shc-save">이미지 저장</button><button type="button" class="shc-b shc-copy">링크 복사</button></div>' +
+      '<p class="shc-msg" aria-live="polite"></p></div>';
+    document.body.appendChild(el);
+    el.addEventListener('click', function (e) {
+      if (e.target === el || e.target.closest('.shc-x')) return close();
+      if (e.target.closest('.shc-save')) return save();
+      if (e.target.closest('.shc-share')) return share();
+      if (e.target.closest('.shc-copy')) return copy(textOf(st.o, st.hide), function () { msg('결과와 주소를 복사했습니다.'); });
+    });
+    el.querySelector('.shc-hide-in').addEventListener('change', function (e) { st.hide = e.target.checked; render(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && st.el && st.el.classList.contains('open')) close(); });
+    return el;
+  }
+  function open(o) {
+    if (!o || !o.big) return;
+    st.o = o; st.lastFocus = document.activeElement;
+    if (!st.el) st.el = build();
+    var hasSecret = (o.rows || []).some(function (r) { return r && r[2]; });
+    st.el.querySelector('.shc-hide').style.display = hasSecret ? '' : 'none';
+    if (!hasSecret) { st.hide = false; st.el.querySelector('.shc-hide-in').checked = false; }
+    st.el.querySelector('.shc-share').textContent = navigator.share ? '공유하기 (카카오톡 등)' : '결과 복사하기';
+    st.el.querySelector('.shc-msg').textContent = '';
+    st.el.querySelector('.shc-img').removeAttribute('src');
+    st.el.classList.add('open'); document.documentElement.classList.add('shc-lock');
+    st.el.querySelector('.shc-x').focus();
+    /* 구글 한글 글꼴은 글자 범위별로 나뉘어 있어, 카드에 쓸 글자를 넘겨 그 조각까지 받아 둔 뒤 그림 */
+    var txt = [o.chip, o.title, o.label, o.big, o.sub, o.source, '디코딩 자본주의 나도 계산해 보기 → 하위 중위 상위 자료: 비공개 d-capitalism.com/' + o.key]
+      .concat((o.rows || []).map(function (r) { return r ? r[0] + ' ' + r[1] : ''; })).join(' ');
+    var ready = document.fonts && document.fonts.load ? Promise.all([700, 500, 400].map(function (w) { return document.fonts.load(font(w, 40), txt); })).catch(function () {}) : Promise.resolve();
+    ready.then(render);
+  }
+  window.shareCard = { open: open, draw: draw };
 })();
