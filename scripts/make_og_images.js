@@ -5,17 +5,17 @@ const fs = require('fs'), path = require('path');
 const { chromium } = require(process.env.PW_CORE || 'playwright-core');
 const ROOT = path.join(__dirname, '..');
 const cfg = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/routes.json'), 'utf8'));
-const GROUP = { me: '내 위치', pay: '월급·세금', invest: '투자', realty: '부동산', passive: '불로소득' };   /* 상단 메뉴 영역 (build_pages.py 의 AREA 와 같게) */
+const GROUP = { me: '내 위치', pay: '노동자', invest: '투자', realty: '부동산', capital: '자본가', passive: '불로소득' };   /* 상단 메뉴 영역 (build_pages.py 의 AREA 와 같게) */
 const TOOLS = cfg.routes.filter(r => !r.hub).length;
 const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 /* 로고: assets/favicon.svg 와 같은 계단 마크 */
 const MARK = (n) => `<svg width="${n}" height="${n}" viewBox="0 0 30 30"><rect width="30" height="30" rx="8" fill="#3182f6"/><path d="M7.5 22h4.5v-4.5h4.5V13h4.5V8.5" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.8 8.5h3.2v3.2" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 /* 배경: 오른쪽으로 올라가는 큰 계단 (노동자 → 자본가) */
 const STAIRS = `<svg class="stairs" width="560" height="630" viewBox="0 0 560 630"><path d="M40 600H160V480H280V360H400V240H520V120" fill="none" stroke="url(#g)" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#3182f6" stop-opacity=".05"/><stop offset="1" stop-color="#3182f6" stop-opacity=".55"/></linearGradient></defs></svg>`;
-const STEPS = ['내 위치', '월급·세금', '투자', '부동산', '불로소득', '사업'];   /* 홈 '노동자 → 자본가' 6단계와 같게 */
+const STEPS = ['내 위치', '노동자', '투자', '부동산', '자본가', '불로소득'];   /* 홈 '노동자 → 자본가' 6단계와 같게 */
 function page(r, home) {
   const title = home ? '노동자에서 <em>자본가로</em>' : esc(r.short);
-  const sub = home ? `연봉·자산 순위부터 월급·세금·투자·부동산·불로소득까지, 공식 통계로 계산하는 무료 금융 도구 ${TOOLS}종` : esc(r.desc);
+  const sub = home ? `연봉·자산 순위부터 월급·투자·부동산·사업 세금·불로소득까지, 공식 통계로 계산하는 무료 금융 도구 ${TOOLS}종` : esc(r.desc);
   const big = home ? 84 : (r.short.length > 24 ? 56 : r.short.length > 16 ? 64 : 74);
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
   *{margin:0;padding:0;box-sizing:border-box}

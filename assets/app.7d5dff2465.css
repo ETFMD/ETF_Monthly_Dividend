@@ -1649,13 +1649,13 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .ye-meter-t > i { position:absolute; top:-4px; bottom:-4px; width:2px; margin-left:-1px; background:var(--text); border-radius:1px; }
   .ye-meter-l { display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color:var(--text2); }
   .ye-meter-l b { color:var(--text); }
-  /* [HUB] 영역별 허브 페이지 (내 위치·월급·세금·투자·부동산·불로소득) — 도구 카드는 build_pages.py 가 메뉴 구조로 채움 */
+  /* [HUB] 영역별 허브 페이지 (내 위치·노동자·투자·부동산·자본가·불로소득) — 도구 카드는 build_pages.py 가 메뉴 구조로 채움 */
   .drop-item[data-hub] { font-weight:600; color:var(--text); border-bottom:1px solid rgba(var(--fg-rgb),0.08); border-radius:8px 8px 0 0; margin-bottom:3px; }
   .drop-all { margin-left:auto; padding:1px 7px; border-radius:999px; font-size:10.5px; font-weight:600; color:var(--accent); background:rgba(49,130,246,0.12); }
   .crumbs { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:0 0 10px; font-size:12px; color:var(--text3); }
   .crumbs a { color:var(--text2); text-decoration:none; } .crumbs a:hover { color:var(--accent); }
   .crumbs i { font-style:normal; opacity:.6; }
-  .hub-path { display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:8px; margin:4px 0 16px; }
+  .hub-path { display:grid; grid-template-columns:repeat(6, minmax(0,1fr)); gap:8px; margin:4px 0 16px; }
   .hub-path a { display:flex; align-items:center; gap:8px; padding:10px 12px; border:1px solid var(--card-border); border-radius:12px; background:var(--card); color:var(--text2); text-decoration:none; font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:border-color .2s, color .2s; }
   .hub-path a b { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:6px; background:rgba(var(--fg-rgb),0.07); font-size:11px; flex-shrink:0; }
   .hub-path a:hover { border-color:rgba(49,130,246,0.4); color:var(--text); }
@@ -1853,13 +1853,16 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .ss-opt.on, .ss-opt:hover { background:rgba(var(--fg-rgb),0.07); color:var(--text); }
   .ss-none { padding:10px; font-size:12.5px; color:var(--text3); }
   /* [FOOTMAP] 푸터의 전체 도구 링크 (scripts/build_pages.py 가 routes.json 으로 채움) */
-  .sf-map { display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:18px 24px; padding:22px 0 20px; border-top:1px solid var(--card-border); text-align:left; }
+  .sf-map { display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:18px 24px; padding:22px 0 20px; border-top:1px solid var(--card-border); text-align:left; }
   .sf-col { display:flex; flex-direction:column; gap:7px; min-width:0; }
   .sf-h { margin:0 0 3px; font-size:12px; font-weight:700; color:var(--text2); }
   .sf-col a { font-size:12px; color:var(--text3); text-decoration:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .sf-col a:hover { color:var(--accent); }
   @media (max-width: 760px) { .sf-map { grid-template-columns:repeat(2, minmax(0, 1fr)); } }
   .drop-label { padding:8px 12px 3px; font-size:11px; font-weight:600; color:var(--text3); letter-spacing:0.02em; border-top:1px solid rgba(var(--fg-rgb),0.08); margin-top:3px; }
+  /* 태블릿 폭: 홈 + 영역 6개가 한 줄에 들어가게 여백·화살표(·아이콘)를 줄임 */
+  @media (max-width: 880px) { .app-nav .tab-group-btn { padding:10px 9px; } .app-nav .tab-group-btn .tab-group-arrow { display:none !important; } }
+  @media (max-width: 720px) { .app-nav .tab-group-btn > svg { display:none !important; } }
   @media (max-width: 600px) {
     .top-bar { flex-wrap:wrap; }
     .brand { font-size:16px; }
@@ -1868,10 +1871,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     .top-bar .visit-bar { order:2; }
     .top-bar .visit-pop { right:auto; left:0; }   /* 왼쪽 끝에 있으므로 목록은 오른쪽으로 펼침 */
     .top-bar .site-search { order:3; flex:1 1 200px; width:auto; min-width:0; }
-    .app-nav .tab-group-btn { padding:10px 9px; font-size:13.5px; }
-    .app-nav .tab-group-btn > svg, .app-nav .tab-group-btn .tab-group-arrow { display:none !important; }   /* 좁은 화면: 홈 + 영역 5개가 한 줄에 들어가게 아이콘·화살표 숨김 */
+    .app-nav .tab-group-btn { padding:10px 6px; font-size:13.5px; }
+    .app-nav .tab-group-btn > svg, .app-nav .tab-group-btn .tab-group-arrow { display:none !important; }   /* 좁은 화면: 홈 + 영역 6개가 한 줄에 들어가게 아이콘·화살표 숨김 */
   }
-  @media (max-width: 380px) { .app-nav .tab-group-btn { padding:10px 7px; font-size:13px; } }   /* 아주 좁은 화면(360 이하): 더 줄이고, 그래도 넘치면 가로 스크롤 */
+  @media (max-width: 380px) { .app-nav .tab-group-btn { padding:10px 5px; font-size:12.5px; } }   /* 아주 좁은 화면(360 이하): 더 줄이고, 그래도 넘치면 가로 스크롤 */
   /* [HM-PATH] 홈: 노동자 → 자본가 6단계 */
   .hm-path { margin:4px 0 36px; }
   .hm-path, .hm-path h2, .hm-path h3, .hm-path p, .hm-path .hm-go { font-family:var(--font); letter-spacing:normal; word-spacing:normal; word-break:keep-all; }

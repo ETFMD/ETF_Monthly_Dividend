@@ -200,9 +200,9 @@ def activate(src, r):
 
 
 # ───────────── 도구별 페이지 분리 ─────────────
-AREA = {'me': '내 위치', 'pay': '월급·세금', 'invest': '투자', 'realty': '부동산', 'passive': '불로소득'}   # 노동자→자본가 여정 순서 (상단 메뉴와 같음)
+AREA = {'me': '내 위치', 'pay': '노동자', 'invest': '투자', 'realty': '부동산', 'capital': '자본가', 'passive': '불로소득'}   # 노동자→자본가 여정 순서 (상단 메뉴와 같음)
 HUB = {r['group']: r for r in ROUTES if r.get('hub')}   # 영역 → 허브 페이지 route (routes.json 의 "hub": true)
-HUB_TOP = {'me': '진단 도구', 'pay': '월급·세금 계산기', 'invest': '투자 계산기·도구', 'realty': '부동산 계산기', 'passive': '불로소득 도구'}
+HUB_TOP = {'me': '진단 도구', 'pay': '노동자 계산기', 'invest': '투자 계산기·도구', 'realty': '부동산 계산기', 'capital': '자본가 계산기', 'passive': '불로소득 도구'}
 DROP = {}   # 영역 → [(소제목, [탭…]), …] — 상단 메뉴 드롭다운 구조 그대로 (메뉴를 바꾸면 허브도 따라 바뀜)
 
 
