@@ -12886,7 +12886,7 @@ var JBX = (function () {
     var K = window.Kakao;
     if (K && K.isInitialized && K.isInitialized() && K.Share) {
       var btns = [{ title: '나도 해보기', link: { mobileWebUrl: L.clean, webUrl: L.clean } }];
-      if (L.has) btns.unshift({ title: '결과 보기', link: { mobileWebUrl: L.result, webUrl: L.result } });
+      if (L.has || (st.opt.inp && st.spec)) btns.unshift({ title: '결과 보기', link: { mobileWebUrl: L.result, webUrl: L.result } });   /* 기본값 그대로여도 결과가 있으면 [결과 보기] */
       var img = st.spec && st.kimg[sig()];
       try {
         K.Share.sendDefault({ objectType: 'feed',
