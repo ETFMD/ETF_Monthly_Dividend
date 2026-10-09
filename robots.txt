@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /src/
+Disallow: /auth/
+Disallow: /saved/
 
 Sitemap: https://d-capitalism.com/sitemap.xml

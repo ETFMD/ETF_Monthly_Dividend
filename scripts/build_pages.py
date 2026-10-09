@@ -355,7 +355,7 @@ def main():
     old = open(os.path.join(ROOT, 'sitemap.xml'), encoding='utf-8').read() if os.path.exists(os.path.join(ROOT, 'sitemap.xml')) else ''
     if re.sub(r'<lastmod>[^<]*</lastmod>', '', old) != re.sub(r'<lastmod>[^<]*</lastmod>', '', sitemap):
         write_if_changed('sitemap.xml', sitemap)          # 주소 목록이 바뀔 때만 (날짜만 바뀌는 커밋 방지)
-    write_if_changed('robots.txt', f'User-agent: *\nAllow: /\nDisallow: /src/\n\nSitemap: {SITE}sitemap.xml\n')
+    write_if_changed('robots.txt', f'User-agent: *\nAllow: /\nDisallow: /src/\nDisallow: /auth/\nDisallow: /saved/\n\nSitemap: {SITE}sitemap.xml\n')
     write_if_changed('404.html', f'''<!DOCTYPE html>
 <html lang="ko"><head><meta charset="UTF-8"><meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>페이지를 찾을 수 없습니다 | {esc(BRAND)}</title>

@@ -1950,6 +1950,32 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .cd-link:disabled { opacity:.3; cursor:default; background:none; }
   /* [I18N] 상단 줄: 방문자 수 · 언어 선택 (오른쪽 위) */
   .top-bar { display:flex; justify-content:flex-end; align-items:center; gap:12px; margin:-22px 0 14px; min-height:28px; }
+  /* [AUTH] 간편 로그인 · 저장 버튼 */
+  .top-bar #dc-auth { order:5; } .top-bar #dc-auth[hidden] { display:none; }
+  .dca-login { font-weight:600; color:var(--accent) !important; border-color:rgba(49,130,246,0.45) !important; }
+  .dca-me { gap:7px !important; }
+  .dca-av { width:18px; height:18px; border-radius:50%; background:var(--accent); color:#fff; font-size:11px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; }
+  .dca-nm { max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .dca-menu { min-width:150px !important; }
+  .dca-menu a.lang-opt { text-decoration:none; }
+  .dca-save { display:inline-flex; align-items:center; gap:6px; margin-top:12px; padding:7px 12px; border-radius:9px; border:1px solid rgba(49,130,246,0.4); background:rgba(49,130,246,0.08); color:var(--accent); font-family:var(--font); font-size:12.5px; font-weight:600; cursor:pointer; }
+  .dca-save:hover { background:rgba(49,130,246,0.15); }
+  .dca-toast { position:fixed; left:50%; bottom:28px; transform:translate(-50%, 20px); opacity:0; pointer-events:none; z-index:10010; background:#202027; color:#f2f3f5; font-size:13px; padding:11px 18px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,.4); transition:opacity .2s, transform .2s; }
+  .dca-toast.on { opacity:1; transform:translate(-50%, 0); }
+  .dcl-ov { position:fixed; inset:0; z-index:10005; display:none; align-items:center; justify-content:center; padding:16px; background:rgba(0,0,0,.6); backdrop-filter:blur(3px); }
+  .dcl-ov.open { display:flex; }
+  .dcl-box { position:relative; width:min(380px, 100%); background:var(--bg2); border:1px solid var(--card-border); border-radius:18px; padding:28px 22px 20px; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,.45); }
+  .dcl-x { position:absolute; top:12px; right:12px; width:32px; height:32px; border-radius:50%; border:1px solid var(--card-border); background:var(--bg3); color:var(--text2); cursor:pointer; }
+  .dcl-brand { display:flex; justify-content:center; margin-bottom:10px; }
+  .dcl-h { font-size:18px; font-weight:700; margin:0 0 6px; color:var(--text); }
+  .dcl-p { font-size:13px; color:var(--text2); margin:0 0 18px; line-height:1.6; }
+  .dcl-b { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; height:48px; margin-top:8px; border-radius:12px; border:none; font-family:var(--font); font-size:15px; font-weight:600; cursor:pointer; }
+  .dcl-kakao { background:#FEE500; color:rgba(0,0,0,.85); }
+  .dcl-naver { background:#03C75A; color:#fff; }
+  .dcl-google { background:#fff; color:#1f1f1f; border:1px solid #dadce0; }
+  .dcl-b:hover { filter:brightness(.97); }
+  .dcl-s { font-size:11.5px; color:var(--text3); margin:16px 0 0; line-height:1.6; text-align:left; }
+  @media (max-width: 600px) { .top-bar #dc-auth { order:1; } .dca-nm { display:none; } }
 
   /* [BRAND] [SEARCH] 상단 줄: 로고 · 검색 · 테마 · 언어 */
   .brand { display:inline-flex; align-items:center; gap:9px; margin-right:auto; text-decoration:none; color:var(--text); font-size:17px; font-weight:800; letter-spacing:-0.02em; white-space:nowrap; }
@@ -2141,6 +2167,8 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <div class="visit-row visit-row-total"><span>전체</span><span><b id="visit-total2">—</b>명</span></div>
     </div>
   </div>
+  <!-- [AUTH] 간편 로그인 — 로그인 제공자 키가 등록돼 있을 때만 보임 -->
+  <div class="lang-sw" id="dc-auth" hidden></div>
   <!-- [I18N] 언어 선택 — 기본값은 접속 국가(한국 → 한국어, 일본 → 일본어 …), 고르면 그 선택을 기억 -->
   <div class="lang-sw notranslate" translate="no" id="lang-sw">
     <button type="button" class="lang-btn" id="lang-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="lang-menu" title="Language / 언어">
@@ -23627,6 +23655,173 @@ var RTC = (function () {
     if (share && e.target.closest('#rt-share')) window.shareCard.open(share);
   });
   window.fcRegister('rt', render, 'retire');
+})();
+
+/* ════════════════════════════════════════
+   [AUTH] 간편 로그인(카카오·네이버·구글) · 내 저장함 — 서버는 방문자 카운터 Worker(worker/src/auth.js)
+   · /auth/config 에 켜진 제공자가 하나도 없으면 로그인 버튼 자체를 숨김 (키 등록 전에는 사이트 변화 없음)
+   · 로그인: 제공자 로그인 창 → https://d-capitalism.com/auth/callback/ (state·PKCE 확인, 첫 가입이면 약관·개인정보·만 14세 동의) → 토큰을 localStorage 'dc_auth' 에 보관
+   · 계산기 화면의 '저장' 버튼: 그 화면의 입력값(입력칸·선택·체크·버튼 선택·단위)을 내 저장함에 저장 → /saved/ 에서 열면 ?load=번호 로 그대로 복원
+════════════════════════════════════════ */
+(function () {
+  if (typeof SITE_EN !== 'undefined' && SITE_EN) return;                    /* 영어 페이지는 아직 로그인 없음 */
+  var KEY = 'dc_auth', CFG = 'dc_auth_cfg', EP = null, PROV = null;
+  var NAME = { kakao: '카카오', naver: '네이버', google: '구글' };
+  function $(id) { return document.getElementById(id); }
+  function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function getAuth() { try { var a = JSON.parse(localStorage.getItem(KEY) || 'null'); return a && a.token && a.exp * 1000 > Date.now() ? a : null; } catch (e) { return null; } }
+  function setAuth(a) { try { if (a) localStorage.setItem(KEY, JSON.stringify(a)); else localStorage.removeItem(KEY); } catch (e) {} }
+  function api(method, path, body) {
+    var a = getAuth(), h = { 'Content-Type': 'application/json' };
+    if (a) h.Authorization = 'Bearer ' + a.token;
+    return fetch(EP + path, { method: method, headers: h, body: body ? JSON.stringify(body) : undefined }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) { if (r.status === 401 && a) { setAuth(null); paint(); } if (!r.ok) { var e = new Error(j.error || r.status); e.status = r.status; e.body = j; throw e; } return j; });
+    });
+  }
+  function endpoint() {
+    if (window.__counterEP) return Promise.resolve(window.__counterEP);
+    return (window.mdLoad ? window.mdLoad('counter.json') : fetch('/data/counter.json').then(function (r) { return r.json(); })).then(function (c) { window.__counterEP = c && c.endpoint; return window.__counterEP; });
+  }
+  function config() {
+    try { var c = JSON.parse(sessionStorage.getItem(CFG) || 'null'); if (c && Date.now() - c.t < 6e5) return Promise.resolve(c.p); } catch (e) {}
+    return fetch(EP + '/auth/config').then(function (r) { return r.json(); }).then(function (j) {
+      var p = (j && j.providers) || {}; try { sessionStorage.setItem(CFG, JSON.stringify({ t: Date.now(), p: p })); } catch (e) {} return p;
+    }).catch(function () { return {}; });
+  }
+  /* ── 로그인 시작: state·PKCE 만들어 두고 제공자 로그인 창으로 ── */
+  function rnd(n) { var a = new Uint8Array(n); crypto.getRandomValues(a); return Array.prototype.map.call(a, function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); }
+  function b64u(buf) { return btoa(String.fromCharCode.apply(null, new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function start(p) {
+    var cid = PROV[p] && PROV[p].client_id; if (!cid) return;
+    var redirect = location.origin + '/auth/callback/', state = rnd(16), verifier = rnd(32);
+    try { sessionStorage.setItem('dc_auth_req', JSON.stringify({ p: p, state: state, verifier: verifier, back: location.pathname + location.search, t: Date.now() })); } catch (e) {}
+    var q = function (o) { return Object.keys(o).map(function (k) { return k + '=' + encodeURIComponent(o[k]); }).join('&'); };
+    if (p === 'kakao') location.href = 'https://kauth.kakao.com/oauth/authorize?' + q({ response_type: 'code', client_id: cid, redirect_uri: redirect, state: state });
+    else if (p === 'naver') location.href = 'https://nid.naver.com/oauth2.0/authorize?' + q({ response_type: 'code', client_id: cid, redirect_uri: redirect, state: state });
+    else crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)).then(function (h) {
+      location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + q({ response_type: 'code', client_id: cid, redirect_uri: redirect, scope: 'openid profile', state: state,
+        code_challenge: b64u(h), code_challenge_method: 'S256', prompt: 'select_account' });
+    });
+  }
+  /* ── 화면: 위쪽 로그인 버튼 · 회원 메뉴 · 로그인 창 ── */
+  var LOGO = {
+    kakao: '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="#000" d="M12 3C6.48 3 2 6.48 2 10.77c0 2.77 1.85 5.2 4.64 6.57-.2.74-.74 2.7-.85 3.12-.13.52.19.51.4.37.17-.11 2.66-1.8 3.74-2.53.67.1 1.36.15 2.07.15 5.52 0 10-3.48 10-7.68C22 6.48 17.52 3 12 3z"/></svg>',
+    naver: '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M16.27 3v9.36L7.73 3H3v18h4.73v-9.36L16.27 21H21V3z"/></svg>',
+    google: '<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>'
+  };
+  function modal() {
+    var el = $('dc-login');
+    if (!el) {
+      el = document.createElement('div'); el.id = 'dc-login'; el.className = 'dcl-ov'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', '로그인');
+      document.body.appendChild(el);
+      el.addEventListener('click', function (e) {
+        if (e.target === el || e.target.closest('.dcl-x')) { el.classList.remove('open'); return; }
+        var b = e.target.closest('[data-prov]'); if (b) start(b.getAttribute('data-prov'));
+      });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') el.classList.remove('open'); });
+    }
+    el.innerHTML = '<div class="dcl-box"><button type="button" class="dcl-x" aria-label="닫기">✕</button>' +
+      '<div class="dcl-brand"><svg width="40" height="40" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="8" fill="#3182f6"/><path d="M7.5 22h4.5v-4.5h4.5V13h4.5V8.5" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.8 8.5h3.2v3.2" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
+      '<h2 class="dcl-h">디코딩 자본주의 로그인</h2><p class="dcl-p">로그인하면 계산 결과를 <b>내 저장함</b>에 저장하고 어느 기기에서든 다시 열 수 있습니다.</p>' +
+      ['kakao', 'naver', 'google'].filter(function (p) { return PROV[p]; }).map(function (p) {
+        return '<button type="button" class="dcl-b dcl-' + p + '" data-prov="' + p + '">' + LOGO[p] + '<span>' + (p === 'kakao' ? '카카오 로그인' : p === 'naver' ? '네이버 로그인' : 'Google 계정으로 로그인') + '</span></button>';
+      }).join('') +
+      '<p class="dcl-s">처음 로그인하면 <a href="/terms/" target="_blank">이용약관</a>·<a href="/privacy/" target="_blank">개인정보처리방침</a> 동의 후 가입됩니다. 이메일·전화번호는 받지 않고 회원 식별값과 닉네임만 저장합니다. 만 14세 미만은 가입할 수 없습니다.</p></div>';
+    el.classList.add('open');
+    var f = el.querySelector('[data-prov]'); if (f) f.focus();
+  }
+  function paint() {
+    var w = $('dc-auth'); if (!w) return;
+    var a = getAuth();
+    if (!PROV || !Object.keys(PROV).length) { w.hidden = true; return; }
+    w.hidden = false;
+    w.innerHTML = a
+      ? '<button type="button" class="lang-btn dca-me" id="dca-me" aria-haspopup="menu" aria-expanded="false"><span class="dca-av">' + esc((a.user && a.user.nick || '회')[0]) + '</span><span class="dca-nm">' + esc(a.user && a.user.nick || '회원') + '</span><span class="lang-arrow">▼</span></button>' +
+        '<div class="lang-menu dca-menu" id="dca-menu" role="menu"><a class="lang-opt" role="menuitem" href="/saved/"><span class="lang-name">내 저장함</span></a><button type="button" class="lang-opt" role="menuitem" data-act="logout"><span class="lang-name">로그아웃</span></button></div>'
+      : '<button type="button" class="lang-btn dca-login" id="dca-login">로그인</button>';
+    saveBtn();
+  }
+  /* ── 계산기 입력값 저장·복원 ── */
+  function pageKey() { var m = location.pathname.match(/^\/([a-z0-9\-]+)\/?$/); return m ? m[1] : ''; }
+  function activePage() { return document.querySelector('.app-page.active') || document.querySelector('.app-page'); }
+  function snapshot() {
+    var pg = activePage(), d = { v: {}, s: {}, u: {} };
+    if (!pg) return d;
+    pg.querySelectorAll('input[id], select[id], textarea[id]').forEach(function (e) {
+      if (e.type === 'search' || e.type === 'file' || e.type === 'password' || e.type === 'hidden') return;
+      if (e.type === 'checkbox' || e.type === 'radio') d.v[e.id] = e.checked ? 1 : 0; else d.v[e.id] = e.value;
+      if (e.getAttribute('data-unit')) d.u[e.id] = e.getAttribute('data-unit');
+    });
+    pg.querySelectorAll('.fc-seg[data-name]').forEach(function (s) { var b = s.querySelector('.mode-btn.active'); if (b) d.s[s.getAttribute('data-name')] = b.getAttribute('data-v'); });
+    return d;
+  }
+  function restore(d) {
+    var pg = activePage(); if (!pg || !d) return;
+    Object.keys(d.s || {}).forEach(function (n) { var s = pg.querySelector('.fc-seg[data-name="' + n + '"]'); if (!s) return; s.querySelectorAll('.mode-btn').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-v') === d.s[n]); }); });
+    var last = null;
+    Object.keys(d.v || {}).forEach(function (id) {
+      var e = document.getElementById(id); if (!e || !pg.contains(e)) return;
+      if (d.u && d.u[id]) { e.setAttribute('data-unit', d.u[id]); document.querySelectorAll('.unit-btn[data-fc-unit="' + id + '"]').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-unit') === d.u[id]); }); }
+      if (e.type === 'checkbox' || e.type === 'radio') { if (e.checked !== !!d.v[id]) { e.checked = !!d.v[id]; e.dispatchEvent(new Event('change', { bubbles: true })); } }
+      else if (e.value !== d.v[id]) {
+        if (e.tagName === 'SELECT' && !Array.prototype.some.call(e.options, function (o) { return o.value === d.v[id]; })) return;   /* 선택지가 아직 없으면(자료 불러오는 중) 다음 번에 */
+        e.value = d.v[id]; e.dispatchEvent(new Event(e.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true })); last = e;
+      }
+    });
+    if (window.fcRender) { try { window.fcRender(); } catch (er) {} }
+  }
+  function toast(t) {
+    var el = $('dca-toast'); if (!el) { el = document.createElement('div'); el.id = 'dca-toast'; el.className = 'dca-toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); }
+    el.textContent = t; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(function () { el.classList.remove('on'); }, 2800);
+  }
+  function saveBtn() {
+    var key = pageKey(), pg = activePage(), old = document.getElementById('dca-save');
+    if (!key || !pg || key === 'saved' || !PROV || !Object.keys(PROV).length) { if (old) old.remove(); return; }
+    var host = pg.querySelector('.header-left'); if (!host) return;
+    if (!old) { old = document.createElement('button'); old.type = 'button'; old.id = 'dca-save'; old.className = 'dca-save'; host.appendChild(old); }
+    old.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2h8a1 1 0 0 1 1 1v11l-5-3-5 3V3a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>' + (getAuth() ? '이 계산 내 저장함에 저장' : '로그인하고 이 계산 저장');
+  }
+  function doSave() {
+    if (!getAuth()) { modal(); return; }
+    var h1 = activePage().querySelector('h1'), def = (h1 ? h1.textContent.trim() : document.title) + ' · ' + new Date().toLocaleDateString('ko-KR');
+    var title = prompt('저장할 이름', def); if (title == null) return;
+    title = title.trim() || def;
+    api('POST', '/saves', { page: pageKey(), title: title, data: snapshot() }).then(function () { toast('내 저장함에 저장했습니다'); })
+      .catch(function (e) { toast(e.status === 409 ? '저장함이 가득 찼습니다 (최대 ' + ((e.body && e.body.max) || 200) + '개)' : e.status === 401 ? '다시 로그인해 주세요' : '저장하지 못했습니다'); });
+  }
+  function loadParam() {
+    var m = location.search.match(/[?&]load=(\d+)/); if (!m || !getAuth()) return;
+    api('GET', '/saves/' + m[1]).then(function (j) {
+      var d = j.save && j.save.data; if (!d) return;
+      var n = 0; (function again() { restore(d); if (++n < 4) setTimeout(again, n * 900); })();   /* 자료를 불러온 뒤 생기는 선택지까지 맞추려고 몇 번 반복 */
+      toast('‘' + j.save.title + '’ 불러옴');
+      try { history.replaceState(null, '', location.pathname); } catch (e) {}
+    }).catch(function () { toast('저장한 계산을 불러오지 못했습니다'); });
+  }
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest) return;
+    if (e.target.closest('#dca-login')) { modal(); return; }
+    if (e.target.closest('#dca-save')) { doSave(); return; }
+    var me = e.target.closest('#dca-me'), menu = $('dca-menu');
+    if (me && menu) { var o = !menu.classList.contains('open'); menu.classList.toggle('open', o); me.setAttribute('aria-expanded', o); return; }
+    if (e.target.closest('[data-act="logout"]')) { setAuth(null); paint(); toast('로그아웃했습니다'); return; }
+    if (menu && !e.target.closest('#dc-auth')) { menu.classList.remove('open'); if ($('dca-me')) $('dca-me').setAttribute('aria-expanded', 'false'); }
+  });
+  window.dcAuth = { get: getAuth, set: setAuth, open: function () { if (PROV) modal(); }, api: function (m, p, b) { return api(m, p, b); } };
+  function init() {
+    endpoint().then(function (ep) {
+      if (!ep) return; EP = ep.replace(/\/$/, '');
+      return config().then(function (p) {
+        PROV = p; paint();
+        if (getAuth()) { api('GET', '/auth/me').then(function (j) { var a = getAuth(); if (a && j.user) { a.user = j.user; setAuth(a); paint(); } }).catch(function () {}); }
+        loadParam();
+        if (/[?&]login=1/.test(location.search) && PROV && Object.keys(PROV).length) { if (!getAuth()) modal(); try { history.replaceState(null, '', location.pathname); } catch (e) {} }
+      });
+    }).catch(function () {});
+  }
+  /* 탭 이동(pushState·뒤로가기) 후 새 화면에 저장 버튼 다시 달기 */
+  (function () { var ps = history.pushState; history.pushState = function () { var r = ps.apply(this, arguments); setTimeout(saveBtn, 30); return r; }; window.addEventListener('popstate', function () { setTimeout(saveBtn, 30); }); })();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 </script>
   <!-- ── 하단 후원/문의 배너 ── -->

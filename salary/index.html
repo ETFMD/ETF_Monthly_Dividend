@@ -249,7 +249,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>(function(){try{var m=localStorage.getItem("site-theme")||"dark";var l=m==="light"||(m==="auto"&&window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches);document.documentElement.setAttribute("data-theme",l?"light":"dark");}catch(e){}})();</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<link rel="stylesheet" href="assets/app.2c04c7c57c.css">
+<link rel="stylesheet" href="assets/app.e3d8f29c3f.css">
 </head>
 <body>
 <div class="wrap">
@@ -288,6 +288,8 @@
       <div class="visit-row visit-row-total"><span>전체</span><span><b id="visit-total2">—</b>명</span></div>
     </div>
   </div>
+  <!-- [AUTH] 간편 로그인 — 로그인 제공자 키가 등록돼 있을 때만 보임 -->
+  <div class="lang-sw" id="dc-auth" hidden></div>
   <!-- [I18N] 언어 선택 — 기본값은 접속 국가(한국 → 한국어, 일본 → 일본어 …), 고르면 그 선택을 기억 -->
   <div class="lang-sw notranslate" translate="no" id="lang-sw">
     <button type="button" class="lang-btn" id="lang-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="lang-menu" title="Language / 언어">
@@ -550,7 +552,7 @@
 
 </div>
 
-<script src="assets/app.9d194b4223.js"></script>
+<script src="assets/app.6f24dc4620.js"></script>
   <!-- ── 하단 후원/문의 배너 ── -->
   <div style="max-width:1280px;margin:0 auto;padding:0 32px 40px;">
   <!-- ── 카카오 오픈채팅 (커뮤니티) — 모든 화면 아래쪽 ── -->

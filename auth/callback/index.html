@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>디코딩 자본주의 | 로그인</title>
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<script>(function(){try{var m=localStorage.getItem("site-theme")||"dark";var l=m==="light"||(m==="auto"&&window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches);document.documentElement.setAttribute("data-theme",l?"light":"dark");}catch(e){}})();</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg:#101013; --bg2:#17171c; --border:rgba(255,255,255,.08); --text:#e4e4e5; --text2:#9e9ea4; --text3:#6b6b73; --accent:#3182f6; }
+  html[data-theme="light"] { --bg:#f2f4f6; --bg2:#ffffff; --border:rgba(0,27,55,.10); --text:#191f28; --text2:#4e5968; --text3:#8b95a1; }
+  body { background:var(--bg); color:var(--text); font-family:'Noto Sans KR',sans-serif; font-size:15px; line-height:1.75; word-break:keep-all; }
+  .wrap { max-width:760px; margin:0 auto; padding:32px 16px 64px; }
+  .back { display:inline-block; font-size:13px; color:var(--text2); text-decoration:none; margin-bottom:20px; }
+  .back:hover { color:var(--accent); }
+  h1 { font-size:26px; font-weight:700; margin-bottom:6px; }
+  .meta { font-size:13px; color:var(--text3); margin-bottom:28px; }
+  .lead { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:16px 18px; color:var(--text2); margin-bottom:28px; }
+  h2 { font-size:17px; font-weight:700; margin:32px 0 10px; }
+  p, li { color:var(--text2); }
+  ul { padding-left:20px; margin:6px 0; }
+  li { margin:4px 0; }
+  b { color:var(--text); font-weight:500; }
+  a { color:var(--accent); }
+  .tbl { overflow-x:auto; margin:10px 0; }
+  table { width:100%; min-width:560px; border-collapse:collapse; font-size:13px; background:var(--bg2); border:1px solid var(--border); border-radius:10px; }
+  th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:top; color:var(--text2); }
+  th { color:var(--text); font-weight:500; white-space:nowrap; }
+  tr:last-child td { border-bottom:none; }
+  footer { margin-top:48px; padding-top:18px; border-top:1px solid var(--border); font-size:12px; color:var(--text3); text-align:center; }
+</style>
+<style>
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; height:42px; padding:0 18px; border-radius:10px; border:1px solid var(--border); background:var(--bg2); color:var(--text); font:inherit; font-size:14px; font-weight:500; cursor:pointer; text-decoration:none; }
+  .btn.pri { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .btn.danger { color:#f04452; border-color:rgba(240,68,82,.45); }
+  .btn:disabled { opacity:.45; cursor:not-allowed; }
+  .card { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:18px; margin:14px 0; }
+  .chk { display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px solid var(--border); color:var(--text); font-size:14px; cursor:pointer; }
+  .chk:last-of-type { border-bottom:none; }
+  .chk input { width:18px; height:18px; margin-top:3px; accent-color:var(--accent); flex-shrink:0; }
+  .chk small { display:block; color:var(--text3); font-size:12px; margin-top:2px; }
+  .all { font-weight:700; }
+  .msg { color:var(--text2); }
+  .err { color:#f04452; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+  .sv { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 0; border-bottom:1px solid var(--border); }
+  .sv:last-child { border-bottom:none; }
+  .sv a.t { color:var(--text); text-decoration:none; font-weight:500; }
+  .sv a.t:hover { color:var(--accent); }
+  .sv small { display:block; color:var(--text3); font-size:12px; }
+  .sv button { flex-shrink:0; height:32px; padding:0 12px; border-radius:8px; border:1px solid var(--border); background:transparent; color:var(--text3); font:inherit; font-size:12px; cursor:pointer; }
+  .sv button:hover { color:#f04452; border-color:rgba(240,68,82,.45); }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <a class="back" href="/">← 디코딩 자본주의 홈으로</a>
+  <h1 id="h">로그인 중…</h1>
+  <p class="msg" id="msg">잠시만 기다려 주세요.</p>
+  <div id="consent" hidden>
+    <div class="card">
+      <p style="margin-bottom:10px;color:var(--text);"><b id="nick">회원</b>님, 처음 오셨네요. 아래 내용에 동의하면 가입이 완료됩니다.</p>
+      <label class="chk all"><input type="checkbox" id="a-all"> <span>전체 동의</span></label>
+      <label class="chk"><input type="checkbox" class="a" id="a-age"> <span>[필수] 만 14세 이상입니다<small>만 14세 미만은 가입할 수 없습니다.</small></span></label>
+      <label class="chk"><input type="checkbox" class="a" id="a-terms"> <span>[필수] <a href="/terms/" target="_blank">이용약관</a>에 동의합니다</span></label>
+      <label class="chk"><input type="checkbox" class="a" id="a-priv"> <span>[필수] 개인정보 수집·이용에 동의합니다
+        <small>수집 항목: 로그인 서비스 구분(카카오·네이버·구글), 회원 식별값, 닉네임, 저장한 계산 입력값 · 목적: 회원 식별, 내 저장함 제공 · 보관: 탈퇴할 때까지(탈퇴 즉시 삭제) · 서버: Cloudflare(미국 등 국외)에 보관 — 자세한 내용은 <a href="/privacy/" target="_blank">개인정보처리방침</a>. 동의하지 않으면 가입할 수 없으며, 로그인 없이도 모든 계산기는 그대로 쓸 수 있습니다.</small></span></label>
+      <div class="row"><button class="btn pri" id="go" disabled>동의하고 시작하기</button><a class="btn" href="/">취소</a></div>
+    </div>
+  </div>
+  <footer>© 디코딩 자본주의 · <a href="/">홈</a> · <a href="/about/">소개</a> · <a href="/terms/">이용약관</a> · <a href="/disclaimer/">투자 면책</a> · <a href="/privacy/">개인정보처리방침</a></footer>
+</main>
+<script>
+var KEY = 'dc_auth';
+function getAuth() { try { var a = JSON.parse(localStorage.getItem(KEY) || 'null'); return a && a.token && a.exp * 1000 > Date.now() ? a : null; } catch (e) { return null; } }
+function setAuth(a) { try { if (a) localStorage.setItem(KEY, JSON.stringify(a)); else localStorage.removeItem(KEY); } catch (e) {} }
+function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+var EP = null;
+function endpoint() { return fetch('/data/counter.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (c) { EP = (c.endpoint || '').replace(/\/$/, ''); return EP; }); }
+function api(method, path, body, noAuth) {
+  var a = getAuth(), h = { 'Content-Type': 'application/json' };
+  if (a && !noAuth) h.Authorization = 'Bearer ' + a.token;
+  return fetch(EP + path, { method: method, headers: h, body: body ? JSON.stringify(body) : undefined }).then(function (r) {
+    return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.error || r.status); e.status = r.status; e.body = j; throw e; } return j; });
+  });
+}
+
+(function () {
+  var q = new URLSearchParams(location.search), req = null;
+  try { req = JSON.parse(sessionStorage.getItem('dc_auth_req') || 'null'); } catch (e) {}
+  var h = document.getElementById('h'), msg = document.getElementById('msg');
+  function fail(t) { h.textContent = '로그인하지 못했습니다'; msg.innerHTML = esc(t) + ' <a href="' + esc((req && req.back) || '/') + '">돌아가기</a>'; msg.className = 'err'; }
+  function done(j) {
+    setAuth({ token: j.token, exp: j.exp, user: j.user });
+    try { sessionStorage.removeItem('dc_auth_req'); sessionStorage.removeItem('dc_auth_cfg'); } catch (e) {}
+    h.textContent = '로그인했습니다'; msg.textContent = '원래 보던 화면으로 돌아갑니다…';
+    var back = (req && req.back) || '/'; if (!/^\/[^/]/.test(back) && back !== '/') back = '/';
+    location.replace(back);
+  }
+  if (q.get('error')) return fail(q.get('error') === 'access_denied' || q.get('error') === 'consent_required' ? '로그인을 취소했습니다.' : '로그인 서비스에서 오류가 났습니다 (' + q.get('error') + ').');
+  if (!req || !q.get('code') || q.get('state') !== req.state || Date.now() - req.t > 15 * 60e3) return fail('로그인 요청이 만료됐거나 올바르지 않습니다. 다시 시도해 주세요.');
+  endpoint().then(function () {
+    return api('POST', '/auth/login', { provider: req.p, code: q.get('code'), state: q.get('state'), redirect_uri: location.origin + '/auth/callback/', code_verifier: req.verifier }, true);
+  }).then(function (j) {
+    try { history.replaceState(null, '', location.pathname); } catch (e) {}
+    if (!j.need_consent) return done(j);
+    h.textContent = '가입 동의'; msg.textContent = '';
+    document.getElementById('nick').textContent = j.nick || '회원';
+    var box = document.getElementById('consent'), all = document.getElementById('a-all'), each = box.querySelectorAll('.a'), go = document.getElementById('go');
+    box.hidden = false;
+    function sync() { var ok = Array.prototype.every.call(each, function (x) { return x.checked; }); all.checked = ok; go.disabled = !ok; }
+    all.addEventListener('change', function () { each.forEach(function (x) { x.checked = all.checked; }); sync(); });
+    each.forEach(function (x) { x.addEventListener('change', sync); });
+    go.addEventListener('click', function () {
+      go.disabled = true;
+      api('POST', '/auth/signup', { ticket: j.ticket, agree: { age14: true, terms: true, privacy: true } }, true).then(done)
+        .catch(function (e) { fail(e.status === 401 ? '가입 시간이 지났습니다(10분). 다시 로그인해 주세요.' : '가입하지 못했습니다.'); box.hidden = true; });
+    });
+  }).catch(function (e) { fail(e.status === 401 ? '로그인 인증에 실패했습니다. 다시 시도해 주세요.' : '서버에 연결하지 못했습니다. 잠시 뒤 다시 시도해 주세요.'); });
+})();
+</script>
+</body>
+</html>

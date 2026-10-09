@@ -6,6 +6,8 @@
  *   GET  /     → 세지 않고 같은 값만 반환
  * · 허용된 사이트(ALLOWED_ORIGINS)에서 온 요청만 셉니다. 검색봇·크롤러는 세지 않습니다.
  *
+ * /auth/* · /saves  → 카카오·네이버·구글 간편 로그인과 내 저장함 (worker/src/auth.js)
+ *
  * GET /geo  → {country} 접속 국가 코드 (기본 언어 선택용 · 기록하지 않음)
  *
  * GET /fear → CNN 공포·탐욕 지수 (점수·과거값·7개 구성 지표·1년 추이)를 실시간에 가깝게 전달
@@ -26,6 +28,7 @@
  *   · 한국장과 공시 시간(평일 09~20시)·미국장(평일 22~07시, 한국 시간) 15분마다, 그 밖에는 3시간마다
  *   · GH_TOKEN(저장소 1개·Actions 쓰기 권한만 있는 토큰) 비밀값이 있을 때만 동작 · GET /status 로 마지막 실행 결과 확인
  */
+import { auth } from './auth.js';
 const REPO = 'ETFMD/d-capitalism';
 const WORKFLOW = 'update-market-data.yml';
 const APT_WORKFLOW = 'update-apt-rank.yml';   // 아파트 시세 순위 (2시간마다)
@@ -111,8 +114,8 @@ function corsHeaders(env, origin) {
     ok,
     headers: {
       'Access-Control-Allow-Origin': ok ? origin : (allowed[0] || '*'),
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       'Access-Control-Max-Age': '86400',
       Vary: 'Origin',
     },
@@ -259,6 +262,10 @@ export default {
         const r = await fetch(target.toString(), { headers: { 'User-Agent': CNN_UA, Accept: req.headers.get('Accept') || '*/*', 'Accept-Language': 'ko-KR,ko;q=0.9',
           Referer: target.origin + '/' }, redirect: 'follow' });
         return new Response(r.body, { status: r.status, headers: { 'Content-Type': r.headers.get('Content-Type') || 'text/plain', 'Cache-Control': 'no-store' } });
+      }
+      if (url.pathname.startsWith('/auth/') || url.pathname === '/saves' || url.pathname.startsWith('/saves/')) {   /* 간편 로그인 · 내 저장함 (worker/src/auth.js) */
+        if (url.pathname !== '/auth/config' && !cors.ok) return json({ error: 'origin' }, 403);
+        return await auth(req, env, url, json);
       }
       if (url.pathname.startsWith('/kr')) return await kr(req, env, url, json);
       if (url.pathname === '/apt' || url.pathname === '/apt/put') return await apt(req, env, url, json);
