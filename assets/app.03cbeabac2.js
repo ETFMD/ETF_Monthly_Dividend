@@ -4485,6 +4485,13 @@ var FC = (function () {
       window.fcRender();
       return;
     }
+    var st = e.target.closest && e.target.closest('.fc-step button');   /* 인원 ± 버튼 (.fc-step[data-max]) */
+    if (st) {
+      var si = st.parentNode.querySelector('input'), mx = +(st.parentNode.getAttribute('data-max') || 9);
+      var sv = (parseInt(String(si.value).replace(/[^\d]/g, ''), 10) || 0) + (+st.getAttribute('data-d'));
+      si.value = Math.min(mx, Math.max(0, sv)); si.dispatchEvent(new Event('input', { bubbles: true }));
+      return;
+    }
     var q = e.target.closest && e.target.closest('.fc-quick[data-target] button');   /* 대상 입력칸이 있는 빠른 금액 버튼만 (다른 용도의 .fc-quick 버튼은 각 모듈이 처리) */
     if (q) {
       var wrap = q.parentNode, tgt = $(wrap.getAttribute('data-target'));
@@ -5131,7 +5138,7 @@ var TAX = (function () {
       ['산출세액 <small>(6~45% 누진)</small>', won(r.calc)],
       r.divCr ? ['배당세액공제', '−' + won(r.divCr)] : null,
       r.wageCr ? ['근로소득세액공제', '−' + won(r.wageCr)] : null,
-      r.child ? ['자녀세액공제 <small>(8세 이상)</small>', '−' + won(r.child)] : null,
+      r.child ? ['자녀세액공제 <small>(2006~2016년생)</small>', '−' + won(r.child)] : null,
       r.birth ? ['출산·입양 세액공제', '−' + won(r.birth)] : null,
       r.penCr ? ['연금계좌 세액공제 <small>(' + (r.penRate * 100) + '%)</small>', '−' + won(r.penCr)] : null,
       r.book ? ['기장세액공제 <small>(20%, 최대 100만원)</small>', '−' + won(r.book)] : null,
@@ -14653,13 +14660,323 @@ var CY = (function () {
       source: '주택공급에 관한 규칙 별표1 (2026) · 서울 평균 가점: 한국부동산원 청약홈' };
     (window.dcShareSpec = window.dcShareSpec || {})['cheongyak-score'] = share;
   }
-  /* 인원 ± 버튼 */
-  document.addEventListener('click', function (e) {
-    var b = e.target.closest && e.target.closest('.cy-step button'); if (!b) return;
-    var inp = b.parentNode.querySelector('input'), v = Math.min(9, Math.max(0, cnt(inp.id) + (+b.getAttribute('data-d'))));
-    inp.value = v; inp.dispatchEvent(new Event('input', { bubbles: true }));
-  });
   window.fcRegister('cy', render, 'cheongyak');
+})();
+
+/* ════════════════════════════════════════
+   [YE] 연말정산 환급 계산기 — 2026년 귀속(2027년 1~2월 연말정산) 근로소득만 있는 거주자
+   근거: 법제처 원문 확인(2026-10) — 소득세법(법률 제21221호 등) 제47·50·51·51의3·52·55·59·59의2·59의3·59의4·61조,
+         조세특례제한법(2026.9.18 시행본) 제58조(고향사랑)·제76조(정치자금)·제87조(청약)·제92조(혼인)·제95조의2(월세)·제126조의2(신용카드)·제132조의2(종합한도),
+         조특법 시행령 제121조의2 ⑱(신용카드 한도의 자녀 = 20세 이하 기본공제 직계비속, 2026.2.27 신설)
+   · 근로소득공제(한도 2천만) → 근로소득금액 − 소득공제 = 과세표준 → 기본세율 6~45% → 세액공제(산출세액 한도) = 결정세액
+   · 인적공제 150만/명 · 추가: 경로(70세+) 100만 · 장애인 200만 · 부녀자 50만(근로소득금액 3천만 이하) · 한부모 100만(부녀자와 중복 불가, 한부모 우선)
+   · 연금보험료(국민연금 본인분) 전액 · 특별소득공제: 건강·장기요양·고용보험료 전액, 주택임차차입금 원리금 40%(청약과 합산 400만), 장기주택저당 이자(청약·임차 포함 600~2,000만)
+   · 주택청약종합저축: 총급여 7천만 이하 무주택 세대주(배우자) 납입 300만 한도 × 40%
+   · 신용카드: 총급여 25% 초과분 — 신용 15% · 체크·현금 30% · 전통시장·대중교통 40% · 문화체육(총급여 7천 이하) 30%
+       기본한도 300만(7천 초과 250만), 20세 이하 자녀 1명 350만/275만 · 2명 이상 400만/300만 (2026~) + 추가한도(전통·대중(·문화) 300만 / 7천 초과 200만)
+   · 소득공제 종합한도 2,500만(특별소득공제 중 보험료 제외 + 청약 + 신용카드)
+   · 근로소득세액공제 55%/30%, 한도 74만~20만 · 자녀(2026년: 2016년 이전 출생 20세 이하) 25/55/+40만 · 출산·입양 30/50/70만
+   · 연금계좌 연금저축 600만, IRP 합산 900만 × 15%(총급여 5,500만 이하)/12%
+   · 보장성 보험 100만 × 12% · 장애인전용 100만 × 15%
+   · 의료비 총급여 3% 초과분 15%(그 밖의 가족 700만 한도, 본인·65세+·6세 이하·장애인·중증 한도 없음) · 미숙아·선천성이상아 20% · 난임 30%
+   · 교육비 15%: 본인 전액 · 취학 전·초중고 1명 300만 · 대학생 1명 900만 · 장애인 특수교육 전액
+   · 기부금: 특례(소득금액 100%)·일반(30%, 종교 포함 시 10% + min(20%, 비종교)) 합계 1천만까지 15%, 초과 30%
+       정치자금 10만까지 100/110, 초과 15%(3천만 초과 25%) · 고향사랑 10만까지 100/110, 10~20만 40%, 20만 초과 15%(특별재난지역 30%)
+   · 월세 1천만 한도 × 17%(총급여 5,500만 이하)/15%(8천만 이하) · 결혼 50만(2026년 혼인신고, 생애 1회)
+   · 표준세액공제 13만: 특별소득공제·특별세액공제·월세를 신청하지 않을 때 — 둘 중 세금이 적은 쪽 자동 선택
+   · 지방소득세 = 결정세액 × 10% · 차감징수세액 10원 미만 절사, 추가 납부 1천원 미만은 징수 안 함(소액부징수)
+════════════════════════════════════════ */
+var YE = (function () {
+  function nz(n) { n = +n; return isFinite(n) && n > 0 ? n : 0; }
+  function cnt(n) { return Math.floor(nz(n)); }
+  function fl(n) { return Math.floor(Math.max(0, n) + 1e-7); }
+  function trunc10(n) { return (n < 0 ? -1 : 1) * Math.floor(Math.abs(n) / 10) * 10; }
+  function W() { return FC; }
+  /* 4대보험 근로자 부담 (2026: 1~6월·7~12월 국민연금 상·하한이 다름) */
+  function insurance(G) {
+    var m = G / 12, a = W().insurance(m, '2026-01'), b = W().insurance(m, '2026-07');
+    return { pension: 6 * (a.pension + b.pension), health: 6 * (a.health + a.ltc + b.health + b.ltc), employ: 6 * (a.employ + b.employ) };
+  }
+  /* 간이세액표로 1년 동안 뗀 소득세 추정 (월급 균등 · 3월 이후 표를 1년 내내 적용) */
+  function withheld(G, family, kids, ratio) {
+    var t = W().incomeTax(Math.floor(G / 12), family, kids, ratio || 100);
+    return { tax: t.tax * 12, local: t.local * 12 };
+  }
+  function cardDeduction(G, c, kids) {
+    var cr = nz(c.credit), db = nz(c.debit), mk = nz(c.market), tr = nz(c.transit), cu = nz(c.culture), hi = G > 7e7;
+    if (hi) { cr += cu; cu = 0; }                                 /* 7천 초과: 문화체육 30% 없음 → 신용카드분(15%)으로 */
+    var S = cr + db + mk + tr + cu, M = G * 0.25;
+    var r = { spend: S, min: M, credit: cr, debit: db, market: mk, transit: tr, culture: cu, hi: hi };
+    var lim = hi ? (kids >= 2 ? 3e6 : kids === 1 ? 2.75e6 : 2.5e6) : (kids >= 2 ? 4e6 : kids === 1 ? 3.5e6 : 3e6);
+    r.limit = lim; r.extraCap = hi ? 2e6 : 3e6;
+    if (S <= M) { r.ded = 0; r.gross = 0; r.sub = 0; r.over = 0; r.extra = 0; r.need = M - S; return r; }
+    var gross = mk * 0.4 + tr * 0.4 + cu * 0.3 + db * 0.3 + cr * 0.15, sub;
+    if (M <= cr) sub = M * 0.15;
+    else if (M <= cr + db + cu) sub = cr * 0.15 + (M - cr) * 0.3;
+    else sub = cr * 0.15 + (db + cu) * 0.3 + (M - cr - db - cu) * 0.4;
+    var d = gross - sub, extra = 0;
+    if (d > lim) extra = Math.min(d - lim, Math.min(mk * 0.4 + tr * 0.4 + cu * 0.3, r.extraCap));
+    r.gross = gross; r.sub = sub; r.over = d; r.extra = extra; r.ded = fl(Math.min(d, lim) + extra); r.capped = d > lim + extra;
+    return r;
+  }
+  function donation(inc, o) {
+    var sp = nz(o.donSp), g1 = nz(o.donGen), g2 = nz(o.donRel);
+    var spOk = Math.min(sp, inc), rest = Math.max(0, inc - spOk), genOk;
+    if (g2 > 0) { var lim = rest * 0.1 + Math.min(rest * 0.2, g1); genOk = Math.min(g1 + g2, lim); }
+    else genOk = Math.min(g1, rest * 0.3);
+    var base = spOk + genOk, cr = Math.min(base, 1e7) * 0.15 + Math.max(0, base - 1e7) * 0.3;
+    var P = nz(o.donPol), pol = Math.min(P, 1e5) * 100 / 110 + Math.max(0, Math.min(P, 3e7) - 1e5) * 0.15 + Math.max(0, P - 3e7) * 0.25;
+    var H = Math.min(nz(o.donHome), 2e7), home = Math.min(H, 1e5) * 100 / 110 + Math.max(0, Math.min(H, 2e5) - 1e5) * 0.4 + Math.max(0, H - 2e5) * (o.disaster ? 0.3 : 0.15);
+    return { credit: fl(cr), base: base, spOk: spOk, genOk: genOk, cut: sp + g1 + g2 - base, pol: fl(pol), home: fl(home) };
+  }
+  function medical(G, o) {
+    var T = G * 0.03, m1 = nz(o.medGen), m2 = nz(o.medSelf), m3 = nz(o.medPre), m4 = nz(o.medIvf);
+    var c1 = Math.min(Math.max(0, m1 - T), 7e6), s1 = Math.max(0, T - m1);
+    var c2 = Math.max(0, m2 - s1), s2 = Math.max(0, T - m1 - m2);
+    var c3 = Math.max(0, m3 - s2), s3 = Math.max(0, T - m1 - m2 - m3);
+    var c4 = Math.max(0, m4 - s3);
+    return { credit: fl(c1 * 0.15 + c2 * 0.15 + c3 * 0.2 + c4 * 0.3), base: c1 + c2 + c3 + c4, T: T, spent: m1 + m2 + m3 + m4, cut1: Math.max(0, m1 - T - 7e6) };
+  }
+  /* o: 입력 (금액은 원/년) — 아래 calc 참고 */
+  function calc(o, forceStd) {
+    var G = nz(o.salary), r = { G: G };
+    if (!(G > 0)) return { err: 'salary' };
+    var wd = fl(W().wageDeduction(G)); r.wageDed = Math.min(wd, G); r.E = G - r.wageDed;            /* 근로소득금액 */
+    /* 인적공제 */
+    var kidsOld = cnt(o.kidsOld), kidsYoung = cnt(o.kidsYoung), kids = kidsOld + kidsYoung;
+    var people = 1 + (o.spouse ? 1 : 0) + cnt(o.parents) + kids + cnt(o.others);
+    r.people = people; r.basic = people * 1.5e6;
+    var single = !!o.single && !o.spouse && kids > 0, woman = !single && !!o.woman && r.E <= 3e7;
+    r.single = single; r.woman = woman; r.womanDrop = !!o.woman && !single && r.E > 3e7;
+    r.addDed = Math.min(cnt(o.elders), people) * 1e6 + Math.min(cnt(o.disabled), people) * 2e6 + (single ? 1e6 : woman ? 5e5 : 0);
+    /* 보험료 */
+    var ins = o.insMode === 'input' ? { pension: nz(o.pension), health: nz(o.health), employ: nz(o.employ) } : insurance(G);
+    r.ins = ins; r.pensionDed = ins.pension;
+    /* 주택자금 · 청약 */
+    var sub = G <= 7e7 && o.homeless !== false ? Math.min(nz(o.subscr), 3e6) * 0.4 : 0;
+    r.subOk = G <= 7e7; var rent = nz(o.leaseLoan) * 0.4, h1 = Math.min(rent + sub, 4e6), mort = nz(o.mortInt), mortLim = nz(o.mortLim) || 8e6;
+    var housing = mort > 0 ? Math.min(h1 + mort, mortLim) : h1;
+    r.subDed = Math.min(sub, housing); r.housingSpecial = housing - r.subDed;                       /* 특별소득공제 몫 / 청약 몫 */
+    /* 신용카드 */
+    var kids20 = kids;                                                                              /* 기본공제 대상 20세 이하 자녀 */
+    var cd = cardDeduction(G, o, kids20); r.card = cd;
+    /* 종합한도 2,500만 (보험료 제외 특별소득공제 + 청약 + 신용카드) */
+    function build(std) {
+      var x = {};
+      x.insDed = std ? 0 : ins.health + ins.employ;
+      x.housingSpecial = std ? 0 : r.housingSpecial;
+      var subD = std ? Math.min(sub, 4e6) : r.subDed;                                              /* 표준공제면 주택자금 대신 청약만 */
+      var capItems = x.housingSpecial + subD + cd.ded;
+      x.capCut = Math.max(0, capItems - 2.5e7);
+      x.subDed = subD; x.cardDed = cd.ded;
+      var spec = x.insDed + x.housingSpecial;
+      spec = Math.min(spec, r.E);                                                                   /* 특별소득공제는 근로소득금액 한도 */
+      x.special = spec;
+      x.dedTotal = r.basic + r.addDed + r.pensionDed + spec + subD + cd.ded - x.capCut;
+      x.base = Math.max(0, r.E - x.dedTotal);
+      x.calc = fl(W().progressiveTax(x.base));
+      /* 세액공제 */
+      x.wageCr = fl(W().wageCredit(x.calc, G));
+      var kc = kidsOld <= 0 ? 0 : kidsOld === 1 ? 25e4 : 55e4 + (kidsOld - 2) * 40e4;
+      x.child = kc; x.birth = [0, 3e5, 5e5, 7e5][Math.min(3, cnt(o.birth))] || 0;
+      var penRate = G <= 5.5e7 ? 0.15 : 0.12, ps = Math.min(nz(o.ps), 6e6), penBase = Math.min(ps + nz(o.irp), 9e6);
+      x.penRate = penRate; x.penBase = penBase; x.pension = fl(penBase * penRate);
+      x.insCr = std ? 0 : fl(Math.min(nz(o.insPrem), 1e6) * 0.12 + Math.min(nz(o.insDis), 1e6) * 0.15);
+      x.med = std ? { credit: 0, base: 0 } : medical(G, o);
+      var e1 = Math.min(nz(o.eduKid), 3e6 * Math.max(1, cnt(o.eduKidN))), e2 = Math.min(nz(o.eduUni), 9e6 * Math.max(1, cnt(o.eduUniN)));
+      x.eduBase = std ? 0 : nz(o.eduSelf) + e1 + e2 + nz(o.eduDis); x.edu = fl(x.eduBase * 0.15);
+      var dn = donation(r.E, o); x.don = std ? 0 : dn.credit; x.donInfo = dn; x.pol = dn.pol; x.home = dn.home;
+      var mr = G <= 5.5e7 ? 0.17 : G <= 8e7 ? 0.15 : 0;
+      x.rentRate = mr; x.rent = std ? 0 : fl(Math.min(nz(o.rent), 1e7) * mr);
+      x.marry = o.marry ? 5e5 : 0;
+      x.std = std ? 13e4 : 0;
+      x.creditsRaw = x.wageCr + x.child + x.birth + x.pension + x.insCr + x.med.credit + x.edu + x.don + x.pol + x.home + x.rent + x.marry + x.std;
+      x.credits = Math.min(x.creditsRaw, x.calc); x.lost = x.creditsRaw - x.credits;
+      x.decided = x.calc - x.credits;
+      x.local = fl(x.decided * 0.1);
+      return x;
+    }
+    var A = build(false), B = build(true);
+    var useStd = forceStd === true || (forceStd !== false && B.decided < A.decided);   /* 세금이 적은 쪽 (같으면 항목별) */
+    var X = useStd ? B : A; r.alt = useStd ? A : B; r.useStd = useStd;
+    for (var k in X) r[k] = X[k];
+    r.rate = r.base > 0 ? marginal(r.base) : 0;
+    /* 기납부세액 */
+    var family = Math.min(11, people);
+    if (o.paidMode === 'input') { r.paid = nz(o.paid); r.paidLocal = o.paidLocal != null && o.paidLocal !== '' ? nz(o.paidLocal) : fl(r.paid * 0.1); r.paidEst = false; }
+    else { var w = withheld(G, family, kidsOld, +o.ratio || 100); r.paid = w.tax; r.paidLocal = w.local; r.paidEst = true; }
+    var diff = r.decided - r.paid, diffL = r.local - r.paidLocal;
+    diff = trunc10(diff); diffL = trunc10(diffL);
+    if (diff > 0 && diff < 1000) diff = 0;                                                         /* 소액부징수 */
+    if (diffL > 0 && diffL < 1000) diffL = 0;
+    r.diff = diff; r.diffL = diffL; r.refund = -(diff + diffL);                                     /* +면 환급 */
+    r.eff = G > 0 ? (r.decided + r.local) / G : 0;
+    return r;
+  }
+  var BR = [[14e6, 0.06], [50e6, 0.15], [88e6, 0.24], [150e6, 0.35], [300e6, 0.38], [500e6, 0.40], [1e9, 0.42], [Infinity, 0.45]];
+  function marginal(b) { for (var i = 0; i < BR.length; i++) if (b <= BR[i][0]) return BR[i][1]; return 0.45; }
+  return { calc: calc, cardDeduction: cardDeduction, donation: donation, medical: medical, insurance: insurance, withheld: withheld, marginal: marginal };
+})();
+
+/* [YE] 화면 — 입력(data-fc="ye")은 [FC-UI] 공통 처리 */
+(function () {
+  if (!document.getElementById('page-yearend')) return;
+  function $(id) { return document.getElementById(id); }
+  function setT(id, v) { var e = $(id); if (e) e.textContent = v; }
+  function setH(id, v) { var e = $(id); if (e) e.innerHTML = v; }
+  function numOf(id) { var e = $(id); return e ? (parseFloat(String(e.value).replace(/,/g, '')) || 0) : 0; }
+  var UNIT = { eok: 1e8, man: 1e4, won: 1 };
+  function amt(id) { var e = $(id); return Math.max(0, Math.round(numOf(id) * (UNIT[e && e.getAttribute('data-unit')] || 1))); }
+  function cnt(id) { return Math.min(20, Math.max(0, Math.floor(numOf(id)))); }
+  function chk(id) { var e = $(id); return !!(e && e.checked); }
+  function seg(name) { var b = document.querySelector('.fc-seg[data-name="' + name + '"] .mode-btn.active'); return b ? b.getAttribute('data-v') : null; }
+  function won(n) { return (n < 0 ? '−' : '') + Math.round(Math.abs(n)).toLocaleString('ko-KR') + '원'; }
+  function eok(n) {
+    var neg = n < 0; n = Math.round(Math.abs(n) / 1e4) * 1e4;
+    var e = Math.floor(n / 1e8), m = Math.round((n - e * 1e8) / 1e4), s;
+    if (!e) s = m.toLocaleString('ko-KR') + '만원'; else s = e.toLocaleString('ko-KR') + '억' + (m ? ' ' + m.toLocaleString('ko-KR') + '만원' : '원');
+    return (neg ? '−' : '') + s;
+  }
+  function man(n) { return n >= 1e4 ? eok(n) : won(n); }
+  function pct(v, d) { return (v * 100).toFixed(d == null ? 1 : d).replace(/\.0+$/, '') + '%'; }
+  var share = null;
+  function input() {
+    var annual = amt('ye-annual'), nontax = Math.min(numOf('ye-nontax') * 12, annual);
+    return { annual: annual, nontaxY: nontax, salary: annual - nontax,
+      paidMode: seg('ye-paid-mode') || 'est', ratio: +(seg('ye-ratio') || 100), paid: amt('ye-paid'),
+      insMode: seg('ye-ins-mode') || 'auto', pension: amt('ye-pen'), health: amt('ye-hea'), employ: amt('ye-emp'),
+      spouse: chk('ye-spouse'), parents: cnt('ye-par'), kidsOld: cnt('ye-kold'), kidsYoung: cnt('ye-kyoung'), others: cnt('ye-oth'), elders: cnt('ye-eld'), disabled: cnt('ye-dis'),
+      birth: +(seg('ye-birth') || 0), woman: chk('ye-woman'), single: chk('ye-single'), marry: chk('ye-marry'),
+      credit: amt('ye-cr'), debit: amt('ye-db'), market: amt('ye-mk'), transit: amt('ye-tr'), culture: amt('ye-cu'),
+      ps: amt('ye-ps'), irp: amt('ye-irp'),
+      homeless: chk('ye-homeless'), rent: chk('ye-homeless') ? amt('ye-rent') : 0, subscr: chk('ye-homeless') ? amt('ye-subs') : 0, leaseLoan: chk('ye-homeless') ? amt('ye-lease') : 0,
+      mortInt: amt('ye-mort'), mortLim: +$('ye-mortlim').value,
+      insPrem: amt('ye-insp'), insDis: amt('ye-insd'), medSelf: amt('ye-meds'), medGen: amt('ye-medg'), medIvf: amt('ye-medi'), medPre: amt('ye-medp'),
+      eduSelf: amt('ye-edus'), eduKid: amt('ye-eduk'), eduKidN: cnt('ye-edukn'), eduUni: amt('ye-eduu'), eduUniN: cnt('ye-eduun'), eduDis: amt('ye-edud'),
+      donHome: amt('ye-dhome'), disaster: chk('ye-disaster'), donPol: amt('ye-dpol'), donSp: amt('ye-dsp'), donGen: amt('ye-dgen'), donRel: amt('ye-drel') };
+  }
+  function sum(key, txt) {
+    var e = $('ye-sum-' + key); if (!e) return;
+    e.textContent = txt || '입력 없음'; e.classList.toggle('on', !!txt);
+    var d = e.closest('.inc-sec'); if (d) d.classList.toggle('has-v', !!txt);
+  }
+  function clear(msg) {
+    setT('ye-val', '—'); setT('ye-sub', msg); ['ye-k1', 'ye-k2', 'ye-k3'].forEach(function (k) { setT(k, '—'); });
+    ['ye-table', 'ye-card', 'ye-more', 'ye-more-note', 'ye-tips', 'ye-std-note'].forEach(function (k) { setH(k, ''); });
+    share = null; (window.dcShareSpec = window.dcShareSpec || {})['year-end-tax'] = null;
+  }
+  function refundTxt(v) { return v > 0 ? won(v) + ' 환급' : v < 0 ? won(-v) + ' 추가 납부' : '0원'; }
+  function render() {
+    var o = input();
+    $('ye-paid-f').style.display = o.paidMode === 'input' ? '' : 'none';
+    $('ye-ratio-f').style.display = o.paidMode === 'input' ? 'none' : '';
+    $('ye-ins-f').style.display = o.insMode === 'input' ? '' : 'none';
+    $('ye-mortlim-f').style.display = o.mortInt > 0 ? '' : 'none';
+    var kids = o.kidsOld + o.kidsYoung;
+    $('ye-single').closest('label').style.display = o.spouse || !kids ? 'none' : '';
+    if (!(o.annual > 0)) return clear('연봉을 넣어 주세요.');
+    if (!(o.salary > 0)) return clear('비과세 소득이 연봉보다 많습니다.');
+    var r = YE.calc(o);
+    if (r.err) return clear('입력을 확인해 주세요.');
+    var hi = r.G > 7e7;
+    $('ye-cu-f').style.opacity = hi ? '0.55' : '';
+    setH('ye-g-note', '총급여 <b>' + won(r.G) + '</b> (연봉 − 비과세 ' + man(o.nontaxY) + ')');
+    setH('ye-ins-note', o.insMode === 'auto' ? '국민연금 ' + won(r.ins.pension) + ' · 건강·요양 ' + won(r.ins.health) + ' · 고용 ' + won(r.ins.employ) + ' (2026년 요율, 매달 같은 월급 가정)' : '');
+    setH('ye-card-note', '총급여의 25% = <b>' + won(r.card.min) + '</b>을 넘게 쓴 금액부터 공제' + (hi ? ' · 총급여 7천만원 초과라 도서·공연·체육시설 사용분은 신용카드(15%)로 계산합니다 (체크카드로 냈다면 체크카드 칸에 넣으세요)' : ''));
+    /* 접은 항목 요약 */
+    sum('pay', '총급여 ' + eok(r.G));
+    sum('fam', '기본공제 ' + r.people + '명' + (r.child ? ' · 자녀세액공제 ' + o.kidsOld + '명' : ''));
+    sum('card', r.card.spend ? '사용 ' + eok(r.card.spend) + ' → 공제 ' + man(r.card.ded) : '');
+    sum('pen', o.ps + o.irp ? '납입 ' + eok(o.ps + o.irp) : '');
+    sum('house', o.rent + o.subscr + o.leaseLoan + o.mortInt ? [o.rent ? '월세 ' + eok(o.rent) : '', o.subscr ? '청약 ' + eok(o.subscr) : '', o.leaseLoan ? '전세대출 ' + eok(o.leaseLoan) : '', o.mortInt ? '주담대 이자 ' + eok(o.mortInt) : ''].filter(Boolean).join(' · ') : '');
+    var spSum = o.insPrem + o.insDis + o.medSelf + o.medGen + o.medIvf + o.medPre + o.eduSelf + o.eduKid + o.eduUni + o.eduDis;
+    sum('spec', spSum ? '합계 ' + eok(spSum) : '');
+    var dSum = o.donHome + o.donPol + o.donSp + o.donGen + o.donRel;
+    sum('don', dSum ? '합계 ' + eok(dSum) : '');
+    /* 히어로 */
+    var rf = r.refund;
+    setT('ye-val', refundTxt(rf)); $('ye-val').style.color = rf > 0 ? '#22a06b' : rf < 0 ? '#f04452' : '';
+    setH('ye-sub', '결정세액 ' + won(r.decided + r.local) + ' − 이미 낸 세금 ' + won(r.paid + r.paidLocal) + (r.paidEst ? ' <small>(간이세액표 ' + o.ratio + '% 추정)</small>' : '') + ' · 과세표준 ' + eok(r.base) + ' · 최고 세율 ' + pct(r.rate, 0));
+    setT('ye-k1', won(r.decided + r.local)); setT('ye-k2', won(r.paid + r.paidLocal)); setT('ye-k3', pct(r.eff, 2));
+    setH('ye-std-note', r.useStd ? '표준세액공제 13만원이 항목별 공제보다 유리해 자동 적용' : '항목별 공제가 표준세액공제(13만원)보다 유리해 자동 적용');
+    /* 계산 과정 */
+    var L = [
+      ['총급여 <small>(연봉 − 비과세)</small>', won(r.G)],
+      ['− 근로소득공제', won(r.wageDed)],
+      ['= 근로소득금액', won(r.E), 'fc-total'],
+      ['− 인적공제 <small>(기본 ' + r.people + '명 × 150만' + (r.addDed ? ' + 추가 ' + man(r.addDed) : '') + ')</small>', won(r.basic + r.addDed)],
+      ['− 국민연금 보험료', won(r.pensionDed)],
+      r.insDed ? ['− 건강·고용보험료', won(r.insDed)] : null,
+      r.housingSpecial ? ['− 주택자금 공제 <small>(전세대출 원리금 40% · 주담대 이자)</small>', won(r.housingSpecial)] : null,
+      r.subDed ? ['− 주택청약 공제 <small>(납입액 40%)</small>', won(r.subDed)] : null,
+      r.cardDed ? ['− 신용카드 등 공제', won(r.cardDed)] : null,
+      r.capCut ? ['+ 소득공제 종합한도 2,500만원 초과분', won(r.capCut)] : null,
+      ['= 과세표준', won(r.base), 'fc-total'],
+      ['산출세액 <small>(6~45% 누진, 최고 구간 ' + pct(r.rate, 0) + ')</small>', won(r.calc)],
+      ['− 근로소득세액공제', won(r.wageCr)],
+      r.child ? ['− 자녀세액공제 <small>(' + o.kidsOld + '명)</small>', won(r.child)] : null,
+      r.birth ? ['− 출산·입양 세액공제', won(r.birth)] : null,
+      r.pension ? ['− 연금계좌 세액공제 <small>(' + man(r.penBase) + ' × ' + pct(r.penRate, 0) + ')</small>', won(r.pension)] : null,
+      r.insCr ? ['− 보험료 세액공제', won(r.insCr)] : null,
+      r.med.credit ? ['− 의료비 세액공제 <small>(총급여 3% ' + man(r.med.T) + ' 초과분)</small>', won(r.med.credit)] : null,
+      r.edu ? ['− 교육비 세액공제', won(r.edu)] : null,
+      r.don ? ['− 기부금 세액공제', won(r.don)] : null,
+      r.pol ? ['− 정치자금 세액공제', won(r.pol)] : null,
+      r.home ? ['− 고향사랑기부금 세액공제', won(r.home)] : null,
+      r.rent ? ['− 월세 세액공제 <small>(' + pct(r.rentRate, 0) + ')</small>', won(r.rent)] : null,
+      r.marry ? ['− 결혼세액공제', won(r.marry)] : null,
+      r.std ? ['− 표준세액공제', won(r.std)] : null,
+      r.lost ? ['<small>세액공제가 산출세액보다 커서 못 쓴 공제</small>', '<small>' + won(r.lost) + '</small>'] : null,
+      ['= 결정세액 (소득세)', won(r.decided), 'fc-total'],
+      ['+ 지방소득세 <small>(10%)</small>', won(r.local)],
+      ['− 이미 낸 세금 <small>(소득세 ' + won(r.paid) + ' + 지방소득세 ' + won(r.paidLocal) + ')</small>', won(r.paid + r.paidLocal)],
+      ['<b>' + (rf >= 0 ? '환급받을 세금' : '더 낼 세금') + '</b>', '<b>' + won(Math.abs(rf)) + '</b>', 'fc-hl']
+    ].filter(Boolean);
+    setH('ye-table', L.map(function (x) { return '<tr' + (x[2] ? ' class="' + x[2] + '"' : '') + '><td>' + x[0] + '</td><td style="text-align:right;">' + x[1] + '</td></tr>'; }).join(''));
+    /* 신용카드 */
+    var c = r.card, M = c.min, S = c.spend, w = Math.max(S, M) || 1;
+    var cardH = '<div class="ye-meter"><div class="ye-meter-t"><span class="ye-m-in" style="width:' + (Math.min(S, M) / w * 100).toFixed(1) + '%;"></span><span class="ye-m-over" style="width:' + (Math.max(0, S - M) / w * 100).toFixed(1) + '%;"></span><i style="left:' + (M / w * 100).toFixed(1) + '%;"></i></div>'
+      + '<div class="ye-meter-l"><span>쓴 돈 <b>' + eok(S) + '</b></span><span>25% 문턱 <b>' + eok(M) + '</b></span></div></div>';
+    if (S <= M) cardH += '<p class="fc-note" style="margin:10px 0 0;">아직 문턱까지 <b>' + eok(M - S) + '</b> 남아 공제가 0원입니다. 문턱까지는 혜택 좋은 신용카드로, 넘는 부분은 체크카드·현금영수증(30%)으로 쓰는 게 유리합니다.</p>';
+    else cardH += '<div class="fc-kpis" style="margin-top:12px;"><div><p>문턱 넘은 금액</p><b>' + eok(S - M) + '</b></div><div><p>소득공제액</p><b>' + won(c.ded) + '</b></div><div><p>기본 한도</p><b>' + eok(c.limit) + (c.extra ? ' <small>+ 추가 ' + man(c.extra) + '</small>' : '') + '</b></div></div>'
+      + '<p class="fc-note" style="margin:10px 0 0;">' + (c.capped ? '한도를 다 채워 <b>더 써도 공제가 늘지 않습니다</b>' + (hi ? '' : ' (전통시장·대중교통·문화체육 사용분은 300만원 추가 한도)') + '.' : '한도까지 ' + man(Math.max(0, c.limit - Math.min(c.over, c.limit))) + ' 남았습니다. 남은 지출은 체크카드·현금영수증(30%)이 신용카드(15%)의 두 배로 공제됩니다.') + ' 소득공제 ' + won(c.ded) + '은 세율 ' + pct(r.rate, 0) + '를 곱하면 세금 약 ' + won(Math.round(c.ded * r.rate * 1.1)) + '을 줄여 줍니다.</p>';
+    setH('ye-card', cardH);
+    /* 환급을 더 받으려면 */
+    function delta(p) { var q = {}; for (var k in o) q[k] = o[k]; for (k in p) q[k] = p[k]; var x = YE.calc(q); return x.err ? 0 : x.refund - rf; }
+    var M2 = [], psRoom = Math.max(0, 6e6 - o.ps), ia = Math.max(0, 3e6 - o.irp);
+    if (psRoom >= 1e4) M2.push(['연금저축 600만원까지 채우기', psRoom, delta({ ps: 6e6 })]);
+    if (ia >= 1e4) M2.push(['IRP로 연금계좌 900만원 채우기 <small>(연금저축 600만원을 채운 뒤)</small>', ia, delta({ ps: Math.max(o.ps, 6e6), irp: o.irp + ia }) - (psRoom ? delta({ ps: 6e6 }) : 0)]);
+    if (o.donHome < 1e5) M2.push(['고향사랑기부 10만원 <small>(답례품 3만원 상당 별도)</small>', 1e5 - o.donHome, delta({ donHome: 1e5 })]);
+    else if (o.donHome < 2e5) M2.push(['고향사랑기부 20만원까지 <small>(40% 구간)</small>', 2e5 - o.donHome, delta({ donHome: 2e5 })]);
+    if (r.G <= 7e7 && o.homeless && o.subscr < 3e6) M2.push(['주택청약 연 300만원 납입 <small>(무주택 세대주)</small>', 3e6 - o.subscr, delta({ subscr: 3e6 })]);
+    M2.push(['체크카드로 100만원 더 쓰기', 1e6, delta({ debit: o.debit + 1e6 })]);
+    M2.push(['신용카드로 100만원 더 쓰기', 1e6, delta({ credit: o.credit + 1e6 })]);
+    setH('ye-more', M2.map(function (x) { var g = Math.max(0, Math.round(x[2])); return '<tr><td>' + x[0] + '</td><td style="text-align:right;">' + won(x[1]) + '</td><td style="text-align:right;' + (g > 0 ? 'color:#22a06b;font-weight:600;' : '') + '">' + (g > 0 ? '+' + won(g) + ' <small>(' + pct(g / x[1], 1) + ')</small>' : '0원') + '</td></tr>'; }).join(''));
+    setH('ye-more-note', r.decided === 0 ? '결정세액이 이미 0원이라 공제를 더 늘려도 환급이 늘지 않습니다. 이미 낸 세금(' + won(r.paid + r.paidLocal) + ')이 돌려받을 수 있는 최대치입니다.' : '연금저축·IRP는 넣은 돈이 노후자금으로 남으면서 세금도 줄이는, 근로소득을 자본으로 바꾸는 가장 쉬운 방법입니다. 단, 55세 전에 중도 해지하면 공제받은 세금을 16.5% 기타소득세로 다시 냅니다.');
+    /* 체크 포인트 */
+    var T = [];
+    if (r.paidEst) T.push('이미 낸 세금은 매달 같은 월급에 간이세액표 ' + o.ratio + '%를 적용해 추정했습니다. 상여금이 많은 달이나 중도 입사가 있으면 차이가 크니, 급여명세서의 소득세 합계를 ‘직접 입력’으로 넣으면 정확합니다.');
+    if (r.lost > 0) T.push('세액공제가 산출세액보다 ' + won(r.lost) + ' 많아 그만큼은 쓰이지 않았습니다. 맞벌이라면 부양가족·의료비·교육비 공제를 배우자에게 넘기는 것이 유리할 수 있습니다.');
+    if (o.ratio === 120 && r.paidEst && rf > 0) T.push('원천징수 120%를 고르면 매달 세금을 더 떼는 대신 연말정산 때 더 돌려받습니다 — 총 세금은 같고 이자만큼 손해입니다.');
+    if (rf < 0 && r.paidEst) T.push('추가 납부가 예상됩니다. 연금저축·IRP 납입이나 체크카드 사용을 늘리면 줄일 수 있고, 추가 납부액이 10만원을 넘으면 2~4월 급여에 나눠 낼 수 있습니다.');
+    if (r.womanDrop) T.push('근로소득금액이 3천만원을 넘어 부녀자공제(50만원)를 받을 수 없습니다.');
+    if (r.G > 7e7 && o.subscr) T.push('총급여 7천만원 초과라 주택청약 소득공제를 받을 수 없습니다.');
+    if (r.G > 8e7 && o.rent) T.push('총급여 8천만원 초과라 월세 세액공제를 받을 수 없습니다.');
+    if (o.medGen + o.medSelf > 0 && r.med && r.med.credit === 0 && !r.useStd) T.push('의료비가 총급여의 3%(' + won(r.med.T) + ')를 넘지 않아 공제가 없습니다. 맞벌이면 급여가 적은 배우자에게 몰면 공제받기 쉽습니다.');
+    if (r.useStd) T.push('보험·의료·교육·기부·월세 공제보다 표준세액공제 13만원이 유리해 자동으로 적용했습니다 (이 경우 건강·고용보험료 소득공제와 주택자금 공제도 빠집니다).');
+    if (r.capCut) T.push('신용카드·청약·주택자금 공제 합계가 소득공제 종합한도 2,500만원을 넘어 ' + won(r.capCut) + '이 빠졌습니다.');
+    if (o.kidsYoung && !o.kidsOld) T.push('2017년 이후 출생 자녀는 아동수당을 받는 연령이라 자녀세액공제가 없고 기본공제(150만원)만 받습니다. 2026년부터 공제 대상이 9세 이상으로 올랐고, 2017년생은 2029년까지 아동수당 대상이라 제외됩니다.');
+    T.push('공제 자료 대부분은 2027년 1월 15일쯤 열리는 홈택스 ‘연말정산 간소화’에서 내려받을 수 있습니다. 안경·교복·월세·종교단체 기부금처럼 간소화에 안 나오는 영수증은 미리 챙겨 두세요.');
+    setH('ye-tips', T.map(function (t) { return '<li>' + t + '</li>'; }).join(''));
+    /* 공유 카드 */
+    share = { key: 'year-end-tax', chip: '연말정산 환급 계산기', title: '2026 연말정산, 13월의 월급은?',
+      label: '총급여 ' + eok(r.G) + ' · 기본공제 ' + r.people + '명' + (o.kidsOld ? ' · 자녀세액공제 ' + o.kidsOld + '명' : ''),
+      big: rf > 0 ? '+' + won(rf) : rf < 0 ? '−' + won(-rf) : '0원', bigSecret: true, sub: rf > 0 ? '환급 예상' : rf < 0 ? '추가 납부 예상' : '환급·추가 납부 없음',
+      rows: [['결정세액', won(r.decided + r.local), true], ['실효세율', pct(r.eff, 2)], ['신용카드 공제', man(r.cardDed || 0), true], ['최고 세율 구간', pct(r.rate, 0)]],
+      source: '2026년 귀속 소득세법·조세특례제한법 · 지방소득세 포함' };
+    (window.dcShareSpec = window.dcShareSpec || {})['year-end-tax'] = share;
+  }
+  window.fcRegister('ye', render, 'yearend');
 })();
 
 /* ════════════════════════════════════════

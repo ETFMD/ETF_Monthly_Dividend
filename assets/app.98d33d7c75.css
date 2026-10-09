@@ -1576,6 +1576,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .fc-seg { width:100%; }
   .fc-seg .mode-btn { padding:8px 6px; font-size:12px; }
   .fc-hint { line-height:1.6; margin-left:0 !important; }
+  p.fc-hint { font-size:12px; color:var(--text2); }
   .fc-quick { display:flex; gap:6px; flex-wrap:wrap; margin:-6px 0 14px; }
   /* [SRANK] 국내 나의 연봉 순위 */
   .sr-src { margin-top:14px; padding-top:12px; border-top:1px solid var(--card-border); font-size:11px; line-height:1.7; color:var(--text3); }
@@ -1619,14 +1620,15 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   /* [CY] 청약 가점 계산기 */
   .fc-seg.cy-seg4 .mode-btn { padding-left:4px; padding-right:4px; white-space:nowrap; }
   @media (max-width:520px) { .fc-seg.cy-seg4 { display:grid; grid-template-columns:1fr 1fr; } }
-  .cy-steps { display:flex; flex-direction:column; gap:8px; }
-  .cy-step-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 12px; border:1px solid var(--card-border); border-radius:10px; background:var(--bg3); }
-  .cy-step-row b { display:block; font-size:13px; font-weight:600; color:var(--text); }
-  .cy-step-row small { display:block; font-size:11px; color:var(--text3, #6d6d76); margin-top:2px; line-height:1.4; }
-  .cy-step { display:flex; align-items:center; flex-shrink:0; border:1px solid var(--card-border); border-radius:8px; overflow:hidden; background:var(--bg2, var(--bg)); }
-  .cy-step button { width:34px; height:34px; border:none; background:transparent; color:var(--text); font-size:18px; line-height:1; cursor:pointer; font-family:var(--font); }
-  .cy-step button:hover { background:rgba(var(--fg-rgb),0.06); }
-  .cy-step input { width:34px; height:34px; border:none; border-left:1px solid var(--card-border); border-right:1px solid var(--card-border); background:transparent; color:var(--text); text-align:center; font-size:14px; font-weight:600; font-family:var(--font); padding:0; }
+  /* 공용 인원 ± 입력 (.fc-step — 클릭은 [FC-UI]가 처리) */
+  .fc-steps { display:flex; flex-direction:column; gap:8px; }
+  .fc-step-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 12px; border:1px solid var(--card-border); border-radius:10px; background:var(--bg3); }
+  .fc-step-row b { display:block; font-size:13px; font-weight:600; color:var(--text); }
+  .fc-step-row small { display:block; font-size:11px; color:var(--text3, #6d6d76); margin-top:2px; line-height:1.4; }
+  .fc-step { display:flex; align-items:center; flex-shrink:0; border:1px solid var(--card-border); border-radius:8px; overflow:hidden; background:var(--bg2, var(--bg)); }
+  .fc-step button { width:34px; height:34px; border:none; background:transparent; color:var(--text); font-size:18px; line-height:1; cursor:pointer; font-family:var(--font); }
+  .fc-step button:hover { background:rgba(var(--fg-rgb),0.06); }
+  .fc-step input { width:34px; height:34px; border:none; border-left:1px solid var(--card-border); border-right:1px solid var(--card-border); background:transparent; color:var(--text); text-align:center; font-size:14px; font-weight:600; font-family:var(--font); padding:0; }
   .cy-bars { display:flex; flex-direction:column; gap:12px; }
   .cy-bar-h { display:flex; justify-content:space-between; align-items:baseline; font-size:13px; color:var(--text2); margin-bottom:6px; }
   .cy-bar-h b { color:var(--text); font-size:15px; } .cy-bar-h small { color:var(--text2); font-weight:500; font-size:12px; }
@@ -1639,6 +1641,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .cy-cmp-row.me span:first-child, .cy-cmp-row.me b { color:#3182f6; font-weight:700; }
   .cy-cmp-row.me .cy-bar-t > span { background:#3182f6; opacity:1; }
   .cy-cmp-row.mx .cy-bar-t > span { background:transparent; border:1px dashed #9e9ea4; box-sizing:border-box; opacity:1; }
+  /* [YE] 연말정산 환급 계산기 — 신용카드 25% 문턱 막대 */
+  .ye-meter-t { position:relative; display:flex; height:12px; border-radius:6px; background:rgba(var(--fg-rgb),0.06); overflow:visible; }
+  .ye-meter-t > span { height:100%; }
+  .ye-m-in { background:#9e9ea4; opacity:.55; border-radius:6px 0 0 6px; }
+  .ye-m-over { background:#3182f6; border-radius:0 6px 6px 0; }
+  .ye-meter-t > i { position:absolute; top:-4px; bottom:-4px; width:2px; margin-left:-1px; background:var(--text); border-radius:1px; }
+  .ye-meter-l { display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color:var(--text2); }
+  .ye-meter-l b { color:var(--text); }
   .fc-sec-title { font-size:12px; font-weight:600; color:var(--text); margin:6px 0 10px; padding-top:12px; border-top:1px solid var(--card-border); }
   .fc-note { font-size:11px; line-height:1.7; color:var(--text3); margin-top:4px; }
   .fc-hero { padding:24px 26px; }
