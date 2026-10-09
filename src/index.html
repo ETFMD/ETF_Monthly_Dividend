@@ -1780,7 +1780,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .shc-open svg { flex-shrink:0; }
   .shc-open[hidden] { display:none; }
   .shc-wide { width:100%; margin-top:16px; padding:12px 16px; font-size:14px; }
-  .wif-quick { margin-top:-4px; } .wif-pre.on { border-color:var(--accent); color:var(--accent); }
+  .wif-quick { margin-top:-4px; } .wif-pre.on { border-color:var(--accent); color:var(--accent); } .wif-pre:disabled { opacity:.35; cursor:not-allowed; }
   #wif-y, #wif-m { width:100%; background:var(--bg3); border:1px solid var(--card-border); border-radius:10px; padding:9px 10px; color:var(--text); font-family:var(--font); font-size:13px; color-scheme:dark; }
   .shc-ov { position:fixed; inset:0; z-index:9999; display:none; align-items:center; justify-content:center; padding:16px; background:rgba(0,0,0,.62); backdrop-filter:blur(3px); }
   .shc-ov.open { display:flex; }
@@ -23043,21 +23043,44 @@ var WIF = (function () {
       var xs = D.assets.filter(function (a) { return a.g === g[0]; });
       return xs.length ? '<optgroup label="' + g[1] + '">' + xs.map(function (a) { return '<option value="' + esc(a.id) + '"' + (a.id === '005930.KS' ? ' selected' : '') + '>' + esc(a.name) + ' (' + (a.yearly ? a.start : a.start.slice(0, 4)) + '년~)</option>'; }).join('') + '</optgroup>' : '';
     }).join('');
-    var y0 = 1981, ys = '';
-    for (var y = Math.floor(NOWM / 12); y >= y0; y--) ys += '<option value="' + y + '">' + y + '년</option>';
-    $('wif-y').innerHTML = ys;
-    var ms = ''; for (var m = 1; m <= 12; m++) ms += '<option value="' + m + '">' + m + '월</option>';
-    $('wif-m').innerHTML = ms;
     setStart(NOWM - 120);
   }
-  function setStart(k) { $('wif-y').value = String(Math.floor(k / 12)); $('wif-m').value = String(k % 12 + 1); }
+  /* '산 때' 선택 범위 = 고른 자산의 자료가 있는 기간 (달러 자산을 원화로 볼 때는 환율 자료 시작 이후, 아파트는 연 단위) */
+  function cur() { return A[$('wif-asset').value] || D.assets[0]; }
+  function range(as) {
+    var P = WIF.priceFn(as, D.fx, { div: true, krw: $('wif-krw').checked });
+    if (as.yearly) return [Math.floor(P.start / 12) * 12, Math.floor(NOWM / 12) * 12 + NOWM % 12];
+    return [P.start, Math.min(NOWM, P.end)];
+  }
+  var want = null;   /* 사용자가 고른(또는 빠른 버튼) 시점 — 범위 밖이면 범위 안으로 맞춰 보여 주되, 자산을 바꾸면 다시 이 시점 기준으로 맞춤 */
+  function syncDate() {
+    var as = cur(), rg = range(as), lo = rg[0], hi = rg[1];
+    var k = Math.max(lo, Math.min(hi, want == null ? NOWM - 120 : want));
+    var y = Math.floor(k / 12), ylo = Math.floor(lo / 12), yhi = Math.floor(hi / 12), ys = '';
+    for (var yy = yhi; yy >= ylo; yy--) ys += '<option value="' + yy + '">' + yy + '년</option>';
+    var ysel = $('wif-y'); if (ysel.getAttribute('data-r') !== ylo + '-' + yhi) { ysel.innerHTML = ys; ysel.setAttribute('data-r', ylo + '-' + yhi); }
+    ysel.value = String(y);
+    var m0 = y === ylo ? lo % 12 : 0, m1 = y === yhi ? hi % 12 : 11, ms = '';
+    for (var m = m0; m <= m1; m++) ms += '<option value="' + (m + 1) + '">' + (m + 1) + '월</option>';
+    var msel = $('wif-m'); if (msel.getAttribute('data-r') !== m0 + '-' + m1) { msel.innerHTML = ms; msel.setAttribute('data-r', m0 + '-' + m1); }
+    msel.value = String(k % 12 + 1);
+    /* 자료 시작 전 시점의 빠른 버튼은 누를 수 없게 */
+    document.querySelectorAll('.wif-pre').forEach(function (b) {
+      var t = b.getAttribute('data-ago') ? NOWM - 12 * (+b.getAttribute('data-ago')) : WIF.mi(b.getAttribute('data-ym'));
+      var off = (as.yearly ? Math.floor(t / 12) * 12 : t) < lo;
+      b.disabled = off; b.title = off ? as.name + ' 자료는 ' + (as.yearly ? Math.floor(lo / 12) + '년' : Math.floor(lo / 12) + '년 ' + (lo % 12 + 1) + '월') + '부터 있습니다' : '';
+    });
+    return k;
+  }
+  function setStart(k) { want = k; syncDate(); }
   function opts() {
     return { start: (+$('wif-y').value) * 12 + (+$('wif-m').value) - 1, mode: seg('wif-mode') || 'lump',
       amount: (seg('wif-mode') || 'lump') === 'dca' ? amt('wif-mamt') : amt('wif-amt'), div: $('wif-div').checked, krw: $('wif-krw').checked };
   }
   function render() {
     if (!D) { load(); return; }
-    var as = A[$('wif-asset').value] || D.assets[0], o = opts();
+    syncDate();
+    var as = cur(), o = opts();
     var dcaOk = !as.yearly;
     if (!dcaOk && o.mode === 'dca') o.mode = 'lump';
     $('wif-dca-btn').disabled = !dcaOk;
@@ -23144,7 +23167,15 @@ var WIF = (function () {
     }
     if (share && e.target.closest('#wif-share')) window.shareCard.open(share);
   });
-  document.addEventListener('change', function (e) { if (e.target && (e.target.id === 'wif-y' || e.target.id === 'wif-m')) document.querySelectorAll('.wif-pre').forEach(function (x) { x.classList.remove('on'); }); });
+  function pick(e) {   /* 연·월을 직접 고르면 그 시점을 기억 — FC-UI 가 input·change 에서 다시 그리기 전에(캡처 단계) 먼저 반영 */
+    if (!e.target || !D || (e.target.id !== 'wif-y' && e.target.id !== 'wif-m')) return;
+    var y = +$('wif-y').value, m = +$('wif-m').value - 1;
+    if (e.target.id === 'wif-y' && want != null) m = want % 12;   /* 연도만 바꾸면 고른 달 유지 (그 해에 없으면 가장 가까운 달) */
+    want = y * 12 + m;
+    document.querySelectorAll('.wif-pre').forEach(function (x) { x.classList.remove('on'); });
+  }
+  document.addEventListener('input', pick, true);
+  document.addEventListener('change', pick, true);
   window.fcRegister('wif', render, 'whatif');
 })();
 
