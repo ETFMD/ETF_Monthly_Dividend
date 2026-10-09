@@ -171,7 +171,7 @@ def activate(src, r):
 
 
 # ───────────── 도구별 페이지 분리 ─────────────
-AREA = {'money': '돈', 'stock': '주식·ETF', 'realty': '부동산', 'passive': '패시브인컴'}
+AREA = {'me': '내 위치', 'pay': '월급·세금', 'invest': '투자', 'realty': '부동산', 'passive': '불로소득'}   # 노동자→자본가 여정 순서 (상단 메뉴와 같음)
 ASSET = {}   # 'css' / 'js' → assets/app.<해시>.<확장자> (main 에서 원본으로 만듦)
 
 

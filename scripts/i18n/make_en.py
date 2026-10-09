@@ -17,7 +17,7 @@ TEXT = {
     'ETF 커버드콜 + 배당투자 + 성장주 함께 장기투자를 위한 오픈톡방 가기': 'Join our Korean-language community for long-term investing in covered-call ETFs, dividends and growth stocks',
     '전체 도구': 'All tools', '법인세 계산기': 'Korean corporate tax', '소개': 'About', '이용약관': 'Terms', '투자 면책': 'Disclaimer', '공포 & 탐욕 지수': 'Fear & Greed Index', '디코딩 자본주의': 'Decoding Capitalism', '디코딩 자본주의 홈': 'Decoding Capitalism home', '사이트 검색': 'Site search', '검색 결과': 'Search results',
     '계산기·자료 검색 (예: 연봉, 취득세, 배당)': 'Search tools (e.g. salary, tax, dividend)',
-    '돈': 'Money', '주식·ETF': 'Stocks & ETFs', '부동산': 'Real estate', '패시브인컴': 'Passive income', '커버드콜 분배 시뮬레이터': 'Covered-call simulators',
+    '돈': 'Money', '주식·ETF': 'Stocks & ETFs', '부동산': 'Real estate', '패시브인컴': 'Passive income', '내 위치': 'Where I stand', '월급·세금': 'Pay & tax', '투자': 'Investing', '불로소득': 'Passive income', '커버드콜 분배 시뮬레이터': 'Covered-call simulators',
     'ETF 월분배 및 배당 달력': 'Korean ETF distribution calendar', '국내 나의 아파트 시세 순위': 'Korean apartment price ranking', '국내 나의 연봉 순위': 'My salary rank in Korea',
     '국내 나의 자산 순위': 'My net-worth rank in Korea', '배당소득세 계산기': 'Korean dividend income tax', '연금저축·IRP 세액공제 계산기': 'Korean pension savings tax credit', '전세계 시가총액 TOP 100': 'Global market cap TOP 100',
     '홈': 'Home', '분배 시뮬레이터': 'Distribution simulators', '금융 계산기': 'Financial calculators', '기타 금융 자료': 'Market data',

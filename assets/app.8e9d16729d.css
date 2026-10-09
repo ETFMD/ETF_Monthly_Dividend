@@ -1818,7 +1818,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .ss-opt.on, .ss-opt:hover { background:rgba(var(--fg-rgb),0.07); color:var(--text); }
   .ss-none { padding:10px; font-size:12.5px; color:var(--text3); }
   /* [FOOTMAP] 푸터의 전체 도구 링크 (scripts/build_pages.py 가 routes.json 으로 채움) */
-  .sf-map { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:18px 24px; padding:22px 0 20px; border-top:1px solid var(--card-border); text-align:left; }
+  .sf-map { display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:18px 24px; padding:22px 0 20px; border-top:1px solid var(--card-border); text-align:left; }
   .sf-col { display:flex; flex-direction:column; gap:7px; min-width:0; }
   .sf-h { margin:0 0 3px; font-size:12px; font-weight:700; color:var(--text2); }
   .sf-col a { font-size:12px; color:var(--text3); text-decoration:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -1833,9 +1833,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     .top-bar .visit-bar { order:2; }
     .top-bar .visit-pop { right:auto; left:0; }   /* 왼쪽 끝에 있으므로 목록은 오른쪽으로 펼침 */
     .top-bar .site-search { order:3; flex:1 1 200px; width:auto; min-width:0; }
-    .app-nav .tab-group-btn { padding:10px 11px; font-size:13.5px; }
-    .app-nav .tab-group-btn > svg, .app-nav .tab-group-btn .tab-group-arrow { display:none !important; }   /* 좁은 화면: 영역 5개가 한 줄에 들어가게 아이콘·화살표 숨김 */
+    .app-nav .tab-group-btn { padding:10px 9px; font-size:13.5px; }
+    .app-nav .tab-group-btn > svg, .app-nav .tab-group-btn .tab-group-arrow { display:none !important; }   /* 좁은 화면: 홈 + 영역 5개가 한 줄에 들어가게 아이콘·화살표 숨김 */
   }
+  @media (max-width: 380px) { .app-nav .tab-group-btn { padding:10px 7px; font-size:13px; } }   /* 아주 좁은 화면(360 이하): 더 줄이고, 그래도 넘치면 가로 스크롤 */
   /* [HM-PATH] 홈: 노동자 → 자본가 6단계 */
   .hm-path { margin:4px 0 36px; }
   .hm-path, .hm-path h2, .hm-path h3, .hm-path p, .hm-path .hm-go { font-family:var(--font); letter-spacing:normal; word-spacing:normal; word-break:keep-all; }

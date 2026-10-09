@@ -1,57 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://d-capitalism.com/</loc><lastmod>2026-10-09</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
-  <url><loc>https://d-capitalism.com/kodex/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/sol/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/tiger/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/tigerdiv/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/tigersemi/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/dividend-calendar/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/dividend-calculator/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/fire/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/retirement-score/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/national-pension/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/loan/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/compound/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/cagr/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/fx/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/health/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/salary/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/severance/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/mortgage/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/brokerage/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/incometax/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/year-end-tax/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/corporate-tax/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/property-tax/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/jongbu/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/stocktax/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/dividend/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/pension/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/gift/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/acquisition/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/capital-gains-tax/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/cheongyak-score/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/fear/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/moneyspeed/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/muhan/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/etfcagr/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/what-if/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/averaging-down/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/marketcap/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://d-capitalism.com/salary-rank/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://d-capitalism.com/asset-rank/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/apt-rank/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/retirement-score/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://d-capitalism.com/house-years/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/kospi/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/kospi200/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://d-capitalism.com/kosdaq/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/what-if/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/moneyspeed/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/salary/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/severance/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/year-end-tax/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/incometax/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/health/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/gift/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/national-pension/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/corporate-tax/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/compound/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/averaging-down/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/stocktax/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/fx/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/fear/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/cagr/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/etfcagr/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/marketcap/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/muhan/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://d-capitalism.com/nasdaq/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://d-capitalism.com/nasdaq100/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://d-capitalism.com/dowjones/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://d-capitalism.com/sp500/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://d-capitalism.com/sox/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://d-capitalism.com/djsemi/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/kospi/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/kospi200/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/kosdaq/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://d-capitalism.com/n225/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://d-capitalism.com/topix/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://d-capitalism.com/sse/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
@@ -63,9 +44,28 @@
   <url><loc>https://d-capitalism.com/hscei/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://d-capitalism.com/hstech/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://d-capitalism.com/taiex/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/loan/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/acquisition/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/capital-gains-tax/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/brokerage/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/mortgage/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/cheongyak-score/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/apt-rank/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/property-tax/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/jongbu/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/dividend-calendar/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/dividend-calculator/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/pension/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/dividend/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/fire/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/kodex/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/sol/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/tiger/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/tigerdiv/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://d-capitalism.com/tigersemi/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://d-capitalism.com/en/compound/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://d-capitalism.com/en/cagr/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://d-capitalism.com/en/fear/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://d-capitalism.com/en/cagr/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://d-capitalism.com/en/etfcagr/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://d-capitalism.com/en/nasdaq/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://d-capitalism.com/en/nasdaq100/</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
