@@ -1701,6 +1701,11 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .fc-table.fc-wrap { min-width:0 !important; width:100%; }
   .fc-table tr.fc-hl td { color:var(--accent); font-weight:600; background:var(--accent-dim); }
   .fc-table tr.fc-total td { font-weight:600; color:var(--text); border-top:1px solid var(--card-border); }
+.fc-table tr.fc-sec td { font-weight:600; color:var(--text); background:rgba(var(--fg-rgb),0.04); border-top:2px solid var(--card-border); padding-top:12px; }
+#ptx-slots .inc-sec-in { padding-bottom:14px; }
+.ptx-del { height:28px; padding:0 12px; border-radius:7px; border:1px solid var(--card-border); background:transparent; color:var(--text3); cursor:pointer; font-size:12px; font-family:inherit; }
+.ptx-del:hover { color:var(--accent2); border-color:rgba(240,68,82,.45); }
+#page-proptax #ptx-bills td, #page-proptax #ptx-assets td, #page-proptax #ptx-agg td { white-space:nowrap; } #page-proptax #ptx-bills td:not(:first-child), #page-proptax #ptx-assets td:not(:first-child), #page-proptax #ptx-agg td:not(:first-child) { text-align:right; font-variant-numeric:tabular-nums; }
   .fc-bar { display:flex; height:12px; border-radius:6px; overflow:hidden; margin-top:14px; background:rgba(var(--fg-rgb),0.05); }
   .fc-bar > span { height:100%; }
   .fc-limits { display:flex; flex-direction:column; gap:10px; }
