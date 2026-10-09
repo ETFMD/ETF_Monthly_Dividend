@@ -1582,7 +1582,16 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .dsh-notice a { color:var(--accent); font-weight:700; text-decoration:none; white-space:nowrap; }
   .dsh-notice button { background:none; border:0; color:var(--text3); cursor:pointer; font-size:14px; padding:2px 4px; }
   @media (max-height: 720px) { .dsh-prev-wrap { display:none !important; } .dsh-b { min-height:48px; } }   /* 낮은 화면: 미리보기 빼고 버튼만 */
-  @media print { .dsh-fab, .dsh-pop { display:none !important; } }
+  @media print { .dsh-fab, .dsh-pop, .kk-fabs { display:none !important; } }
+  /* [KAKAO-FAB] 공유 버튼(56px) 위로 같은 크기·간격(12px)의 카카오톡 원형 버튼 2개 — 위: 오픈채팅, 아래: 후원 및 문의 */
+  .kk-fabs { position:fixed; right:max(18px, env(safe-area-inset-right)); bottom:calc(88px + env(safe-area-inset-bottom)); z-index:8990; display:flex; flex-direction:column-reverse; gap:12px; margin:0; }
+  body:has(.tab-dropdown.open) .kk-fabs { opacity:0; pointer-events:none; }
+  body:not(:has(.dsh-fab)) .kk-fabs { bottom:calc(20px + env(safe-area-inset-bottom)); }   /* 공유 버튼이 없는 화면(영어판 등)은 맨 아래부터 */
+  .kk-fab { position:relative; width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#FEE500; text-decoration:none; box-shadow:0 8px 24px rgba(254,229,0,.22), 0 2px 6px rgba(0,0,0,.25); transition:transform .15s, filter .15s; }
+  .kk-fab:hover { transform:translateY(-1px); filter:brightness(1.04); } .kk-fab:active { transform:scale(.96); }
+  .kk-fab:focus-visible { outline:3px solid rgba(254,229,0,.6); outline-offset:3px; }
+  .kk-fab::after { content:attr(aria-label); position:absolute; right:calc(100% + 10px); top:50%; transform:translateY(-50%); white-space:nowrap; padding:6px 10px; border-radius:8px; background:var(--dsh-s); color:var(--text); border:1px solid var(--dsh-bd); box-shadow:var(--dsh-sh); font-size:12px; font-weight:600; opacity:0; pointer-events:none; transition:opacity .15s; }
+  @media (hover:hover) { .kk-fab:hover::after, .kk-fab:focus-visible::after { opacity:1; } }
   .fc-row2 > .fc-field > .fc-input, .fc-row2 > .fc-field > .fc-amt, .fc-row2 > .fc-field > select, .fc-row2 > .fc-field > .fc-seg { margin-top:auto; }   /* 라벨이 두 줄이 돼도 옆 칸과 입력칸 높이 맞춤 */
   .fc-seg { width:100%; }
   .fc-seg .mode-btn { padding:8px 6px; font-size:12px; }

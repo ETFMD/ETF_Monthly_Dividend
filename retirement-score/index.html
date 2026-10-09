@@ -250,7 +250,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>(function(){try{var m=localStorage.getItem("site-theme")||"dark";var l=m==="light"||(m==="auto"&&window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches);document.documentElement.setAttribute("data-theme",l?"light":"dark");}catch(e){}})();</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<link rel="stylesheet" href="assets/app.215988f6a2.css">
+<link rel="stylesheet" href="assets/app.5ad42f5a39.css">
 </head>
 <body>
 <div class="wrap">
@@ -585,39 +585,10 @@
 </div>
 
 <script src="assets/app.e8f7bdad21.js"></script>
-  <!-- ── 하단 후원/문의 배너 ── -->
-  <div style="max-width:1280px;margin:0 auto;padding:0 32px 40px;">
-  <!-- ── 카카오 오픈채팅 (커뮤니티) — 모든 화면 아래쪽 ── -->
-  <a href="https://open.kakao.com/o/gi9XfRpi" target="_blank" rel="noopener"
-    style="display:flex;align-items:center;justify-content:center;gap:14px;
-      background:linear-gradient(135deg,rgba(254,152,0,0.12),rgba(254,152,0,0.06));
-      border:1px solid rgba(254,152,0,0.3);border-radius:14px;
-      padding:18px 24px;margin-bottom:12px;text-decoration:none;
-      width:100%;box-sizing:border-box;transition:background 0.2s,border-color 0.2s;"
-    onmouseover="this.style.background='linear-gradient(135deg,rgba(254,152,0,0.2),rgba(254,152,0,0.1))';this.style.borderColor='rgba(254,152,0,0.5)'"
-    onmouseout="this.style.background='linear-gradient(135deg,rgba(254,152,0,0.12),rgba(254,152,0,0.06))';this.style.borderColor='rgba(254,152,0,0.3)'">
-    <span style="font-size:22px;flex-shrink:0;">💬</span>
-    <div style="text-align:center;">
-      <p style="font-size:15px;font-weight:600;color:#fe9800;margin-bottom:3px;">카카오 오픈채팅</p>
-      <p style="font-size:12px;color:var(--text2);">ETF 커버드콜 + 배당투자 + 성장주 함께 장기투자를 위한 오픈톡방 가기</p>
-    </div>
-    <span style="font-size:18px;color:#fe9800;flex-shrink:0;">→</span>
-  </a>
-    <a href="https://open.kakao.com/o/smk2aSpi" target="_blank" rel="noopener"
-      style="display:flex;align-items:center;justify-content:center;gap:14px;
-        background:linear-gradient(135deg,rgba(49,130,246,0.1),rgba(49,130,246,0.08));
-        border:1px solid rgba(49,130,246,0.25);border-radius:14px;
-        padding:18px 24px;text-decoration:none;width:100%;box-sizing:border-box;
-        transition:background 0.2s,border-color 0.2s;"
-      onmouseover="this.style.background='linear-gradient(135deg,rgba(49,130,246,0.18),rgba(49,130,246,0.14))';this.style.borderColor='rgba(49,130,246,0.5)'"
-      onmouseout="this.style.background='linear-gradient(135deg,rgba(49,130,246,0.1),rgba(49,130,246,0.08))';this.style.borderColor='rgba(49,130,246,0.25)'">
-      <span style="font-size:22px;">☕</span>
-      <div style="text-align:center;">
-        <p style="font-size:15px;font-weight:600;color:var(--accent);margin-bottom:3px;">후원 및 문의</p>
-        <p style="font-size:12px;color:var(--text2);">카카오 오픈 1:1채팅으로 연결됩니다</p>
-      </div>
-      <span style="font-size:18px;color:var(--accent);">→</span>
-    </a>
+  <!-- ── 카카오톡 바로가기 (오른쪽 아래 공유 버튼 위, 같은 원형 버튼) — 오픈채팅 커뮤니티 · 후원 및 문의 1:1 채팅 ── -->
+  <div class="kk-fabs">
+    <a class="kk-fab" href="https://open.kakao.com/o/smk2aSpi" target="_blank" rel="noopener" aria-label="후원 및 문의"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 4.5c-6.08 0-11 3.86-11 8.62 0 3.03 2 5.7 5.03 7.23l-1.08 3.95c-.1.36.31.65.62.44l4.7-3.12c.56.07 1.14.11 1.73.11 6.08 0 11-3.86 11-8.61S20.08 4.5 14 4.5z" fill="#191919"/><path d="M14 16.9l-.43-.39c-1.55-1.4-2.57-2.33-2.57-3.47 0-.93.73-1.66 1.66-1.66.52 0 1.03.25 1.34.63.31-.38.82-.63 1.34-.63.93 0 1.66.73 1.66 1.66 0 1.14-1.02 2.07-2.57 3.47L14 16.9z" fill="#FEE500"/></svg></a>
+    <a class="kk-fab" href="https://open.kakao.com/o/gi9XfRpi" target="_blank" rel="noopener" aria-label="카카오 오픈채팅"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 4.5c-6.08 0-11 3.86-11 8.62 0 3.03 2 5.7 5.03 7.23l-1.08 3.95c-.1.36.31.65.62.44l4.7-3.12c.56.07 1.14.11 1.73.11 6.08 0 11-3.86 11-8.61S20.08 4.5 14 4.5z" fill="#191919"/><circle cx="9.6" cy="13.1" r="1.45" fill="#FEE500"/><circle cx="14" cy="13.1" r="1.45" fill="#FEE500"/><circle cx="18.4" cy="13.1" r="1.45" fill="#FEE500"/></svg></a>
   </div>
 
   <!-- [FOOTER] 모든 화면 하단 공통: 저작권 · 개인정보처리방침 · 문의 -->
