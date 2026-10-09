@@ -40,6 +40,8 @@ jobs:
         run: |
           if [ -z "$APT_KEY" ]; then echo "::warning::APT_KEY 시크릿이 없어 건너뜁니다"; exit 0; fi
           python3 scripts/update_apt_rank.py
+      - name: 지역별 시세 요약 (집 사기 계산기용)
+        run: python3 scripts/make_apt_area.py || echo "::warning::지역별 요약 실패 — 직전 자료 유지"
       - name: 실거래 캐시 저장
         if: always() && hashFiles('.cache/apt/*.json') != ''
         uses: actions/cache/save@v4
@@ -52,7 +54,7 @@ jobs:
           git config user.email '41898099+github-actions[bot]@users.noreply.github.com'
           [ -f data/apt_rank.json ] || exit 0
           git add data/apt_rank.json
-          git add data/apt_hist data/apt_supply.json 2>/dev/null || true
+          git add data/apt_hist data/apt_supply.json data/apt_area.json 2>/dev/null || true
           if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
           git commit -m "chore: 아파트 시세 순위 갱신"
           for i in 1 2 3; do

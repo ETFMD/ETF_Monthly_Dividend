@@ -35,8 +35,8 @@ var SITE_EN = (document.documentElement.getAttribute('lang') || '').indexOf('en'
     return Promise.race([p, new Promise(function (_, rej) { setTimeout(function () { rej(new Error('timeout')); }, ms); })]);
   }
   /* 파일별 갱신 주기(신선도)와 다운로드 제한 시간 — 큰 파일을 불필요하게 두 번 받지 않도록 */
-  var FRESH_MS = { 'apt_rank.json': 4 * 3600e3, 'salary_rank.json': 7 * 86400e3, 'asset_rank.json': 7 * 86400e3, 'mcap.json': 26 * 3600e3, 'etfcagr.json': 7 * 3600e3, 'history.json': 22 * 3600e3, 'dxy.json': 7 * 3600e3, 'home.json': 7 * 3600e3 };   /* 기본 40분 */
-  var BIG = { 'apt_rank.json': 1, 'dxy.json': 1, 'etfcagr.json': 1, 'history.json': 1, 'compare.json': 1, 'muhan.json': 1 };
+  var FRESH_MS = { 'apt_rank.json': 4 * 3600e3, 'salary_rank.json': 7 * 86400e3, 'asset_rank.json': 7 * 86400e3, 'mcap.json': 26 * 3600e3, 'etfcagr.json': 7 * 3600e3, 'history.json': 22 * 3600e3, 'dxy.json': 7 * 3600e3, 'home.json': 7 * 3600e3, 'whatif.json': 20 * 3600e3, 'apt_area.json': 26 * 3600e3, 'realty.json': 7 * 86400e3 };   /* 기본 40분 */
+  var BIG = { 'apt_rank.json': 1, 'dxy.json': 1, 'etfcagr.json': 1, 'history.json': 1, 'compare.json': 1, 'muhan.json': 1, 'whatif.json': 1 };
   function getJSON(url, ms) {
     return timeout(nativeFetch(url, { cache: 'no-cache' }), ms || 6000)
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
@@ -4485,9 +4485,10 @@ var FC = (function () {
       window.fcRender();
       return;
     }
-    var q = e.target.closest && e.target.closest('.fc-quick button');
+    var q = e.target.closest && e.target.closest('.fc-quick[data-target] button');   /* 대상 입력칸이 있는 빠른 금액 버튼만 (다른 용도의 .fc-quick 버튼은 각 모듈이 처리) */
     if (q) {
       var wrap = q.parentNode, tgt = $(wrap.getAttribute('data-target'));
+      if (!tgt) return;
       tgt.value = fmtIn(+q.getAttribute('data-v') * 1e4, tgt.getAttribute('data-unit') || 'man');   /* 버튼 값은 만원 기준 */
       if (RENDER[wrap.getAttribute('data-fc')]) RENDER[wrap.getAttribute('data-fc')]();
       return;
@@ -12562,7 +12563,7 @@ var JBX = (function () {
     /* 숫자 상자 */
     var rows = (o.rows || []).filter(function (r) { return r && r[1] != null && r[1] !== ''; }).slice(0, 4);
     if (rows.length) {
-      var rh = 76, top = Math.max(y + 46, 900 - (rows.length - 3) * 40), bh = rows.length * rh + 28;
+      var rh = 76, top = o.gauge != null && isFinite(o.gauge) ? Math.max(y + 46, 900 - (rows.length - 3) * 40) : y + 90, bh = rows.length * rh + 28;   /* 위치 막대가 없으면 설명 바로 아래로 */
       if (top + bh > H - 170) top = H - 170 - bh;
       rr(ctx, X, top, CW, bh, 26); ctx.fillStyle = 'rgba(255,255,255,0.045)'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.stroke();
       rows.forEach(function (r, i) {
@@ -12665,4 +12666,395 @@ var JBX = (function () {
     ready.then(render);
   }
   window.shareCard = { open: open, draw: draw };
+})();
+
+/* ════════════════════════════════════════
+   [WHATIF] 그때 샀더라면 계산기 — data/whatif.json (Actions '그때 샀더라면 자료 갱신': 매일)
+   · 월봉 종가 c / 배당 재투자 반영 a(국내: 네이버 수정주가 × 야후 배당 비율, 미국: 야후 수정종가)
+   · 달러 자산은 그 달 원달러 환율로 원화 환산 (원화로 사서 원화로 평가) — 끄면 달러 기준
+   · 한 번에: 시작 달 종가에 전액 매수 → 지금 종가로 평가
+     매달 적립: 시작 달부터 이번 달까지 매달 종가에 같은 금액 매수 (소수점 단위 매수 가정)
+   · 연평균 수익률: 한 번에 = (지금 가치 ÷ 원금)^(12 ÷ 개월 수) − 1 · 적립 = 납입 시점을 반영한 연환산 내부수익률(IRR)
+   · 아파트: 서울·강남 3구 아파트 매매 실거래 중위가격(연도별) — 한 채의 가격이 같은 비율로 움직였다고 가정
+════════════════════════════════════════ */
+var WIF = (function () {
+  function mi(s) { s = String(s); return +s.slice(0, 4) * 12 + (s.length > 4 ? +s.slice(5, 7) - 1 : 0); }
+  function txt(n) { return Math.floor(n / 12) + '.' + String(n % 12 + 1).padStart(2, '0'); }
+  /* 자산의 월별 원화(또는 달러) 가격 함수 */
+  function priceFn(as, fx, o) {
+    var arr = o.div && as.a ? as.a : as.c, s = mi(as.start), yearly = !!as.yearly;
+    var fs = mi(fx.start), conv = as.cur === 'USD' && o.krw;
+    var end = yearly ? Math.floor(s / 12) * 12 + (arr.length - 1) * 12 + 11 : s + arr.length - 1;
+    return {
+      start: yearly ? s : (conv ? Math.max(s, fs) : s), end: yearly ? end : (conv ? Math.min(end, fs + fx.v.length - 1) : end), yearly: yearly,
+      at: function (k) {
+        var p = yearly ? arr[Math.floor(k / 12) - Math.floor(s / 12)] : arr[k - s];
+        if (p == null) return null;
+        if (conv) { var f = fx.v[Math.min(fx.v.length - 1, k - fs)]; if (f == null) return null; p *= f; }
+        return p;
+      }
+    };
+  }
+  function irr(flows, final) {   /* flows: 월별 납입액(0..n−1, 월초) · final: n개월 뒤 가치 → 월 수익률 */
+    var n = flows.length;
+    function fv(i) { var g = 1 + i, v = 0; for (var k = 0; k < n; k++) v += flows[k] * Math.pow(g, n - k); return v; }
+    var lo = -0.99, hi = 2;
+    if (fv(lo) > final || fv(hi) < final) return null;
+    for (var it = 0; it < 200; it++) { var mid = (lo + hi) / 2; if (fv(mid) < final) lo = mid; else hi = mid; }
+    return (lo + hi) / 2;
+  }
+  /* o: {start: 월 번호, amount, mode:'lump'|'dca', div, krw} */
+  function calc(as, fx, o) {
+    var P = priceFn(as, fx, o), r = { P: P, as: as };
+    var s = Math.max(o.start, P.start), e = P.end;
+    if (P.yearly) s = Math.max(Math.floor(o.start / 12) * 12, Math.floor(P.start / 12) * 12);
+    r.clamped = s !== o.start && !(P.yearly && Math.floor(s / 12) === Math.floor(o.start / 12));
+    r.s = s; r.e = e;
+    if (s > e) { r.err = 'range'; return r; }
+    var units = 0, inv = 0, pts = [], peak = 0, mdd = 0, flows = [], p0 = P.at(s);
+    var step = P.yearly ? 12 : 1;
+    for (var k = s; k <= e; k += step) {
+      var p = P.at(k); if (!(p > 0)) continue;
+      if (o.mode === 'dca' && !P.yearly) { units += o.amount / p; inv += o.amount; flows.push(o.amount); }
+      else if (k === s) { units = o.amount / p; inv = o.amount; }
+      var v = units * p; pts.push([k, v, inv]);
+      if (p > peak) peak = p; else if (peak > 0) mdd = Math.min(mdd, p / peak - 1);
+    }
+    if (!pts.length) { r.err = 'range'; return r; }
+    var last = pts[pts.length - 1];
+    r.pts = pts; r.value = last[1]; r.inv = last[2]; r.profit = r.value - r.inv; r.ret = r.inv > 0 ? r.value / r.inv - 1 : 0;
+    r.months = P.yearly ? (Math.floor(e / 12) - Math.floor(s / 12)) * 12 : e - s;
+    if (o.mode === 'dca' && !P.yearly) { var m = irr(flows, r.value * (1 + 0)); r.cagr = m == null ? null : Math.pow(1 + m, 12) - 1; }
+    else r.cagr = r.months >= 1 ? Math.pow(r.value / r.inv, 12 / r.months) - 1 : null;
+    r.mdd = mdd; r.p0 = p0; r.p1 = P.at(e); r.priceX = r.p1 / p0;
+    return r;
+  }
+  return { calc: calc, mi: mi, txt: txt, priceFn: priceFn, irr: irr };
+})();
+
+/* [WHATIF] 화면 — 입력(data-fc="wif")은 [FC-UI] 공통 처리 */
+(function () {
+  if (!document.getElementById('page-whatif')) return;
+  function $(id) { return document.getElementById(id); }
+  function setT(id, v) { var e = $(id); if (e) e.textContent = v; }
+  function setH(id, v) { var e = $(id); if (e) e.innerHTML = v; }
+  function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function numOf(id) { var e = $(id); return e ? (parseFloat(String(e.value).replace(/,/g, '')) || 0) : 0; }
+  var UNIT = { eok: 1e8, man: 1e4, won: 1 };
+  function amt(id) { var e = $(id); return Math.round(numOf(id) * (UNIT[e && e.getAttribute('data-unit')] || 1)); }
+  function seg(name) { var b = document.querySelector('.fc-seg[data-name="' + name + '"] .mode-btn.active'); return b ? b.getAttribute('data-v') : null; }
+  function won(n) { return (n < 0 ? '−' : '') + Math.round(Math.abs(n)).toLocaleString('ko-KR') + '원'; }
+  function eok(n) {
+    var neg = n < 0; n = Math.abs(n);
+    if (n >= 1e12) { var j = Math.floor(n / 1e12), e2 = Math.round((n - j * 1e12) / 1e8); return (neg ? '−' : '') + j.toLocaleString('ko-KR') + '조' + (e2 ? ' ' + e2.toLocaleString('ko-KR') + '억원' : '원'); }
+    n = Math.round(n / 1e4) * 1e4;
+    var e = Math.floor(n / 1e8), m = Math.round((n - e * 1e8) / 1e4), s;
+    if (!e) s = m.toLocaleString('ko-KR') + '만원'; else s = e.toLocaleString('ko-KR') + '억' + (m ? ' ' + m.toLocaleString('ko-KR') + '만원' : '원');
+    return (neg ? '−' : '') + s;
+  }
+  function pctS(v, d) { if (v == null || !isFinite(v)) return '—'; var a = Math.abs(v * 100); var t = a >= 1000 ? Math.round(a).toLocaleString('ko-KR') : a.toFixed(d == null ? 1 : d); return (v < 0 ? '−' : '+') + t + '%'; }
+  var GROUPS = [['kr', '국내 주식'], ['idx', '지수·ETF'], ['us', '미국 주식'], ['coin', '코인'], ['etc', '금·은·달러'], ['apt', '아파트']];
+  var D = null, A = {}, loading = false, chart = null, share = null;
+  var now = new Date(Date.now() + 9 * 3600e3), NOWM = now.getUTCFullYear() * 12 + now.getUTCMonth();
+  function ymTxt(k, yearly) { return yearly ? Math.floor(k / 12) + '년' : Math.floor(k / 12) + '년 ' + (k % 12 + 1) + '월'; }
+  function fill() {
+    var sel = $('wif-asset');
+    sel.innerHTML = GROUPS.map(function (g) {
+      var xs = D.assets.filter(function (a) { return a.g === g[0]; });
+      return xs.length ? '<optgroup label="' + g[1] + '">' + xs.map(function (a) { return '<option value="' + esc(a.id) + '"' + (a.id === '005930.KS' ? ' selected' : '') + '>' + esc(a.name) + ' (' + (a.yearly ? a.start : a.start.slice(0, 4)) + '년~)</option>'; }).join('') + '</optgroup>' : '';
+    }).join('');
+    var y0 = 1981, ys = '';
+    for (var y = Math.floor(NOWM / 12); y >= y0; y--) ys += '<option value="' + y + '">' + y + '년</option>';
+    $('wif-y').innerHTML = ys;
+    var ms = ''; for (var m = 1; m <= 12; m++) ms += '<option value="' + m + '">' + m + '월</option>';
+    $('wif-m').innerHTML = ms;
+    setStart(NOWM - 120);
+  }
+  function setStart(k) { $('wif-y').value = String(Math.floor(k / 12)); $('wif-m').value = String(k % 12 + 1); }
+  function opts() {
+    return { start: (+$('wif-y').value) * 12 + (+$('wif-m').value) - 1, mode: seg('wif-mode') || 'lump',
+      amount: (seg('wif-mode') || 'lump') === 'dca' ? amt('wif-mamt') : amt('wif-amt'), div: $('wif-div').checked, krw: $('wif-krw').checked };
+  }
+  function render() {
+    if (!D) { load(); return; }
+    var as = A[$('wif-asset').value] || D.assets[0], o = opts();
+    var dcaOk = !as.yearly;
+    if (!dcaOk && o.mode === 'dca') o.mode = 'lump';
+    $('wif-dca-btn').disabled = !dcaOk;
+    $('wif-amt-f').style.display = o.mode === 'dca' ? 'none' : ''; $('wif-mamt-f').style.display = o.mode === 'dca' ? '' : 'none';
+    $('wif-m-f').style.visibility = as.yearly ? 'hidden' : '';
+    $('wif-div-f').style.display = as.a ? '' : 'none';
+    $('wif-krw-f').style.display = as.cur === 'USD' ? '' : 'none';
+    var r = WIF.calc(as, D.fx, o), notes = [];
+    if (o.start > NOWM) r.err = 'future';
+    if (r.err || !(o.amount > 0)) {
+      setT('wif-label', '그때 샀더라면'); setT('wif-val', '—');
+      setT('wif-sub', r.err === 'future' ? '미래 날짜는 계산할 수 없습니다.' : !(o.amount > 0) ? '투자 금액을 넣어 주세요.' : as.name + ' 자료가 없는 기간입니다.');
+      ['wif-k1', 'wif-k2', 'wif-k3'].forEach(function (k) { setT(k, '—'); }); setH('wif-cmp', ''); share = null; $('wif-share').hidden = true;
+      if (chart) { chart.destroy(); chart = null; } return;
+    }
+    if (r.clamped) notes.push(as.name + ' 자료는 ' + ymTxt(r.P.start, as.yearly) + '부터 있어 그때부터 계산했습니다.');
+    if (as.yearly) notes.push('아파트는 그 해 서울' + (as.id === 'APT-gangnam' ? ' 강남 3구(강남·서초·송파)' : '') + ' 아파트 매매 실거래 중위가격으로 계산합니다. 한 채의 값이 중위가격과 같은 비율로 움직였다고 가정하며, 대출·세금·관리비·전월세 수익은 넣지 않았습니다. 올해는 지금까지 거래 기준입니다.');
+    if (as.cur === 'USD' && o.krw) notes.push('달러 자산은 그 달 원달러 환율로 원화로 바꿔 사고, 지금 환율로 원화 가치를 계산했습니다(환차익·환차손 포함).');
+    if (as.a && o.div) notes.push('배당금은 받은 날 같은 종목을 다시 산다고 보고 계산했습니다(세금 제외)' + (as.g === 'kr' && r.s < 2000 * 12 + 1 ? ' — 2000년 이전 배당은 자료가 없어 빠져 있습니다.' : '.'));
+    if (as.id === '^KS11' || as.id === '^KQ11') notes.push('지수 자체(배당 미포함)로 계산했습니다. 실제 지수 ETF는 보수·배당이 더해집니다.');
+    var startTxt = ymTxt(r.s, as.yearly), mode = o.mode;
+    setT('wif-label', startTxt + '에 ' + as.name + ' ' + (mode === 'dca' ? '매달 ' + eok(o.amount) + '씩' : eok(o.amount)) + ' 샀다면');
+    setT('wif-val', eok(r.value));
+    var endTxt = as.yearly ? Math.floor(r.e / 12) + '년' : (as.t ? as.t.replace(/-/g, '.') : ymTxt(r.e));
+    setH('wif-sub', '원금 ' + eok(r.inv) + ' → <b style="color:' + (r.profit >= 0 ? 'var(--red, #f04452)' : 'var(--accent)') + ';">' + (r.profit >= 0 ? '+' : '−') + eok(Math.abs(r.profit)) + '</b> · ' + endTxt + ' 기준' + (as.cur === 'USD' && !o.krw ? ' (달러 기준을 원화 금액으로 표시)' : ''));
+    setT('wif-k1', pctS(r.ret)); setT('wif-k2', r.cagr == null ? '—' : pctS(r.cagr, 2)); setT('wif-k3', (r.mdd * 100).toFixed(1) + '%');
+    setH('wif-notes', notes.map(function (t) { return '<p class="fc-note" style="margin:8px 0 0;">※ ' + t + '</p>'; }).join(''));
+    /* 같은 돈을 다른 곳에 넣었다면 */
+    var rows = D.assets.map(function (x) {
+      var oo = { start: o.start, amount: o.amount, mode: x.yearly ? 'lump' : mode, div: o.div, krw: true }, q = WIF.calc(x, D.fx, oo);
+      if (q.err || q.clamped || (x.yearly && mode === 'dca')) return null;
+      return { x: x, q: q };
+    }).filter(Boolean).sort(function (a, b) { return b.q.value - a.q.value; });
+    var inv = mode === 'dca' ? null : o.amount, cash = rows.length ? rows[0].q.inv : o.amount;
+    setH('wif-cmp', rows.map(function (z, i) {
+      var on = z.x.id === as.id;
+      return '<tr' + (on ? ' class="fc-hl"' : '') + '><td>' + (i + 1) + '</td><td style="text-align:left;">' + esc(z.x.name) + '</td><td style="text-align:right;">' + eok(z.q.value) + '</td><td style="text-align:right;color:' + (z.q.ret >= 0 ? '#f04452' : '#3182f6') + ';">' + pctS(z.q.ret) + '</td><td style="text-align:right;">' + (z.q.cagr == null ? '—' : pctS(z.q.cagr, 1)) + '</td></tr>';
+    }).join('') + '<tr><td>—</td><td style="text-align:left;">현금으로 그냥 들고 있었다면</td><td style="text-align:right;">' + eok(cash) + '</td><td style="text-align:right;">0%</td><td style="text-align:right;">0%</td></tr>');
+    setT('wif-cmp-sub', ymTxt(o.start) + '부터 같은 돈을 ' + (mode === 'dca' ? '매달 ' + eok(o.amount) + '씩' : eok(o.amount)) + ' 넣었다면 · 원화 기준 · 자료가 그때부터 있는 ' + rows.length + '개');
+    /* 그래프 */
+    if (typeof Chart !== 'undefined') {
+      var labels = r.pts.map(function (p) { return as.yearly ? String(Math.floor(p[0] / 12)) : txt2(p[0]); });
+      var ds = [{ label: '평가 금액', data: r.pts.map(function (p) { return Math.round(p[1]); }), borderColor: '#3182f6', backgroundColor: 'rgba(49,130,246,0.12)', fill: true, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, tension: 0.15 },
+                { label: '넣은 돈', data: r.pts.map(function (p) { return Math.round(p[2]); }), borderColor: '#fe9800', borderDash: [6, 4], fill: false, pointRadius: 0, borderWidth: 1.5 }];
+      var opt = { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#202027', borderColor: fgA(0.1), borderWidth: 1, titleColor: '#9e9ea4', bodyColor: '#e4e4e5', padding: 12, callbacks: { label: function (c) { return ' ' + c.dataset.label + ': ' + eok(c.parsed.y); } } } },
+        scales: { x: { ticks: { color: '#6d6d76', font: { size: 11 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 }, grid: { display: false }, border: { display: false } },
+                  y: { ticks: { color: '#6d6d76', font: { size: 11 }, callback: function (v) { return fmt(v, true); } }, grid: { color: fgA(0.04) }, border: { display: false } } } };
+      if (chart) { chart.data.labels = labels; chart.data.datasets = ds; chart.options = opt; chart.update('none'); }
+      else chart = new Chart($('wif-chart'), { type: 'line', data: { labels: labels, datasets: ds }, options: opt });
+    }
+    /* 공유 카드 */
+    var ks = A['^KS11'] && WIF.calc(A['^KS11'], D.fx, { start: r.s, amount: o.amount, mode: as.yearly ? 'lump' : mode, div: true, krw: true });
+    var sp = A['SPY'] && WIF.calc(A['SPY'], D.fx, { start: r.s, amount: o.amount, mode: as.yearly ? 'lump' : mode, div: true, krw: true });
+    var rank = rows.findIndex(function (z) { return z.x.id === as.id; });
+    share = { key: 'what-if', chip: '그때 샀더라면', title: startTxt + ' ' + as.name + (mode === 'dca' ? ' 매달 ' + eok(o.amount) + '씩' : ' ' + eok(o.amount)),
+      label: '샀다면 지금(' + endTxt + ') 얼마?', big: eok(r.value), sub: '수익률 ' + pctS(r.ret) + (r.cagr != null ? ' · 연평균 ' + pctS(r.cagr, 1) : ''),
+      rows: [['넣은 돈', eok(r.inv)], ['수익', (r.profit >= 0 ? '+' : '−') + eok(Math.abs(r.profit))],
+             ks && !ks.err && !ks.clamped && as.id !== '^KS11' ? ['같은 기간 코스피', pctS(ks.ret)] : null,
+             sp && !sp.err && !sp.clamped && as.id !== 'SPY' ? ['같은 기간 S&P 500', pctS(sp.ret)] : (rank >= 0 ? ['비교 자산 ' + rows.length + '개 중', (rank + 1) + '위'] : null)],
+      source: (as.yearly ? '국토교통부 실거래가 (연도별 중위가격)' : '네이버 금융·Yahoo Finance 월봉') + (as.a && o.div ? ' · 배당 재투자' : '') + (as.cur === 'USD' && o.krw ? ' · 원화 환산' : '') };
+    $('wif-share').hidden = false;
+  }
+  function txt2(k) { return String(Math.floor(k / 12)).slice(2) + '.' + String(k % 12 + 1).padStart(2, '0'); }
+  function load() {
+    if (loading || !window.mdLoad) return; loading = true;
+    window.mdLoad('whatif.json').then(function (d) {
+      loading = false;
+      if (!d || !d.assets) { setT('wif-sub', '자료를 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.'); return; }
+      D = d; A = {}; d.assets.forEach(function (a) { A[a.id] = a; });
+      fill();
+      setH('wif-src', '자료: 네이버 금융·Yahoo Finance 월봉 · 원달러 환율(Yahoo·FRED) · 국토교통부 아파트 실거래가 — ' + d.updated.slice(0, 10) + ' 갱신');
+      var pg = $('page-whatif'); if (pg && pg.classList.contains('active')) render();
+    }).catch(function () { loading = false; setT('wif-sub', '자료를 불러오지 못했습니다.'); });
+  }
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest) return;
+    var b = e.target.closest('.wif-pre');
+    if (b && D) {
+      var ago = b.getAttribute('data-ago'), ym = b.getAttribute('data-ym');
+      setStart(ago ? NOWM - 12 * (+ago) : WIF.mi(ym));
+      document.querySelectorAll('.wif-pre').forEach(function (x) { x.classList.toggle('on', x === b); });
+      render(); return;
+    }
+    if (share && e.target.closest('#wif-share')) window.shareCard.open(share);
+  });
+  document.addEventListener('change', function (e) { if (e.target && (e.target.id === 'wif-y' || e.target.id === 'wif-m')) document.querySelectorAll('.wif-pre').forEach(function (x) { x.classList.remove('on'); }); });
+  window.fcRegister('wif', render, 'whatif');
+})();
+
+/* ════════════════════════════════════════
+   [HOUSE-YEARS] 내 연봉으로 집 사기까지 몇 년 — data/apt_area.json(지역별 단지 최근 실거래 중위값) · data/realty.json(서울 연도별 중위가)
+   · 월 실수령 = 연봉 실수령액 계산기(FC.salary — 4대보험·근로소득세 간이세액표, 비과세 식대 월 20만원, 본인 1명) · 해마다 연봉 상승률만큼 올려 다시 계산
+   · 매달 저축(실수령 × 저축률 또는 정액)을 모은 돈에 더하고, 모은 돈은 연 수익률로 불어남 (월 복리)
+   · 필요한 돈 = 그때 집값 × (1 − 대출 비율) + 취득세(지방교육세·농특세 포함, 1주택·생애최초 감면 선택) + 중개보수(부가세 포함)
+     그때 집값 = 지금 집값 × (1 + 집값 상승률)^(경과 개월 ÷ 12)
+   · 모은 돈 ≥ 필요한 돈이 되는 첫 달 = 집을 살 수 있는 때 (100년 안에 안 되면 '어려움')
+════════════════════════════════════════ */
+var HYC = (function () {
+  function cost(price, first) {
+    var a = TAX.acquisition({ price: price, kind: 'buy', houses: 1, big: false, relief: first && price <= 12e8 ? 'first' : 'none' });
+    var b = FC.brokerage({ kind: 'sale', prop: 'house', price: price });
+    return { acq: a.total, broker: b.fee + b.vat, total: a.total + b.fee + b.vat };
+  }
+  function netMonthly(annual) { return annual > 0 ? FC.salary({ annual: annual, nontax: 2e5, family: 1, kids: 0, ratio: 100 }).net : 0; }
+  /* o: {salary, mode:'rate'|'fixed', rate, fixed, saved, raise, ret, grow, price, ltv, costs, first} */
+  function calc(o, maxYears) {
+    var mr = Math.pow(1 + (o.ret || 0), 1 / 12) - 1, A = Math.max(0, o.saved || 0), y = -1, net = 0, save = 0, rows = [], M = (maxYears || 100) * 12;
+    function need(m) {
+      var p = o.price * Math.pow(1 + (o.grow || 0), m / 12);
+      var c = o.costs ? cost(p, o.first) : { acq: 0, broker: 0, total: 0 };
+      return { price: p, cash: p * (1 - (o.ltv || 0)), cost: c, total: p * (1 - (o.ltv || 0)) + c.total };
+    }
+    for (var m = 0; m <= M; m++) {
+      if (Math.floor(m / 12) !== y) {
+        y = Math.floor(m / 12);
+        var sal = o.salary * Math.pow(1 + (o.raise || 0), y);
+        net = netMonthly(sal);
+        save = o.mode === 'fixed' ? o.fixed * Math.pow(1 + (o.raise || 0), y) : net * (o.rate || 0);
+        rows.push({ y: y, salary: sal, net: net, save: save, start: A, need: need(m).total });
+      }
+      var N = need(m);
+      if (A >= N.total - 0.5) return { m: m, A: A, need: N, rows: rows, first: rows[0] };
+      A = A * (1 + mr) + Math.max(0, save);
+      rows[rows.length - 1].end = A;
+    }
+    return { m: -1, A: A, rows: rows, first: rows[0], need: need(M) };
+  }
+  return { calc: calc, cost: cost, netMonthly: netMonthly };
+})();
+
+/* [HOUSE-YEARS] 화면 — 입력(data-fc="hy")은 [FC-UI] 공통 처리 */
+(function () {
+  if (!document.getElementById('page-houseyears')) return;
+  function $(id) { return document.getElementById(id); }
+  function setT(id, v) { var e = $(id); if (e) e.textContent = v; }
+  function setH(id, v) { var e = $(id); if (e) e.innerHTML = v; }
+  function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function numOf(id) { var e = $(id); return e ? (parseFloat(String(e.value).replace(/,/g, '')) || 0) : 0; }
+  var UNIT = { eok: 1e8, man: 1e4, won: 1 };
+  function amt(id) { var e = $(id); return Math.round(numOf(id) * (UNIT[e && e.getAttribute('data-unit')] || 1)); }
+  function seg(name) { var b = document.querySelector('.fc-seg[data-name="' + name + '"] .mode-btn.active'); return b ? b.getAttribute('data-v') : null; }
+  function won(n) { return (n < 0 ? '−' : '') + Math.round(Math.abs(n)).toLocaleString('ko-KR') + '원'; }
+  function eok(n) {
+    var neg = n < 0; n = Math.round(Math.abs(n) / 1e4) * 1e4;
+    var e = Math.floor(n / 1e8), m = Math.round((n - e * 1e8) / 1e4), s;
+    if (!e) s = m.toLocaleString('ko-KR') + '만원'; else s = e.toLocaleString('ko-KR') + '억' + (m ? ' ' + m.toLocaleString('ko-KR') + '만원' : '원');
+    return (neg ? '−' : '') + s;
+  }
+  function ym(m) { var y = Math.floor(m / 12), r = m % 12; return y ? y + '년' + (r ? ' ' + r + '개월' : '') : r + '개월'; }
+  var D = null, R = null, loading = false, chart = null, share = null;
+  function regionPrice(key, size) {   /* key: 'all' | '시도' | '시도 시군구' → [가격(원), 설명] */
+    var x = key === 'all' ? D.all : (D.sgg[key] || D.sido[key]);
+    if (!x) return null;
+    var py = (x.py || 0) * 1e4, v, how;
+    if (size === '59' || size === '84') {
+      var p = x['p' + size], n = x['n' + size];
+      if (p) { v = p * 1e4; how = '전용 ' + size + '㎡형(' + (size === '59' ? '55~65' : '80~90') + '㎡) 거래 ' + n + '개 단지의 중위값'; }
+      else { v = py * (+size / 3.3058); how = '전용 ' + size + '㎡형 거래가 적어 평당 중위가 × ' + (+size / 3.3058).toFixed(1) + '평'; }
+    } else { v = x.med * 1e4; how = '단지 ' + x.n.toLocaleString('ko-KR') + '개의 최근 실거래가 중위값 (면적 무관)'; }
+    return [v, how, x];
+  }
+  function fill() {
+    var sel = $('hy-region'), h = '<option value="all">전국</option>';
+    var sidos = Object.keys(D.sido);
+    h += '<optgroup label="시·도">' + sidos.map(function (s) { return '<option value="' + esc(s) + '"' + (s === '서울' ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') + '</optgroup>';
+    sidos.forEach(function (s) {
+      var gs = Object.keys(D.sgg).filter(function (k) { return k.indexOf(s + ' ') === 0; });
+      if (gs.length) h += '<optgroup label="' + esc(s) + '">' + gs.map(function (k) { return '<option value="' + esc(k) + '">' + esc(k) + '</option>'; }).join('') + '</optgroup>';
+    });
+    sel.innerHTML = h;
+  }
+  function seoulCagr() {   /* 서울 아파트 실거래 중위가 최근 10년 연평균 상승률 (올해는 빼고 마지막 완결 연도까지) */
+    if (!R || !R.years) return null;
+    var ys = Object.keys(R.years).sort(), last = ys[ys.length - 2], first = String(+last - 10);
+    if (!R.years[first]) return null;
+    return [Math.pow(R.years[last].seoul.median / R.years[first].seoul.median, 1 / 10) - 1, first, last];
+  }
+  function opts() {
+    var size = seg('hy-size') || '84', reg = $('hy-region').value, rp = size === 'custom' ? null : regionPrice(reg, size);
+    return {
+      salary: amt('hy-salary'), mode: seg('hy-save') || 'rate', rate: numOf('hy-rate') / 100, fixed: amt('hy-fixed'), saved: amt('hy-saved'),
+      raise: numOf('hy-raise') / 100, ret: numOf('hy-ret') / 100, grow: numOf('hy-grow') / 100,
+      price: size === 'custom' ? amt('hy-price') : (rp ? rp[0] : 0), how: rp ? rp[1] : '직접 넣은 집값', ltv: $('hy-loan').checked ? numOf('hy-ltv') / 100 : 0,
+      costs: $('hy-costs').checked, first: $('hy-first').checked, size: size, reg: reg, age: numOf('hy-age')
+    };
+  }
+  function render() {
+    if (!D) { load(); return; }
+    var o = opts();
+    $('hy-rate-f').style.display = o.mode === 'rate' ? '' : 'none'; $('hy-fixed-f').style.display = o.mode === 'fixed' ? '' : 'none';
+    $('hy-price-f').style.display = o.size === 'custom' ? '' : 'none'; $('hy-region-f').style.display = o.size === 'custom' ? 'none' : '';
+    $('hy-ltv-f').style.display = $('hy-loan').checked ? '' : 'none';
+    var net0 = HYC.netMonthly(o.salary);
+    setT('hy-net', o.salary > 0 ? '월 실수령 약 ' + won(net0) + (o.mode === 'rate' ? ' → 매달 ' + won(net0 * o.rate) + ' 저축' : '') : '');
+    var sc = seoulCagr(); if (sc) setT('hy-grow-hint', '참고: 서울 아파트 실거래 중위가 ' + sc[1] + '→' + sc[2] + '년 연평균 ' + (sc[0] * 100).toFixed(1) + '%');
+    if (!(o.price > 0) || !(o.salary > 0)) {
+      setT('hy-val', '—'); setT('hy-sub', !(o.salary > 0) ? '연봉을 넣어 주세요.' : '집값을 넣어 주세요.'); share = null; $('hy-share').hidden = true; return;
+    }
+    var r = HYC.calc(o, 100), place = o.size === 'custom' ? '이 집' : (o.reg === 'all' ? '전국' : o.reg) + ' ' + (o.size === 'any' ? '아파트' : o.size + '㎡ 아파트');
+    var pir = o.price / Math.max(1, net0 * 12), pirG = o.price / o.salary;
+    setT('hy-label', '연봉 ' + eok(o.salary) + '으로 ' + place + ' 사기까지');
+    if (r.m >= 0) {
+      setT('hy-val', r.m === 0 ? '지금 바로 가능' : ym(r.m));
+      setT('hy-sub', (r.m === 0 ? '모은 돈 ' + eok(o.saved) + '으로 필요한 돈 ' + eok(r.need.total) + '을 이미 넘습니다' : (o.age > 0 ? Math.floor(o.age + r.m / 12) + '세에 · ' : '') + '그때 집값 ' + eok(r.need.price) + ' · 필요한 돈 ' + eok(r.need.total)));
+    } else {
+      setT('hy-val', '100년 안에 어려움');
+      setT('hy-sub', '집값이 오르는 속도가 저축이 늘어나는 속도보다 빨라 따라잡지 못합니다 — 저축률·수익률을 높이거나 대출·지역을 바꿔 보세요');
+    }
+    setT('hy-k1', pir.toFixed(1) + '년'); setT('hy-k2', pirG.toFixed(1) + '배'); setT('hy-k3', eok(o.price));
+    /* 계산 내역 */
+    var c0 = o.costs ? HYC.cost(o.price, o.first) : null, lines = [
+      ['목표 집값 (지금) <small>(' + esc(o.how) + ')</small>', won(o.price)],
+      o.ltv ? ['대출 <small>(집값의 ' + Math.round(o.ltv * 100) + '% — 실제 한도는 LTV·DSR 규제로 달라짐)</small>', '−' + won(o.price * o.ltv)] : null,
+      c0 ? ['취득세·지방교육세 <small>(1주택' + (o.first ? ' · 생애최초 감면' : '') + ')</small>', '+' + won(c0.acq)] : null,
+      c0 ? ['중개보수 <small>(상한요율 · 부가세 포함)</small>', '+' + won(c0.broker)] : null,
+      ['<b>지금 필요한 돈</b>', won(o.price * (1 - o.ltv) + (c0 ? c0.total : 0)), 'fc-total'],
+      ['모은 돈', '−' + won(o.saved)],
+      ['월 저축 (첫해)', won(r.first ? r.first.save : 0)],
+      ['한 푼도 안 쓰고 모으면 <small>(집값 ÷ 연 실수령액, 집값·월급 그대로 가정)</small>', pir.toFixed(1) + '년', 'fc-hl'],
+      ['연봉 대비 집값 <small>(집값 ÷ 세전 연봉 — PIR과 비슷한 지표)</small>', pirG.toFixed(1) + '배'],
+      r.m > 0 ? ['<b>집을 살 수 있는 때</b> <small>(연봉 +' + (o.raise * 100).toFixed(1) + '%·집값 +' + (o.grow * 100).toFixed(1) + '%·저축 수익률 ' + (o.ret * 100).toFixed(1) + '% 매년)</small>', ym(r.m) + ' 뒤', 'fc-hl'] : null
+    ];
+    setH('hy-table', lines.filter(Boolean).map(function (x) { return '<tr' + (x[2] ? ' class="' + x[2] + '"' : '') + '><td>' + x[0] + '</td><td style="text-align:right;">' + x[1] + '</td></tr>'; }).join(''));
+    /* 지역별 비교 (같은 조건) */
+    var cmp = [['all', '전국']].concat(Object.keys(D.sido).map(function (k) { return [k, k]; })).map(function (k) {
+      var rp = o.size === 'custom' ? regionPrice(k[0], '84') : regionPrice(k[0], o.size), oo = {}; for (var z in o) oo[z] = o[z];
+      if (!rp) return null; oo.price = rp[0];
+      var q = HYC.calc(oo, 100);
+      return { k: k, p: rp[0], m: q.m, pir: rp[0] / Math.max(1, net0 * 12) };
+    }).filter(Boolean).sort(function (a, b) { return (a.m < 0 ? 1e9 : a.m) - (b.m < 0 ? 1e9 : b.m) || a.p - b.p; });
+    setT('hy-cmp-sub', (o.size === 'custom' ? '84㎡ 아파트' : o.size === 'any' ? '아파트 (면적 무관)' : o.size + '㎡ 아파트') + ' 중위값 · 같은 연봉·저축 조건');
+    setH('hy-cmp', cmp.map(function (z) {
+      var on = z.k[0] === o.reg && o.size !== 'custom';
+      return '<tr' + (on ? ' class="fc-hl"' : '') + '><td>' + esc(z.k[1]) + '</td><td style="text-align:right;">' + eok(z.p) + '</td><td style="text-align:right;">' + z.pir.toFixed(1) + '년</td><td style="text-align:right;"><b>' + (z.m < 0 ? '100년+' : z.m === 0 ? '지금' : ym(z.m)) + '</b></td></tr>';
+    }).join(''));
+    /* 그래프: 모은 돈 vs 필요한 돈 */
+    if (typeof Chart !== 'undefined') {
+      var yrs = r.m >= 0 ? Math.max(3, Math.ceil(r.m / 12) + 2) : 40, labels = [], A = [], N = [];
+      var oo2 = {}; for (var z2 in o) oo2[z2] = o[z2];
+      var mr = Math.pow(1 + o.ret, 1 / 12) - 1, Acc = o.saved;
+      for (var y = 0; y <= yrs; y++) {
+        labels.push(y ? y + '년' : '지금');
+        var p = o.price * Math.pow(1 + o.grow, y), c = o.costs ? HYC.cost(p, o.first).total : 0;
+        A.push(Math.round(Acc)); N.push(Math.round(p * (1 - o.ltv) + c));
+        var sal = o.salary * Math.pow(1 + o.raise, y), net = HYC.netMonthly(sal), sv = o.mode === 'fixed' ? o.fixed * Math.pow(1 + o.raise, y) : net * o.rate;
+        for (var k = 0; k < 12; k++) Acc = Acc * (1 + mr) + Math.max(0, sv);
+      }
+      var ds = [{ label: '모은 돈', data: A, borderColor: '#3182f6', backgroundColor: 'rgba(49,130,246,0.12)', fill: true, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, tension: 0.15 },
+                { label: '필요한 돈', data: N, borderColor: '#f04452', borderDash: [6, 4], fill: false, pointRadius: 0, borderWidth: 1.6 }];
+      var opt = { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#202027', borderColor: fgA(0.1), borderWidth: 1, titleColor: '#9e9ea4', bodyColor: '#e4e4e5', padding: 12, callbacks: { label: function (c) { return ' ' + c.dataset.label + ': ' + eok(c.parsed.y); } } } },
+        scales: { x: { ticks: { color: '#6d6d76', font: { size: 11 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 }, grid: { display: false }, border: { display: false } },
+                  y: { beginAtZero: true, ticks: { color: '#6d6d76', font: { size: 11 }, callback: function (v) { return fmt(v, true); } }, grid: { color: fgA(0.04) }, border: { display: false } } } };
+      if (chart) { chart.data.labels = labels; chart.data.datasets = ds; chart.options = opt; chart.update('none'); }
+      else chart = new Chart($('hy-chart'), { type: 'line', data: { labels: labels, datasets: ds }, options: opt });
+    }
+    /* 공유 카드 */
+    var rk = cmp.findIndex(function (z) { return z.k[0] === o.reg; });
+    share = { key: 'house-years', chip: '집 사기 계산기', title: '연봉 ' + eok(o.salary) + '으로 ' + place,
+      label: o.mode === 'rate' ? '실수령의 ' + Math.round(o.rate * 100) + '% 저축 · 연봉 +' + (o.raise * 100).toFixed(1) + '% · 집값 +' + (o.grow * 100).toFixed(1) + '%/년' : '매달 ' + eok(o.fixed) + ' 저축 · 집값 +' + (o.grow * 100).toFixed(1) + '%/년',
+      big: r.m < 0 ? '100년+' : r.m === 0 ? '지금 가능' : ym(r.m), sub: r.m > 0 ? (o.age > 0 ? Math.floor(o.age + r.m / 12) + '세에 내 집 마련' : '모아야 내 집 마련') : r.m === 0 ? '이미 살 수 있는 돈이 있습니다' : '저축만으로는 따라잡기 어렵습니다',
+      rows: [['목표 집값 (지금)', eok(o.price)], ['한 푼도 안 쓰고 모으면', pir.toFixed(1) + '년'], ['연봉 대비 집값', pirG.toFixed(1) + '배'],
+             rk >= 0 && o.size !== 'custom' ? ['전국 ' + cmp.length + '개 지역 중', '빠른 순 ' + (rk + 1) + '위'] : (o.ltv ? ['대출 비율', Math.round(o.ltv * 100) + '%'] : null)],
+      source: '국토교통부 아파트 실거래가 (단지별 최근 거래 중위값) · ' + (D.updated || '').slice(0, 10) };
+    $('hy-share').hidden = false;
+  }
+  function load() {
+    if (loading || !window.mdLoad) return; loading = true;
+    Promise.all([window.mdLoad('apt_area.json'), window.mdLoad('realty.json').catch(function () { return null; })]).then(function (x) {
+      loading = false; var d = x[0];
+      if (!d || !d.sido) { setT('hy-sub', '자료를 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.'); return; }
+      D = d; R = x[1]; fill();
+      setH('hy-src', '집값: 국토교통부 아파트 매매 실거래가 — 최근 1년 거래된 단지마다 가장 최근 거래 1건의 중위값 (' + (d.updated || '').slice(0, 10) + ' 갱신)');
+      var pg = $('page-houseyears'); if (pg && pg.classList.contains('active')) render();
+    }).catch(function () { loading = false; setT('hy-sub', '자료를 불러오지 못했습니다.'); });
+  }
+  document.addEventListener('click', function (e) { if (share && e.target.closest && e.target.closest('#hy-share')) window.shareCard.open(share); });
+  window.fcRegister('hy', render, 'houseyears');
 })();
