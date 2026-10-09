@@ -103,7 +103,7 @@ async function me(env, req) {
 
 export async function auth(req, env, url, json) {
   const path = url.pathname, now = Math.floor(Date.now() / 1000);
-  if (path === '/auth/config' && req.method === 'GET') return json({ providers: env.AUTH_SECRET ? providers(env) : {}, terms: TERMS_VER });
+  if (path === '/auth/config' && req.method === 'GET') return json({ providers: env.AUTH_SECRET ? providers(env) : {}, terms: TERMS_VER, kakao_js: env.KAKAO_JS_KEY || '' });   /* kakao_js: 카카오톡 공유용 자바스크립트 키(공개 값) */
   if (!env.AUTH_SECRET) return json({ error: 'auth disabled' }, 503);
   let body = {};
   if (req.method === 'POST') { try { body = await req.json(); } catch (e) { return json({ error: 'bad json' }, 400); } }

@@ -23,7 +23,12 @@
    이메일·전화번호 등 다른 항목은 켜지 마세요(최소 수집, 처리방침과 일치해야 함).
 5. (선택) **[앱] → [어드민 키]** → `KAKAO_ADMIN_KEY`.
    등록하면 회원 탈퇴 때 카카오 쪽 연결도 자동으로 끊습니다(권장). Admin 키는 절대 외부에 노출 금지.
-6. JavaScript SDK 도메인은 이 사이트 방식(REST)에서는 등록하지 않아도 됩니다.
+6. **카카오톡 공유(결과 카드 메시지)용** — 로그인과 별개로 아래 3가지를 해 주세요.
+   - **[앱] → [플랫폼 키] → [JavaScript 키]** 값 → GitHub 시크릿 `KAKAO_JS_KEY` (공개돼도 되는 값)
+   - 같은 화면의 **JavaScript SDK 도메인**에 `https://d-capitalism.com` 과 `https://www.d-capitalism.com` 등록
+   - **[앱] → [제품 링크 관리] → [웹 도메인]** 에 `https://d-capitalism.com` 등록
+     (등록하지 않으면 카카오톡 메시지의 [결과 보기]·[나도 해보기] 버튼 주소가 열리지 않음)
+   - 키를 넣기 전에는 공유 창의 '카카오톡 공유'가 휴대폰 공유창(또는 PC에서는 링크 복사)으로 대신 동작합니다.
 
 ## 2. 네이버 (developers.naver.com)
 
@@ -58,6 +63,7 @@
 |---|---|
 | `KAKAO_CLIENT_ID`, `KAKAO_CLIENT_SECRET` | 카카오 쓰면 둘 다 |
 | `KAKAO_ADMIN_KEY` | 선택(탈퇴 시 연결 끊기) |
+| `KAKAO_JS_KEY` | 카카오톡 공유 (결과 카드 메시지) |
 | `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET` | 네이버 쓰면 둘 다 |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | 구글 쓰면 둘 다 |
 

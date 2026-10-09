@@ -29,6 +29,7 @@ jobs:
       GH_DISPATCH_TOKEN: ${{ secrets.GH_DISPATCH_TOKEN }}   # 선택: 15분마다 시세 수집을 실행시킬 토큰 (저장소 1개 · Actions 쓰기)
       # 선택: 간편 로그인 — 카카오 디벨로퍼스·네이버 개발자센터·구글 클라우드에서 앱을 만든 뒤 저장소 시크릿에 등록 (LOGIN_SETUP.md)
       KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+      KAKAO_JS_KEY: ${{ secrets.KAKAO_JS_KEY }}
       KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
       KAKAO_ADMIN_KEY: ${{ secrets.KAKAO_ADMIN_KEY }}
       NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
@@ -73,7 +74,7 @@ jobs:
           if ! $W secret list 2>/dev/null | grep -q '"AUTH_SECRET"'; then
             openssl rand -hex 32 | $W secret put AUTH_SECRET >/dev/null
           fi
-          for k in KAKAO_CLIENT_ID KAKAO_CLIENT_SECRET KAKAO_ADMIN_KEY NAVER_CLIENT_ID NAVER_CLIENT_SECRET GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET; do
+          for k in KAKAO_JS_KEY KAKAO_CLIENT_ID KAKAO_CLIENT_SECRET KAKAO_ADMIN_KEY NAVER_CLIENT_ID NAVER_CLIENT_SECRET GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET; do
             v="${!k:-}"
             if [ -n "$v" ]; then printf '%s' "$v" | $W secret put "$k" >/dev/null && echo "::notice::$k 등록"; fi
           done

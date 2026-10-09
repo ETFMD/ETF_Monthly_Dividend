@@ -6042,7 +6042,7 @@ var TAX = (function () {
   var RANGE = [['1', 1], ['3', 3], ['5', 5], ['10', 10], ['all', 0]];
   function histDraw(r) {
     var box = $('ap-h-' + hid(r.k)); if (!box) return;
-    var shareBtn = '<button type="button" class="shc-open ap-share" data-k="' + esc(r.k) + '"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v8M4.8 5.2 8 2l3.2 3.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 9.5V13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>순위 공유 카드</button>';
+    var shareBtn = '<button type="button" class="shc-open ap-share" data-k="' + esc(r.k) + '"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v8M4.8 5.2 8 2l3.2 3.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 9.5V13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>순위 공유</button>';
     var H = hist[r.k];
     if (!H) {
       box.innerHTML = '<div class="ap-hist-head">' + shareBtn + '</div><div class="ap-hist-msg">전체 기간 실거래를 불러오는 중…</div>';
@@ -12466,19 +12466,24 @@ var JBX = (function () {
 })();
 
 /* ════════════════════════════════════════
-   [SHARE-CARD] 결과 공유 카드 — 순위 결과를 1080×1350 이미지로 그려 저장·공유(카카오톡 등)·링크 복사
+   [SHARE] 공유 — 오른쪽 아래 공유 버튼 하나로: 공개 설정 · 링크 복사 · 카카오톡 공유 · 카드 이미지 저장 · 다른 앱으로 공유
+   · 결과 링크: 화면 입력값 가운데 기본값과 달라진 것만 주소 ?s= 에 담음 → 받은 사람이 열면 같은 계산이 그대로 보임
+   · 카카오톡: 결과 카드(1200×630)를 카카오 서버에 올려 피드 메시지로 보냄 — [결과 보기][나도 해보기] 버튼
+     (자바스크립트 키는 Worker /auth/config 의 kakao_js · 없으면 휴대폰 공유창 / 링크 복사로 대신)
+   · 카드 내용: 계산기가 직접 넘겨 주는 카드가 있으면 그것을, 없으면 화면의 큰 결과·요약 칸을 읽어 만듦
    window.shareCard.open({
      key: 'salary-rank',            // 주소(경로) — 공유 링크 https://d-capitalism.com/<key>/ · 파일 이름
      chip: '연봉 순위', title: '국내 나의 연봉 순위', label: '전체 근로소득자 기준',
      big: '상위 12.3%', sub: '근로소득자 2,085만 명 중 약 256만 번째',
      gauge: 87.7,                   // 0(하위)~100(상위) 막대 위 내 위치 · 없으면 생략
      rows: [['내 연봉', '5,000만원', true], …],   // [이름, 값, 숨김 가능(금액)] 최대 4줄
+     bigSecret, subSecret,          // 금액 비공개일 때 큰 숫자·설명도 가릴지
      source: '국세청 근로소득 천분위 자료 2024년 귀속'
    })
+   window.dcState — 화면 입력값 저장·복원 (내 저장함과 같이 씀)
 ════════════════════════════════════════ */
 (function () {
   var SITE = 'https://d-capitalism.com/', W = 1080, H = 1350, FONT = '"Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif';
-  var st = { o: null, hide: false, blob: null, url: null, el: null, lastFocus: null };
   function font(w, s) { return w + ' ' + s + 'px ' + FONT; }
   function fit(ctx, text, maxW, size, weight, min) {          /* 너비에 맞게 글자 크기 줄이기 */
     var s = size; ctx.font = font(weight, s);
@@ -12514,6 +12519,7 @@ var JBX = (function () {
   function draw(o, hide) {
     var c = document.createElement('canvas'); c.width = W; c.height = H;
     var ctx = c.getContext('2d'), X = 84, CW = W - X * 2;
+    var BIG = hide && o.bigSecret ? '금액 비공개' : o.big, SUB = hide && o.subSecret ? '' : o.sub;
     /* 배경 */
     var g = ctx.createLinearGradient(0, 0, W * 0.5, H); g.addColorStop(0, '#141925'); g.addColorStop(1, '#0b0d12');
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
@@ -12540,13 +12546,13 @@ var JBX = (function () {
     if (o.label) { y += 56; fit(ctx, o.label, CW, 32, 400, 16); ctx.fillStyle = '#8b919d'; ctx.fillText(o.label, X, y); }
     /* 큰 결과 */
     y += 190;
-    var bs = fit(ctx, o.big, CW, 168, 700, 60);
-    var bg = ctx.createLinearGradient(X, y - bs, X + ctx.measureText(o.big).width, y); bg.addColorStop(0, '#5aa0ff'); bg.addColorStop(1, '#2f7bf5');
-    ctx.fillStyle = bg; ctx.fillText(o.big, X - 4, y);
+    var bs = fit(ctx, BIG, CW, 168, 700, 60);
+    var bg = ctx.createLinearGradient(X, y - bs, X + ctx.measureText(BIG).width, y); bg.addColorStop(0, '#5aa0ff'); bg.addColorStop(1, '#2f7bf5');
+    ctx.fillStyle = hide && o.bigSecret ? '#6f7582' : bg; ctx.fillText(BIG, X - 4, y);
     /* 설명 */
-    if (o.sub) {
+    if (SUB) {
       ctx.font = font(500, 36); ctx.fillStyle = '#c9cdd4';
-      wrap(ctx, o.sub, CW, 2).forEach(function (l, i) { y += i ? 52 : 74; ctx.fillText(l, X, y); });
+      wrap(ctx, SUB, CW, 2).forEach(function (l, i) { y += i ? 52 : 74; ctx.fillText(l, X, y); });
     }
     /* 위치 막대 (하위 ← → 상위) */
     if (o.gauge != null && isFinite(o.gauge)) {
@@ -12588,85 +12594,440 @@ var JBX = (function () {
     if (o.source) { fit(ctx, '자료: ' + o.source, CW, 24, 400, 16); ctx.fillStyle = '#6a707c'; ctx.fillText('자료: ' + o.source, X, H - 40); }
     return c;
   }
-  function linkOf(o) { return SITE + o.key + '/'; }
-  function textOf(o, hide) { return o.title + ' — ' + o.big + (o.shareText && !hide ? ' (' + o.shareText + ')' : '') + '\n나도 계산해 보기 👉 ' + linkOf(o); }
-  function render() {
-    var o = st.o, c = draw(o, st.hide), img = st.el.querySelector('.shc-img');
-    st.blob = null;
-    if (st.url) { URL.revokeObjectURL(st.url); st.url = null; }
-    c.toBlob(function (b) { st.blob = b; st.url = URL.createObjectURL(b); img.src = st.url; }, 'image/png');
+  /* 카카오톡·미리보기용 가로 카드 1200×630 (카카오 피드 이미지 비율) */
+  function drawWide(o, hide) {
+    var WW = 1200, HH = 630, X = 64, CW = WW - X * 2;
+    var BIG = hide && o.bigSecret ? '금액 비공개' : o.big, SUB = hide && o.subSecret ? '' : o.sub;
+    var c = document.createElement('canvas'); c.width = WW; c.height = HH;
+    var ctx = c.getContext('2d');
+    var g = ctx.createLinearGradient(0, 0, WW * 0.6, HH); g.addColorStop(0, '#141925'); g.addColorStop(1, '#0b0d12');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, WW, HH);
+    var rg = ctx.createRadialGradient(WW, 0, 0, WW, 0, 700); rg.addColorStop(0, 'rgba(49,130,246,0.28)'); rg.addColorStop(1, 'rgba(49,130,246,0)');
+    ctx.fillStyle = rg; ctx.fillRect(0, 0, WW, HH);
+    var sg = ctx.createLinearGradient(900, 200, WW, 40); sg.addColorStop(0, 'rgba(49,130,246,0.03)'); sg.addColorStop(1, 'rgba(49,130,246,0.32)');
+    ctx.strokeStyle = sg; ctx.lineWidth = 16; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(930, 196); ctx.lineTo(990, 196); ctx.lineTo(990, 150); ctx.lineTo(1050, 150); ctx.lineTo(1050, 104); ctx.lineTo(1110, 104); ctx.lineTo(1110, 58); ctx.lineTo(1170, 58); ctx.stroke();
+    /* 머리: 로고 · 사이트 이름 · 분류 칩 */
+    mark(ctx, X, 44, 52);
+    ctx.textBaseline = 'middle'; ctx.fillStyle = '#e8eaee'; ctx.font = font(700, 30); ctx.fillText('디코딩 자본주의', X + 68, 71);
+    var bw = ctx.measureText('디코딩 자본주의').width;
+    if (o.chip) {
+      ctx.font = font(500, 22); var cw = ctx.measureText(o.chip).width + 34, cx = X + 68 + bw + 18;
+      rr(ctx, cx, 53, cw, 36, 18); ctx.fillStyle = 'rgba(49,130,246,0.16)'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(49,130,246,0.55)'; ctx.stroke();
+      ctx.fillStyle = '#9cc2ff'; ctx.fillText(o.chip, cx + 17, 72);
+    }
+    ctx.textBaseline = 'alphabetic';
+    var y = 178;
+    fit(ctx, o.title, CW - 120, 44, 700, 24); ctx.fillStyle = '#f2f3f5'; ctx.fillText(o.title, X, y, CW - 120);
+    if (o.label) { y += 44; fit(ctx, o.label, CW, 26, 400, 16); ctx.fillStyle = '#8b919d'; ctx.fillText(o.label, X, y, CW); }
+    y += 122;
+    var bs = fit(ctx, BIG, CW, 108, 700, 44);
+    var bg = ctx.createLinearGradient(X, y - bs, X + ctx.measureText(BIG).width, y); bg.addColorStop(0, '#5aa0ff'); bg.addColorStop(1, '#2f7bf5');
+    ctx.fillStyle = hide && o.bigSecret ? '#6f7582' : bg; ctx.fillText(BIG, X - 3, y);
+    if (SUB) { y += 50; ctx.font = font(500, 28); ctx.fillStyle = '#c9cdd4'; ctx.fillText(wrap(ctx, SUB, CW, 1)[0], X, y); }
+    /* 숫자 칸 (최대 3개) */
+    var rows = (o.rows || []).filter(function (r) { return r && r[1] != null && r[1] !== ''; }).slice(0, 3);
+    if (rows.length) {
+      var top = Math.max(y + 30, 448), gap = 14, bw2 = (CW - gap * (rows.length - 1)) / rows.length, bh = 86;
+      rows.forEach(function (r, i) {
+        var bx = X + i * (bw2 + gap);
+        rr(ctx, bx, top, bw2, bh, 18); ctx.fillStyle = 'rgba(255,255,255,0.05)'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.stroke();
+        fit(ctx, r[0], bw2 - 36, 21, 400, 14); ctx.fillStyle = '#a5abb6'; ctx.fillText(r[0], bx + 18, top + 34, bw2 - 36);
+        var v = hide && r[2] ? '비공개' : String(r[1]);
+        fit(ctx, v, bw2 - 36, 30, 700, 16); ctx.fillStyle = hide && r[2] ? '#6f7582' : '#f2f3f5'; ctx.fillText(v, bx + 18, top + 70, bw2 - 36);
+      });
+    }
+    ctx.font = font(500, 22); ctx.fillStyle = '#7d8390'; ctx.textAlign = 'right';
+    ctx.fillText('d-capitalism.com' + (o.key ? '/' + o.key : ''), WW - X, HH - 26); ctx.textAlign = 'left';
+    return c;
   }
-  function msg(t) { var m = st.el.querySelector('.shc-msg'); m.textContent = t; clearTimeout(msg.t); msg.t = setTimeout(function () { m.textContent = ''; }, 3200); }
-  function fileOf() { return new File([st.blob], 'd-capitalism-' + st.o.key + '.png', { type: 'image/png' }); }
-  function save() {
-    if (!st.blob) return;
-    var a = document.createElement('a'); a.href = st.url; a.download = 'd-capitalism-' + st.o.key + '.png';
-    document.body.appendChild(a); a.click(); a.remove();
-    msg(/iPhone|iPad|iPod/.test(navigator.userAgent) ? '이미지가 열리면 길게 눌러 "사진에 저장"을 누르세요.' : '이미지를 저장했습니다.');
+  /* 카드에 쓸 글자의 한글 글꼴 조각까지 받아 둔 뒤 그림 (구글 한글 글꼴은 글자 범위별로 나뉨) */
+  function fontsReady(o) {
+    var txt = [o.chip, o.title, o.label, o.big, o.sub, o.source, (o.gaugeLabels || []).join(' '), '디코딩 자본주의 나도 계산해 보기 → 하위 중위 상위 자료: 비공개 금액 d-capitalism.com/' + o.key]
+      .concat((o.rows || []).map(function (r) { return r ? r[0] + ' ' + r[1] : ''; })).join(' ');
+    return document.fonts && document.fonts.load ? Promise.all([700, 500, 400].map(function (w) { return document.fonts.load(font(w, 40), txt); })).catch(function () {}) : Promise.resolve();
+  }
+  function blobOf(c) { return new Promise(function (res) { c.toBlob(function (b) { res(b); }, 'image/png'); }); }
+
+  /* ════════ 화면 입력값: 기본값을 기억해 두고, 달라진 것만 담기 · 되돌리기 (공유 링크 · 내 저장함) ════════ */
+  var State = (function () {
+    function page() { return document.querySelector('.app-page.active') || document.querySelector('.app-page'); }
+    function skip(e) { var t = e.type; return t === 'search' || t === 'file' || t === 'password' || t === 'hidden' || t === 'button' || t === 'submit' || !!(e.closest && e.closest('.site-search, [data-share-skip]')); }
+    function q(s) { return window.CSS && CSS.escape ? CSS.escape(s) : String(s).replace(/["\\]/g, '\\$&'); }
+    function norm(v) { return String(v == null ? '' : v).replace(/,/g, '').trim(); }
+    /* 버튼 묶음(.mode-btn 의 부모): 이름은 data-name, 없으면 화면 안 순서 */
+    function groups(pg) {
+      var seen = [];
+      pg.querySelectorAll('.mode-btn').forEach(function (b) { var g = b.parentElement; if (g && seen.indexOf(g) < 0) seen.push(g); });
+      return seen.map(function (g, i) {
+        return { g: g, k: g.getAttribute('data-name') || '#' + i, btns: Array.prototype.filter.call(g.children, function (c) { return c.classList && c.classList.contains('mode-btn'); }) };
+      });
+    }
+    function act(btns) { for (var i = 0; i < btns.length; i++) if (btns[i].classList.contains('active')) return i; return -1; }
+    function defVal(e) {
+      if (e.tagName === 'SELECT') { for (var i = 0; i < e.options.length; i++) if (e.options[i].defaultSelected) return e.options[i].value; return e.options.length ? e.options[0].value : ''; }
+      return e.defaultValue;
+    }
+    function capture() {
+      document.querySelectorAll('[data-unit]').forEach(function (e) { if (e.__u0 === undefined) e.__u0 = e.getAttribute('data-unit'); });
+      document.querySelectorAll('.app-page').forEach(function (pg) { groups(pg).forEach(function (x) { if (x.g.__a0 === undefined) x.g.__a0 = act(x.btns); }); });
+    }
+    function snapshot(diff) {
+      var pg = page(), d = { v: {}, g: {}, u: {} };
+      if (!pg) return d;
+      pg.querySelectorAll('input[id], select[id], textarea[id]').forEach(function (e) {
+        if (skip(e)) return;
+        var u = e.getAttribute('data-unit'), uch = !!u && (!diff || u !== e.__u0);
+        if (uch) d.u[e.id] = u;
+        if (e.type === 'checkbox' || e.type === 'radio') { if (!diff || e.checked !== e.defaultChecked) d.v[e.id] = e.checked ? 1 : 0; }
+        else if (!diff || uch || norm(e.value) !== norm(defVal(e))) d.v[e.id] = e.value;   /* 단위를 바꿨으면 값도 함께 (단위만 바뀌면 뜻이 달라짐) */
+      });
+      groups(pg).forEach(function (x) { var a = act(x.btns); if (a >= 0 && (!diff || a !== x.g.__a0)) d.g[x.k] = a; });
+      return d;
+    }
+    function restore(d) {
+      var pg = page(); if (!pg || !d) return;
+      /* 버튼 묶음 먼저 (보이는 입력칸·단위가 달라질 수 있음) — 사용자가 누른 것처럼 click */
+      if (d.s) pg.querySelectorAll('.fc-seg[data-name]').forEach(function (s) {        /* 예전 저장 형식: 이름 → data-v */
+        var want = d.s[s.getAttribute('data-name')]; if (want == null) return;
+        s.querySelectorAll('.mode-btn').forEach(function (b) { if (b.getAttribute('data-v') === String(want) && !b.classList.contains('active')) b.click(); });
+      });
+      if (d.g) {
+        var gs = groups(pg);
+        Object.keys(d.g).forEach(function (k) {
+          var x = null; gs.forEach(function (y) { if (y.k === k) x = y; });
+          var b = x && x.btns[+d.g[k]];
+          if (b && !b.classList.contains('active') && !b.disabled) b.click();
+        });
+      }
+      Object.keys(d.v || {}).forEach(function (id) {
+        var e = document.getElementById(id);
+        if (!e || !pg.contains(e) || !/^(INPUT|SELECT|TEXTAREA)$/.test(e.tagName) || skip(e)) return;
+        if (d.u && typeof d.u[id] === 'string' && e.getAttribute('data-unit') !== d.u[id]) {
+          e.setAttribute('data-unit', d.u[id]);
+          document.querySelectorAll('.unit-btn[data-fc-unit="' + q(id) + '"]').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-unit') === d.u[id]); });
+        }
+        var val = d.v[id];
+        if (e.type === 'checkbox' || e.type === 'radio') { if (e.checked !== !!+val) { e.checked = !!+val; e.dispatchEvent(new Event('change', { bubbles: true })); } return; }
+        val = String(val);
+        if (e.value === val) return;
+        if (e.tagName === 'SELECT' && !Array.prototype.some.call(e.options, function (o) { return o.value === val; })) return;   /* 선택지가 아직 없으면(자료 불러오는 중) 다음 번에 */
+        e.value = val;
+        e.dispatchEvent(new Event('input', { bubbles: true }));
+        if (e.tagName === 'SELECT' || e.type === 'range' || e.type === 'date' || e.type === 'month') e.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      if (window.fcRender) { try { window.fcRender(); } catch (er) {} }
+    }
+    /* 자료를 불러온 뒤에야 생기는 선택지까지 맞추려고 몇 번 되풀이 */
+    function apply(d, done) { var n = 0; (function again() { restore(d); if (++n < 4) setTimeout(again, n * 900); else if (done) done(); })(); }
+    function enc(d) {
+      var o = {};
+      ['v', 'g', 'u'].forEach(function (k) { if (d && d[k] && Object.keys(d[k]).length) o[k] = d[k]; });
+      if (!Object.keys(o).length) return '';
+      var bytes = new TextEncoder().encode(JSON.stringify(o)), bin = '';
+      for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+      return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+    function dec(t) {
+      try {
+        if (!t || t.length > 12000) return null;
+        var b = t.replace(/-/g, '+').replace(/_/g, '/'); while (b.length % 4) b += '=';
+        var bin = atob(b), bytes = new Uint8Array(bin.length);
+        for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        var o = JSON.parse(new TextDecoder().decode(bytes)), r = {};
+        if (!o || typeof o !== 'object') return null;
+        ['v', 'g', 'u'].forEach(function (k) {
+          if (!o[k] || typeof o[k] !== 'object' || Array.isArray(o[k])) return;
+          r[k] = {};
+          Object.keys(o[k]).slice(0, 500).forEach(function (x) { var y = o[k][x]; if (typeof y === 'string') r[k][x] = y.slice(0, 300); else if (typeof y === 'number' && isFinite(y)) r[k][x] = y; });
+        });
+        return r;
+      } catch (e) { return null; }
+    }
+    function count(d) { return d ? ['v', 'g', 'u'].reduce(function (n, k) { return n + (d[k] ? Object.keys(d[k]).length : 0); }, 0) : 0; }
+    return { page: page, snapshot: snapshot, restore: restore, apply: apply, enc: enc, dec: dec, capture: capture, count: count };
+  })();
+  window.dcState = State;
+
+  /* ════════ 카드 내용: 계산기가 넘겨 준 것 → 없으면 화면의 큰 결과·요약 칸을 읽어서 ════════ */
+  var REG = []; try { REG = JSON.parse((document.getElementById('etfmd-routes') || {}).textContent || '[]'); } catch (e) {}
+  var GROUP = { money: '돈', stock: '주식·ETF', realty: '부동산', passive: '패시브인컴' };
+  var SIM = ['s-port', 's-annual', 's-final', 's-total', 's-cagr'];
+  var IDS = {                                                     /* 큰 결과 칸이 없는 계산기: 첫 번째가 큰 숫자, 나머지는 숫자 칸 */
+    simulator: SIM, sol: SIM.map(function (x) { return 'sol-' + x; }), tiger: SIM.map(function (x) { return 'tiger-' + x; }),
+    tigerdiv: SIM.map(function (x) { return 'tigerdiv-' + x; }), tigersemi: SIM.map(function (x) { return 'tigersemi-' + x; }),
+    divcalc: SIM.map(function (x) { return 'divcalc-' + x; }),
+    loan: ['loan-s-monthly', 'loan-s-interest', 'loan-s-total'], compound: ['cpd-s-final', 'cpd-s-profit', 'cpd-s-cagr'],
+    cagr: ['cagr-result', 'cagr-monthly-rate', 'cagr-daily-rate'],
+    health: ['h-w-total', 'h-w-employer', 'h-w-annual', 'h-l-total', 'h-l-annual']
+  };
+  var SHARE_BTNS = '#sr-share, #ar-share, #wif-share, #hy-share, #rt-share';
+  function pageKey() { var m = location.pathname.match(/^\/([a-z0-9\-]+)\/?$/); return m ? m[1] : ''; }
+  function route(k) { for (var i = 0; i < REG.length; i++) if (REG[i].path === k) return REG[i]; return null; }
+  function txt(e) { return e ? String(e.textContent || '').replace(/\s+/g, ' ').trim() : ''; }
+  function vis(e) { return !!e && e.offsetParent !== null; }
+  function empty(v) { return !v || /^[—–\-\s·.]*$/.test(v) || /NaN|Infinity|undefined/.test(v); }
+  function money(v) { return /[0-9].*(원|억|만)/.test(String(v || '')); }
+  function labelOf(e) {
+    var c = e.closest('.sum-cell'); if (c && c.querySelector('.sum-cell-label')) return txt(c.querySelector('.sum-cell-label'));
+    var p = e.previousElementSibling; return p ? txt(p).slice(0, 40) : '';
+  }
+  function subOf(e) { var n = e.nextElementSibling; return n && /-sub$/.test(n.id || '') ? txt(n) : ''; }
+  function generic() {
+    var pg = State.page(), key = pageKey(), r = route(key);
+    if (!pg || !key || !r) return null;
+    var o = null, hv = pg.querySelector('.fc-hero-val');
+    if (vis(hv) && !empty(txt(hv))) {
+      var box = hv.parentElement, hl = box.querySelector('.fc-hero-label'), hs = box.querySelector('.fc-hero-sub');
+      o = { big: txt(hv), label: txt(hl), sub: txt(hs), rows: [] };
+      box.querySelectorAll('.fc-kpis > div').forEach(function (d) { var p = d.querySelector('p'), b = d.querySelector('b'); if (p && vis(b) && !empty(txt(b))) o.rows.push([txt(p), txt(b)]); });
+    } else {
+      var pid = (pg.id || '').replace(/^page-/, ''), els = (IDS[pid] || []).map(function (id) { return document.getElementById(id); })
+        .filter(function (e) { return vis(e) && pg.contains(e) && !empty(txt(e)); });
+      if (!els.length) { var ix = pg.querySelector('.idx-rate-num'); if (vis(ix) && !empty(txt(ix))) els = [ix]; }
+      if (!els.length) return null;
+      o = { big: txt(els[0]), label: labelOf(els[0]), sub: subOf(els[0]), rows: els.slice(1).map(function (e) { return [labelOf(e), txt(e)]; }) };
+    }
+    if (empty(o.sub)) o.sub = '';
+    var h1 = pg.querySelector('h1');
+    o.key = key; o.title = txt(h1) || r.title; o.chip = GROUP[r.group] || '계산 결과';
+    o.bigSecret = money(o.big); o.subSecret = money(o.sub);
+    o.rows = o.rows.filter(function (x) { return x[0] && !empty(x[1]); }).slice(0, 4).map(function (x) { return [x[0], x[1], money(x[1])]; });
+    return o;
+  }
+
+  /* ════════ 공유 창 (오른쪽 아래 버튼) ════════ */
+  var KSDK = 'https://t1.kakaocdn.net/kakao_js_sdk/2.8.3/kakao.min.js', KSRI = 'sha384-oroumrnFVE0xtgqyDZJARgERibXg2C28380uaUZz2kHDS5CR7tu20eGiOU6GkTpy';
+  var OPT_KEY = 'dc_share_opt', IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var st = { el: null, fab: null, spec: null, override: null, capturing: false, cap: null, openedAt: 0, lastFocus: null,
+             kimg: {}, kup: {}, pblob: {}, prevUrl: null, sdkP: null, opt: { inp: true, amt: true } };
+  try { var so = JSON.parse(localStorage.getItem(OPT_KEY) || 'null'); if (so) { st.opt.inp = so.inp !== false; st.opt.amt = so.amt !== false; } } catch (e) {}
+  var ICON = {
+    share: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="18" cy="5" r="2.6" stroke="currentColor" stroke-width="1.9"/><circle cx="6" cy="12" r="2.6" stroke="currentColor" stroke-width="1.9"/><circle cx="18" cy="19" r="2.6" stroke="currentColor" stroke-width="1.9"/><path d="M8.3 10.8l7.4-4.4M8.3 13.2l7.4 4.4" stroke="currentColor" stroke-width="1.9"/></svg>',
+    x: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+    link: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    kakao: '<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="#191919" d="M12 3C6.48 3 2 6.48 2 10.77c0 2.77 1.85 5.2 4.64 6.57-.2.74-.74 2.7-.85 3.12-.13.52.19.51.4.37.17-.11 2.66-1.8 3.74-2.53.67.1 1.36.15 2.07.15 5.52 0 10-3.48 10-7.68C22 6.48 17.52 3 12 3z"/></svg>',
+    card: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="10" r="1.8" fill="currentColor"/><path d="M4 18l5-5 4 4 3-3 4 4" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>',
+    more: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12M7.5 7.5L12 3l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+  };
+  function toast(t) {
+    var el = document.getElementById('dca-toast');
+    if (!el) { el = document.createElement('div'); el.id = 'dca-toast'; el.className = 'dca-toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); }
+    el.textContent = t; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(function () { el.classList.remove('on'); }, 2800);
   }
   function copy(text, done) {
-    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, function () { legacy(); });
-    else legacy();
     function legacy() {
       var t = document.createElement('textarea'); t.value = text; t.setAttribute('readonly', ''); t.style.position = 'fixed'; t.style.opacity = '0';
       document.body.appendChild(t); t.select(); var ok = false; try { ok = document.execCommand('copy'); } catch (e) {} t.remove();
-      if (ok) done(); else msg('복사하지 못했습니다. 주소: ' + text);
+      if (ok) done(); else window.prompt('아래 주소를 복사해 주세요', text);
     }
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, legacy); else legacy();
   }
-  function share() {
-    var o = st.o, text = textOf(o, st.hide);
-    if (!st.blob) return;
-    var f = fileOf();
-    if (navigator.canShare && navigator.canShare({ files: [f] })) {
-      navigator.share({ files: [f], title: o.title, text: text }).catch(function (e) { if (e && e.name !== 'AbortError') msg('공유하지 못했습니다. 이미지 저장 후 직접 올려 주세요.'); });
-    } else if (navigator.share) {
-      navigator.share({ title: o.title, text: text, url: linkOf(o) }).catch(function () {});
-    } else copy(text, function () { msg('결과와 주소를 복사했습니다. 카카오톡·커뮤니티에 붙여 넣으세요.'); });
+  function links() {
+    var key = pageKey(), base = SITE + (key ? key + '/' : ''), s = '';
+    if (st.opt.inp && key) s = State.enc(State.snapshot(true));
+    return { clean: base, result: s ? base + '?s=' + s : base, has: !!s };
   }
-  function close() {
-    if (!st.el) return;
-    st.el.classList.remove('open'); document.documentElement.classList.remove('shc-lock');
-    if (st.url) { URL.revokeObjectURL(st.url); st.url = null; }
-    if (st.lastFocus && st.lastFocus.focus) st.lastFocus.focus();
+  function sig() { return JSON.stringify([st.spec, !st.opt.amt]); }
+  function cfg() { return window.dcConfig ? window.dcConfig().catch(function () { return {}; }) : Promise.resolve({}); }
+  function sdk() {
+    if (st.sdkP) return st.sdkP;
+    st.sdkP = cfg().then(function (j) {
+      var key = j && j.kakao_js; if (!key) return null;
+      return new Promise(function (res) {
+        if (window.Kakao) return res(window.Kakao);
+        var s = document.createElement('script'); s.src = KSDK; s.integrity = KSRI; s.crossOrigin = 'anonymous';
+        s.onload = function () { res(window.Kakao || null); }; s.onerror = function () { res(null); };
+        document.head.appendChild(s);
+      }).then(function (K) { if (!K) return null; try { if (!K.isInitialized()) K.init(key); } catch (e) { return null; } return K; });
+    }).catch(function () { return null; });
+    st.sdkP.then(function (K) { if (!K) st.sdkP = null; });          /* 실패하면 다음에 다시 시도 */
+    return st.sdkP;
+  }
+  /* 창을 열 때 미리: 미리보기 · 저장용 카드 · 카카오 서버에 카드 올리기 (누르는 순간 바로 보내야 팝업이 막히지 않음) */
+  function prepare() {
+    var o = st.spec, k = sig(), hide = !st.opt.amt, img = st.el.querySelector('.dsh-prev');
+    if (!o) { img.removeAttribute('src'); return; }
+    fontsReady(o).then(function () {
+      if (sig() !== k) return;
+      blobOf(drawWide(o, hide)).then(function (b) {
+        if (sig() !== k || !b) return;
+        if (st.prevUrl) URL.revokeObjectURL(st.prevUrl);
+        st.prevUrl = URL.createObjectURL(b); img.src = st.prevUrl;
+        if (!st.kimg[k] && !st.kup[k]) {
+          st.kup[k] = 1;
+          sdk().then(function (K) {
+            if (!K) return;
+            return K.Share.uploadImage({ file: [new File([b], 'd-capitalism-card.png', { type: 'image/png' })] }).then(function (r) {
+              var u = r && r.infos && r.infos.original && r.infos.original.url; if (u) st.kimg[k] = u;
+            });
+          }).catch(function () {}).then(function () { delete st.kup[k]; });
+        }
+      });
+      if (!st.pblob[k]) blobOf(draw(o, hide)).then(function (b) { if (b) st.pblob[k] = b; });
+    });
+  }
+  function ogImg(key) { return SITE + 'assets/og/' + (key && route(key) ? key : 'home') + '.png'; }
+  function cut(t, n) { t = String(t || '').replace(/\s+/g, ' ').trim(); return t.length > n ? t.slice(0, n - 1) + '…' : t; }
+  function message() {
+    var o = st.spec, key = pageKey(), r = route(key) || {}, hide = !st.opt.amt, title, desc;
+    if (o) {
+      var big = hide && o.bigSecret ? '' : o.big;
+      title = o.title + (big ? ' · ' + big : '');
+      desc = [o.label, hide && o.subSecret ? '' : o.sub].filter(Boolean).join(' — ');
+    } else {
+      title = r.share || r.title || document.title;
+      var md = document.querySelector('meta[name="description"]'); desc = r.desc || (md && md.content) || '';
+    }
+    return { title: cut(title, 90), desc: cut(desc || '공식 통계·실제 시세로 계산하는 자본주의 계산기', 140) };
+  }
+  function kakao() {
+    var L = links(), m = message(), key = pageKey();
+    var K = window.Kakao;
+    if (K && K.isInitialized && K.isInitialized() && K.Share) {
+      var btns = [{ title: '나도 해보기', link: { mobileWebUrl: L.clean, webUrl: L.clean } }];
+      if (L.has) btns.unshift({ title: '결과 보기', link: { mobileWebUrl: L.result, webUrl: L.result } });
+      var img = st.spec && st.kimg[sig()];
+      try {
+        K.Share.sendDefault({ objectType: 'feed',
+          content: { title: m.title, description: m.desc, imageUrl: img || ogImg(key), imageWidth: 1200, imageHeight: 630, link: { mobileWebUrl: L.result, webUrl: L.result } },
+          buttons: btns });
+        return;
+      } catch (e) {}
+    }
+    /* 카카오 공유를 쓸 수 없을 때: 휴대폰은 공유창(카카오톡 선택), 컴퓨터는 링크 복사 */
+    if (navigator.share && (IOS || /Android/i.test(navigator.userAgent))) navigator.share({ title: m.title, text: m.title, url: L.result }).catch(function () {});
+    else copy(L.result, function () { toast('링크를 복사했어요. 카카오톡 대화창에 붙여 넣어 주세요'); });
+  }
+  function saveCard() {
+    var o = st.spec; if (!o) return;
+    var b = st.pblob[sig()], name = 'd-capitalism-' + o.key + '.png';
+    if (!b) { toast('카드를 만드는 중이에요. 잠시 뒤 다시 눌러 주세요'); prepare(); return; }
+    var f = new File([b], name, { type: 'image/png' });
+    if (IOS && navigator.canShare && navigator.canShare({ files: [f] })) {        /* 아이폰: 공유창의 '이미지 저장' → 사진 앱 */
+      navigator.share({ files: [f] }).catch(function () {}); return;
+    }
+    var u = URL.createObjectURL(b), a = document.createElement('a');
+    a.href = u; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(u); }, 5000);
+    toast('카드 이미지를 저장했어요');
+  }
+  function more() {
+    var L = links(), m = message(), b = st.spec && st.pblob[sig()];
+    var f = b ? new File([b], 'd-capitalism-' + st.spec.key + '.png', { type: 'image/png' }) : null;
+    var data = f && navigator.canShare && navigator.canShare({ files: [f] }) ? { files: [f], title: m.title, text: m.title + '\n' + L.result } : { title: m.title, text: m.title, url: L.result };
+    navigator.share(data).catch(function () {});
+  }
+  function currentSpec() {
+    var key = pageKey(), pg = State.page();
+    if (!key || !pg) return null;
+    var b = pg.querySelector(SHARE_BTNS);                     /* 계산기에 자기 공유 카드가 있으면 그 내용을 받아 옴 */
+    if (b && !b.hidden) {
+      st.cap = null; st.capturing = true;
+      try { b.click(); } catch (e) {} finally { st.capturing = false; }
+      if (st.cap) return st.cap;
+    }
+    if (st.override && st.override.key === key) return st.override;
+    return generic();
+  }
+  function sync() {
+    var el = st.el, o = st.spec, hasInp = !!pageKey() && State.count(State.snapshot(false)) > 0;   /* 입력칸이 있는 화면이면 항상 (안 바꿨으면 링크는 그냥 주소) */
+    var amtOn = !!o && (o.bigSecret || o.subSecret || (o.rows || []).some(function (r) { return r && r[2]; }));
+    el.querySelector('[data-o="inp"]').hidden = !hasInp;
+    el.querySelector('[data-o="amt"]').hidden = !amtOn;
+    el.querySelector('.dsh-opts').hidden = !hasInp && !amtOn;
+    el.querySelector('[data-o="inp"] input').checked = st.opt.inp;
+    el.querySelector('[data-o="amt"] input').checked = st.opt.amt;
+    el.querySelector('.dsh-prev-wrap').hidden = !o;
+    el.querySelector('[data-a="card"]').hidden = !o;
+    el.querySelector('[data-a="more"]').hidden = !navigator.share;
+  }
+  function openPanel(spec) {
+    if (!st.el) build();
+    st.spec = spec || currentSpec();
+    st.lastFocus = document.activeElement;
+    sync(); prepare();
+    st.el.hidden = false; st.openedAt = Date.now();
+    st.fab.classList.add('on'); st.fab.setAttribute('aria-expanded', 'true'); st.fab.setAttribute('aria-label', '공유 닫기'); st.fab.innerHTML = ICON.x;
+    var f = st.el.querySelector('[data-a="copy"]'); if (f) f.focus({ preventScroll: true });
+  }
+  function closePanel(back) {
+    if (!st.el || st.el.hidden) return;
+    st.el.hidden = true;
+    st.fab.classList.remove('on'); st.fab.setAttribute('aria-expanded', 'false'); st.fab.setAttribute('aria-label', '공유하기'); st.fab.innerHTML = ICON.share;
+    if (back && st.lastFocus && st.lastFocus.focus) st.lastFocus.focus({ preventScroll: true });
   }
   function build() {
+    var fab = document.createElement('button');
+    fab.type = 'button'; fab.className = 'dsh-fab'; fab.setAttribute('aria-label', '공유하기'); fab.setAttribute('aria-expanded', 'false'); fab.setAttribute('aria-controls', 'dsh-pop'); fab.innerHTML = ICON.share;
     var el = document.createElement('div');
-    el.className = 'shc-ov'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', '결과 공유 카드');
-    el.innerHTML = '<div class="shc-box"><div class="shc-head"><b>결과 공유 카드</b><button type="button" class="shc-x" aria-label="닫기">✕</button></div>' +
-      '<div class="shc-prev"><img class="shc-img" alt="공유 카드 미리보기"></div>' +
-      '<label class="shc-hide"><input type="checkbox" class="shc-hide-in"> 금액 숨기기 <small>(순위만 공유)</small></label>' +
-      '<div class="shc-btns"><button type="button" class="shc-b shc-share">공유하기</button><button type="button" class="shc-b shc-save">이미지 저장</button><button type="button" class="shc-b shc-copy">링크 복사</button></div>' +
-      '<p class="shc-msg" aria-live="polite"></p></div>';
-    document.body.appendChild(el);
-    el.addEventListener('click', function (e) {
-      if (e.target === el || e.target.closest('.shc-x')) return close();
-      if (e.target.closest('.shc-save')) return save();
-      if (e.target.closest('.shc-share')) return share();
-      if (e.target.closest('.shc-copy')) return copy(textOf(st.o, st.hide), function () { msg('결과와 주소를 복사했습니다.'); });
+    el.id = 'dsh-pop'; el.className = 'dsh-pop'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', '공유하기'); el.hidden = true;
+    el.innerHTML =
+      '<div class="dsh-card dsh-prev-wrap"><img class="dsh-prev" alt="카카오톡에 보이는 결과 카드 미리보기"></div>' +
+      '<div class="dsh-card dsh-opts"><p class="dsh-h">공유 시 공개 설정</p>' +
+        '<label class="dsh-opt" data-o="inp"><span>내 입력값 공개<small>링크를 연 사람에게 내 계산이 그대로 보여요</small></span><input type="checkbox"></label>' +
+        '<label class="dsh-opt" data-o="amt"><span>금액 공개<small>끄면 카드에 금액 대신 ‘비공개’로 표시해요</small></span><input type="checkbox"></label></div>' +
+      '<button type="button" class="dsh-b" data-a="copy">' + ICON.link + '<span>링크 복사</span></button>' +
+      '<button type="button" class="dsh-b dsh-kakao" data-a="kakao">' + ICON.kakao + '<span>카카오톡 공유</span></button>' +
+      '<button type="button" class="dsh-b" data-a="card">' + ICON.card + '<span>카드 이미지 저장</span></button>' +
+      '<button type="button" class="dsh-b" data-a="more">' + ICON.more + '<span>다른 앱으로 공유</span></button>';
+    document.body.appendChild(el); document.body.appendChild(fab);
+    st.el = el; st.fab = fab;
+    fab.addEventListener('click', function () { if (el.hidden) openPanel(); else closePanel(true); });
+    el.addEventListener('change', function (e) {
+      var o = e.target.closest('[data-o]'); if (!o) return;
+      st.opt[o.getAttribute('data-o')] = e.target.checked;
+      try { localStorage.setItem(OPT_KEY, JSON.stringify(st.opt)); } catch (er) {}
+      prepare();
     });
-    el.querySelector('.shc-hide-in').addEventListener('change', function (e) { st.hide = e.target.checked; render(); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && st.el && st.el.classList.contains('open')) close(); });
-    return el;
+    el.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-a]'); if (!b) return;
+      var a = b.getAttribute('data-a');
+      if (a === 'copy') copy(links().result, function () { toast(links().has ? '내 계산이 담긴 링크를 복사했어요' : '링크를 복사했어요'); });
+      else if (a === 'kakao') kakao();
+      else if (a === 'card') saveCard();
+      else if (a === 'more') more();
+    });
+    document.addEventListener('click', function (e) {
+      if (st.capturing || el.hidden || Date.now() - st.openedAt < 80) return;
+      var path = e.composedPath ? e.composedPath() : [];                 /* 버튼 아이콘을 바꾸면 눌린 요소가 문서에서 빠지므로 경로로 판단 */
+      if (path.indexOf(el) >= 0 || path.indexOf(fab) >= 0 || el.contains(e.target) || fab.contains(e.target)) return;
+      closePanel(false);
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !el.hidden) closePanel(true); });
+    window.addEventListener('popstate', function () { closePanel(false); st.override = null; });
   }
+  /* 계산기 안의 '공유하기' 버튼(순위·성적표 등)이 부르는 입구 */
   function open(o) {
     if (!o || !o.big) return;
-    st.o = o; st.lastFocus = document.activeElement;
-    if (!st.el) st.el = build();
-    var hasSecret = (o.rows || []).some(function (r) { return r && r[2]; });
-    st.el.querySelector('.shc-hide').style.display = hasSecret ? '' : 'none';
-    if (!hasSecret) { st.hide = false; st.el.querySelector('.shc-hide-in').checked = false; }
-    st.el.querySelector('.shc-share').textContent = navigator.share ? '공유하기 (카카오톡 등)' : '결과 복사하기';
-    st.el.querySelector('.shc-msg').textContent = '';
-    st.el.querySelector('.shc-img').removeAttribute('src');
-    st.el.classList.add('open'); document.documentElement.classList.add('shc-lock');
-    st.el.querySelector('.shc-x').focus();
-    /* 구글 한글 글꼴은 글자 범위별로 나뉘어 있어, 카드에 쓸 글자를 넘겨 그 조각까지 받아 둔 뒤 그림 */
-    var txt = [o.chip, o.title, o.label, o.big, o.sub, o.source, (o.gaugeLabels || []).join(' '), '디코딩 자본주의 나도 계산해 보기 → 하위 중위 상위 자료: 비공개 d-capitalism.com/' + o.key]
-      .concat((o.rows || []).map(function (r) { return r ? r[0] + ' ' + r[1] : ''; })).join(' ');
-    var ready = document.fonts && document.fonts.load ? Promise.all([700, 500, 400].map(function (w) { return document.fonts.load(font(w, 40), txt); })).catch(function () {}) : Promise.resolve();
-    ready.then(render);
+    if (st.capturing) { st.cap = o; return; }
+    st.override = o;
+    openPanel(o);
   }
-  window.shareCard = { open: open, draw: draw };
+  /* 공유받은 링크(?s=)로 들어왔을 때: 입력값을 되살리고 안내 */
+  function arrive() {
+    var m = location.search.match(/[?&]s=([A-Za-z0-9_\-]+)/); if (!m) return;
+    var d = State.dec(m[1]);
+    try { history.replaceState(history.state, '', location.pathname + location.search.replace(/([?&])s=[^&]*&?/, '$1').replace(/[?&]$/, '') + location.hash); } catch (e) {}
+    if (!d || !State.count(d)) return;
+    State.apply(d);
+    var pg = State.page(), host = pg && (pg.querySelector('.header-left') || pg);
+    if (!host || document.getElementById('dsh-notice')) return;
+    var n = document.createElement('div'); n.id = 'dsh-notice'; n.className = 'dsh-notice'; n.setAttribute('role', 'status');
+    n.innerHTML = '<span>공유받은 계산 결과예요. 값을 바꿔 직접 계산해 보세요.</span><a href="' + location.pathname + '">처음 값으로</a><button type="button" aria-label="안내 닫기">✕</button>';
+    n.querySelector('button').addEventListener('click', function () { n.remove(); });
+    host.appendChild(n);
+  }
+  window.shareCard = { open: open, draw: draw, drawWide: drawWide, spec: function () { return currentSpec(); } };
+  if (typeof SITE_EN !== 'undefined' && SITE_EN) return;                 /* 영어 페이지는 공유 버튼 없음 */
+  State.capture();
+  function init() {
+    State.capture();
+    if (!document.querySelector('.app-page')) return;
+    build();
+    arrive();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 
 /* ════════════════════════════════════════
@@ -13290,7 +13651,7 @@ var RTC = (function () {
 ════════════════════════════════════════ */
 (function () {
   if (typeof SITE_EN !== 'undefined' && SITE_EN) return;                    /* 영어 페이지는 아직 로그인 없음 */
-  var KEY = 'dc_auth', CFG = 'dc_auth_cfg', EP = null, PROV = null;
+  var KEY = 'dc_auth', CFG = 'dc_cfg', EP = null, PROV = null;
   var NAME = { kakao: '카카오', naver: '네이버', google: '구글' };
   function $(id) { return document.getElementById(id); }
   function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -13307,12 +13668,17 @@ var RTC = (function () {
     if (window.__counterEP) return Promise.resolve(window.__counterEP);
     return (window.mdLoad ? window.mdLoad('counter.json') : fetch('/data/counter.json').then(function (r) { return r.json(); })).then(function (c) { window.__counterEP = c && c.endpoint; return window.__counterEP; });
   }
-  function config() {
-    try { var c = JSON.parse(sessionStorage.getItem(CFG) || 'null'); if (c && Date.now() - c.t < 6e5) return Promise.resolve(c.p); } catch (e) {}
-    return fetch(EP + '/auth/config').then(function (r) { return r.json(); }).then(function (j) {
-      var p = (j && j.providers) || {}; try { sessionStorage.setItem(CFG, JSON.stringify({ t: Date.now(), p: p })); } catch (e) {} return p;
-    }).catch(function () { return {}; });
+  var cfgP = null;
+  function cfgJson() {                                                     /* /auth/config 전체 (로그인 제공자 · 카카오 공유 키) — 10분 보관 */
+    try { var c = JSON.parse(sessionStorage.getItem(CFG) || 'null'); if (c && c.j && Date.now() - c.t < 6e5) return Promise.resolve(c.j); } catch (e) {}
+    if (cfgP) return cfgP;
+    cfgP = fetch(EP + '/auth/config').then(function (r) { return r.json(); }).then(function (j) {
+      j = j || {}; try { sessionStorage.setItem(CFG, JSON.stringify({ t: Date.now(), j: j })); } catch (e) {} return j;
+    }).catch(function () { cfgP = null; return {}; });
+    return cfgP;
   }
+  function config() { return cfgJson().then(function (j) { return j.providers || {}; }); }
+  window.dcConfig = function () { return endpoint().then(function (ep) { if (!ep) return {}; EP = EP || ep.replace(/\/$/, ''); return cfgJson(); }); };
   /* ── 로그인 시작: state·PKCE 만들어 두고 제공자 로그인 창으로 ── */
   function rnd(n) { var a = new Uint8Array(n); crypto.getRandomValues(a); return Array.prototype.map.call(a, function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); }
   function b64u(buf) { return btoa(String.fromCharCode.apply(null, new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
@@ -13369,32 +13735,7 @@ var RTC = (function () {
   /* ── 계산기 입력값 저장·복원 ── */
   function pageKey() { var m = location.pathname.match(/^\/([a-z0-9\-]+)\/?$/); return m ? m[1] : ''; }
   function activePage() { return document.querySelector('.app-page.active') || document.querySelector('.app-page'); }
-  function snapshot() {
-    var pg = activePage(), d = { v: {}, s: {}, u: {} };
-    if (!pg) return d;
-    pg.querySelectorAll('input[id], select[id], textarea[id]').forEach(function (e) {
-      if (e.type === 'search' || e.type === 'file' || e.type === 'password' || e.type === 'hidden') return;
-      if (e.type === 'checkbox' || e.type === 'radio') d.v[e.id] = e.checked ? 1 : 0; else d.v[e.id] = e.value;
-      if (e.getAttribute('data-unit')) d.u[e.id] = e.getAttribute('data-unit');
-    });
-    pg.querySelectorAll('.fc-seg[data-name]').forEach(function (s) { var b = s.querySelector('.mode-btn.active'); if (b) d.s[s.getAttribute('data-name')] = b.getAttribute('data-v'); });
-    return d;
-  }
-  function restore(d) {
-    var pg = activePage(); if (!pg || !d) return;
-    Object.keys(d.s || {}).forEach(function (n) { var s = pg.querySelector('.fc-seg[data-name="' + n + '"]'); if (!s) return; s.querySelectorAll('.mode-btn').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-v') === d.s[n]); }); });
-    var last = null;
-    Object.keys(d.v || {}).forEach(function (id) {
-      var e = document.getElementById(id); if (!e || !pg.contains(e)) return;
-      if (d.u && d.u[id]) { e.setAttribute('data-unit', d.u[id]); document.querySelectorAll('.unit-btn[data-fc-unit="' + id + '"]').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-unit') === d.u[id]); }); }
-      if (e.type === 'checkbox' || e.type === 'radio') { if (e.checked !== !!d.v[id]) { e.checked = !!d.v[id]; e.dispatchEvent(new Event('change', { bubbles: true })); } }
-      else if (e.value !== d.v[id]) {
-        if (e.tagName === 'SELECT' && !Array.prototype.some.call(e.options, function (o) { return o.value === d.v[id]; })) return;   /* 선택지가 아직 없으면(자료 불러오는 중) 다음 번에 */
-        e.value = d.v[id]; e.dispatchEvent(new Event(e.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true })); last = e;
-      }
-    });
-    if (window.fcRender) { try { window.fcRender(); } catch (er) {} }
-  }
+  function snapshot() { return window.dcState ? window.dcState.snapshot(false) : {}; }   /* 화면 입력값 전체 ([SHARE] 의 dcState) */
   function toast(t) {
     var el = $('dca-toast'); if (!el) { el = document.createElement('div'); el.id = 'dca-toast'; el.className = 'dca-toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); }
     el.textContent = t; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(function () { el.classList.remove('on'); }, 2800);
@@ -13418,7 +13759,7 @@ var RTC = (function () {
     var m = location.search.match(/[?&]load=(\d+)/); if (!m || !getAuth()) return;
     api('GET', '/saves/' + m[1]).then(function (j) {
       var d = j.save && j.save.data; if (!d) return;
-      var n = 0; (function again() { restore(d); if (++n < 4) setTimeout(again, n * 900); })();   /* 자료를 불러온 뒤 생기는 선택지까지 맞추려고 몇 번 반복 */
+      if (window.dcState) window.dcState.apply(d);
       toast('‘' + j.save.title + '’ 불러옴');
       try { history.replaceState(null, '', location.pathname); } catch (e) {}
     }).catch(function () { toast('저장한 계산을 불러오지 못했습니다'); });
