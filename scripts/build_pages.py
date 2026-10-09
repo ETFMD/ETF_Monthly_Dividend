@@ -60,11 +60,20 @@ def og_image(r):
 
 
 NAV_LABEL = {}   # 탭 id → 메뉴에 보이는 탭 이름 (index.html 의 드롭다운 버튼 글자에서 읽음)
+NAV_ICON = {}    # 탭 id → 메뉴 버튼의 아이콘 SVG (허브 페이지 카드에 그대로 씀)
+
+
+def plain(h):
+    return re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', '', h))).strip()
 
 
 def load_nav_labels(src):
     for m in re.finditer(r'<button class="drop-item[^"]*"\s+id="drop-([a-z0-9]+)"[^>]*>(.*?)</button>', src, re.S):
-        NAV_LABEL[m.group(1)] = re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', '', m.group(2)))).strip()
+        body = re.sub(r'<span class="drop-all">.*?</span>', '', m.group(2))   # 허브 버튼의 '전체' 표시는 이름이 아님
+        NAV_LABEL[m.group(1)] = plain(body)
+        ic = re.search(r'<svg\b.*?</svg>', body, re.S)
+        if ic:
+            NAV_ICON[m.group(1)] = ic.group(0)
     missing = [x['tab'] for x in ALL if not NAV_LABEL.get(x['tab'])]
     if missing:
         sys.exit(f'메뉴에서 탭 이름을 찾지 못했습니다: {missing}')
@@ -97,7 +106,12 @@ def head_block(r, lang='ko'):
     }
     ld['publisher'] = {'@type': 'Organization', 'name': BRAND_EN if en else BRAND, 'url': SITE,
                        'logo': {'@type': 'ImageObject', 'url': SITE + 'assets/logo-512.png', 'width': 512, 'height': 512}}
-    if r['path']:
+    if r.get('hub'):
+        ld['@type'] = 'CollectionPage'
+        ld['mainEntity'] = {'@type': 'ItemList', 'itemListElement': [
+            {'@type': 'ListItem', 'position': i + 1, 'url': url_of(x, lang) if (not en or 'en' in x) else url_of(x), 'name': NAV_LABEL[x['tab']]}
+            for i, x in enumerate(hub_tools(r['group']))]}
+    elif r['path']:
         ld.update({'applicationCategory': 'FinanceApplication', 'operatingSystem': 'Web',
                    'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'KRW'},
                    'isPartOf': {'@type': 'WebSite', 'name': BRAND_EN if en else BRAND, 'url': SITE}})
@@ -137,6 +151,16 @@ def head_block(r, lang='ko'):
         f'<meta name="twitter:description" content="{esc(desc)}">',
         f'<meta name="twitter:image" content="{esc(og_image(r))}">',
         '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False) + '</script>',
+    ]
+    if r['path'] and not en:   # 경로 표시(홈 › 영역 › 도구) — 검색 결과에 사이트 구조가 보이게
+        crumbs = [('홈' , SITE)]
+        hub = HUB.get(r['group'])
+        if hub and hub is not r:
+            crumbs.append((AREA[r['group']], url_of(hub)))
+        crumbs.append((AREA[r['group']] if r.get('hub') else NAV_LABEL[r['tab']], url))
+        lines.append('<script type="application/ld+json">' + json.dumps({'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
+            {'@type': 'ListItem', 'position': i + 1, 'name': n, 'item': u} for i, (n, u) in enumerate(crumbs)]}, ensure_ascii=False) + '</script>')
+    lines += [
         '<script id="etfmd-routes" type="application/json">' + json.dumps(registry, ensure_ascii=False).replace('</', '<\\/') + '</script>',
         END,
     ]
@@ -167,11 +191,68 @@ def activate(src, r):
     out, n = re.subn(rf'class="drop-item"(\s+)id="drop-{tab}"', rf'class="drop-item active"\1id="drop-{tab}"', out, count=1)
     if n != 1:
         sys.exit(f'drop-{tab} 버튼을 찾지 못했습니다')
+    hub = HUB.get(grp)
+    if hub:   # 화면 위쪽 경로 표시: 홈 › 영역(허브) [› 도구] — 허브 페이지로 들어가는 내부 링크
+        area = f'<span aria-current="page">{esc(AREA[grp])}</span>' if r.get('hub') else f'<a href="{esc(hub["path"])}/">{esc(AREA[grp])}</a>'
+        nav = f'<nav class="crumbs" aria-label="현재 위치"><a href="./">홈</a><i>›</i>{area}</nav>'
+        out = out.replace(f'class="app-page active" id="page-{tab}">', f'class="app-page active" id="page-{tab}">\n    {nav}', 1)
     return out
 
 
 # ───────────── 도구별 페이지 분리 ─────────────
 AREA = {'me': '내 위치', 'pay': '월급·세금', 'invest': '투자', 'realty': '부동산', 'passive': '불로소득'}   # 노동자→자본가 여정 순서 (상단 메뉴와 같음)
+HUB = {r['group']: r for r in ROUTES if r.get('hub')}   # 영역 → 허브 페이지 route (routes.json 의 "hub": true)
+HUB_TOP = {'me': '진단 도구', 'pay': '월급·세금 계산기', 'invest': '투자 계산기·도구', 'realty': '부동산 계산기', 'passive': '불로소득 도구'}
+DROP = {}   # 영역 → [(소제목, [탭…]), …] — 상단 메뉴 드롭다운 구조 그대로 (메뉴를 바꾸면 허브도 따라 바뀜)
+
+
+def load_drop_tree(src):
+    by_tab = {x['tab'] for x in ROUTES}
+    for g in AREA:
+        m = re.search(r'<div class="tab-dropdown" id="grp-%s-drop">' % g, src)
+        if not m:
+            sys.exit(f'grp-{g}-drop 을 찾지 못했습니다')
+        i, depth = m.end(), 1
+        for t in re.finditer(r'<div\b|</div>', src[i:]):
+            depth += 1 if t.group(0) == '<div' else -1
+            if depth == 0:
+                body = src[i:i + t.start()]
+                break
+        secs, top = [], []
+        parents = list(re.finditer(r'<div class="drop-parent"[^>]*>(.*?)</div></div>\s*</div>', body, re.S))
+        rest = body
+        for pm in parents:
+            rest = rest.replace(pm.group(0), '')
+        for t in re.findall(r'<button class="drop-item[^"]*"\s+id="drop-([a-z0-9]+)"', rest):
+            if t in by_tab and not HUB.get(g, {}).get('tab') == t:
+                top.append(t)
+        if top:
+            secs.append((HUB_TOP[g], top))
+        for pm in parents:
+            name = plain(re.search(r'<button[^>]*drop-parent-btn[^>]*>(.*?)</button>', pm.group(1), re.S).group(1)).replace('▼', '').strip()
+            items = [t for t in re.findall(r'id="drop-([a-z0-9]+)"', pm.group(1)) if t in by_tab]
+            if items:
+                secs.append((name, items))
+        DROP[g] = secs
+    listed = {t for g in DROP for _, ts in DROP[g] for t in ts}
+    lost = [x['tab'] for x in ROUTES if not x.get('hub') and x['tab'] not in listed]
+    if lost:
+        sys.exit(f'허브에 빠진 도구(메뉴에 없음): {lost}')
+
+
+def hub_tools(g):
+    by = {x['tab']: x for x in ROUTES}
+    return [by[t] for _, ts in DROP.get(g, []) for t in ts]
+
+
+def hub_grid(g, en=False):
+    T = tr_text if en else (lambda t: t)
+    by = {x['tab']: x for x in ROUTES}
+    out = ''
+    for name, ts in DROP[g]:
+        cards = ''.join(f'<a class="hub-card" href="{esc(by[t]["path"])}/"><b>{NAV_ICON.get(t, "")}{esc(T(NAV_LABEL[t]))}</b><span>{esc(by[t]["desc"])}</span></a>' for t in ts)
+        out += f'<section class="hub-sec"><h2 class="hub-h">{esc(T(name))} <small>{len(ts)}개</small></h2><div class="hub-grid">{cards}</div></section>'
+    return out
 ASSET = {}   # 'css' / 'js' → assets/app.<해시>.<확장자> (main 에서 원본으로 만듦)
 
 
@@ -210,8 +291,9 @@ def footmap(en=False):
     T = tr_text if en else (lambda t: t)
     cols = []
     for g, name in AREA.items():
-        links = ''.join(f'<a href="{esc(r["path"])}/">{esc(T(NAV_LABEL[r["tab"]]))}</a>' for r in ROUTES if r['group'] == g)
-        cols.append(f'<div class="sf-col"><p class="sf-h">{esc(T(name))}</p>{links}</div>')
+        links = ''.join(f'<a href="{esc(r["path"])}/">{esc(T(NAV_LABEL[r["tab"]]))}</a>' for r in ROUTES if r['group'] == g and not r.get('hub'))
+        head = f'<a href="{esc(HUB[g]["path"])}/">{esc(T(name))}</a>' if g in HUB else esc(T(name))
+        cols.append(f'<div class="sf-col"><p class="sf-h">{head}</p>{links}</div>')
     return f'<nav class="sf-map" aria-label="{esc(T("전체 도구"))}">' + ''.join(cols) + '</nav>'
 
 
@@ -228,6 +310,7 @@ def finalize(html_text, tab, en=False):
     html_text = html_text[:a] + f'<script src="{ASSET["js"]}"></script>' + html_text[b:]
     a, b = style_span(html_text)
     html_text = html_text[:a] + f'<link rel="stylesheet" href="{ASSET["css"]}">' + html_text[b:]
+    html_text = re.sub(r'<!--HUBGRID:([a-z]+)-->.*?<!--/HUBGRID-->', lambda m: f'<!--HUBGRID:{m.group(1)}-->' + hub_grid(m.group(1), en) + '<!--/HUBGRID-->', html_text, flags=re.S)
     html_text, n = re.subn(r'<!--FOOTMAP-->.*?<!--/FOOTMAP-->', lambda m: '<!--FOOTMAP-->' + footmap(en) + '<!--/FOOTMAP-->', html_text, count=1, flags=re.S)
     if n != 1:
         sys.exit('<!--FOOTMAP--> 표시를 찾지 못했습니다')
@@ -310,6 +393,7 @@ def write_if_changed(path, text):
 def main():
     src = open(SRC, encoding='utf-8').read()
     load_nav_labels(src)
+    load_drop_tree(src)
     # 원본에 이미 들어 있는 하위 페이지 표시(앞선 빌드 결과)가 있으면 루트 기준으로 되돌린 뒤 시작
     make_assets(src)
     home = with_head(src, HOME)
@@ -342,7 +426,7 @@ def main():
             print('     ·', t[:70])
     today = datetime.date.today().isoformat()
     urls = ''.join(f'  <url><loc>{esc(SITE + (r["path"] + "/" if r["path"] else ""))}</loc><lastmod>{today}</lastmod>'
-                   f'<changefreq>{"daily" if not r["path"] else "weekly"}</changefreq><priority>{"1.0" if not r["path"] else "0.8"}</priority></url>\n'
+                   f'<changefreq>{"daily" if not r["path"] else "weekly"}</changefreq><priority>{"1.0" if not r["path"] else "0.9" if r.get("hub") else "0.8"}</priority></url>\n'
                    for r in ALL)
     for r in ROUTES:   # 영어판 페이지
         if 'en' in r:

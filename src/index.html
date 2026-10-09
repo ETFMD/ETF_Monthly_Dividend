@@ -1901,6 +1901,41 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .ye-meter-t > i { position:absolute; top:-4px; bottom:-4px; width:2px; margin-left:-1px; background:var(--text); border-radius:1px; }
   .ye-meter-l { display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color:var(--text2); }
   .ye-meter-l b { color:var(--text); }
+  /* [HUB] 영역별 허브 페이지 (내 위치·월급·세금·투자·부동산·불로소득) — 도구 카드는 build_pages.py 가 메뉴 구조로 채움 */
+  .drop-item[data-hub] { font-weight:600; color:var(--text); border-bottom:1px solid rgba(var(--fg-rgb),0.08); border-radius:8px 8px 0 0; margin-bottom:3px; }
+  .drop-all { margin-left:auto; padding:1px 7px; border-radius:999px; font-size:10.5px; font-weight:600; color:var(--accent); background:rgba(49,130,246,0.12); }
+  .crumbs { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:0 0 10px; font-size:12px; color:var(--text3); }
+  .crumbs a { color:var(--text2); text-decoration:none; } .crumbs a:hover { color:var(--accent); }
+  .crumbs i { font-style:normal; opacity:.6; }
+  .hub-path { display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:8px; margin:4px 0 16px; }
+  .hub-path a { display:flex; align-items:center; gap:8px; padding:10px 12px; border:1px solid var(--card-border); border-radius:12px; background:var(--card); color:var(--text2); text-decoration:none; font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:border-color .2s, color .2s; }
+  .hub-path a b { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:6px; background:rgba(var(--fg-rgb),0.07); font-size:11px; flex-shrink:0; }
+  .hub-path a:hover { border-color:rgba(49,130,246,0.4); color:var(--text); }
+  .hub-path a.on { border-color:var(--accent); color:var(--accent); background:rgba(49,130,246,0.08); }
+  .hub-path a.on b { background:var(--accent); color:#fff; }
+  .hub-todo h2 { font-size:15px; font-weight:700; color:var(--text); margin:0 0 10px; }
+  .hub-todo ol { margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px; font-size:13.5px; line-height:1.7; color:var(--text2); }
+  .hub-todo b { color:var(--text); }
+  .hub-sec { margin-top:22px; }
+  .hub-h { display:flex; align-items:baseline; gap:8px; font-size:16px; font-weight:700; color:var(--text); margin:0 0 10px; }
+  .hub-h small { font-size:12px; font-weight:600; color:var(--text3); }
+  .hub-grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
+  .hub-card { display:flex; flex-direction:column; gap:6px; padding:16px; border:1px solid var(--card-border); border-radius:14px; background:var(--card); text-decoration:none; transition:border-color .2s, transform .2s; min-width:0; }
+  .hub-card:hover { border-color:rgba(49,130,246,0.45); transform:translateY(-2px); }
+  .hub-card > b { display:flex; align-items:center; gap:2px; font-size:14.5px; font-weight:700; color:var(--text); }
+  .hub-card > b svg { color:var(--accent); }
+  .hub-card > span { font-size:12.5px; line-height:1.6; color:var(--text3); }
+  .hub-next { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:24px 0 8px; padding:18px 20px; border-radius:14px; border:1px solid rgba(49,130,246,0.3); background:rgba(49,130,246,0.07); text-decoration:none; }
+  .hub-next span { font-size:12.5px; color:var(--text3); } .hub-next b { font-size:15px; color:var(--accent); }
+  .hub-next:hover { background:rgba(49,130,246,0.12); }
+  .sf-h a { color:inherit; text-decoration:none; } .sf-h a:hover { color:var(--accent); }
+  @media (max-width: 900px) { .hub-grid { grid-template-columns:repeat(2, minmax(0,1fr)); } }
+  @media (max-width: 640px) {
+    .hub-path { display:flex; overflow-x:auto; scrollbar-width:none; } .hub-path::-webkit-scrollbar { display:none; }
+    .hub-path a { flex:0 0 auto; padding:8px 11px; }
+    .hub-grid { grid-template-columns:1fr; }
+    .hub-next { flex-direction:column; align-items:flex-start; gap:4px; }
+  }
   .fc-sec-title { font-size:12px; font-weight:600; color:var(--text); margin:6px 0 10px; padding-top:12px; border-top:1px solid var(--card-border); }
   .fc-note { font-size:11px; line-height:1.7; color:var(--text3); margin-top:4px; }
   .fc-hero { padding:24px 26px; }
@@ -7171,6 +7206,66 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     </section>
     <!-- [/GUIDE:ye] -->
   </div><!-- /page-yearend -->
+
+  <div class="app-page" id="page-hubme">
+    <div class="header"><div class="header-left">
+      <span class="badge">STEP 1 · WHERE I STAND</span>
+      <h1>내 위치 <span>진단 도구 모음</span></h1>
+      <p class="subtitle">자본가로 가는 첫걸음은 지금 내가 어디쯤 서 있는지 정확히 아는 것입니다. 국세청·통계청 공식 자료로 내 연봉과 자산, 노후 준비 수준을 대한민국 전체와 비교해 보세요.</p>
+    </div></div>
+    <nav class="hub-path" aria-label="노동자에서 자본가로 가는 단계"><a href="my-position/" class="on" aria-current="page"><b>1</b>내 위치</a><a href="pay-tax/"><b>2</b>월급·세금</a><a href="invest/"><b>3</b>투자</a><a href="real-estate/"><b>4</b>부동산</a><a href="passive-income/"><b>5</b>불로소득</a></nav>
+    <section class="card hub-todo"><h2>이 단계에서 할 일</h2><ol><li><b>연봉 순위</b>로 내 노동소득이 전체 근로자 중 상위 몇 %인지 확인합니다. 소득이 높아도 자산으로 바뀌지 않으면 자본가가 될 수 없습니다.</li><li><b>자산 순위</b>로 우리 집 순자산(자산 − 부채)을 전체 가구와 비교합니다. 연봉 순위보다 자산 순위가 낮다면 버는 돈이 쌓이지 않고 있다는 신호입니다.</li><li><b>노후 준비 성적표</b>와 <b>집 사기까지 몇 년</b>으로 지금 속도라면 목표까지 얼마나 걸리는지 계산하고, <b>돈·자산·노동의 가치 속도</b>로 월급만으로는 왜 따라잡기 어려운지 확인합니다.</li></ol></section>
+    <!--HUBGRID:me--><!--/HUBGRID-->
+    <a class="hub-next" href="pay-tax/"><span>다음 단계 2</span><b>월급·세금 →</b></a>
+  </div><!-- /page-hubme -->
+
+  <div class="app-page" id="page-hubpay">
+    <div class="header"><div class="header-left">
+      <span class="badge">STEP 2 · PAY &amp; TAX</span>
+      <h1>월급·세금 <span>계산기 모음</span></h1>
+      <p class="subtitle">노동소득은 자본을 만드는 종잣돈입니다. 4대보험과 세금으로 빠져나가는 돈을 정확히 알고, 연말정산·퇴직금·연금에서 돌려받을 돈을 빠짐없이 챙기는 계산기를 모았습니다.</p>
+    </div></div>
+    <nav class="hub-path" aria-label="노동자에서 자본가로 가는 단계"><a href="my-position/"><b>1</b>내 위치</a><a href="pay-tax/" class="on" aria-current="page"><b>2</b>월급·세금</a><a href="invest/"><b>3</b>투자</a><a href="real-estate/"><b>4</b>부동산</a><a href="passive-income/"><b>5</b>불로소득</a></nav>
+    <section class="card hub-todo"><h2>이 단계에서 할 일</h2><ol><li><b>연봉 실수령액</b>으로 매달 실제로 손에 쥐는 돈을 확인하고, 그중 얼마를 투자로 돌릴지 먼저 정합니다.</li><li><b>연말정산</b>과 <b>종합소득세</b> 계산기로 돌려받을 세금을 미리 계산합니다. 연금저축·IRP처럼 세금을 줄이면서 자산까지 쌓는 방법이 가장 먼저 챙길 일입니다.</li><li><b>퇴직금</b>과 <b>국민연금 손익</b>으로 회사와 국가가 대신 쌓아 주는 돈의 크기를 확인하고, <b>증여·상속세</b>로 가족 간 자산 이전 계획을 세웁니다.</li></ol></section>
+    <!--HUBGRID:pay--><!--/HUBGRID-->
+    <a class="hub-next" href="invest/"><span>다음 단계 3</span><b>투자 →</b></a>
+  </div><!-- /page-hubpay -->
+
+  <div class="app-page" id="page-hubinvest">
+    <div class="header"><div class="header-left">
+      <span class="badge">STEP 3 · INVEST</span>
+      <h1>투자 <span>계산기·지수 모음</span></h1>
+      <p class="subtitle">월급에서 떼어 낸 돈이 자본이 되려면 시간과 복리가 필요합니다. 복리·CAGR 계산기와 미국·한국·일본·중국·홍콩·대만 주요 지수의 장기 성장률로 어디에, 얼마나 오래 두어야 하는지 확인하세요.</p>
+    </div></div>
+    <nav class="hub-path" aria-label="노동자에서 자본가로 가는 단계"><a href="my-position/"><b>1</b>내 위치</a><a href="pay-tax/"><b>2</b>월급·세금</a><a href="invest/" class="on" aria-current="page"><b>3</b>투자</a><a href="real-estate/"><b>4</b>부동산</a><a href="passive-income/"><b>5</b>불로소득</a></nav>
+    <section class="card hub-todo"><h2>이 단계에서 할 일</h2><ol><li><b>복리 계산기</b>로 매달 적립한 돈이 10년·20년 뒤 얼마가 되는지 확인합니다. 수익률만큼이나 기간이 결과를 크게 바꿉니다.</li><li><b>지수 성장률</b>로 S&amp;P 500·나스닥 100·코스피 같은 시장 전체의 장기 성과를 비교합니다. 개별 종목 고르기보다 지수에 꾸준히 넣는 방법이 대부분의 개인에게 더 안정적인 결과를 냈습니다.</li><li><b>물타기</b>·<b>해외주식 양도소득세</b>·<b>환율</b> 계산기로 매수 전략과 세금, 환전 비용까지 따져 실제로 남는 수익을 계산합니다.</li></ol></section>
+    <!--HUBGRID:invest--><!--/HUBGRID-->
+    <a class="hub-next" href="real-estate/"><span>다음 단계 4</span><b>부동산 →</b></a>
+  </div><!-- /page-hubinvest -->
+
+  <div class="app-page" id="page-hubrealty">
+    <div class="header"><div class="header-left">
+      <span class="badge">STEP 4 · REAL ESTATE</span>
+      <h1>부동산 <span>계산기 모음</span></h1>
+      <p class="subtitle">한국 가계 자산의 약 4분의 3은 부동산 등 실물자산입니다. 대출 한도와 이자, 살 때·가지고 있을 때·팔 때 붙는 세금, 청약 가점과 실거래가 순위까지 집을 사고팔 때 필요한 계산을 한곳에 모았습니다.</p>
+    </div></div>
+    <nav class="hub-path" aria-label="노동자에서 자본가로 가는 단계"><a href="my-position/"><b>1</b>내 위치</a><a href="pay-tax/"><b>2</b>월급·세금</a><a href="invest/"><b>3</b>투자</a><a href="real-estate/" class="on" aria-current="page"><b>4</b>부동산</a><a href="passive-income/"><b>5</b>불로소득</a></nav>
+    <section class="card hub-todo"><h2>이 단계에서 할 일</h2><ol><li><b>청약 가점</b>과 <b>주담대 LTV·DSR 한도</b>로 지금 노릴 수 있는 집의 가격대를 먼저 확인합니다.</li><li><b>대출 이자</b>·<b>취득세</b>·<b>중개수수료</b>로 집값 외에 실제로 드는 돈을 모두 더해 봅니다.</li><li><b>재산세</b>·<b>종합부동산세</b>·<b>양도소득세</b>로 보유하는 동안과 팔 때 내는 세금까지 계산해, 세금을 뺀 순수익으로 판단합니다.</li></ol></section>
+    <!--HUBGRID:realty--><!--/HUBGRID-->
+    <a class="hub-next" href="passive-income/"><span>다음 단계 5</span><b>불로소득 →</b></a>
+  </div><!-- /page-hubrealty -->
+
+  <div class="app-page" id="page-hubpassive">
+    <div class="header"><div class="header-left">
+      <span class="badge">STEP 5 · PASSIVE INCOME</span>
+      <h1>불로소득 <span>도구 모음</span></h1>
+      <p class="subtitle">자본가의 마지막 단계는 일하지 않아도 매달 들어오는 현금흐름입니다. 월배당 ETF 분배 일정, 배당금과 세금, 연금계좌 절세, 파이어(FIRE) 목표 금액까지 불로소득을 설계하는 도구를 모았습니다.</p>
+    </div></div>
+    <nav class="hub-path" aria-label="노동자에서 자본가로 가는 단계"><a href="my-position/"><b>1</b>내 위치</a><a href="pay-tax/"><b>2</b>월급·세금</a><a href="invest/"><b>3</b>투자</a><a href="real-estate/"><b>4</b>부동산</a><a href="passive-income/" class="on" aria-current="page"><b>5</b>불로소득</a></nav>
+    <section class="card hub-todo"><h2>이 단계에서 할 일</h2><ol><li><b>ETF 월분배 달력</b>과 <b>배당금 계산기</b>로 목표한 월 현금흐름을 만들려면 얼마의 자산이 필요한지 계산합니다.</li><li><b>배당소득세</b>와 <b>연금저축·IRP</b> 계산기로 같은 배당이라도 어느 계좌에서 받아야 세금이 가장 적은지 확인합니다. 이자·배당이 연 2천만원을 넘으면 금융소득종합과세가 붙습니다.</li><li><b>파이어족 계산기</b>로 생활비를 자산 수익만으로 충당하는 시점을 계산하고, <b>커버드콜 시뮬레이터</b>로 분배금과 원금 성장의 균형을 비교합니다.</li></ol></section>
+    <!--HUBGRID:passive--><!--/HUBGRID-->
+    <a class="hub-next" href="my-position/"><span>한 바퀴 돌았다면</span><b>1단계로 돌아가 내 위치 다시 진단하기 →</b></a>
+  </div><!-- /page-hubpassive -->
 
   <div class="app-page" id="page-fx">
     <div class="header">
@@ -25974,6 +26069,7 @@ var YE = (function () {
 
   <!-- ── 탭 드롭다운 (문서 기준 absolute, 메뉴 줄의 가로 스크롤 영역 밖에 둠) — 노동자→자본가 여정 순서(내 위치 → 월급·세금 → 투자 → 부동산 → 불로소득), 탭 안은 검색 수요가 큰 순서 [NAV-AREAS] ── -->
   <div class="tab-dropdown" id="grp-me-drop">
+    <button class="drop-item" id="drop-hubme" data-hub onclick="switchSubTab('hubme','me',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="2.5" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg>내 위치 진단 도구 모음<span class="drop-all">전체</span></button>
     <button class="drop-item" id="drop-home" style="display:none" onclick="switchSubTab('home','home',this)">홈</button>
     <button class="drop-item" id="drop-srank" onclick="switchSubTab('srank','me',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="5.5" cy="4.6" r="2.2" stroke="currentColor" stroke-width="1.2"/><path d="M1.8 11.2c.4-2.2 1.9-3.4 3.7-3.4s3.3 1.2 3.7 3.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><rect x="10.2" y="10" width="1.9" height="5.8" rx="0.5" fill="currentColor" opacity="0.55"/><rect x="13" y="7.4" width="1.9" height="8.4" rx="0.5" fill="currentColor" opacity="0.75"/><rect x="15.8" y="4.4" width="1.9" height="11.4" rx="0.5" fill="currentColor"/><path d="M1.6 15.8h8" stroke="currentColor" stroke-width="1" opacity="0.55" stroke-linecap="round"/></svg>국내 나의 연봉 순위</button>
     <button class="drop-item" id="drop-arank" onclick="switchSubTab('arank','me',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2 8.2 7 4l5 4.2V15H2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" opacity="0.6"/><path d="M5.6 15v-3.4h2.8V15" stroke="currentColor" stroke-width="1.1" opacity="0.6"/><rect x="12.6" y="9.6" width="1.8" height="6" rx="0.5" fill="currentColor" opacity="0.75"/><rect x="15.4" y="6.4" width="1.8" height="9.2" rx="0.5" fill="currentColor"/></svg>국내 나의 자산 순위</button>
@@ -25983,6 +26079,7 @@ var YE = (function () {
     <button class="drop-item" id="drop-moneyspeed" onclick="switchSubTab('moneyspeed','me',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M9 5.5v4l2.5 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 3.5 L5 1.5 M12 3.5 L13 1.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" opacity="0.5"/></svg>돈, 자산, 노동의 가치 속도</button>
   </div>
   <div class="tab-dropdown" id="grp-pay-drop">
+    <button class="drop-item" id="drop-hubpay" data-hub onclick="switchSubTab('hubpay','pay',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="2.5" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg>월급·세금 계산기 모음<span class="drop-all">전체</span></button>
     <button class="drop-item" id="drop-salary" onclick="switchSubTab('salary','pay',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="9" cy="9" r="2.2" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 6.5h1M12.5 11.5h1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>연봉 실수령액 계산기</button>
     <button class="drop-item" id="drop-severance" onclick="switchSubTab('severance','pay',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="3" y="6" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M6.5 6V4.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1V6" stroke="currentColor" stroke-width="1.3"/><path d="M3 10h12" stroke="currentColor" stroke-width="1.1" opacity="0.6"/></svg>퇴직금 계산기</button>
     <button class="drop-item" id="drop-yearend" onclick="switchSubTab('yearend','pay',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M4 1.8h10v14.4l-1.7-1.2-1.6 1.2-1.7-1.2-1.7 1.2-1.6-1.2L4 16.2V1.8z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M9 10.8V5.2M6.8 8.6L9 10.8l2.2-2.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>연말정산 환급 계산기</button>
@@ -25993,6 +26090,7 @@ var YE = (function () {
     <button class="drop-item" id="drop-corptax" onclick="switchSubTab('corptax','pay',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="5.5" width="13" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M6.5 5.5V3.8a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1.7M2.5 9.5h13" stroke="currentColor" stroke-width="1.3"/><path d="M8 9.5v1.5h2V9.5" stroke="currentColor" stroke-width="1.2"/></svg>법인세 계산기</button>
   </div>
   <div class="tab-dropdown" id="grp-invest-drop">
+    <button class="drop-item" id="drop-hubinvest" data-hub onclick="switchSubTab('hubinvest','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="2.5" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg>투자 계산기·지수 모음<span class="drop-all">전체</span></button>
     <button class="drop-item" id="drop-compound" onclick="switchSubTab('compound','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M9 3.5 C5.96 3.5 3.5 5.96 3.5 9 C3.5 12.04 5.96 14.5 9 14.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9 14.5 C12.04 14.5 14.5 12.04 14.5 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="2 1.5"/><path d="M12 7 L14.5 9 L12 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 7.5 L9.5 9 L11 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/><circle cx="9" cy="9" r="1" fill="currentColor"/></svg>복리 계산기</button>
     <button class="drop-item" id="drop-avgdown" onclick="switchSubTab('avgdown','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2.5 4.5l4 4.5 3-2.5 5.5 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 13.5h13" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-dasharray="1.6 1.8"/><circle cx="6.5" cy="9" r="1.3" fill="currentColor"/><circle cx="9.5" cy="6.5" r="1.3" fill="currentColor"/></svg>주식 물타기 계산기</button>
     <button class="drop-item" id="drop-stocktax" onclick="switchSubTab('stocktax','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M2.5 9h13M9 2c1.9 2 2.8 4.3 2.8 7S10.9 14 9 16M9 2C7.1 4 6.2 6.3 6.2 9S7.1 14 9 16" stroke="currentColor" stroke-width="1" opacity=".55"/><path d="M5 11.5 8 8.5l2 1.5 3-3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>해외주식 양도소득세 계산기</button>
@@ -26055,6 +26153,7 @@ var YE = (function () {
     </div>
   </div>
   <div class="tab-dropdown" id="grp-realty-drop">
+    <button class="drop-item" id="drop-hubrealty" data-hub onclick="switchSubTab('hubrealty','realty',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="2.5" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg>부동산 계산기 모음<span class="drop-all">전체</span></button>
     <button class="drop-item" id="drop-loan"     onclick="switchSubTab('loan','realty',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="3" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M2 7h14" stroke="currentColor" stroke-width="1.3"/><path d="M5 11h2M9 11h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>대출 이자 계산기</button>
     <button class="drop-item" id="drop-acquisition" onclick="switchSubTab('acquisition','realty',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2.5 8 9 2.5 15.5 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 7v8.5h10V7" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 15.5v-4h4v4" stroke="currentColor" stroke-width="1.2"/><path d="M7.4 7.9 10.6 10.7" stroke="currentColor" stroke-width="1" stroke-linecap="round"/><circle cx="7.6" cy="10.4" r=".6" fill="currentColor"/><circle cx="10.4" cy="8.2" r=".6" fill="currentColor"/></svg>부동산 취득세 계산기</button>
     <button class="drop-item" id="drop-cgt" onclick="switchSubTab('cgt','realty',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2.5 8.2L8 3.5l5.5 4.7V15h-11V8.2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M11.5 6.2l2.6-2.6M14.1 3.6h-2M14.1 3.6v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 12.5l4-4M6.4 9.1h.01M9.6 12h.01" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>부동산 양도소득세 계산기</button>
@@ -26066,6 +26165,7 @@ var YE = (function () {
     <button class="drop-item" id="drop-jongbu" onclick="switchSubTab('jongbu','realty',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2 15.5h14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M3.5 15.5V9l3-2.2L9.5 9v6.5M9.5 15.5V5.5l2.5-2 2.5 2v10" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M11.4 8h1.2M11.4 10.5h1.2M5.9 11.5h1.2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>종합부동산세 계산기</button>
   </div>
   <div class="tab-dropdown" id="grp-passive-drop">
+    <button class="drop-item" id="drop-hubpassive" data-hub onclick="switchSubTab('hubpassive','passive',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="2.5" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg>불로소득 도구 모음<span class="drop-all">전체</span></button>
     <button class="drop-item" id="drop-etfdiv" onclick="switchSubTab('etfdiv','passive',this)">ETF 월분배 및 배당 달력</button>
     <button class="drop-item" id="drop-divcalc" onclick="switchSubTab('divcalc','passive',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M3 14.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><rect x="4" y="9.5" width="2.2" height="5" rx=".6" stroke="currentColor" stroke-width="1.2"/><rect x="7.9" y="7" width="2.2" height="7.5" rx=".6" stroke="currentColor" stroke-width="1.2"/><rect x="11.8" y="4.5" width="2.2" height="10" rx=".6" stroke="currentColor" stroke-width="1.2"/><circle cx="5.1" cy="5.2" r="1.7" stroke="currentColor" stroke-width="1.1"/></svg>배당금 계산기</button>
     <button class="drop-item" id="drop-pension" onclick="switchSubTab('pension','passive',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M3 15.5h12M4.5 15.5V8.5M8 15.5V8.5M11.5 15.5V8.5M14 15.5V8.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M2.5 7.5 9 3l6.5 4.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>연금저축·IRP 세액공제 계산기</button>
@@ -26341,6 +26441,12 @@ var YE = (function () {
 })();
 </script>
 <script>
+/* [HUB] 좁은 화면에서 단계 줄(가로 스크롤)이 지금 단계를 보이게 */
+(function () {
+  function fit() { document.querySelectorAll('.hub-path').forEach(function (n) { var a = n.querySelector('a.on'); if (a && n.scrollWidth > n.clientWidth) n.scrollLeft = Math.max(0, a.offsetLeft - n.offsetLeft - 16); }); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fit); else fit();
+})();
+
 /* ════════════════════════════════════════════════════════════
    [SEARCH] 사이트 검색 — 메뉴의 모든 도구(드롭다운 버튼)를 이름·주소 설명(#etfmd-routes)으로 찾아 바로 이동
 ════════════════════════════════════════════════════════════ */

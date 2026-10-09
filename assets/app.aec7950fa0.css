@@ -1649,6 +1649,41 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .ye-meter-t > i { position:absolute; top:-4px; bottom:-4px; width:2px; margin-left:-1px; background:var(--text); border-radius:1px; }
   .ye-meter-l { display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color:var(--text2); }
   .ye-meter-l b { color:var(--text); }
+  /* [HUB] 영역별 허브 페이지 (내 위치·월급·세금·투자·부동산·불로소득) — 도구 카드는 build_pages.py 가 메뉴 구조로 채움 */
+  .drop-item[data-hub] { font-weight:600; color:var(--text); border-bottom:1px solid rgba(var(--fg-rgb),0.08); border-radius:8px 8px 0 0; margin-bottom:3px; }
+  .drop-all { margin-left:auto; padding:1px 7px; border-radius:999px; font-size:10.5px; font-weight:600; color:var(--accent); background:rgba(49,130,246,0.12); }
+  .crumbs { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:0 0 10px; font-size:12px; color:var(--text3); }
+  .crumbs a { color:var(--text2); text-decoration:none; } .crumbs a:hover { color:var(--accent); }
+  .crumbs i { font-style:normal; opacity:.6; }
+  .hub-path { display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:8px; margin:4px 0 16px; }
+  .hub-path a { display:flex; align-items:center; gap:8px; padding:10px 12px; border:1px solid var(--card-border); border-radius:12px; background:var(--card); color:var(--text2); text-decoration:none; font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:border-color .2s, color .2s; }
+  .hub-path a b { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:6px; background:rgba(var(--fg-rgb),0.07); font-size:11px; flex-shrink:0; }
+  .hub-path a:hover { border-color:rgba(49,130,246,0.4); color:var(--text); }
+  .hub-path a.on { border-color:var(--accent); color:var(--accent); background:rgba(49,130,246,0.08); }
+  .hub-path a.on b { background:var(--accent); color:#fff; }
+  .hub-todo h2 { font-size:15px; font-weight:700; color:var(--text); margin:0 0 10px; }
+  .hub-todo ol { margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px; font-size:13.5px; line-height:1.7; color:var(--text2); }
+  .hub-todo b { color:var(--text); }
+  .hub-sec { margin-top:22px; }
+  .hub-h { display:flex; align-items:baseline; gap:8px; font-size:16px; font-weight:700; color:var(--text); margin:0 0 10px; }
+  .hub-h small { font-size:12px; font-weight:600; color:var(--text3); }
+  .hub-grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
+  .hub-card { display:flex; flex-direction:column; gap:6px; padding:16px; border:1px solid var(--card-border); border-radius:14px; background:var(--card); text-decoration:none; transition:border-color .2s, transform .2s; min-width:0; }
+  .hub-card:hover { border-color:rgba(49,130,246,0.45); transform:translateY(-2px); }
+  .hub-card > b { display:flex; align-items:center; gap:2px; font-size:14.5px; font-weight:700; color:var(--text); }
+  .hub-card > b svg { color:var(--accent); }
+  .hub-card > span { font-size:12.5px; line-height:1.6; color:var(--text3); }
+  .hub-next { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:24px 0 8px; padding:18px 20px; border-radius:14px; border:1px solid rgba(49,130,246,0.3); background:rgba(49,130,246,0.07); text-decoration:none; }
+  .hub-next span { font-size:12.5px; color:var(--text3); } .hub-next b { font-size:15px; color:var(--accent); }
+  .hub-next:hover { background:rgba(49,130,246,0.12); }
+  .sf-h a { color:inherit; text-decoration:none; } .sf-h a:hover { color:var(--accent); }
+  @media (max-width: 900px) { .hub-grid { grid-template-columns:repeat(2, minmax(0,1fr)); } }
+  @media (max-width: 640px) {
+    .hub-path { display:flex; overflow-x:auto; scrollbar-width:none; } .hub-path::-webkit-scrollbar { display:none; }
+    .hub-path a { flex:0 0 auto; padding:8px 11px; }
+    .hub-grid { grid-template-columns:1fr; }
+    .hub-next { flex-direction:column; align-items:flex-start; gap:4px; }
+  }
   .fc-sec-title { font-size:12px; font-weight:600; color:var(--text); margin:6px 0 10px; padding-top:12px; border-top:1px solid var(--card-border); }
   .fc-note { font-size:11px; line-height:1.7; color:var(--text3); margin-top:4px; }
   .fc-hero { padding:24px 26px; }

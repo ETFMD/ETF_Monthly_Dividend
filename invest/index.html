@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<!-- [ADSENSE] Google 애드센스 (사이트 소유 확인 · 광고) -->
+<meta name="google-adsense-account" content="ca-pub-8051182229751523">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8051182229751523" crossorigin="anonymous"></script>
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/logo-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="naver-site-verification" content="d2783397f53380a104200dc7255c6254d5c6a680" />
+<script>
+/* [ANALYTICS] Google Analytics 4 · Microsoft Clarity · 네이버 애널리틱스 — 실제 도메인(d-capitalism.com)에서만 동작 (로컬 파일·미리보기는 집계 안 함)
+   · 탭 이동은 [ROUTER] 가 제목을 먼저 바꾼 뒤 주소를 바꾸므로(pushState) GA4 '향상된 측정'이 탭별 페이지뷰를 정확한 제목으로 자동 집계
+   · 네이버 애널리틱스는 주소 변경을 스스로 감지하지 못하므로 pushState·뒤로가기 때 wcs_do() 를 직접 호출
+     (이때 이전 주소를 referrer 로 넘겨, 탭 이동이 '외부 유입'으로 중복 집계되지 않게 함)
+   · ID 를 비워 두면 해당 도구는 설치되지 않음 */
+(function () {
+  var GA_ID = 'G-Z76QH8HLZ9', CLARITY_ID = 'ytm7hk3l3d', NAVER_ID = '1c5d67738faa0a0';
+  if (!/(^|\.)d-capitalism\.com$/.test(location.hostname)) return;
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function () { window.dataLayer.push(arguments); };
+  window.gtag('js', new Date());
+  window.gtag('config', GA_ID);
+  var s = document.createElement('script');
+  s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+  document.head.appendChild(s);
+  if (CLARITY_ID) {
+    window.clarity = window.clarity || function () { (window.clarity.q = window.clarity.q || []).push(arguments); };
+    var c = document.createElement('script');
+    c.async = true; c.src = 'https://www.clarity.ms/tag/' + CLARITY_ID;
+    document.head.appendChild(c);
+  }
+  if (NAVER_ID) {
+    window.wcs_add = window.wcs_add || {};
+    window.wcs_add.wa = NAVER_ID;
+    var lastHref = location.href, ready = false;
+    var hit = function () { try { if (window.wcs_do) window.wcs_do(); } catch (e) {} };
+    var n = document.createElement('script');
+    n.async = true; n.src = 'https://wcs.naver.net/wcslog.js';
+    n.onload = function () { ready = true; hit(); };
+    document.head.appendChild(n);
+    var onNav = function () {
+      if (location.href.split('#')[0] === lastHref.split('#')[0]) return;
+      var prev = lastHref; lastHref = location.href;
+      try { Object.defineProperty(document, 'referrer', { configurable: true, get: function () { return prev; } }); } catch (e) {}
+      if (ready) setTimeout(hit, 0);
+    };
+    var ps = history.pushState;
+    history.pushState = function () { var r = ps.apply(this, arguments); onNav(); return r; };
+    window.addEventListener('popstate', onNav);
+  }
+})();
+</script>
+<!--SEO:BEGIN-->
+<base href="../">
+<script>(function(){var b=document.querySelector("base");if(b)b.setAttribute("href",b.href);})();</script>
+<title>디코딩 자본주의 | 투자 계산기·지수 모음</title>
+<meta name="description" content="복리·CAGR·물타기·해외주식 양도세 계산기와 미국·한국·아시아 주요 지수 장기 성장률을 한곳에 모았습니다.">
+<link rel="canonical" href="https://d-capitalism.com/invest/">
+<meta name="etfmd-route" content="invest">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="디코딩 자본주의">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="투자 계산기·지수 모음 — 복리·CAGR·해외주식 양도세·지수 성장률 | 디코딩 자본주의">
+<meta property="og:description" content="복리·CAGR·물타기·해외주식 양도세 계산기와 미국·한국·아시아 주요 지수 장기 성장률을 한곳에 모았습니다.">
+<meta property="og:url" content="https://d-capitalism.com/invest/">
+<meta property="og:image" content="https://d-capitalism.com/assets/og/invest.png?v=55235142">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="투자 계산기·지수 모음 — 복리·CAGR·해외주식 양도세·지수 성장률 | 디코딩 자본주의">
+<meta name="twitter:description" content="복리·CAGR·물타기·해외주식 양도세 계산기와 미국·한국·아시아 주요 지수 장기 성장률을 한곳에 모았습니다.">
+<meta name="twitter:image" content="https://d-capitalism.com/assets/og/invest.png?v=55235142">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "name": "투자 계산기·지수 모음", "url": "https://d-capitalism.com/invest/", "description": "복리·CAGR·물타기·해외주식 양도세 계산기와 미국·한국·아시아 주요 지수 장기 성장률을 한곳에 모았습니다.", "inLanguage": "ko-KR", "publisher": {"@type": "Organization", "name": "디코딩 자본주의", "url": "https://d-capitalism.com/", "logo": {"@type": "ImageObject", "url": "https://d-capitalism.com/assets/logo-512.png", "width": 512, "height": 512}}, "mainEntity": {"@type": "ItemList", "itemListElement": [{"@type": "ListItem", "position": 1, "url": "https://d-capitalism.com/compound/", "name": "복리 계산기"}, {"@type": "ListItem", "position": 2, "url": "https://d-capitalism.com/averaging-down/", "name": "주식 물타기 계산기"}, {"@type": "ListItem", "position": 3, "url": "https://d-capitalism.com/stocktax/", "name": "해외주식 양도소득세 계산기"}, {"@type": "ListItem", "position": 4, "url": "https://d-capitalism.com/fx/", "name": "환율 계산기"}, {"@type": "ListItem", "position": 5, "url": "https://d-capitalism.com/fear/", "name": "공포 & 탐욕 지수"}, {"@type": "ListItem", "position": 6, "url": "https://d-capitalism.com/cagr/", "name": "CAGR 계산기"}, {"@type": "ListItem", "position": 7, "url": "https://d-capitalism.com/etfcagr/", "name": "ETF CAGR 비교"}, {"@type": "ListItem", "position": 8, "url": "https://d-capitalism.com/marketcap/", "name": "전세계 시가총액 TOP 100"}, {"@type": "ListItem", "position": 9, "url": "https://d-capitalism.com/muhan/", "name": "무한매수법 기록"}, {"@type": "ListItem", "position": 10, "url": "https://d-capitalism.com/nasdaq/", "name": "나스닥 종합 성장률"}, {"@type": "ListItem", "position": 11, "url": "https://d-capitalism.com/nasdaq100/", "name": "나스닥 100 성장률"}, {"@type": "ListItem", "position": 12, "url": "https://d-capitalism.com/dowjones/", "name": "다우존스 성장률"}, {"@type": "ListItem", "position": 13, "url": "https://d-capitalism.com/sp500/", "name": "S&P 500 성장률"}, {"@type": "ListItem", "position": 14, "url": "https://d-capitalism.com/sox/", "name": "필라델피아 반도체 성장률"}, {"@type": "ListItem", "position": 15, "url": "https://d-capitalism.com/djsemi/", "name": "다우존스 반도체 성장률"}, {"@type": "ListItem", "position": 16, "url": "https://d-capitalism.com/kospi/", "name": "코스피 성장률"}, {"@type": "ListItem", "position": 17, "url": "https://d-capitalism.com/kospi200/", "name": "코스피 200 성장률"}, {"@type": "ListItem", "position": 18, "url": "https://d-capitalism.com/kosdaq/", "name": "코스닥 성장률"}, {"@type": "ListItem", "position": 19, "url": "https://d-capitalism.com/n225/", "name": "닛케이 225 성장률"}, {"@type": "ListItem", "position": 20, "url": "https://d-capitalism.com/topix/", "name": "TOPIX 성장률"}, {"@type": "ListItem", "position": 21, "url": "https://d-capitalism.com/sse/", "name": "상해종합지수 성장률"}, {"@type": "ListItem", "position": 22, "url": "https://d-capitalism.com/csi300/", "name": "CSI 300 성장률"}, {"@type": "ListItem", "position": 23, "url": "https://d-capitalism.com/szse/", "name": "선전성분지수 성장률"}, {"@type": "ListItem", "position": 24, "url": "https://d-capitalism.com/chinext/", "name": "창업판지수 성장률"}, {"@type": "ListItem", "position": 25, "url": "https://d-capitalism.com/star50/", "name": "과창판50 성장률"}, {"@type": "ListItem", "position": 26, "url": "https://d-capitalism.com/hsi/", "name": "항셍지수 성장률"}, {"@type": "ListItem", "position": 27, "url": "https://d-capitalism.com/hscei/", "name": "홍콩H지수 성장률"}, {"@type": "ListItem", "position": 28, "url": "https://d-capitalism.com/hstech/", "name": "항셍테크지수 성장률"}, {"@type": "ListItem", "position": 29, "url": "https://d-capitalism.com/taiex/", "name": "대만 가권지수 성장률"}]}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "홈", "item": "https://d-capitalism.com/"}, {"@type": "ListItem", "position": 2, "name": "투자", "item": "https://d-capitalism.com/invest/"}]}</script>
+<script id="etfmd-routes" type="application/json">[{"path": "", "tab": "home", "group": "home", "title": "디코딩 자본주의 | 홈", "share": "디코딩 자본주의 | 인플레이션·자산 상승률·복리로 읽는 자본주의", "desc": "물가·예금·서울 아파트·코스피·S&P 500 상승률을 공식 통계로 비교해 투자가 필요한 이유와 복리의 힘을 보여 줍니다."}, {"path": "my-position", "tab": "hubme", "group": "me", "title": "디코딩 자본주의 | 내 위치 진단 도구 모음", "share": "내 위치 진단 — 연봉·자산 순위와 노후 준비 점검 | 디코딩 자본주의", "desc": "연봉·자산 순위, 노후 준비 성적표, 집 사기까지 걸리는 기간으로 대한민국에서 내 경제적 위치를 진단합니다."}, {"path": "pay-tax", "tab": "hubpay", "group": "pay", "title": "디코딩 자본주의 | 월급·세금 계산기 모음", "share": "월급·세금 계산기 모음 — 실수령액·연말정산·퇴직금·종합소득세 | 디코딩 자본주의", "desc": "연봉 실수령액·연말정산·퇴직금·종합소득세·건강보험료 등 월급과 세금을 계산하는 도구를 한곳에 모았습니다."}, {"path": "invest", "tab": "hubinvest", "group": "invest", "title": "디코딩 자본주의 | 투자 계산기·지수 모음", "share": "투자 계산기·지수 모음 — 복리·CAGR·해외주식 양도세·지수 성장률 | 디코딩 자본주의", "desc": "복리·CAGR·물타기·해외주식 양도세 계산기와 미국·한국·아시아 주요 지수 장기 성장률을 한곳에 모았습니다."}, {"path": "real-estate", "tab": "hubrealty", "group": "realty", "title": "디코딩 자본주의 | 부동산 계산기 모음", "share": "부동산 계산기 모음 — 대출·취득세·양도세·보유세·청약 | 디코딩 자본주의", "desc": "대출 이자·주담대 한도·취득세·양도세·재산세·종부세·중개수수료·청약 가점 계산기를 한곳에 모았습니다."}, {"path": "passive-income", "tab": "hubpassive", "group": "passive", "title": "디코딩 자본주의 | 불로소득 도구 모음", "share": "불로소득 도구 모음 — 월배당 ETF·배당금·연금저축·파이어족 | 디코딩 자본주의", "desc": "ETF 월분배 달력·배당금·배당소득세·연금저축·파이어족 계산기로 매달 들어오는 불로소득을 설계합니다."}, {"path": "salary-rank", "tab": "srank", "group": "me", "title": "디코딩 자본주의 | 국내 나의 연봉 순위", "share": "국내 나의 연봉 순위 — 국세청 근로소득 천분위로 보는 내 연봉 상위 % | 디코딩 자본주의", "desc": "연봉(총급여)을 넣으면 국세청 근로소득 천분위 자료로 전체 근로자 중 상위 몇 %인지와 중위·평균 연봉을 비교합니다."}, {"path": "asset-rank", "tab": "arank", "group": "me", "title": "디코딩 자본주의 | 국내 나의 자산 순위", "share": "국내 나의 자산 순위 — 가계금융복지조사로 보는 우리 집 순자산 상위 % | 디코딩 자본주의", "desc": "자산과 부채를 넣으면 통계청 가계금융복지조사로 우리 집 순자산이 전체 가구 중 상위 몇 %인지 계산합니다."}, {"path": "retirement-score", "tab": "retire", "group": "me", "title": "디코딩 자본주의 | 노후 준비 성적표", "share": "노후 준비 성적표 — 국민연금·퇴직연금·개인연금으로 내 노후 준비율 A~F | 디코딩 자본주의", "desc": "국민연금(2026 개정 소득대체율 43%)·퇴직연금·개인연금·저축으로 은퇴 후 월 소득과 적정 노후생활비 준비율을 A+~F 성적으로 계산합니다."}, {"path": "house-years", "tab": "houseyears", "group": "me", "title": "디코딩 자본주의 | 내 연봉으로 집 사기까지 몇 년", "share": "내 연봉으로 집 사기까지 몇 년? — 지역별 아파트 실거래가·실수령액 계산 | 디코딩 자본주의", "desc": "내 연봉·저축률로 서울·우리 동네 아파트를 사려면 몇 년? 실거래 중위가·실수령액·취득세·집값 상승·대출까지 반영해 계산합니다."}, {"path": "what-if", "tab": "whatif", "group": "me", "title": "디코딩 자본주의 | 그때 샀더라면 계산기", "share": "그때 샀더라면 계산기 — 10년 전 삼성전자·엔비디아·비트코인을 샀다면 지금 얼마? | 디코딩 자본주의", "desc": "그때 삼성전자·엔비디아·테슬라·비트코인·금·강남 아파트를 샀다면 지금 얼마일까? 배당 재투자·환율 반영, 34개 자산 수익률 비교."}, {"path": "moneyspeed", "tab": "moneyspeed", "group": "me", "title": "디코딩 자본주의 | 돈, 자산, 노동의 가치 속도", "share": "돈·자산·노동의 가치 속도 — 통화량·물가·임금·집값 CAGR | 디코딩 자본주의", "desc": "통화량·물가·임금·서울 아파트 실거래가·금·주가지수의 연평균 상승률(CAGR)을 공식 통계로 비교합니다."}, {"path": "salary", "tab": "salary", "group": "pay", "title": "디코딩 자본주의 | 연봉 실수령액 계산기", "share": "2026 연봉 실수령액 계산기 — 4대보험·간이세액표 반영 | 디코딩 자본주의", "desc": "2026년 4대보험 요율과 근로소득 간이세액표로 연봉별 월 실수령액과 공제 내역을 계산합니다."}, {"path": "severance", "tab": "severance", "group": "pay", "title": "디코딩 자본주의 | 퇴직금 계산기", "share": "퇴직금 계산기 2026 — DB형·DC형·퇴직소득세 | 디코딩 자본주의", "desc": "법정 퇴직금(DB형)과 퇴직소득세·세후 수령액을 계산하고 DC형 적립금과 비교합니다."}, {"path": "year-end-tax", "tab": "yearend", "group": "pay", "title": "디코딩 자본주의 | 연말정산 환급 계산기", "share": "연말정산 환급 계산기 2026 — 13월의 월급 미리 계산 | 디코딩 자본주의", "desc": "2026년 귀속 연말정산 환급액을 인적공제·신용카드·연금저축·월세·의료·교육·기부금까지 넣어 미리 계산합니다."}, {"path": "incometax", "tab": "incometax", "group": "pay", "title": "디코딩 자본주의 | 종합소득세 계산기", "share": "종합소득세 계산기 2026 — 프리랜서 3.3% 환급·납부액 계산 | 디코딩 자본주의", "desc": "프리랜서 3.3%·개인사업자·부업의 2026년 귀속 종합소득세 납부·환급액을 소득공제·세액공제까지 계산합니다."}, {"path": "health", "tab": "health", "group": "pay", "title": "디코딩 자본주의 | 건강보험료 계산기", "share": "건강보험료 계산기 2026 — 직장·지역가입자 장기요양보험료 | 디코딩 자본주의", "desc": "2026년 기준 직장 가입자와 지역 가입자의 건강보험료와 장기요양보험료를 소득·재산 조건으로 계산합니다."}, {"path": "gift", "tab": "gift", "group": "pay", "title": "디코딩 자본주의 | 증여세·상속세 계산기", "share": "증여세·상속세 계산기 2026 — 증여재산공제·배우자공제 반영 | 디코딩 자본주의", "desc": "2026년 현행법 기준 증여세(10년 합산·혼인출산공제)와 상속세(일괄·배우자·금융재산공제)를 계산합니다."}, {"path": "national-pension", "tab": "npsroi", "group": "pay", "title": "디코딩 자본주의 | 국민연금 손익 계산기", "share": "국민연금 손익 계산기 2026 — 낸 돈 대비 받는 돈·세대별 손익 (연금개혁 반영) | 디코딩 자본주의", "desc": "2025 연금개혁(보험료 13%·소득대체율 43%) 반영. 국민연금 낸 돈 대비 받는 돈, 본전 나이, 세대별 손익을 계산합니다."}, {"path": "corporate-tax", "tab": "corptax", "group": "pay", "title": "디코딩 자본주의 | 법인세 계산기", "share": "법인세 계산기 2026 — 세무조정·기부금 한도·최저한세·지방소득세 | 디코딩 자본주의", "desc": "2026년 개시 사업연도 법인세율로 세무조정·이월결손금·감면·최저한세·지방소득세까지 계산합니다."}, {"path": "compound", "tab": "compound", "group": "invest", "title": "디코딩 자본주의 | 복리 계산기", "share": "복리 계산기 — 적립식 복리·세후 수익·실효 수익률 | 디코딩 자본주의", "desc": "원금·월 적립금·이율·기간으로 복리 최종 자산과 세후 수익, 적립식 실효 수익률을 연도별로 계산합니다.", "en": true, "enTitle": "Decoding Capitalism | Compound Interest Calculator", "enDesc": "Compound interest calculator with monthly contributions, compounding frequency and tax: final balance, earnings and effective annual return by year."}, {"path": "averaging-down", "tab": "avgdown", "group": "invest", "title": "디코딩 자본주의 | 주식 물타기 계산기", "share": "주식 물타기 계산기 — 평균 단가·본전 가격·목표 평단·분할 매수 (불타기 포함) | 디코딩 자본주의", "desc": "추가 매수 후 평균 단가와 본전 가격, 목표 평단까지 필요한 수량, 분할 물타기 계획을 수수료·거래세까지 계산합니다."}, {"path": "stocktax", "tab": "stocktax", "group": "invest", "title": "디코딩 자본주의 | 해외주식 양도소득세 계산기", "share": "해외주식 양도소득세 계산기 2026 — 250만원 공제·22%·RIA 공제 | 디코딩 자본주의", "desc": "미국 주식·해외 ETF 매도 손익을 환율로 계산해 250만원 공제 후 22% 양도세와 RIA 공제를 계산합니다."}, {"path": "fx", "tab": "fx", "group": "invest", "title": "디코딩 자본주의 | 환율 계산기", "share": "환율 계산기 — 실시간 환율·달러인덱스(DXY) 차트 | 디코딩 자본주의", "desc": "달러·엔·유로·위안 등 12개 통화의 원화 환율과 억·만 단위 통화 변환, 달러인덱스(DXY) 1M~MAX 기간별 차트를 제공합니다."}, {"path": "fear", "tab": "fear", "group": "invest", "title": "디코딩 자본주의 | 공포 & 탐욕 지수", "share": "공포 탐욕 지수 — CNN Fear & Greed Index와 시장 지표 | 디코딩 자본주의", "desc": "CNN 공포 탐욕 지수(Fear & Greed Index)와 구성 지표, 주요 시장 심리·금융 지표를 한눈에 확인합니다.", "en": true, "enTitle": "Decoding Capitalism | Fear & Greed Index", "enDesc": "Live CNN Fear & Greed Index with its seven components, previous values and a 90-day trend, plus what each indicator means for market sentiment."}, {"path": "cagr", "tab": "cagr", "group": "invest", "title": "디코딩 자본주의 | CAGR 계산기", "share": "CAGR 계산기 — 연평균 성장률·목표 수익률 역산 | 디코딩 자본주의", "desc": "초기·최종 금액과 기간으로 연평균 성장률(CAGR), 2배·10배 도달 기간, 목표 수익률 역산을 계산합니다.", "en": true, "enTitle": "Decoding Capitalism | CAGR Calculator", "enDesc": "Calculate CAGR from starting and ending values or dates, years to double or 10×, and the ending value or time needed for a target growth rate."}, {"path": "etfcagr", "tab": "etfcagr", "group": "invest", "title": "디코딩 자본주의 | ETF CAGR 비교", "share": "ETF CAGR 비교 — QQQ·SPY·TQQQ·SOXL 등 레버리지 ETF | 디코딩 자본주의", "desc": "QQQ·SPY·SOXX와 TQQQ·SOXL 등 레버리지 ETF 12종의 연평균 성장률(CAGR) 추이를 비교합니다.", "en": true, "enTitle": "Decoding Capitalism | ETF CAGR Comparison", "enDesc": "Compare the CAGR of 12 U.S. index and leveraged ETFs (QQQ, SPY, TQQQ, SOXL and more) over time, by price or with distributions reinvested."}, {"path": "marketcap", "tab": "mcap", "group": "invest", "title": "디코딩 자본주의 | 전세계 시가총액 TOP 100", "share": "전세계 시가총액 순위 TOP 100 — 매일 종가 기준 글로벌 기업 순위 | 디코딩 자본주의", "desc": "엔비디아·애플·삼성전자 등 전 세계 상장 기업 시가총액 상위 100개를 매일 종가 기준 달러·원화로 비교합니다."}, {"path": "muhan", "tab": "muhan", "group": "invest", "title": "디코딩 자본주의 | 무한매수법 기록", "share": "무한매수법 4.0 계산기 — TQQQ·SOXL 분할매수 주문표 | 디코딩 자본주의", "desc": "무한매수법 4.0 방식으로 TQQQ·SOXL 분할 매수·매도 주문표와 평단가, 진행 회차, 수익 현황을 계산하고 기록합니다."}, {"path": "nasdaq", "tab": "nasdaq", "group": "invest", "title": "디코딩 자본주의 | 나스닥 종합 성장률", "share": "나스닥 종합지수 연평균 성장률(CAGR) — 1971년 이후 | 디코딩 자본주의", "desc": "1971년 기준지수 100에서 출발한 나스닥 종합지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.", "en": true, "enTitle": "Decoding Capitalism | NASDAQ Composite Growth Rate", "enDesc": "NASDAQ Composite compound annual growth rate since its 1971 base of 100, plus the last 5–30 years, monthly and daily rates and a growth projection."}, {"path": "nasdaq100", "tab": "nasdaq100", "group": "invest", "title": "디코딩 자본주의 | 나스닥 100 성장률", "share": "나스닥 100 연평균 성장률(CAGR) — 1985년 이후 | 디코딩 자본주의", "desc": "1985년 기준지수 250에서 출발한 나스닥 100 지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.", "en": true, "enTitle": "Decoding Capitalism | Nasdaq-100 Growth Rate", "enDesc": "Nasdaq-100 compound annual growth rate since its 1985 base of 250, plus the last 5–30 years, monthly and daily rates — the index behind QQQ."}, {"path": "dowjones", "tab": "dowjones", "group": "invest", "title": "디코딩 자본주의 | 다우존스 성장률", "share": "다우존스 산업평균지수 연평균 성장률(CAGR) — 1896년 이후 | 디코딩 자본주의", "desc": "1896년 산출을 시작한 다우존스 산업평균지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.", "en": true, "enTitle": "Decoding Capitalism | Dow Jones Growth Rate", "enDesc": "Dow Jones Industrial Average compound annual growth rate since 1896, plus the last 5–30 years, monthly and daily rates and a growth projection."}, {"path": "sp500", "tab": "sp500", "group": "invest", "title": "디코딩 자본주의 | S&P 500 성장률", "share": "S&P 500 연평균 성장률(CAGR) — 1928년 이후 | 디코딩 자본주의", "desc": "1928년부터 산출된 S&P 500 지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.", "en": true, "enTitle": "Decoding Capitalism | S&P 500 Growth Rate", "enDesc": "Calculate the S&P 500’s compound annual growth rate (CAGR) since 1928 or over the last 5–30 years, with monthly and daily rates and a growth projection."}, {"path": "sox", "tab": "sox", "group": "invest", "title": "디코딩 자본주의 | 필라델피아 반도체 성장률", "share": "필라델피아 반도체지수(SOX) 연평균 성장률 — 1993년 이후 | 디코딩 자본주의", "desc": "1993년 기준지수 200에서 출발한 필라델피아 반도체지수(SOX)의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.", "en": true, "enTitle": "Decoding Capitalism | PHLX Semiconductor (SOX) Growth Rate", "enDesc": "Philadelphia Semiconductor Index (SOX) compound annual growth rate since its 1993 base of 200, plus the last 5–30 years and monthly and daily rates."}, {"path": "djsemi", "tab": "djsemi", "group": "invest", "title": "디코딩 자본주의 | 다우존스 반도체 성장률", "share": "다우존스 미국 반도체 지수(DJUSSC) 연평균 성장률 | 디코딩 자본주의", "desc": "다우존스 미국 반도체 지수(DJUSSC)의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.", "en": true, "enTitle": "Decoding Capitalism | DJ U.S. Semiconductors Growth Rate", "enDesc": "Dow Jones U.S. Semiconductors Index (DJUSSC) compound annual growth rate since 2000 and over the last 5–20 years, with monthly and daily rates."}, {"path": "kospi", "tab": "kospi", "group": "invest", "title": "디코딩 자본주의 | 코스피 성장률", "share": "코스피 연평균 성장률(CAGR) — 1980년 이후 지수 분석 | 디코딩 자본주의", "desc": "1980년 기준지수 100에서 출발한 코스피의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."}, {"path": "kospi200", "tab": "kospi200", "group": "invest", "title": "디코딩 자본주의 | 코스피 200 성장률", "share": "코스피 200 연평균 성장률(CAGR) — 1990년 이후 지수 분석 | 디코딩 자본주의", "desc": "1990년 기준지수 100에서 출발한 코스피 200의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."}, {"path": "kosdaq", "tab": "kosdaq", "group": "invest", "title": "디코딩 자본주의 | 코스닥 성장률", "share": "코스닥 연평균 성장률(CAGR) — 1996년 이후 지수 분석 | 디코딩 자본주의", "desc": "1996년 기준지수 1000에서 출발한 코스닥의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."}, {"path": "n225", "tab": "n225", "group": "invest", "title": "디코딩 자본주의 | 닛케이 225 성장률", "share": "닛케이 225 연평균 성장률(CAGR) — 1949년 이후 일본 지수 분석 | 디코딩 자본주의", "desc": "1949년 176.21에서 출발한 닛케이 225의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."}, {"path": "topix", "tab": "topix", "group": "invest", "title": "디코딩 자본주의 | TOPIX 성장률", "share": "TOPIX 연평균 성장률(CAGR) — 1968년 이후 일본 시가총액 지수 분석 | 디코딩 자본주의", "desc": "1968년 기준지수 100에서 출발한 TOPIX의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."}, {"path": "sse", "tab": "sse", "group": "invest", "title": "디코딩 자본주의 | 상해종합지수 성장률", "share": "상해종합지수 연평균 성장률(CAGR) — 1990년 이후 중국 지수 분석 | 디코딩 자본주의", "desc": "1990년 기준지수 100에서 출발한 상해종합지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."}, {"path": "csi300", "tab": "csi300", "group": "invest", "title": "디코딩 자본주의 | CSI 300 성장률", "share": "CSI 300 연평균 성장률(CAGR) — 2004년 이후 중국 대형주 지수 분석 | 디코딩 자본주의", "desc": "2004년 기준지수 1000에서 출발한 CSI 300의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."}, {"path": "szse", "tab": "szse", "group": "invest", "title": "디코딩 자본주의 | 선전성분지수 성장률", "share": "선전성분지수 연평균 성장률(CAGR) — 1994년 이후 중국 지수 분석 | 디코딩 자본주의", "desc": "1994년 기준지수 1000에서 출발한 선전성분지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."}, {"path": "chinext", "tab": "chinext", "group": "invest", "title": "디코딩 자본주의 | 창업판지수 성장률", "share": "창업판지수(ChiNext) 연평균 성장률(CAGR) — 2010년 이후 분석 | 디코딩 자본주의", "desc": "2010년 기준지수 1000에서 출발한 창업판지수(ChiNext)의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."}, {"path": "star50", "tab": "star50", "group": "invest", "title": "디코딩 자본주의 | 과창판50 성장률", "share": "과창판50(STAR 50) 연평균 성장률(CAGR) — 2019년 이후 분석 | 디코딩 자본주의", "desc": "2019년 기준지수 1000에서 출발한 과창판50(STAR 50)의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."}, {"path": "hsi", "tab": "hsi", "group": "invest", "title": "디코딩 자본주의 | 항셍지수 성장률", "share": "항셍지수 연평균 성장률(CAGR) — 1964년 이후 홍콩 지수 분석 | 디코딩 자본주의", "desc": "1964년 기준지수 100에서 출발한 항셍지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."}, {"path": "hscei", "tab": "hscei", "group": "invest", "title": "디코딩 자본주의 | 홍콩H지수 성장률", "share": "홍콩H지수(HSCEI) 연평균 성장률(CAGR) — 2000년 기준 분석 | 디코딩 자본주의", "desc": "2000년 기준지수 2000으로 산출되는 홍콩H지수(항셍중국기업지수)의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다."}, {"path": "hstech", "tab": "hstech", "group": "invest", "title": "디코딩 자본주의 | 항셍테크지수 성장률", "share": "항셍테크지수 연평균 성장률(CAGR) — 2014년 기준 분석 | 디코딩 자본주의", "desc": "2014년 기준지수 3000에서 출발한 항셍테크지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."}, {"path": "taiex", "tab": "taiex", "group": "invest", "title": "디코딩 자본주의 | 대만 가권지수 성장률", "share": "대만 가권지수(TAIEX) 연평균 성장률(CAGR) — 1966년 이후 분석 | 디코딩 자본주의", "desc": "1966년 평균 기준지수 100에서 출발한 대만 가권지수(TAIEX)의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다."}, {"path": "loan", "tab": "loan", "group": "realty", "title": "디코딩 자본주의 | 대출 이자 계산기", "share": "대출 이자 계산기 — 원리금균등·원금균등·만기일시·체증식 | 디코딩 자본주의", "desc": "원리금균등·원금균등·만기일시·체증식 대출의 월 납입금과 총이자, 연간·월간 상환표를 계산합니다."}, {"path": "acquisition", "tab": "acquisition", "group": "realty", "title": "디코딩 자본주의 | 부동산 취득세 계산기", "share": "부동산 취득세 계산기 2026 — 다주택 중과·생애최초 감면 | 디코딩 자본주의", "desc": "주택 매매·증여·상속과 토지·상가 취득세를 주택 수·조정대상지역 중과와 생애최초 감면까지 계산합니다."}, {"path": "capital-gains-tax", "tab": "cgt", "group": "realty", "title": "디코딩 자본주의 | 부동산 양도소득세 계산기", "share": "부동산 양도소득세 계산기 2026 — 1주택 비과세·장기보유특별공제·다주택 중과 | 디코딩 자본주의", "desc": "2026 세법 기준 주택·분양권·토지 양도세를 1주택 비과세·장특공·단기세율·다주택 중과까지 반영해 계산합니다."}, {"path": "brokerage", "tab": "brokerage", "group": "realty", "title": "디코딩 자본주의 | 부동산 중개수수료 계산기", "share": "부동산 중개수수료 계산기 — 매매·전세·월세 중개보수 상한 | 디코딩 자본주의", "desc": "아파트·주택 매매·전세·월세와 오피스텔·상가의 중개보수 상한액을 부가세 포함으로 계산합니다."}, {"path": "mortgage", "tab": "mortgage", "group": "realty", "title": "디코딩 자본주의 | 주담대 LTV·DSR 한도 계산기", "share": "주택담보대출 LTV·DSR 한도 계산기 2026 — 스트레스 DSR 반영 | 디코딩 자본주의", "desc": "2026년 규제지역 LTV, 수도권 대출 상한, 스트레스 DSR을 반영해 주택담보대출 최대 한도를 계산합니다."}, {"path": "cheongyak-score", "tab": "cheongyak", "group": "realty", "title": "디코딩 자본주의 | 청약 가점 계산기", "share": "청약 가점 계산기 2026 — 무주택기간·부양가족·통장 84점 만점 | 디코딩 자본주의", "desc": "무주택기간·부양가족·청약통장 가입기간을 날짜로 따져 84점 만점 가점과 서울 평균 당첨 가점 도달 시점을 계산합니다."}, {"path": "apt-rank", "tab": "aptrank", "group": "realty", "title": "디코딩 자본주의 | 국내 나의 아파트 시세 순위", "share": "국내 아파트 시세 순위 — 실거래가 기준 전국 아파트 단지 순위 | 디코딩 자본주의", "desc": "최근 1년 실거래된 전국 아파트 단지를 최근 실거래가 순으로 순위를 매기고 1년 거래 그래프를 보여 줍니다."}, {"path": "property-tax", "tab": "proptax", "group": "realty", "title": "디코딩 자본주의 | 재산세 계산기", "share": "재산세 계산기 2026 — 주택·1세대1주택 특례·과세표준 상한·건축물·토지 | 디코딩 자본주의", "desc": "2026년 지방세법 기준 주택(1세대1주택 43~45%·특례세율·과표상한)·건축물·토지 재산세와 도시지역분·지방교육세·소방분까지 계산합니다."}, {"path": "jongbu", "tab": "jongbu", "group": "realty", "title": "디코딩 자본주의 | 종합부동산세 계산기", "share": "종합부동산세 계산기 2026 — 1세대1주택 12억·재산세 공제·세부담상한·농특세 | 디코딩 자본주의", "desc": "2026년 종부세법 기준 공제 9억·1세대1주택 12억, 고령자·장기보유 공제, 재산세 공제, 세부담상한, 농어촌특별세, 토지분까지 계산합니다."}, {"path": "dividend-calendar", "tab": "etfdiv", "group": "passive", "title": "디코딩 자본주의 | ETF 월분배 및 배당 달력", "share": "ETF 월분배 및 배당 달력 — 분배락일·지급일·분배금 실시간 공시 | 디코딩 자본주의", "desc": "국내 월분배·월배당 ETF 전 종목의 분배금 공시일·분배락일·기준일·지급일·분배율을 거래소 공시로 바로 확인합니다."}, {"path": "dividend-calculator", "tab": "divcalc", "group": "passive", "title": "디코딩 자본주의 | 배당금 계산기", "share": "배당금 계산기 — 월·분기·반년·연 배당 재투자·적립식·배당소득세 | 디코딩 자본주의", "desc": "투자 금액·배당률·지급 주기(월·분기·반년·연)로 배당금과 재투자 복리, 적립식, 배당소득세(15.4%·종합과세)까지 계산합니다."}, {"path": "pension", "tab": "pension", "group": "passive", "title": "디코딩 자본주의 | 연금저축·IRP 세액공제 계산기", "share": "연금저축·IRP 세액공제 계산기 2026 — 900만원 한도 환급액 | 디코딩 자본주의", "desc": "연금저축 600만원·IRP 합산 900만원 한도와 13.2%·16.5% 공제율로 연말정산 환급액을 계산합니다."}, {"path": "dividend", "tab": "dividend", "group": "passive", "title": "디코딩 자본주의 | 배당소득세 계산기", "share": "배당소득세·금융소득종합과세 계산기 2026 — 2천만원 초과 세금 | 디코딩 자본주의", "desc": "이자·배당이 연 2천만원을 넘을 때 5월에 더 낼 세금과 고배당기업 분리과세 유불리를 계산합니다."}, {"path": "fire", "tab": "fire", "group": "passive", "title": "디코딩 자본주의 | 파이어족 계산기", "share": "파이어족 계산기 — FIRE 목표 자산·달성 나이·4% 룰·코스트 FIRE | 디코딩 자본주의", "desc": "월 생활비·저축액·수익률·물가로 FIRE 목표 자산과 달성 나이, 희망 나이 은퇴에 필요한 월 저축, 코스트 FIRE를 계산합니다."}, {"path": "kodex", "tab": "simulator", "group": "passive", "title": "디코딩 자본주의 | KODEX 200타겟위클리커버드콜", "share": "KODEX 200타겟위클리커버드콜 분배금 시뮬레이터 (498400) | 디코딩 자본주의", "desc": "KODEX 200타겟위클리커버드콜(498400)의 월 분배금·세후 수령액을 계산하고 코스피와 수익률을 비교합니다."}, {"path": "sol", "tab": "sol", "group": "passive", "title": "디코딩 자본주의 | SOL 200타겟위클리커버드콜", "share": "SOL 200타겟위클리커버드콜 분배금 시뮬레이터 (0167B0) | 디코딩 자본주의", "desc": "SOL 200타겟위클리커버드콜(0167B0)의 월 분배금·세후 수령액을 계산하고 코스피와 수익률을 비교합니다."}, {"path": "tiger", "tab": "tiger", "group": "passive", "title": "디코딩 자본주의 | TIGER 200타겟위클리커버드콜", "share": "TIGER 200타겟위클리커버드콜 분배금 시뮬레이터 (0104N0) | 디코딩 자본주의", "desc": "TIGER 200타겟위클리커버드콜(0104N0)의 월 분배금·세후 수령액을 계산하고 코스피와 수익률을 비교합니다."}, {"path": "tigerdiv", "tab": "tigerdiv", "group": "passive", "title": "디코딩 자본주의 | TIGER 배당커버드콜액티브", "share": "TIGER 배당커버드콜액티브 분배금 시뮬레이터 (472150) | 디코딩 자본주의", "desc": "TIGER 배당커버드콜액티브(472150)의 월 분배금·특별분배·세후 수령액을 계산하고 코스피와 비교합니다."}, {"path": "tigersemi", "tab": "tigersemi", "group": "passive", "title": "디코딩 자본주의 | TIGER 반도체TOP10커버드콜액티브", "share": "TIGER 반도체TOP10커버드콜액티브 분배금 시뮬레이터 (0177R0) | 디코딩 자본주의", "desc": "TIGER 반도체TOP10커버드콜액티브(0177R0)의 월 분배금·세후 수령액을 계산하고 코스피와 비교합니다."}]</script>
+<!--SEO:END-->
+<script>
+/* ════════════════════════════════════════════════════════════
+   [I18N] 언어 선택 — 한국어(원문) · English · 日本語 · 简体中文 · 繁體中文
+   · 기본값: 접속 국가 (Worker GET /geo · Cloudflare 가 IP 로 판별) → KR 한국어, JP 일본어, CN·SG 간체, TW·HK·MO 번체, 그 밖 영어
+     국가를 못 알아내면 브라우저 언어 · 검색엔진 봇은 항상 원문(한국어) · 판별 결과는 하루 동안 기억
+   · 직접 고르면 그 선택을 계속 기억 (localStorage 'site-lang') · 주소에 ?lang=en 처럼 붙여도 됨
+   · 영어: 직접 번역한 /en/ 페이지가 있는 도구는 그 주소로 이동, 나머지는 자동 번역
+   · 일본어·중국어(및 /en/ 이 없는 영어): 구글 번역 엔진으로 화면 전체를 자동 번역 (한국어면 번역기를 아예 불러오지 않음)
+════════════════════════════════════════════════════════════ */
+(function () {
+  var LANGS = ['ko', 'en', 'ja', 'zh-CN', 'zh-TW'], KEY = 'site-lang', AUTO = 'site-lang-auto';
+  var BOT = /bot|crawl|spider|slurp|yeti|daum|lighthouse|headless|preview|facebookexternalhit|kakaotalk-scrap/i;
+  var isBot = BOT.test(navigator.userAgent || '') || navigator.webdriver === true;
+  var EN_PAGE = (document.documentElement.getAttribute('lang') || '').indexOf('en') === 0;
+  var MSG = { en: 'Automatic translation could not be loaded. Please try again later.', ja: '自動翻訳を読み込めませんでした。しばらくしてからもう一度お試しください。',
+              'zh-CN': '无法加载自动翻译，请稍后再试。', 'zh-TW': '無法載入自動翻譯，請稍後再試。', ko: '자동 번역을 불러오지 못했습니다.' };
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function valid(l) { return LANGS.indexOf(l) >= 0 ? l : null; }
+  function byCountry(c) {
+    c = String(c || '').toUpperCase();
+    if (!/^[A-Z]{2}$/.test(c) || c === 'XX' || c === 'T1') return null;
+    return c === 'KR' ? 'ko' : c === 'JP' ? 'ja' : (c === 'CN' || c === 'SG') ? 'zh-CN' : (c === 'TW' || c === 'HK' || c === 'MO') ? 'zh-TW' : 'en';
+  }
+  function byBrowser() {
+    var l = String((navigator.languages && navigator.languages[0]) || navigator.language || '').toLowerCase();
+    if (l.indexOf('ko') === 0) return 'ko';
+    if (l.indexOf('ja') === 0) return 'ja';
+    if (/^zh-(tw|hk|mo)|^zh-hant/.test(l)) return 'zh-TW';
+    if (l.indexOf('zh') === 0) return 'zh-CN';
+    return 'en';
+  }
+  /* 사이트 루트 · 현재 도구 경로 · 그 도구의 영어 페이지 유무 */
+  function routeInfo() {
+    var meta = document.querySelector('meta[name="etfmd-route"]'), route = meta ? meta.getAttribute('content') || '' : '';
+    var p = location.pathname.replace(/index\.html$/, ''); if (p.slice(-1) !== '/') p += '/';
+    if (route && p.slice(-(route.length + 2)) === '/' + route + '/') p = p.slice(0, -(route.length + 1));
+    if (EN_PAGE && /\/en\/$/.test(p)) p = p.slice(0, -3);
+    var reg = []; try { reg = JSON.parse((document.getElementById('etfmd-routes') || {}).textContent || '[]'); } catch (e) {}
+    var r = null; reg.forEach(function (x) { if (x.path === route) r = x; });
+    return { root: p, route: route, hasEn: !!(r && r.en) };
+  }
+  function koUrl(i) { return i.root + (i.route ? i.route + '/' : '') + location.search.replace(/[?&]lang=[^&]*/, '').replace(/^&/, '?') + location.hash; }
+  function enUrl(i) { return i.root + 'en/' + i.route + '/' + location.hash; }
+  /* 구글 번역 쿠키 (googtrans=/ko/ja) — 도메인 표기마다 따로 저장될 수 있어 지울 때는 모두 지움 */
+  function cookieDomains() { var h = location.hostname, d = ['']; if (h.indexOf('.') > 0) { d.push(h, '.' + h); var b = h.replace(/^www\./, ''); if (b !== h) d.push(b, '.' + b); } return d; }
+  function setTrans(lang) {
+    cookieDomains().forEach(function (d) { document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' + (d ? '; domain=' + d : ''); });
+    if (lang) document.cookie = 'googtrans=/ko/' + lang + '; path=/';
+  }
+  function hasTrans() { return /(?:^|;\s*)googtrans=\/ko\/[^;]+/.test(document.cookie); }
+  function toast(lang) {
+    var t = document.createElement('div'); t.className = 'lang-toast notranslate'; t.setAttribute('translate', 'no');
+    t.textContent = MSG[lang] || MSG.en; (document.body || document.documentElement).appendChild(t);
+    setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 6000);
+  }
+  function loadTranslator(lang) {
+    setTrans(lang);
+    var done = false;
+    window.googleTranslateElementInit = function () {
+      var go = function () {
+        try {
+          new google.translate.TranslateElement({ pageLanguage: 'ko', includedLanguages: 'en,ja,zh-CN,zh-TW', autoDisplay: false }, 'google_translate_element');
+          done = true;
+        } catch (e) { toast(lang); }
+      };
+      if (document.getElementById('google_translate_element')) go(); else document.addEventListener('DOMContentLoaded', go);
+    };
+    var s = document.createElement('script');
+    s.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit'; s.async = true;
+    s.onerror = function () { if (!done) toast(lang); };
+    document.head.appendChild(s);
+    setTimeout(function () { if (!done) toast(lang); }, 12000);
+  }
+  /* 언어 적용: 필요하면 주소 이동, 아니면 번역기 로드 · 반환값 true = 이동함 */
+  function apply(lang, info) {
+    window.siteLang = lang;
+    if (lang === 'ko') {
+      if (EN_PAGE) { setTrans(null); location.replace(koUrl(info)); return true; }
+      if (hasTrans()) { setTrans(null); location.reload(); return true; }   /* 번역된 채 남은 쿠키 정리 */
+      return false;
+    }
+    if (lang === 'en' && !EN_PAGE && info.hasEn) { location.replace(enUrl(info)); return true; }
+    if (lang !== 'en' && EN_PAGE) { setTrans(lang); location.replace(koUrl(info)); return true; }
+    if (isBot) return false;
+    loadTranslator(lang);
+    return false;
+  }
+  function today() { return new Date().toISOString().slice(0, 10); }
+  function detect(cb) {
+    var c = lsGet(AUTO), m = /^([\w-]+)\|(\d{4}-\d{2}-\d{2})$/.exec(c || '');
+    if (m && valid(m[1]) && m[2] === today()) return cb(m[1]);
+    var finished = false, fin = function (l) { if (finished) return; finished = true; lsSet(AUTO, l + '|' + today()); cb(l); };
+    setTimeout(function () { fin(byBrowser()); }, 3000);
+    fetch('data/counter.json', { cache: 'force-cache' }).then(function (r) { return r.json(); })
+      .then(function (c) { return fetch(String(c.endpoint).replace(/\/+$/, '') + '/geo', { cache: 'no-store' }); })
+      .then(function (r) { return r.json(); })
+      .then(function (g) { fin(byCountry(g && g.country) || byBrowser()); })
+      .catch(function () { fin(byBrowser()); });
+  }
+  var NAMES = { ko: '한국어', en: 'English', ja: '日本語', 'zh-CN': '简体中文', 'zh-TW': '繁體中文' };
+  /* 사용자가 언어를 고름 → 기억하고 해당 주소로 이동하거나 새로고침 */
+  function choose(l, info) {
+    l = valid(l) || 'ko';
+    lsSet(KEY, l);
+    if (l === (window.siteLang || 'ko') && !(l === 'en' && !EN_PAGE && info.hasEn)) return;
+    if (l === 'ko') { setTrans(null); if (EN_PAGE) location.href = koUrl(info); else location.reload(); return; }
+    if (l === 'en' && !EN_PAGE && info.hasEn) { setTrans(null); location.href = enUrl(info); return; }
+    setTrans(l);
+    if (EN_PAGE && l !== 'en') { location.href = koUrl(info); return; }
+    location.reload();
+  }
+  /* 버튼 글자·선택 표시를 현재 언어로 */
+  function markCurrent() {
+    var cur = window.siteLang || (EN_PAGE ? 'en' : 'ko'), lb = document.getElementById('lang-cur');
+    if (lb) lb.textContent = NAMES[cur] || NAMES.ko;
+    var opts = document.querySelectorAll('#lang-menu .lang-opt');
+    for (var i = 0; i < opts.length; i++) {
+      var on = opts[i].getAttribute('data-lang') === cur;
+      opts[i].classList.toggle('active', on); opts[i].setAttribute('aria-selected', on ? 'true' : 'false');
+    }
+  }
+  /* 펼침 목록: 버튼으로 열고 닫기 · 바깥 클릭/Esc 로 닫기 · ↑↓ 로 이동 */
+  function bindMenu(info) {
+    var btn = document.getElementById('lang-btn'), menu = document.getElementById('lang-menu');
+    if (!btn || !menu || btn.getAttribute('data-bound')) return;
+    btn.setAttribute('data-bound', '1');
+    var opts = function () { return Array.prototype.slice.call(menu.querySelectorAll('.lang-opt')); };
+    var open = function (focus) {
+      menu.classList.add('open'); btn.setAttribute('aria-expanded', 'true');
+      if (focus) { var a = menu.querySelector('.lang-opt.active') || opts()[0]; if (a) a.focus(); }
+    };
+    var close = function (back) { menu.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); if (back) btn.focus(); };
+    btn.addEventListener('click', function (e) { e.stopPropagation(); menu.classList.contains('open') ? close() : open(e.detail === 0); });
+    btn.addEventListener('keydown', function (e) { if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); open(true); } });
+    menu.addEventListener('click', function (e) {
+      var o = e.target.closest && e.target.closest('.lang-opt'); if (!o) return;
+      e.stopPropagation(); close(); choose(o.getAttribute('data-lang'), info);
+    });
+    menu.addEventListener('keydown', function (e) {
+      var list = opts(), i = list.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown') { e.preventDefault(); list[(i + 1) % list.length].focus(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); list[(i - 1 + list.length) % list.length].focus(); }
+      else if (e.key === 'Escape') { e.preventDefault(); close(true); }
+      else if (e.key === 'Tab') close();
+    });
+    document.addEventListener('click', function (e) { if (!e.target.closest || !e.target.closest('#lang-sw')) close(); }, true);   /* capture: 다른 버튼이 클릭 전파를 막아도 닫힘 */
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && menu.classList.contains('open')) close(true); });
+    markCurrent();
+  }
+
+  var q = /[?&]lang=([\w-]+)/.exec(location.search), forced = q ? valid(q[1]) : null;
+  if (forced) lsSet(KEY, forced);
+  var manual = valid(lsGet(KEY));
+  var info = routeInfo();
+  var start = function (lang) {
+    var moved = apply(lang, info);
+    if (moved) return;
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', markCurrent); else markCurrent();
+  };
+  /* 목록은 언어 판별을 기다리지 않고 바로 쓸 수 있게 */
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { bindMenu(info); }); else bindMenu(info);
+  window.siteLang = manual || (EN_PAGE ? 'en' : 'ko');
+  if (manual) start(manual);
+  else if (EN_PAGE) start('en');                 /* 영어 주소로 들어오면 영어 그대로 */
+  else if (isBot) start('ko');
+  else detect(function (l) { start(l); });
+})();
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>(function(){try{var m=localStorage.getItem("site-theme")||"dark";var l=m==="light"||(m==="auto"&&window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches);document.documentElement.setAttribute("data-theme",l?"light":"dark");}catch(e){}})();</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="stylesheet" href="assets/app.aec7950fa0.css">
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ── 앱 탭 네비게이션 ── -->
+  <!-- ── 방문자 수 (같은 IP 하루 1회) ── [VISITS] ── -->
+  <div class="top-bar">
+  <!-- [BRAND] 로고 · 사이트 이름 (누르면 홈) -->
+  <a class="brand" href="./" onclick="if (window.switchSubTab) { switchSubTab('home','home',document.getElementById('drop-home')); window.scrollTo(0, 0); return false; }" aria-label="디코딩 자본주의 홈"><svg class="brand-mark" width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="8" fill="#3182f6"/><path d="M7.5 22h4.5v-4.5h4.5V13h4.5V8.5" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.8 8.5h3.2v3.2" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="brand-name">디코딩 자본주의</span></a>
+  <!-- [SEARCH] 사이트 검색 — 메뉴의 모든 도구를 이름·설명으로 찾아 바로 이동 -->
+  <div class="site-search" role="search">
+    <svg class="ss-ico" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input id="ss-input" type="search" autocomplete="off" spellcheck="false" placeholder="계산기·자료 검색 (예: 연봉, 취득세, 배당)" aria-label="사이트 검색" role="combobox" aria-autocomplete="list" aria-controls="ss-list" aria-expanded="false">
+    <div class="ss-list" id="ss-list" role="listbox" aria-label="검색 결과" hidden></div>
+  </div>
+  <!-- [THEME] 테마 선택 (왼쪽 위) — 언어 선택 버튼과 같은 모양 -->
+  <div class="lang-sw theme-sw" id="theme-sw">
+    <button type="button" class="lang-btn" id="theme-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="theme-menu" title="테마">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg>
+      <span id="theme-btn-label">다크</span><span class="lang-arrow">▼</span>
+    </button>
+    <div class="lang-menu theme-menu" id="theme-menu" role="listbox" aria-label="테마">
+      <button type="button" class="lang-opt theme-opt" role="option" data-theme-opt="dark"><span class="lang-code">☾</span><span class="lang-name">다크</span><svg class="lang-check" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="lang-opt theme-opt" role="option" data-theme-opt="light"><span class="lang-code">☀</span><span class="lang-name">라이트</span><svg class="lang-check" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="lang-opt theme-opt" role="option" data-theme-opt="auto"><span class="lang-code">⌬</span><span class="lang-name">오토 <small class="theme-sub">(기기 설정 따라감)</small></span><svg class="lang-check" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+  </div>
+  <div class="visit-bar" id="visit-bar" hidden>
+    <button type="button" class="visit-btn" id="visit-btn" aria-expanded="false" aria-controls="visit-pop" aria-label="방문자 수">
+      <span class="visit-dot"></span><span>전체 <b id="visit-total">—</b>명</span>
+    </button>
+    <div class="visit-pop" id="visit-pop" role="tooltip">
+      <div class="visit-row visit-row-live"><span><i class="visit-live-dot" aria-hidden="true"></i>실시간</span><span><b id="visit-live">—</b>명</span></div>
+      <div class="visit-row"><span>오늘</span><span><b id="visit-today">—</b>명</span></div>
+      <div class="visit-row"><span>어제</span><span><b id="visit-yday">—</b>명</span></div>
+      <div class="visit-row"><span>최대</span><span><small id="visit-maxday"></small><b id="visit-max">—</b>명</span></div>
+      <div class="visit-row visit-row-total"><span>전체</span><span><b id="visit-total2">—</b>명</span></div>
+    </div>
+  </div>
+  <!-- [AUTH] 간편 로그인 — 로그인 제공자 키가 등록돼 있을 때만 보임 -->
+  <div class="lang-sw" id="dc-auth" hidden></div>
+  <!-- [I18N] 언어 선택 — 기본값은 접속 국가(한국 → 한국어, 일본 → 일본어 …), 고르면 그 선택을 기억 -->
+  <div class="lang-sw notranslate" translate="no" id="lang-sw">
+    <button type="button" class="lang-btn" id="lang-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="lang-menu" title="Language / 언어">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 8h13M8 1.5c1.8 1.8 2.7 4 2.7 6.5S9.8 12.7 8 14.5M8 1.5C6.2 3.3 5.3 5.5 5.3 8s.9 4.7 2.7 6.5" stroke="currentColor" stroke-width="1.3"/></svg>
+      <span id="lang-cur">한국어</span><span class="lang-arrow">▼</span>
+    </button>
+    <div class="lang-menu" id="lang-menu" role="listbox" aria-label="Language">
+      <button type="button" class="lang-opt" role="option" data-lang="ko"><span class="lang-code">KO</span><span class="lang-name">한국어</span><svg class="lang-check" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="lang-opt" role="option" data-lang="en"><span class="lang-code">EN</span><span class="lang-name">English</span><svg class="lang-check" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="lang-opt" role="option" data-lang="ja"><span class="lang-code">JA</span><span class="lang-name">日本語</span><svg class="lang-check" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="lang-opt" role="option" data-lang="zh-CN"><span class="lang-code">简</span><span class="lang-name">简体中文</span><svg class="lang-check" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="lang-opt" role="option" data-lang="zh-TW"><span class="lang-code">繁</span><span class="lang-name">繁體中文</span><svg class="lang-check" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+  </div>
+  </div>
+  <div id="google_translate_element"></div>
+  <nav class="app-nav" id="mainNav">
+    <!-- 홈 (메인 화면) -->
+    <div class="tab-group" id="grp-home">
+      <button class="tab-group-btn" id="grp-home-btn" onclick="switchSubTab('home','home',document.getElementById('drop-home'))"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2.5 8.2 L9 2.8 L15.5 8.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.2 7.2 V15.2 H13.8 V7.2" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7.4 15.2 V11 H10.6 V15.2" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>홈</button>
+    </div>
+    <div class="tab-group" id="grp-me">
+      <button class="tab-group-btn" id="grp-me-btn" onclick="toggleTabGroup('me')">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="5.6" r="2.8" stroke="currentColor" stroke-width="1.3"/><path d="M3.6 15.6c.6-3 2.8-4.6 5.4-4.6s4.8 1.6 5.4 4.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>내 위치<span class="tab-group-arrow">▼</span>
+      </button>
+    </div>
+    <div class="tab-group" id="grp-pay">
+      <button class="tab-group-btn" id="grp-pay-btn" onclick="toggleTabGroup('pay')">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.8" y="4" width="14.4" height="10" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="9" cy="9" r="2.2" stroke="currentColor" stroke-width="1.2"/><path d="M4 6.5v5M14 6.5v5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>월급·세금<span class="tab-group-arrow">▼</span>
+      </button>
+    </div>
+    <div class="tab-group" id="grp-invest">
+      <button class="tab-group-btn has-active" id="grp-invest-btn" onclick="toggleTabGroup('invest')">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2 15.5h14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M3 12l4-4 3 2.5 5-5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.5 5h3.5v3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>투자<span class="tab-group-arrow">▼</span>
+      </button>
+    </div>
+    <div class="tab-group" id="grp-realty">
+      <button class="tab-group-btn" id="grp-realty-btn" onclick="toggleTabGroup('realty')">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2.5 8.2 9 2.8l6.5 5.4V15a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 16v-4.5h4V16" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>부동산<span class="tab-group-arrow">▼</span>
+      </button>
+    </div>
+    <div class="tab-group" id="grp-passive">
+      <button class="tab-group-btn" id="grp-passive-btn" onclick="toggleTabGroup('passive')">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M14.6 7.2A5.8 5.8 0 0 0 4 5.6M3.4 10.8A5.8 5.8 0 0 0 14 12.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 2.6v3h3M14 15.4v-3h-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 6.3v5.4M7.6 7.4h2a1 1 0 0 1 0 2h-1.2a1 1 0 0 0 0 2h2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>불로소득<span class="tab-group-arrow">▼</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── 홈 (메인 화면) ── [HOME] ── -->
+  <!-- /page-home -->
+
+  <!-- ── 연봉 실수령액 계산기 ── [FC-SALARY] ── -->
+  <!-- /page-salary -->
+
+  <!-- ── 퇴직금 계산기 (DB/DC) ── [FC-SEVERANCE] ── -->
+  <!-- /page-severance -->
+
+  <!-- ── 주택담보대출 LTV·DSR 한도 계산기 ── [FC-MORTGAGE] ── -->
+  <!-- /page-mortgage -->
+
+  <!-- ── 부동산 중개수수료 계산기 ── [FC-BROKER] ── -->
+  <!-- /page-brokerage -->
+  
+  <!-- ── 법인세 계산기 ── [CORP-TAX] ── -->
+  
+<!-- /page-incometax -->
+  <!-- /page-stocktax -->
+  <!-- /page-dividend -->
+  <!-- /page-pension -->
+  <!-- /page-gift -->
+  <!-- /page-acquisition -->
+
+  <!-- ── 대출 이자 계산기 페이지 ── -->
+  <!-- /page-loan -->
+
+  <!-- ── 복리 계산기 페이지 ── -->
+  <!-- /page-compound -->
+
+  <!-- ── 시뮬레이터 페이지 ── -->
+  <!-- /page-simulator -->
+
+  <!-- /page-sol -->
+
+  <!-- /page-tiger -->
+
+  <!-- ── 환율 계산기 페이지 ── -->
+  <!-- /page-tigerdiv -->
+
+  <!-- ── TIGER 반도체TOP10커버드콜액티브 페이지 ── -->
+  <!-- /page-tigersemi -->
+
+  <!-- ── 환율 계산기 페이지 ── -->
+  <!-- ── 배당금 계산기 ── [DIV-CALC] ── -->
+  <!-- /page-divcalc -->
+
+  <!-- ── 파이어족 계산기 ── [FIRE] ── -->
+  <!-- /page-fire -->
+
+  <!-- ── 재산세 계산기 ── [RE-TAX] ── -->
+  <!-- /page-proptax -->
+
+  <!-- ── 종합부동산세 계산기 ── [RE-TAX] ── -->
+  <!-- /page-jongbu -->
+
+  <!-- ── 그때 샀더라면 계산기 ── [WHATIF] ── -->
+  <!-- /page-whatif -->
+
+  <!-- ── 내 연봉으로 집 사기까지 몇 년 ── [HOUSE-YEARS] ── -->
+  <!-- /page-houseyears -->
+
+  <!-- ── 노후 준비 성적표 ── [RETIRE] ── -->
+  <!-- /page-retire -->
+
+  <!-- /page-npsroi -->
+
+  <!-- /page-avgdown -->
+
+  <!-- /page-cgt -->
+
+  <!-- /page-cheongyak -->
+
+  <!-- /page-yearend -->
+
+  <!-- /page-hubme -->
+
+  <!-- /page-hubpay -->
+
+  <div class="app-page active" id="page-hubinvest">
+    <nav class="crumbs" aria-label="현재 위치"><a href="./">홈</a><i>›</i><span aria-current="page">투자</span></nav>
+    <div class="header"><div class="header-left">
+      <span class="badge">STEP 3 · INVEST</span>
+      <h1>투자 <span>계산기·지수 모음</span></h1>
+      <p class="subtitle">월급에서 떼어 낸 돈이 자본이 되려면 시간과 복리가 필요합니다. 복리·CAGR 계산기와 미국·한국·일본·중국·홍콩·대만 주요 지수의 장기 성장률로 어디에, 얼마나 오래 두어야 하는지 확인하세요.</p>
+    </div></div>
+    <nav class="hub-path" aria-label="노동자에서 자본가로 가는 단계"><a href="my-position/"><b>1</b>내 위치</a><a href="pay-tax/"><b>2</b>월급·세금</a><a href="invest/" class="on" aria-current="page"><b>3</b>투자</a><a href="real-estate/"><b>4</b>부동산</a><a href="passive-income/"><b>5</b>불로소득</a></nav>
+    <section class="card hub-todo"><h2>이 단계에서 할 일</h2><ol><li><b>복리 계산기</b>로 매달 적립한 돈이 10년·20년 뒤 얼마가 되는지 확인합니다. 수익률만큼이나 기간이 결과를 크게 바꿉니다.</li><li><b>지수 성장률</b>로 S&amp;P 500·나스닥 100·코스피 같은 시장 전체의 장기 성과를 비교합니다. 개별 종목 고르기보다 지수에 꾸준히 넣는 방법이 대부분의 개인에게 더 안정적인 결과를 냈습니다.</li><li><b>물타기</b>·<b>해외주식 양도소득세</b>·<b>환율</b> 계산기로 매수 전략과 세금, 환전 비용까지 따져 실제로 남는 수익을 계산합니다.</li></ol></section>
+    <!--HUBGRID:invest--><section class="hub-sec"><h2 class="hub-h">투자 계산기·도구 <small>9개</small></h2><div class="hub-grid"><a class="hub-card" href="compound/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M9 3.5 C5.96 3.5 3.5 5.96 3.5 9 C3.5 12.04 5.96 14.5 9 14.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9 14.5 C12.04 14.5 14.5 12.04 14.5 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="2 1.5"/><path d="M12 7 L14.5 9 L12 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 7.5 L9.5 9 L11 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/><circle cx="9" cy="9" r="1" fill="currentColor"/></svg>복리 계산기</b><span>원금·월 적립금·이율·기간으로 복리 최종 자산과 세후 수익, 적립식 실효 수익률을 연도별로 계산합니다.</span></a><a class="hub-card" href="averaging-down/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2.5 4.5l4 4.5 3-2.5 5.5 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 13.5h13" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-dasharray="1.6 1.8"/><circle cx="6.5" cy="9" r="1.3" fill="currentColor"/><circle cx="9.5" cy="6.5" r="1.3" fill="currentColor"/></svg>주식 물타기 계산기</b><span>추가 매수 후 평균 단가와 본전 가격, 목표 평단까지 필요한 수량, 분할 물타기 계획을 수수료·거래세까지 계산합니다.</span></a><a class="hub-card" href="stocktax/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M2.5 9h13M9 2c1.9 2 2.8 4.3 2.8 7S10.9 14 9 16M9 2C7.1 4 6.2 6.3 6.2 9S7.1 14 9 16" stroke="currentColor" stroke-width="1" opacity=".55"/><path d="M5 11.5 8 8.5l2 1.5 3-3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>해외주식 양도소득세 계산기</b><span>미국 주식·해외 ETF 매도 손익을 환율로 계산해 250만원 공제 후 22% 양도세와 RIA 공제를 계산합니다.</span></a><a class="hub-card" href="fx/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M9 2.5 Q12.5 9 9 15.5 M9 2.5 Q5.5 9 9 15.5" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M2.5 6.5 Q9 5 15.5 6.5 M2.5 11.5 Q9 13 15.5 11.5" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M7 8 h1.5 a1 1 0 1 1 0 2 H7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>환율 계산기</b><span>달러·엔·유로·위안 등 12개 통화의 원화 환율과 억·만 단위 통화 변환, 달러인덱스(DXY) 1M~MAX 기간별 차트를 제공합니다.</span></a><a class="hub-card" href="fear/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M9 2a7 7 0 1 0 0 14A7 7 0 0 0 9 2z" stroke="currentColor" stroke-width="1.3"/><path d="M6 7.5 C6 6.7 6.7 6 7.5 6 S9 6.7 9 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M9 7.5 C9 6.7 9.7 6 10.5 6 S12 6.7 12 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><circle cx="7.5" cy="7.5" r="0.8" fill="currentColor"/><circle cx="10.5" cy="7.5" r="0.8" fill="currentColor"/><path d="M6.5 11.5 Q9 10 11.5 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>공포 &amp; 탐욕 지수</b><span>CNN 공포 탐욕 지수(Fear &amp; Greed Index)와 구성 지표, 주요 시장 심리·금융 지표를 한눈에 확인합니다.</span></a><a class="hub-card" href="cagr/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="1.5" width="13" height="15" rx="2" stroke="currentColor" stroke-width="1.4"/><rect x="4.5" y="3.5" width="9" height="3" rx="0.8" fill="currentColor" opacity="0.5"/><path d="M4.5 11 L7.5 8.5 L10.5 10 L13.5 6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13.5" cy="6.5" r="1.2" fill="currentColor"/></svg>CAGR 계산기</b><span>초기·최종 금액과 기간으로 연평균 성장률(CAGR), 2배·10배 도달 기간, 목표 수익률 역산을 계산합니다.</span></a><a class="hub-card" href="etfcagr/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2 15.5h14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M2.5 13 L6.5 9 L9.5 11 L15.5 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 13.5 L7 11.5 L10 12.5 L15.5 8.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/></svg>ETF CAGR 비교</b><span>QQQ·SPY·SOXX와 TQQQ·SOXL 등 레버리지 ETF 12종의 연평균 성장률(CAGR) 추이를 비교합니다.</span></a><a class="hub-card" href="marketcap/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.8" stroke="currentColor" stroke-width="1.2" opacity="0.55"/><path d="M2.2 9h13.6M9 2.2c1.9 1.9 2.8 4.2 2.8 6.8S10.9 13.9 9 15.8M9 2.2C7.1 4.1 6.2 6.4 6.2 9s.9 4.9 2.8 6.8" stroke="currentColor" stroke-width="1" opacity="0.55"/><rect x="11.5" y="10" width="2" height="5.5" rx="0.5" fill="currentColor"/><rect x="14.5" y="7.5" width="2" height="8" rx="0.5" fill="currentColor"/></svg>전세계 시가총액 TOP 100</b><span>엔비디아·애플·삼성전자 등 전 세계 상장 기업 시가총액 상위 100개를 매일 종가 기준 달러·원화로 비교합니다.</span></a><a class="hub-card" href="muhan/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="2.5" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 6.5h7M5.5 9h5M5.5 11.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>무한매수법 기록</b><span>무한매수법 4.0 방식으로 TQQQ·SOXL 분할 매수·매도 주문표와 평단가, 진행 회차, 수익 현황을 계산하고 기록합니다.</span></a></div></section><section class="hub-sec"><h2 class="hub-h">미국 지수 성장률 <small>6개</small></h2><div class="hub-grid"><a class="hub-card" href="nasdaq/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="6" y="6" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M3 7.5 H6 M3 10.5 H6 M12 7.5 H15 M12 10.5 H15" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M7.5 3 V6 M10.5 3 V6 M7.5 12 V15 M10.5 12 V15" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/></svg>나스닥 종합 성장률</b><span>1971년 기준지수 100에서 출발한 나스닥 종합지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.</span></a><a class="hub-card" href="nasdaq100/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.5" y="6" width="4" height="10.5" rx="0.8" fill="currentColor" opacity="0.35"/><rect x="7" y="3" width="4" height="13.5" rx="0.8" fill="currentColor" opacity="0.65"/><rect x="12.5" y="1.5" width="4" height="15" rx="0.8" fill="currentColor"/><path d="M1.5 5 Q4 2 6.5 5 Q9 8 11 4 Q13 1 16.5 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>나스닥 100 성장률</b><span>1985년 기준지수 250에서 출발한 나스닥 100 지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.</span></a><a class="hub-card" href="dowjones/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="9" width="5" height="7.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="6" width="5.5" height="10.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="3.5" y="6" width="1.5" height="3" fill="currentColor" opacity="0.5"/><path d="M2 8 L6 5 L10 6.5 L15.5 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 1.5 h3 v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>다우존스 성장률</b><span>1896년 산출을 시작한 다우존스 산업평균지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.</span></a><a class="hub-card" href="sp500/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M9 2 Q13 9 9 16 M9 2 Q5 9 9 16" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M2.5 7 Q9 5.5 15.5 7 M2 11 Q9 12.5 16 11" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M5 12 L9 8 L12 10 L15 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>S&amp;P 500 성장률</b><span>1928년부터 산출된 S&amp;P 500 지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.</span></a><a class="hub-card" href="sox/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="7" y="7" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.6"/><path d="M7 2v2.5M11 2v2.5M7 13.5V16M11 13.5V16M2 7h2.5M2 11h2.5M13.5 7H16M13.5 11H16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>필라델피아 반도체 성장률</b><span>1993년 기준지수 200에서 출발한 필라델피아 반도체지수(SOX)의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.</span></a><a class="hub-card" href="djsemi/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="7" y="7" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.6"/><path d="M7 2v2.5M11 2v2.5M7 13.5V16M11 13.5V16M2 7h2.5M2 11h2.5M13.5 7H16M13.5 11H16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>다우존스 반도체 성장률</b><span>다우존스 미국 반도체 지수(DJUSSC)의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.</span></a></div></section><section class="hub-sec"><h2 class="hub-h">한국 지수 성장률 <small>3개</small></h2><div class="hub-grid"><a class="hub-card" href="kospi/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>코스피 성장률</b><span>1980년 기준지수 100에서 출발한 코스피의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다.</span></a><a class="hub-card" href="kospi200/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.5" y="13" width="2.5" height="3.5" rx="0.6" fill="currentColor" opacity="0.4"/><rect x="5.5" y="9" width="2.5" height="7.5" rx="0.6" fill="currentColor" opacity="0.6"/><rect x="9.5" y="5.5" width="2.5" height="11" rx="0.6" fill="currentColor" opacity="0.8"/><rect x="13.5" y="2" width="2.5" height="14.5" rx="0.6" fill="currentColor"/><path d="M1.5 10 L5.5 7.5 L9.5 5 L14 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>코스피 200 성장률</b><span>1990년 기준지수 100에서 출발한 코스피 200의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다.</span></a><a class="hub-card" href="kosdaq/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>코스닥 성장률</b><span>1996년 기준지수 1000에서 출발한 코스닥의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다.</span></a></div></section><section class="hub-sec"><h2 class="hub-h">일본 지수 성장률 <small>2개</small></h2><div class="hub-grid"><a class="hub-card" href="n225/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>닛케이 225 성장률</b><span>1949년 176.21에서 출발한 닛케이 225의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다.</span></a><a class="hub-card" href="topix/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>TOPIX 성장률</b><span>1968년 기준지수 100에서 출발한 TOPIX의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다.</span></a></div></section><section class="hub-sec"><h2 class="hub-h">중국 지수 성장률 <small>5개</small></h2><div class="hub-grid"><a class="hub-card" href="sse/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>상해종합지수 성장률</b><span>1990년 기준지수 100에서 출발한 상해종합지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다.</span></a><a class="hub-card" href="csi300/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>CSI 300 성장률</b><span>2004년 기준지수 1000에서 출발한 CSI 300의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다.</span></a><a class="hub-card" href="szse/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>선전성분지수 성장률</b><span>1994년 기준지수 1000에서 출발한 선전성분지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다.</span></a><a class="hub-card" href="chinext/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="7" y="7" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.6"/><path d="M7 2v2.5M11 2v2.5M7 13.5V16M11 13.5V16M2 7h2.5M2 11h2.5M13.5 7H16M13.5 11H16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>창업판지수 성장률</b><span>2010년 기준지수 1000에서 출발한 창업판지수(ChiNext)의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다.</span></a><a class="hub-card" href="star50/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="7" y="7" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.6"/><path d="M7 2v2.5M11 2v2.5M7 13.5V16M11 13.5V16M2 7h2.5M2 11h2.5M13.5 7H16M13.5 11H16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>과창판50 성장률</b><span>2019년 기준지수 1000에서 출발한 과창판50(STAR 50)의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다.</span></a></div></section><section class="hub-sec"><h2 class="hub-h">홍콩 지수 성장률 <small>3개</small></h2><div class="hub-grid"><a class="hub-card" href="hsi/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>항셍지수 성장률</b><span>1964년 기준지수 100에서 출발한 항셍지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다.</span></a><a class="hub-card" href="hscei/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>홍콩H지수 성장률</b><span>2000년 기준지수 2000으로 산출되는 홍콩H지수(항셍중국기업지수)의 연평균·월평균·일평균 성장률과 기간별 수익률을 계산합니다.</span></a><a class="hub-card" href="hstech/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="7" y="7" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.6"/><path d="M7 2v2.5M11 2v2.5M7 13.5V16M11 13.5V16M2 7h2.5M2 11h2.5M13.5 7H16M13.5 11H16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>항셍테크지수 성장률</b><span>2014년 기준지수 3000에서 출발한 항셍테크지수의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다.</span></a></div></section><section class="hub-sec"><h2 class="hub-h">대만 지수 성장률 <small>1개</small></h2><div class="hub-grid"><a class="hub-card" href="taiex/"><b><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>대만 가권지수 성장률</b><span>1966년 평균 기준지수 100에서 출발한 대만 가권지수(TAIEX)의 연평균·월평균·일평균 성장률과 기간별 수익률을 현재 지수로 계산합니다.</span></a></div></section><!--/HUBGRID-->
+    <a class="hub-next" href="real-estate/"><span>다음 단계 4</span><b>부동산 →</b></a>
+  </div><!-- /page-hubinvest -->
+
+  <!-- /page-hubrealty -->
+
+  <!-- /page-hubpassive -->
+
+  <!-- /page-fx -->
+
+
+  <!-- ── 건강보험료 계산기 페이지 ── -->
+  <!-- /page-health -->
+
+
+  <!-- ── CAGR 계산기 페이지 ── -->
+  <!-- /page-cagr -->
+
+  <!-- ── KOSPI 성장률 페이지 ── -->
+  <!-- /page-kospi -->
+
+  <!-- ── KOSPI 200 페이지 ── -->
+  <!-- /page-kospi200 -->
+
+  <!-- ── KOSDAQ 페이지 ── -->
+  <!-- /page-kosdaq -->
+
+
+  <!-- ── 나스닥 종합지수 페이지 ── -->
+  <!-- /page-nasdaq -->
+
+  <!-- ── 나스닥 100 페이지 ── -->
+  <!-- /page-nasdaq100 -->
+
+  <!-- ── 다우존스 산업평균지수 페이지 ── -->
+  <!-- /page-dowjones -->
+
+  <!-- ── S&P 500 페이지 ── -->
+  <!-- /page-sp500 -->
+
+  <!-- ── 필라델피아 반도체지수 페이지 ── -->
+  <!-- /page-sox -->
+
+  <!-- ── 다우존스 미국 반도체 지수 페이지 ── -->
+  <!-- /page-djsemi -->
+  <!-- /page-n225 -->
+  <!-- /page-topix -->
+  <!-- /page-sse -->
+  <!-- /page-csi300 -->
+  <!-- /page-szse -->
+  <!-- /page-chinext -->
+  <!-- /page-star50 -->
+  <!-- /page-hsi -->
+  <!-- /page-hscei -->
+  <!-- /page-hstech -->
+  <!-- /page-taiex -->
+
+  <!-- ── 공포 & 탐욕 지수 페이지 ── -->
+  <!-- /page-fear -->
+
+  <!-- ───────────────────────────────────────────── page-moneyspeed ── -->
+  <!-- /page-moneyspeed -->
+
+
+
+
+
+
+  <!-- ───────────────────────────────────────────── page-muhan ── -->
+  <!-- [MUHAN] 무한매수법 기록 — 화면은 JS가 #mh-root 에 그림 -->
+  <!-- /page-muhan -->
+
+  <!-- ── ETF CAGR 비교 페이지 ── [ETF-CAGR] ── -->
+  <!-- /page-etfcagr -->
+
+  <!-- ── ETF 월분배 및 배당 달력 ── [ETFDIV] ── -->
+  <!-- /page-etfdiv -->
+
+  <!-- ── 전세계 시가총액 TOP 100 ── [MCAP] ── -->
+  <!-- /page-mcap -->
+
+  <!-- ── 국내 나의 연봉 순위 ── [SRANK] data/salary_rank.json (국세청 근로소득 백분위·천분위 자료) ── -->
+  <!-- /page-srank -->
+
+  <!-- ── 국내 나의 자산 순위 ── [ARANK] data/asset_rank.json (통계청 가계금융복지조사 · KOSIS) ── -->
+  <!-- /page-arank -->
+
+  <!-- ── 국내 나의 아파트 시세 순위 ── [APTRANK] data/apt_rank.json (국토교통부 아파트 매매 실거래가 · 매일 갱신) ── -->
+  <!-- /page-aptrank -->
+
+
+
+
+
+
+
+
+
+
+</div>
+
+<script src="assets/app.03cbeabac2.js"></script>
+  <!-- ── 하단 후원/문의 배너 ── -->
+  <div style="max-width:1280px;margin:0 auto;padding:0 32px 40px;">
+  <!-- ── 카카오 오픈채팅 (커뮤니티) — 모든 화면 아래쪽 ── -->
+  <a href="https://open.kakao.com/o/gi9XfRpi" target="_blank" rel="noopener"
+    style="display:flex;align-items:center;justify-content:center;gap:14px;
+      background:linear-gradient(135deg,rgba(254,152,0,0.12),rgba(254,152,0,0.06));
+      border:1px solid rgba(254,152,0,0.3);border-radius:14px;
+      padding:18px 24px;margin-bottom:12px;text-decoration:none;
+      width:100%;box-sizing:border-box;transition:background 0.2s,border-color 0.2s;"
+    onmouseover="this.style.background='linear-gradient(135deg,rgba(254,152,0,0.2),rgba(254,152,0,0.1))';this.style.borderColor='rgba(254,152,0,0.5)'"
+    onmouseout="this.style.background='linear-gradient(135deg,rgba(254,152,0,0.12),rgba(254,152,0,0.06))';this.style.borderColor='rgba(254,152,0,0.3)'">
+    <span style="font-size:22px;flex-shrink:0;">💬</span>
+    <div style="text-align:center;">
+      <p style="font-size:15px;font-weight:600;color:#fe9800;margin-bottom:3px;">카카오 오픈채팅</p>
+      <p style="font-size:12px;color:var(--text2);">ETF 커버드콜 + 배당투자 + 성장주 함께 장기투자를 위한 오픈톡방 가기</p>
+    </div>
+    <span style="font-size:18px;color:#fe9800;flex-shrink:0;">→</span>
+  </a>
+    <a href="https://open.kakao.com/o/smk2aSpi" target="_blank" rel="noopener"
+      style="display:flex;align-items:center;justify-content:center;gap:14px;
+        background:linear-gradient(135deg,rgba(49,130,246,0.1),rgba(49,130,246,0.08));
+        border:1px solid rgba(49,130,246,0.25);border-radius:14px;
+        padding:18px 24px;text-decoration:none;width:100%;box-sizing:border-box;
+        transition:background 0.2s,border-color 0.2s;"
+      onmouseover="this.style.background='linear-gradient(135deg,rgba(49,130,246,0.18),rgba(49,130,246,0.14))';this.style.borderColor='rgba(49,130,246,0.5)'"
+      onmouseout="this.style.background='linear-gradient(135deg,rgba(49,130,246,0.1),rgba(49,130,246,0.08))';this.style.borderColor='rgba(49,130,246,0.25)'">
+      <span style="font-size:22px;">☕</span>
+      <div style="text-align:center;">
+        <p style="font-size:15px;font-weight:600;color:var(--accent);margin-bottom:3px;">후원 및 문의</p>
+        <p style="font-size:12px;color:var(--text2);">카카오 오픈 1:1채팅으로 연결됩니다</p>
+      </div>
+      <span style="font-size:18px;color:var(--accent);">→</span>
+    </a>
+  </div>
+
+  <!-- [FOOTER] 모든 화면 하단 공통: 저작권 · 개인정보처리방침 · 문의 -->
+  <footer class="site-footer"><!--FOOTMAP--><nav class="sf-map" aria-label="전체 도구"><div class="sf-col"><p class="sf-h"><a href="my-position/">내 위치</a></p><a href="salary-rank/">국내 나의 연봉 순위</a><a href="asset-rank/">국내 나의 자산 순위</a><a href="retirement-score/">노후 준비 성적표</a><a href="house-years/">내 연봉으로 집 사기까지 몇 년</a><a href="what-if/">그때 샀더라면 계산기</a><a href="moneyspeed/">돈, 자산, 노동의 가치 속도</a></div><div class="sf-col"><p class="sf-h"><a href="pay-tax/">월급·세금</a></p><a href="salary/">연봉 실수령액 계산기</a><a href="severance/">퇴직금 계산기</a><a href="year-end-tax/">연말정산 환급 계산기</a><a href="incometax/">종합소득세 계산기</a><a href="health/">건강보험료 계산기</a><a href="gift/">증여세·상속세 계산기</a><a href="national-pension/">국민연금 손익 계산기</a><a href="corporate-tax/">법인세 계산기</a></div><div class="sf-col"><p class="sf-h"><a href="invest/">투자</a></p><a href="compound/">복리 계산기</a><a href="averaging-down/">주식 물타기 계산기</a><a href="stocktax/">해외주식 양도소득세 계산기</a><a href="fx/">환율 계산기</a><a href="fear/">공포 &amp; 탐욕 지수</a><a href="cagr/">CAGR 계산기</a><a href="etfcagr/">ETF CAGR 비교</a><a href="marketcap/">전세계 시가총액 TOP 100</a><a href="muhan/">무한매수법 기록</a><a href="nasdaq/">나스닥 종합 성장률</a><a href="nasdaq100/">나스닥 100 성장률</a><a href="dowjones/">다우존스 성장률</a><a href="sp500/">S&amp;P 500 성장률</a><a href="sox/">필라델피아 반도체 성장률</a><a href="djsemi/">다우존스 반도체 성장률</a><a href="kospi/">코스피 성장률</a><a href="kospi200/">코스피 200 성장률</a><a href="kosdaq/">코스닥 성장률</a><a href="n225/">닛케이 225 성장률</a><a href="topix/">TOPIX 성장률</a><a href="sse/">상해종합지수 성장률</a><a href="csi300/">CSI 300 성장률</a><a href="szse/">선전성분지수 성장률</a><a href="chinext/">창업판지수 성장률</a><a href="star50/">과창판50 성장률</a><a href="hsi/">항셍지수 성장률</a><a href="hscei/">홍콩H지수 성장률</a><a href="hstech/">항셍테크지수 성장률</a><a href="taiex/">대만 가권지수 성장률</a></div><div class="sf-col"><p class="sf-h"><a href="real-estate/">부동산</a></p><a href="loan/">대출 이자 계산기</a><a href="acquisition/">부동산 취득세 계산기</a><a href="capital-gains-tax/">부동산 양도소득세 계산기</a><a href="brokerage/">부동산 중개수수료 계산기</a><a href="mortgage/">주담대 LTV·DSR 한도 계산기</a><a href="cheongyak-score/">청약 가점 계산기</a><a href="apt-rank/">국내 나의 아파트 시세 순위</a><a href="property-tax/">재산세 계산기</a><a href="jongbu/">종합부동산세 계산기</a></div><div class="sf-col"><p class="sf-h"><a href="passive-income/">불로소득</a></p><a href="dividend-calendar/">ETF 월분배 및 배당 달력</a><a href="dividend-calculator/">배당금 계산기</a><a href="pension/">연금저축·IRP 세액공제 계산기</a><a href="dividend/">배당소득세 계산기</a><a href="fire/">파이어족 계산기</a><a href="kodex/">KODEX 200타겟위클리커버드콜</a><a href="sol/">SOL 200타겟위클리커버드콜</a><a href="tiger/">TIGER 200타겟위클리커버드콜</a><a href="tigerdiv/">TIGER 배당커버드콜액티브</a><a href="tigersemi/">TIGER 반도체TOP10커버드콜액티브</a></div></nav><!--/FOOTMAP--><div class="sf-in">
+    <a href="about/">소개</a><span class="sf-dot">·</span><a href="terms/">이용약관</a><span class="sf-dot">·</span><a href="disclaimer/">투자 면책</a><span class="sf-dot">·</span><a href="privacy/">개인정보처리방침</a><span class="sf-dot">·</span><a href="mailto:gusrudgma@gmail.com">문의</a><span class="sf-dot">·</span><span>© 디코딩 자본주의</span>
+    <p class="sf-note">이 사이트의 모든 계산 결과와 자료는 참고용이며 투자 판단의 책임은 이용자 본인에게 있습니다.</p>
+  </div></footer>
+
+  <!-- ── 탭 드롭다운 (문서 기준 absolute, 메뉴 줄의 가로 스크롤 영역 밖에 둠) — 노동자→자본가 여정 순서(내 위치 → 월급·세금 → 투자 → 부동산 → 불로소득), 탭 안은 검색 수요가 큰 순서 [NAV-AREAS] ── -->
+  <div class="tab-dropdown" id="grp-me-drop">
+    <button class="drop-item" id="drop-hubme" data-hub onclick="switchSubTab('hubme','me',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="2.5" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg>내 위치 진단 도구 모음<span class="drop-all">전체</span></button>
+    <button class="drop-item" id="drop-home" style="display:none" onclick="switchSubTab('home','home',this)">홈</button>
+    <button class="drop-item" id="drop-srank" onclick="switchSubTab('srank','me',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="5.5" cy="4.6" r="2.2" stroke="currentColor" stroke-width="1.2"/><path d="M1.8 11.2c.4-2.2 1.9-3.4 3.7-3.4s3.3 1.2 3.7 3.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><rect x="10.2" y="10" width="1.9" height="5.8" rx="0.5" fill="currentColor" opacity="0.55"/><rect x="13" y="7.4" width="1.9" height="8.4" rx="0.5" fill="currentColor" opacity="0.75"/><rect x="15.8" y="4.4" width="1.9" height="11.4" rx="0.5" fill="currentColor"/><path d="M1.6 15.8h8" stroke="currentColor" stroke-width="1" opacity="0.55" stroke-linecap="round"/></svg>국내 나의 연봉 순위</button>
+    <button class="drop-item" id="drop-arank" onclick="switchSubTab('arank','me',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2 8.2 7 4l5 4.2V15H2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" opacity="0.6"/><path d="M5.6 15v-3.4h2.8V15" stroke="currentColor" stroke-width="1.1" opacity="0.6"/><rect x="12.6" y="9.6" width="1.8" height="6" rx="0.5" fill="currentColor" opacity="0.75"/><rect x="15.4" y="6.4" width="1.8" height="9.2" rx="0.5" fill="currentColor"/></svg>국내 나의 자산 순위</button>
+    <button class="drop-item" id="drop-retire" onclick="switchSubTab('retire','me',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="3" y="2.5" width="12" height="13" rx="1.6" stroke="currentColor" stroke-width="1.3"/><path d="M6 6.5h6M6 9.5h3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M10.2 12.6l1.2 1.1 2.1-2.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>노후 준비 성적표</button>
+    <button class="drop-item" id="drop-houseyears" onclick="switchSubTab('houseyears','me',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2.5 8.5 9 3l6.5 5.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.2 7.3V15h9.6V7.3" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7.2 11.8c0-1 .8-1.6 1.8-1.6s1.8.6 1.8 1.6V15H7.2z" stroke="currentColor" stroke-width="1.1"/></svg>내 연봉으로 집 사기까지 몇 년</button>
+    <button class="drop-item" id="drop-whatif" onclick="switchSubTab('whatif','me',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.6" stroke="currentColor" stroke-width="1.3"/><path d="M9 5v4l2.6 1.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.4 4.2 2 7l2.7-.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>그때 샀더라면 계산기</button>
+    <button class="drop-item" id="drop-moneyspeed" onclick="switchSubTab('moneyspeed','me',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M9 5.5v4l2.5 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 3.5 L5 1.5 M12 3.5 L13 1.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" opacity="0.5"/></svg>돈, 자산, 노동의 가치 속도</button>
+  </div>
+  <div class="tab-dropdown" id="grp-pay-drop">
+    <button class="drop-item" id="drop-hubpay" data-hub onclick="switchSubTab('hubpay','pay',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="2.5" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg>월급·세금 계산기 모음<span class="drop-all">전체</span></button>
+    <button class="drop-item" id="drop-salary" onclick="switchSubTab('salary','pay',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="9" cy="9" r="2.2" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 6.5h1M12.5 11.5h1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>연봉 실수령액 계산기</button>
+    <button class="drop-item" id="drop-severance" onclick="switchSubTab('severance','pay',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="3" y="6" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M6.5 6V4.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1V6" stroke="currentColor" stroke-width="1.3"/><path d="M3 10h12" stroke="currentColor" stroke-width="1.1" opacity="0.6"/></svg>퇴직금 계산기</button>
+    <button class="drop-item" id="drop-yearend" onclick="switchSubTab('yearend','pay',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M4 1.8h10v14.4l-1.7-1.2-1.6 1.2-1.7-1.2-1.7 1.2-1.6-1.2L4 16.2V1.8z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M9 10.8V5.2M6.8 8.6L9 10.8l2.2-2.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>연말정산 환급 계산기</button>
+    <button class="drop-item" id="drop-incometax" onclick="switchSubTab('incometax','pay',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="3" y="1.8" width="12" height="14.4" rx="1.6" stroke="currentColor" stroke-width="1.3"/><path d="M6 5.5h6M6 8.5h6M6 11.5h3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M11.2 13.7l1.2-2.6 1.2 2.6" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>종합소득세 계산기</button>
+    <button class="drop-item" id="drop-health" onclick="switchSubTab('health','pay',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="4" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M9 7v4M7 9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 4V3M13 4V3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>건강보험료 계산기</button>
+    <button class="drop-item" id="drop-gift" onclick="switchSubTab('gift','pay',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="7" width="13" height="9" rx="1.3" stroke="currentColor" stroke-width="1.3"/><path d="M1.8 4.6h14.4V7H1.8zM9 4.6V16" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M9 4.6C7.6 1.6 4.8 2.2 5.6 3.8 6.1 4.6 9 4.6 9 4.6zm0 0c1.4-3 4.2-2.4 3.4-.8-.5.8-3.4.8-3.4.8z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>증여세·상속세 계산기</button>
+    <button class="drop-item" id="drop-npsroi" onclick="switchSubTab('npsroi','pay',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2.5 14.5h13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><rect x="3.5" y="9" width="3" height="5.5" rx=".8" stroke="currentColor" stroke-width="1.2"/><rect x="11.5" y="5" width="3" height="9.5" rx=".8" stroke="currentColor" stroke-width="1.2"/><path d="M9 4.2v6.6M7.3 5.8c0-.9.8-1.4 1.7-1.4s1.7.5 1.7 1.3c0 1.7-3.4 1-3.4 2.8 0 .8.8 1.3 1.7 1.3s1.7-.5 1.7-1.4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>국민연금 손익 계산기</button>
+    <button class="drop-item" id="drop-corptax" onclick="switchSubTab('corptax','pay',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="5.5" width="13" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M6.5 5.5V3.8a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1.7M2.5 9.5h13" stroke="currentColor" stroke-width="1.3"/><path d="M8 9.5v1.5h2V9.5" stroke="currentColor" stroke-width="1.2"/></svg>법인세 계산기</button>
+  </div>
+  <div class="tab-dropdown" id="grp-invest-drop">
+    <button class="drop-item active" id="drop-hubinvest" data-hub onclick="switchSubTab('hubinvest','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="2.5" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg>투자 계산기·지수 모음<span class="drop-all">전체</span></button>
+    <button class="drop-item" id="drop-compound" onclick="switchSubTab('compound','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M9 3.5 C5.96 3.5 3.5 5.96 3.5 9 C3.5 12.04 5.96 14.5 9 14.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9 14.5 C12.04 14.5 14.5 12.04 14.5 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="2 1.5"/><path d="M12 7 L14.5 9 L12 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 7.5 L9.5 9 L11 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/><circle cx="9" cy="9" r="1" fill="currentColor"/></svg>복리 계산기</button>
+    <button class="drop-item" id="drop-avgdown" onclick="switchSubTab('avgdown','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2.5 4.5l4 4.5 3-2.5 5.5 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 13.5h13" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-dasharray="1.6 1.8"/><circle cx="6.5" cy="9" r="1.3" fill="currentColor"/><circle cx="9.5" cy="6.5" r="1.3" fill="currentColor"/></svg>주식 물타기 계산기</button>
+    <button class="drop-item" id="drop-stocktax" onclick="switchSubTab('stocktax','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M2.5 9h13M9 2c1.9 2 2.8 4.3 2.8 7S10.9 14 9 16M9 2C7.1 4 6.2 6.3 6.2 9S7.1 14 9 16" stroke="currentColor" stroke-width="1" opacity=".55"/><path d="M5 11.5 8 8.5l2 1.5 3-3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>해외주식 양도소득세 계산기</button>
+    <button class="drop-item" id="drop-fx" onclick="switchSubTab('fx','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M9 2.5 Q12.5 9 9 15.5 M9 2.5 Q5.5 9 9 15.5" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M2.5 6.5 Q9 5 15.5 6.5 M2.5 11.5 Q9 13 15.5 11.5" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M7 8 h1.5 a1 1 0 1 1 0 2 H7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>환율 계산기</button>
+    <button class="drop-item" id="drop-fear" onclick="switchSubTab('fear','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M9 2a7 7 0 1 0 0 14A7 7 0 0 0 9 2z" stroke="currentColor" stroke-width="1.3"/><path d="M6 7.5 C6 6.7 6.7 6 7.5 6 S9 6.7 9 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M9 7.5 C9 6.7 9.7 6 10.5 6 S12 6.7 12 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><circle cx="7.5" cy="7.5" r="0.8" fill="currentColor"/><circle cx="10.5" cy="7.5" r="0.8" fill="currentColor"/><path d="M6.5 11.5 Q9 10 11.5 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>공포 &amp; 탐욕 지수</button>
+    <button class="drop-item" id="drop-cagr"     onclick="switchSubTab('cagr','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="1.5" width="13" height="15" rx="2" stroke="currentColor" stroke-width="1.4"/><rect x="4.5" y="3.5" width="9" height="3" rx="0.8" fill="currentColor" opacity="0.5"/><path d="M4.5 11 L7.5 8.5 L10.5 10 L13.5 6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13.5" cy="6.5" r="1.2" fill="currentColor"/></svg>CAGR 계산기</button>
+    <button class="drop-item" id="drop-etfcagr" onclick="switchSubTab('etfcagr','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2 15.5h14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M2.5 13 L6.5 9 L9.5 11 L15.5 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 13.5 L7 11.5 L10 12.5 L15.5 8.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/></svg>ETF CAGR 비교</button>
+    <button class="drop-item" id="drop-mcap" onclick="switchSubTab('mcap','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.8" stroke="currentColor" stroke-width="1.2" opacity="0.55"/><path d="M2.2 9h13.6M9 2.2c1.9 1.9 2.8 4.2 2.8 6.8S10.9 13.9 9 15.8M9 2.2C7.1 4.1 6.2 6.4 6.2 9s.9 4.9 2.8 6.8" stroke="currentColor" stroke-width="1" opacity="0.55"/><rect x="11.5" y="10" width="2" height="5.5" rx="0.5" fill="currentColor"/><rect x="14.5" y="7.5" width="2" height="8" rx="0.5" fill="currentColor"/></svg>전세계 시가총액 TOP 100</button>
+    <button class="drop-item" id="drop-muhan" onclick="switchSubTab('muhan','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="2.5" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 6.5h7M5.5 9h5M5.5 11.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>무한매수법 기록</button>
+    <div class="drop-label">지수 성장률</div>
+    <div class="drop-parent" data-sub="us">
+      <button type="button" class="drop-item drop-parent-btn" aria-haspopup="true" aria-expanded="false"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.5" y="3.5" width="15" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><rect x="1.5" y="3.5" width="7" height="5.5" rx="1.5" fill="currentColor" opacity=".35"/><circle cx="3.6" cy="5.3" r=".6" fill="currentColor"/><circle cx="6.2" cy="5.3" r=".6" fill="currentColor"/><circle cx="4.9" cy="7.2" r=".6" fill="currentColor"/><path d="M9.5 6.2h6.3M9.5 8.9h6.3M2.5 11.6h13.3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg><span class="drop-parent-label">미국 지수 성장률</span><svg class="drop-caret" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="drop-sub"><div class="drop-sub-in">
+        <button class="drop-item" id="drop-nasdaq" onclick="switchSubTab('nasdaq','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="6" y="6" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M3 7.5 H6 M3 10.5 H6 M12 7.5 H15 M12 10.5 H15" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M7.5 3 V6 M10.5 3 V6 M7.5 12 V15 M10.5 12 V15" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/></svg>나스닥 종합 성장률</button>
+        <button class="drop-item" id="drop-nasdaq100" onclick="switchSubTab('nasdaq100','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.5" y="6" width="4" height="10.5" rx="0.8" fill="currentColor" opacity="0.35"/><rect x="7" y="3" width="4" height="13.5" rx="0.8" fill="currentColor" opacity="0.65"/><rect x="12.5" y="1.5" width="4" height="15" rx="0.8" fill="currentColor"/><path d="M1.5 5 Q4 2 6.5 5 Q9 8 11 4 Q13 1 16.5 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>나스닥 100 성장률</button>
+        <button class="drop-item" id="drop-dowjones" onclick="switchSubTab('dowjones','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="9" width="5" height="7.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="6" width="5.5" height="10.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="3.5" y="6" width="1.5" height="3" fill="currentColor" opacity="0.5"/><path d="M2 8 L6 5 L10 6.5 L15.5 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 1.5 h3 v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>다우존스 성장률</button>
+        <button class="drop-item" id="drop-sp500" onclick="switchSubTab('sp500','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M9 2 Q13 9 9 16 M9 2 Q5 9 9 16" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M2.5 7 Q9 5.5 15.5 7 M2 11 Q9 12.5 16 11" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M5 12 L9 8 L12 10 L15 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>S&P 500 성장률</button>
+        <button class="drop-item" id="drop-sox" onclick="switchSubTab('sox','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="7" y="7" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.6"/><path d="M7 2v2.5M11 2v2.5M7 13.5V16M11 13.5V16M2 7h2.5M2 11h2.5M13.5 7H16M13.5 11H16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>필라델피아 반도체 성장률</button>
+        <button class="drop-item" id="drop-djsemi" onclick="switchSubTab('djsemi','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="7" y="7" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.6"/><path d="M7 2v2.5M11 2v2.5M7 13.5V16M11 13.5V16M2 7h2.5M2 11h2.5M13.5 7H16M13.5 11H16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>다우존스 반도체 성장률</button>
+      </div></div>
+    </div>
+    <div class="drop-parent" data-sub="kr">
+      <button type="button" class="drop-item drop-parent-btn" aria-haspopup="true" aria-expanded="false"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.5" y="3.5" width="15" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="9" cy="9" r="2.6" stroke="currentColor" stroke-width="1"/><path d="M6.4 9a2.6 2.6 0 0 1 5.2 0a1.3 1.3 0 0 1-2.6 0a1.3 1.3 0 0 0-2.6 0z" fill="currentColor"/><path d="M3.3 5.7l1.3.9M3.8 5l1.3.9M14.7 5.7l-1.3.9M14.2 5l-1.3.9M3.3 12.3l1.3-.9M3.8 13l1.3-.9M14.7 12.3l-1.3-.9M14.2 13l-1.3-.9" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg><span class="drop-parent-label">한국 지수 성장률</span><svg class="drop-caret" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="drop-sub"><div class="drop-sub-in">
+        <button class="drop-item" id="drop-kospi" onclick="switchSubTab('kospi','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>코스피 성장률</button>
+        <button class="drop-item" id="drop-kospi200" onclick="switchSubTab('kospi200','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.5" y="13" width="2.5" height="3.5" rx="0.6" fill="currentColor" opacity="0.4"/><rect x="5.5" y="9" width="2.5" height="7.5" rx="0.6" fill="currentColor" opacity="0.6"/><rect x="9.5" y="5.5" width="2.5" height="11" rx="0.6" fill="currentColor" opacity="0.8"/><rect x="13.5" y="2" width="2.5" height="14.5" rx="0.6" fill="currentColor"/><path d="M1.5 10 L5.5 7.5 L9.5 5 L14 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>코스피 200 성장률</button>
+        <button class="drop-item" id="drop-kosdaq" onclick="switchSubTab('kosdaq','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>코스닥 성장률</button>
+      </div></div>
+    </div>
+    <div class="drop-parent" data-sub="jp">
+      <button type="button" class="drop-item drop-parent-btn" aria-haspopup="true" aria-expanded="false"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.5" y="3.5" width="15" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="9" cy="9" r="2.6" fill="currentColor"/></svg><span class="drop-parent-label">일본 지수 성장률</span><svg class="drop-caret" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="drop-sub"><div class="drop-sub-in">
+        <button class="drop-item" id="drop-n225" onclick="switchSubTab('n225','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>닛케이 225 성장률</button>
+        <button class="drop-item" id="drop-topix" onclick="switchSubTab('topix','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>TOPIX 성장률</button>
+      </div></div>
+    </div>
+    <div class="drop-parent" data-sub="cn">
+      <button type="button" class="drop-item drop-parent-btn" aria-haspopup="true" aria-expanded="false"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.5" y="3.5" width="15" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 5.6l.6 1.3 1.4.2-1 1 .2 1.4-1.2-.7-1.2.7.2-1.4-1-1 1.4-.2z" fill="currentColor"/><circle cx="9.5" cy="6" r=".7" fill="currentColor"/><circle cx="10.6" cy="7.6" r=".7" fill="currentColor"/><circle cx="10.4" cy="9.6" r=".7" fill="currentColor"/><circle cx="9.3" cy="11" r=".7" fill="currentColor"/></svg><span class="drop-parent-label">중국 지수 성장률</span><svg class="drop-caret" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="drop-sub"><div class="drop-sub-in">
+        <button class="drop-item" id="drop-sse" onclick="switchSubTab('sse','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>상해종합지수 성장률</button>
+        <button class="drop-item" id="drop-csi300" onclick="switchSubTab('csi300','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>CSI 300 성장률</button>
+        <button class="drop-item" id="drop-szse" onclick="switchSubTab('szse','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>선전성분지수 성장률</button>
+        <button class="drop-item" id="drop-chinext" onclick="switchSubTab('chinext','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="7" y="7" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.6"/><path d="M7 2v2.5M11 2v2.5M7 13.5V16M11 13.5V16M2 7h2.5M2 11h2.5M13.5 7H16M13.5 11H16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>창업판지수 성장률</button>
+        <button class="drop-item" id="drop-star50" onclick="switchSubTab('star50','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="7" y="7" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.6"/><path d="M7 2v2.5M11 2v2.5M7 13.5V16M11 13.5V16M2 7h2.5M2 11h2.5M13.5 7H16M13.5 11H16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>과창판50 성장률</button>
+      </div></div>
+    </div>
+    <div class="drop-parent" data-sub="hk">
+      <button type="button" class="drop-item drop-parent-btn" aria-haspopup="true" aria-expanded="false"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.5" y="3.5" width="15" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M9 6.2c1.4.6 1.2 2.2 0 2.8M9 9c1.5-.3 2.4 1 1.7 2.2M9 9c-.2 1.5-1.8 1.9-2.6.9M9 9c-1.4-.5-1.4-2.1-.2-2.8" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg><span class="drop-parent-label">홍콩 지수 성장률</span><svg class="drop-caret" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="drop-sub"><div class="drop-sub-in">
+        <button class="drop-item" id="drop-hsi" onclick="switchSubTab('hsi','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>항셍지수 성장률</button>
+        <button class="drop-item" id="drop-hscei" onclick="switchSubTab('hscei','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>홍콩H지수 성장률</button>
+        <button class="drop-item" id="drop-hstech" onclick="switchSubTab('hstech','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="7" y="7" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.6"/><path d="M7 2v2.5M11 2v2.5M7 13.5V16M11 13.5V16M2 7h2.5M2 11h2.5M13.5 7H16M13.5 11H16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>항셍테크지수 성장률</button>
+      </div></div>
+    </div>
+    <div class="drop-parent" data-sub="tw">
+      <button type="button" class="drop-item drop-parent-btn" aria-haspopup="true" aria-expanded="false"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="1.5" y="3.5" width="15" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><rect x="1.5" y="3.5" width="7.5" height="5.5" rx="1.5" fill="currentColor" opacity=".35"/><circle cx="5.2" cy="6.2" r="1.4" fill="currentColor"/></svg><span class="drop-parent-label">대만 지수 성장률</span><svg class="drop-caret" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="drop-sub"><div class="drop-sub-in">
+        <button class="drop-item" id="drop-taiex" onclick="switchSubTab('taiex','invest',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>대만 가권지수 성장률</button>
+      </div></div>
+    </div>
+  </div>
+  <div class="tab-dropdown" id="grp-realty-drop">
+    <button class="drop-item" id="drop-hubrealty" data-hub onclick="switchSubTab('hubrealty','realty',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="2.5" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg>부동산 계산기 모음<span class="drop-all">전체</span></button>
+    <button class="drop-item" id="drop-loan"     onclick="switchSubTab('loan','realty',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="3" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M2 7h14" stroke="currentColor" stroke-width="1.3"/><path d="M5 11h2M9 11h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>대출 이자 계산기</button>
+    <button class="drop-item" id="drop-acquisition" onclick="switchSubTab('acquisition','realty',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2.5 8 9 2.5 15.5 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 7v8.5h10V7" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 15.5v-4h4v4" stroke="currentColor" stroke-width="1.2"/><path d="M7.4 7.9 10.6 10.7" stroke="currentColor" stroke-width="1" stroke-linecap="round"/><circle cx="7.6" cy="10.4" r=".6" fill="currentColor"/><circle cx="10.4" cy="8.2" r=".6" fill="currentColor"/></svg>부동산 취득세 계산기</button>
+    <button class="drop-item" id="drop-cgt" onclick="switchSubTab('cgt','realty',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2.5 8.2L8 3.5l5.5 4.7V15h-11V8.2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M11.5 6.2l2.6-2.6M14.1 3.6h-2M14.1 3.6v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 12.5l4-4M6.4 9.1h.01M9.6 12h.01" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>부동산 양도소득세 계산기</button>
+    <button class="drop-item" id="drop-brokerage" onclick="switchSubTab('brokerage','realty',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M3 9.5 L7 6 L10 8 L15 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 15h12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M5 12.5h2.5M10 12.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/></svg>부동산 중개수수료 계산기</button>
+    <button class="drop-item" id="drop-mortgage" onclick="switchSubTab('mortgage','realty',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2.5 8 L9 2.8 L15.5 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.2 7 V15 H13.8 V7" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 11.5 h4 M9 9.5 v4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>주담대 LTV·DSR 한도 계산기</button>
+    <button class="drop-item" id="drop-cheongyak" onclick="switchSubTab('cheongyak','realty',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2.5 8L9 3l6.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="8.5" width="10" height="7" rx="1.2" stroke="currentColor" stroke-width="1.3"/><path d="M6.6 12.2l1.6 1.5 3.2-3.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>청약 가점 계산기</button>
+    <button class="drop-item" id="drop-aptrank" onclick="switchSubTab('aptrank','realty',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="4" width="6.5" height="11.8" rx="0.8" stroke="currentColor" stroke-width="1.2" opacity="0.6"/><rect x="9.5" y="1.8" width="6.5" height="14" rx="0.8" stroke="currentColor" stroke-width="1.2"/><path d="M4 7h2.5M4 10h2.5M11.5 5h2.5M11.5 8h2.5M11.5 11h2.5" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.7"/></svg>국내 나의 아파트 시세 순위</button>
+    <button class="drop-item" id="drop-proptax" onclick="switchSubTab('proptax','realty',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2.5 8.2 9 3l6.5 5.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 7.2V15h10V7.2" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7.3 11.2h3.4M9 9.5v3.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>재산세 계산기</button>
+    <button class="drop-item" id="drop-jongbu" onclick="switchSubTab('jongbu','realty',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2 15.5h14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M3.5 15.5V9l3-2.2L9.5 9v6.5M9.5 15.5V5.5l2.5-2 2.5 2v10" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M11.4 8h1.2M11.4 10.5h1.2M5.9 11.5h1.2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>종합부동산세 계산기</button>
+  </div>
+  <div class="tab-dropdown" id="grp-passive-drop">
+    <button class="drop-item" id="drop-hubpassive" data-hub onclick="switchSubTab('hubpassive','passive',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="2.5" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="2.5" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10.3" y="10.3" width="5.2" height="5.2" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg>불로소득 도구 모음<span class="drop-all">전체</span></button>
+    <button class="drop-item" id="drop-etfdiv" onclick="switchSubTab('etfdiv','passive',this)">ETF 월분배 및 배당 달력</button>
+    <button class="drop-item" id="drop-divcalc" onclick="switchSubTab('divcalc','passive',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M3 14.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><rect x="4" y="9.5" width="2.2" height="5" rx=".6" stroke="currentColor" stroke-width="1.2"/><rect x="7.9" y="7" width="2.2" height="7.5" rx=".6" stroke="currentColor" stroke-width="1.2"/><rect x="11.8" y="4.5" width="2.2" height="10" rx=".6" stroke="currentColor" stroke-width="1.2"/><circle cx="5.1" cy="5.2" r="1.7" stroke="currentColor" stroke-width="1.1"/></svg>배당금 계산기</button>
+    <button class="drop-item" id="drop-pension" onclick="switchSubTab('pension','passive',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M3 15.5h12M4.5 15.5V8.5M8 15.5V8.5M11.5 15.5V8.5M14 15.5V8.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M2.5 7.5 9 3l6.5 4.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>연금저축·IRP 세액공제 계산기</button>
+    <button class="drop-item" id="drop-dividend" onclick="switchSubTab('dividend','passive',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.8" stroke="currentColor" stroke-width="1.3"/><path d="M9 5.2v7.6M11.2 6.8c-.4-.9-1.3-1.3-2.3-1.3-1.3 0-2.2.7-2.2 1.7 0 2.3 4.6 1.2 4.6 3.6 0 1-1 1.8-2.4 1.8-1.1 0-2-.5-2.4-1.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>배당소득세 계산기</button>
+    <button class="drop-item" id="drop-fire" onclick="switchSubTab('fire','passive',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M9 2.2c.4 2.3 3.8 3.9 3.8 7.6A3.8 3.8 0 0 1 9 13.6a3.8 3.8 0 0 1-3.8-3.8c0-1.6.9-2.6 1.6-3.3.1 1.2.7 1.9 1.4 2.2C8 7.1 7.8 4.4 9 2.2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M3 16h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>파이어족 계산기</button>
+    <div class="drop-parent" data-sub="sim">
+      <button type="button" class="drop-item drop-parent-btn" aria-haspopup="true" aria-expanded="false"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M9 6v6M7 7.5h2.5a1.5 1.5 0 0 1 0 3H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M14.5 4.5 L16.5 2.5 M14.5 2.5 h2 v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="drop-parent-label">커버드콜 분배 시뮬레이터</span><svg class="drop-caret" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="drop-sub"><div class="drop-sub-in">
+        <button class="drop-item" id="drop-simulator" onclick="switchSubTab('simulator','passive',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M9 6v6M7 7.5h2.5a1.5 1.5 0 0 1 0 3H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M14.5 4.5 L16.5 2.5 M14.5 2.5 h2 v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>KODEX 200타겟위클리커버드콜</button>
+        <button class="drop-item" id="drop-sol" onclick="switchSubTab('sol','passive',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M9 6v6M7 7.5h2.5a1.5 1.5 0 0 1 0 3H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M14.5 4.5 L16.5 2.5 M14.5 2.5 h2 v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>SOL 200타겟위클리커버드콜</button>
+        <button class="drop-item" id="drop-tiger" onclick="switchSubTab('tiger','passive',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M9 6v6M7 7.5h2.5a1.5 1.5 0 0 1 0 3H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M14.5 4.5 L16.5 2.5 M14.5 2.5 h2 v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>TIGER 200타겟위클리커버드콜</button>
+        <button class="drop-item" id="drop-tigerdiv" onclick="switchSubTab('tigerdiv','passive',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M9 6v6M7 7.5h2.5a1.5 1.5 0 0 1 0 3H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M14.5 4.5 L16.5 2.5 M14.5 2.5 h2 v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>TIGER 배당커버드콜액티브</button>
+        <button class="drop-item" id="drop-tigersemi" onclick="switchSubTab('tigersemi','passive',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M9 6v6M7 7.5h2.5a1.5 1.5 0 0 1 0 3H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M14.5 4.5 L16.5 2.5 M14.5 2.5 h2 v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>TIGER 반도체TOP10커버드콜액티브</button>
+      </div></div>
+    </div>
+  </div>
+<script>
+/* ════════════════════════════════════════════════════════════
+   [CSEL] 선택 목록(select)과 [CDATE] 날짜 선택(input type=date)을 사이트 메뉴 드롭다운과 같은 모양으로 — 사이트 전체
+   · 원래 <select>·<input type=date> 는 화면에서만 숨기고 그대로 둠 → 값 읽기·input/change 이벤트·기존 계산 코드는 바뀌지 않음
+   · 코드가 value 를 바꾸거나 옵션을 새로 채워도 버튼 글자가 자동으로 따라감
+   · 나중에 화면에 새로 생기는 목록·날짜 칸(무한매수법 화면 등)도 자동으로 바꿈
+   · 키보드: 버튼에서 ↓·Enter·Space 로 열기 · 목록 ↑↓ · 달력 ←→↑↓ (하루·일주일), PageUp/PageDown (한 달) · Enter 선택 · Esc 닫기
+════════════════════════════════════════════════════════════ */
+(function () {
+  var CHECK = '<svg class="lang-check" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var CAL = '<svg class="cd-ico" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
+  var SVAL = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+  var SIDX = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'selectedIndex');
+  var IVAL = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+  var T = typeof L === 'function' ? L : function (ko) { return ko; };
+  var pop = null, cur = null, kind = null, view = null;   /* 열린 창 · 대상 요소 · 'sel' | 'date' · 달력 보기 상태 */
+
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function fire(el, types) { types.forEach(function (t) { el.dispatchEvent(new Event(t, { bubbles: true })); }); }
+
+  /* 원래 요소를 숨기고 그 앞에 버튼을 둠 (버튼이 앞에 있어야 <label> 을 눌렀을 때 버튼이 열림) */
+  function wrapWith(el, btn, inline) {
+    var wrap = document.createElement('span');
+    wrap.className = 'cs-wrap' + (inline ? ' cs-inline' : '');
+    var fl = el.style.flex; if (fl) { wrap.style.flex = fl; wrap.style.minWidth = '0'; }
+    el.parentNode.insertBefore(wrap, el);
+    wrap.appendChild(btn); wrap.appendChild(el);
+    el.classList.add('cs-native'); el.tabIndex = -1; el.setAttribute('aria-hidden', 'true');
+    var lab = el.closest('label'), name = el.getAttribute('aria-label') || (lab && lab.querySelector('span') ? lab.querySelector('span').textContent : '');
+    if (name) btn.setAttribute('aria-label', name.trim());
+  }
+  /* 원래 요소에 클래스(.mh-sel·.kcmp-date·.fc-date·.mh-in 등)나 인라인 스타일이 있으면 버튼이 그 모양을 그대로 이어받음 */
+  function ownLook(el) { return el.className && el.className.replace(/\bcs-native\b/, '').trim(); }
+  function makeBtn(el, extra) {
+    var b = document.createElement('button'); b.type = 'button';
+    var own = ownLook(el);
+    b.className = (own ? own + ' cs-cbtn' : 'cs-btn') + (extra ? ' ' + extra : '');
+    var st = el.getAttribute('style'); if (st) b.setAttribute('style', st.replace(/flex\s*:[^;]+;?/g, ''));
+    b.setAttribute('aria-expanded', 'false');
+    return b;
+  }
+
+  /* ─────────── 공용 펼침 창 ─────────── */
+  function place(btn, wantW) {
+    var r = btn.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight;
+    var w = Math.min(Math.max(wantW || r.width, kind === 'date' ? 288 : 180), 440, vw - 16);
+    pop.style.width = w + 'px';
+    pop.style.left = Math.max(8, Math.min(r.left, vw - w - 8)) + 'px';
+    var below = vh - r.bottom - 12, above = r.top - 12, h = Math.min(pop.scrollHeight, 360);
+    if (below >= Math.min(h, 240) || below >= above) { pop.style.top = (r.bottom + 6) + 'px'; pop.style.bottom = ''; pop.style.maxHeight = Math.max(140, Math.min(380, below)) + 'px'; }
+    else { pop.style.top = ''; pop.style.bottom = (vh - r.top + 6) + 'px'; pop.style.maxHeight = Math.max(140, Math.min(380, above)) + 'px'; }
+  }
+  function btnOf(el) { return el && (el._csBtn || el._cdBtn); }
+  function close(back) {
+    if (!cur) return;
+    var b = btnOf(cur); pop.className = 'cs-menu'; pop.innerHTML = '';
+    if (b) b.setAttribute('aria-expanded', 'false');
+    cur = null; kind = null; view = null;
+    if (back && b && document.contains(b)) b.focus();
+  }
+
+  /* ─────────── [CSEL] 선택 목록 ─────────── */
+  function syncSel(sel) {
+    var b = sel._csBtn; if (!b) return;
+    var o = sel.options[SIDX.get.call(sel)];
+    b.querySelector('.cs-label').textContent = o ? o.text : '';
+    b.disabled = !!sel.disabled;
+    if (cur === sel) fillSel(sel);
+  }
+  function fillSel(sel) {
+    var v = SVAL.get.call(sel);
+    pop.innerHTML = Array.prototype.map.call(sel.options, function (o) {
+      var on = o.value === v;
+      return '<button type="button" class="cs-opt' + (on ? ' active' : '') + '" role="option" aria-selected="' + on + '" data-v="' + esc(o.value) + '"' + (o.disabled ? ' disabled' : '') + '><span class="cs-t">' + esc(o.text) + '</span>' + CHECK + '</button>';
+    }).join('');
+  }
+  function openSel(sel, focus) {
+    if (cur === sel) return close();
+    close();
+    cur = sel; kind = 'sel'; pop.className = 'cs-menu open'; pop.setAttribute('role', 'listbox');
+    fillSel(sel); place(sel._csBtn);
+    sel._csBtn.setAttribute('aria-expanded', 'true');
+    var a = pop.querySelector('.cs-opt.active') || pop.querySelector('.cs-opt');
+    if (a) { a.scrollIntoView({ block: 'nearest' }); if (focus) a.focus(); }
+  }
+  function pickSel(v) {
+    var sel = cur; if (!sel) return;
+    close(true);
+    if (SVAL.get.call(sel) === v) return;
+    SVAL.set.call(sel, v); syncSel(sel); fire(sel, ['change']);
+  }
+  function enhanceSel(sel) {
+    if (sel._csBtn || sel.multiple || sel.size > 1 || sel.hasAttribute('data-native')) return;
+    var btn = makeBtn(sel);
+    btn.setAttribute('aria-haspopup', 'listbox');
+    btn.innerHTML = '<span class="cs-label"></span><span class="cs-arrow">▼</span>';
+    var inline = !ownLook(sel) && !sel.closest('.fc-field') && !/width:\s*100%/.test(sel.getAttribute('style') || '');
+    wrapWith(sel, btn, inline || !!ownLook(sel));
+    sel._csBtn = btn;
+    Object.defineProperty(sel, 'value', { configurable: true, get: function () { return SVAL.get.call(this); }, set: function (v) { SVAL.set.call(this, v); syncSel(this); } });
+    Object.defineProperty(sel, 'selectedIndex', { configurable: true, get: function () { return SIDX.get.call(this); }, set: function (v) { SIDX.set.call(this, v); syncSel(this); } });
+    new MutationObserver(function () { syncSel(sel); }).observe(sel, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled', 'selected'] });
+    sel.addEventListener('change', function () { syncSel(sel); });
+    btn.addEventListener('click', function (e) { e.stopPropagation(); openSel(sel, e.detail === 0); });
+    btn.addEventListener('keydown', function (e) { if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); openSel(sel, true); } });
+    syncSel(sel);
+  }
+
+  /* ─────────── [CDATE] 날짜 선택 (달력) ─────────── */
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function iso(y, m, d) { return y + '-' + pad(m + 1) + '-' + pad(d); }
+  function parse(v) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); return m ? { y: +m[1], m: +m[2] - 1, d: +m[3] } : null; }
+  function todayIso() { var t = new Date(); return iso(t.getFullYear(), t.getMonth(), t.getDate()); }
+  function shown(v) { var p = parse(v); return p ? p.y + '.' + pad(p.m + 1) + '.' + pad(p.d) : ''; }
+  function ok(inp, s) { return (!inp.min || s >= inp.min) && (!inp.max || s <= inp.max); }
+  function monthOk(inp, y, m) { var a = iso(y, m, 1), z = iso(y, m, new Date(y, m + 1, 0).getDate()); return (!inp.min || z >= inp.min) && (!inp.max || a <= inp.max); }
+  function yearOk(inp, y) { return (!inp.min || y >= +inp.min.slice(0, 4)) && (!inp.max || y <= +inp.max.slice(0, 4)); }
+  var MON_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function syncDate(inp) {
+    var b = inp._cdBtn; if (!b) return;
+    var v = IVAL.get.call(inp);
+    b.querySelector('.cd-text').textContent = v ? shown(v) : T('날짜 선택', 'Select date');
+    b.classList.toggle('cd-empty', !v);
+    b.disabled = !!inp.disabled;
+  }
+  function renderCal() {
+    var inp = cur, v = IVAL.get.call(inp), y = view.y, m = view.m, h = '';
+    if (view.mode === 'day') {
+      var title = T(y + '년 ' + (m + 1) + '월', MON_EN[m] + ' ' + y);
+      h += '<div class="cd-head"><button type="button" class="cd-nav" data-a="pm" aria-label="' + T('이전 달', 'Previous month') + '">‹</button>'
+        + '<button type="button" class="cd-title" data-a="mode">' + title + ' <span class="cs-arrow">▼</span></button>'
+        + '<button type="button" class="cd-nav" data-a="nm" aria-label="' + T('다음 달', 'Next month') + '">›</button></div>';
+      h += '<div class="cd-grid cd-wk">' + T('일 월 화 수 목 금 토', 'Su Mo Tu We Th Fr Sa').split(' ').map(function (w, i) { return '<span' + (i === 0 ? ' class="cd-sun"' : '') + '>' + w + '</span>'; }).join('') + '</div><div class="cd-grid" role="grid">';
+      var first = new Date(y, m, 1), start = new Date(y, m, 1 - first.getDay()), td = todayIso();
+      for (var i = 0; i < 42; i++) {
+        var d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i), s = iso(d.getFullYear(), d.getMonth(), d.getDate());
+        var cls = 'cd-day' + (d.getMonth() !== m ? ' cd-out' : '') + (s === v ? ' cd-sel' : '') + (s === td ? ' cd-today' : '') + (d.getDay() === 0 ? ' cd-sun' : '');
+        h += '<button type="button" class="' + cls + '" data-d="' + s + '"' + (ok(inp, s) ? '' : ' disabled') + ' tabindex="-1">' + d.getDate() + '</button>';
+      }
+      h += '</div><div class="cd-foot"><button type="button" class="cd-link" data-a="today"' + (ok(inp, td) ? '' : ' disabled') + '>' + T('오늘', 'Today') + '</button>'
+        + (inp.required ? '' : '<button type="button" class="cd-link" data-a="clear">' + T('지우기', 'Clear') + '</button>') + '</div>';
+    } else if (view.mode === 'month') {
+      h += '<div class="cd-head"><button type="button" class="cd-nav" data-a="py" aria-label="' + T('이전 해', 'Previous year') + '">‹</button>'
+        + '<button type="button" class="cd-title" data-a="mode">' + T(y + '년', String(y)) + ' <span class="cs-arrow">▼</span></button>'
+        + '<button type="button" class="cd-nav" data-a="ny" aria-label="' + T('다음 해', 'Next year') + '">›</button></div><div class="cd-cells">';
+      var pv = parse(v);
+      for (var k = 0; k < 12; k++) h += '<button type="button" class="cd-cell' + (pv && pv.y === y && pv.m === k ? ' cd-sel' : '') + '" data-m="' + k + '"' + (monthOk(inp, y, k) ? '' : ' disabled') + '>' + T((k + 1) + '월', MON_EN[k]) + '</button>';
+      h += '</div>';
+    } else {
+      var b0 = y - (y % 12);
+      h += '<div class="cd-head"><button type="button" class="cd-nav" data-a="pd" aria-label="' + T('이전 12년', 'Previous 12 years') + '">‹</button>'
+        + '<span class="cd-title cd-static">' + b0 + ' – ' + (b0 + 11) + '</span>'
+        + '<button type="button" class="cd-nav" data-a="nd" aria-label="' + T('다음 12년', 'Next 12 years') + '">›</button></div><div class="cd-cells">';
+      var py = parse(v);
+      for (var j = 0; j < 12; j++) h += '<button type="button" class="cd-cell' + (py && py.y === b0 + j ? ' cd-sel' : '') + '" data-y="' + (b0 + j) + '"' + (yearOk(inp, b0 + j) ? '' : ' disabled') + '>' + (b0 + j) + '</button>';
+      h += '</div>';
+    }
+    pop.innerHTML = h;
+  }
+  function focusDay(s) {
+    var b = pop.querySelector('.cd-day[data-d="' + s + '"]:not([disabled])') || pop.querySelector('.cd-day.cd-sel') || pop.querySelector('.cd-day:not(.cd-out):not([disabled])');
+    if (b) b.focus();
+  }
+  function openDate(inp, focus) {
+    if (cur === inp) return close();
+    close();
+    var p = parse(IVAL.get.call(inp)) || parse(inp.max && todayIso() > inp.max ? inp.max : (inp.min && todayIso() < inp.min ? inp.min : todayIso()));
+    cur = inp; kind = 'date'; view = { y: p.y, m: p.m, mode: 'day' };
+    pop.className = 'cs-menu cd-pop open'; pop.setAttribute('role', 'dialog');
+    renderCal(); place(inp._cdBtn, 288);
+    inp._cdBtn.setAttribute('aria-expanded', 'true');
+    if (focus) focusDay(IVAL.get.call(inp) || todayIso());
+  }
+  function setDate(s) {
+    var inp = cur; if (!inp) return;
+    close(true);
+    if (IVAL.get.call(inp) === s) return;
+    IVAL.set.call(inp, s); syncDate(inp); fire(inp, ['input', 'change']);
+  }
+  function calAction(a) {
+    if (a === 'pm' || a === 'nm') { var d = new Date(view.y, view.m + (a === 'pm' ? -1 : 1), 1); view.y = d.getFullYear(); view.m = d.getMonth(); }
+    else if (a === 'py' || a === 'ny') view.y += a === 'py' ? -1 : 1;
+    else if (a === 'pd' || a === 'nd') view.y += a === 'pd' ? -12 : 12;
+    else if (a === 'mode') view.mode = view.mode === 'day' ? 'month' : 'year';
+    else if (a === 'today') return setDate(todayIso());
+    else if (a === 'clear') return setDate('');
+    renderCal();
+  }
+  function enhanceDate(inp) {
+    if (inp._cdBtn || inp.hasAttribute('data-native')) return;
+    var btn = makeBtn(inp, 'cd-btn');
+    btn.setAttribute('aria-haspopup', 'dialog');
+    btn.innerHTML = '<span class="cd-text"></span>' + CAL;
+    wrapWith(inp, btn, !inp.classList.contains('fc-date') && !inp.classList.contains('mh-in') && !/width:\s*100%/.test(inp.getAttribute('style') || ''));
+    inp._cdBtn = btn;
+    Object.defineProperty(inp, 'value', { configurable: true, get: function () { return IVAL.get.call(this); }, set: function (v) { IVAL.set.call(this, v); syncDate(this); } });
+    new MutationObserver(function () { syncDate(inp); }).observe(inp, { attributes: true, attributeFilter: ['disabled', 'value'] });
+    inp.addEventListener('input', function () { syncDate(inp); });
+    inp.addEventListener('change', function () { syncDate(inp); });
+    btn.addEventListener('click', function (e) { e.stopPropagation(); openDate(inp, e.detail === 0); });
+    btn.addEventListener('keydown', function (e) { if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); openDate(inp, true); } });
+    syncDate(inp);
+  }
+
+  /* ─────────── 공용: 창 안 클릭·키보드, 바깥 클릭·스크롤로 닫기, 새로 생기는 요소 자동 적용 ─────────── */
+  function scan(root) {
+    if (!root || root.nodeType !== 1) return;
+    if (root.matches('select')) enhanceSel(root); else if (root.matches('input[type="date"]')) enhanceDate(root);
+    Array.prototype.forEach.call(root.querySelectorAll('select'), enhanceSel);
+    Array.prototype.forEach.call(root.querySelectorAll('input[type="date"]'), enhanceDate);
+  }
+  function init() {
+    pop = document.createElement('div'); pop.className = 'cs-menu';
+    document.body.appendChild(pop);
+    pop.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var o = e.target.closest('.cs-opt'); if (o && !o.disabled && kind === 'sel') return pickSel(o.getAttribute('data-v'));
+      if (kind !== 'date') return;
+      var d = e.target.closest('.cd-day'); if (d && !d.disabled) return setDate(d.getAttribute('data-d'));
+      var mm = e.target.closest('[data-m]'); if (mm && !mm.disabled) { view.m = +mm.getAttribute('data-m'); view.mode = 'day'; return renderCal(); }
+      var yy = e.target.closest('[data-y]'); if (yy && !yy.disabled) { view.y = +yy.getAttribute('data-y'); view.mode = 'month'; return renderCal(); }
+      var a = e.target.closest('[data-a]'); if (a && !a.disabled) calAction(a.getAttribute('data-a'));
+    });
+    pop.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { e.preventDefault(); return close(true); }
+      if (e.key === 'Tab' && kind === 'sel') return close();
+      if (kind === 'sel') {
+        var list = Array.prototype.slice.call(pop.querySelectorAll('.cs-opt:not([disabled])')), i = list.indexOf(document.activeElement);
+        if (e.key === 'ArrowDown') { e.preventDefault(); (list[i + 1] || list[0]).focus(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); (list[i - 1] || list[list.length - 1]).focus(); }
+        else if (e.key === 'Home') { e.preventDefault(); list[0].focus(); }
+        else if (e.key === 'End') { e.preventDefault(); list[list.length - 1].focus(); }
+        return;
+      }
+      var f = document.activeElement; if (!f || !f.classList || !f.classList.contains('cd-day')) return;
+      var p = parse(f.getAttribute('data-d')), step = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }[e.key], dt;
+      if (step) dt = new Date(p.y, p.m, p.d + step);
+      else if (e.key === 'PageUp' || e.key === 'PageDown') dt = new Date(p.y, p.m + (e.key === 'PageUp' ? -1 : 1), p.d);
+      if (!dt) return;
+      e.preventDefault();
+      var s = iso(dt.getFullYear(), dt.getMonth(), dt.getDate());
+      if (dt.getMonth() !== view.m || dt.getFullYear() !== view.y) { view.y = dt.getFullYear(); view.m = dt.getMonth(); renderCal(); }
+      focusDay(s);
+    });
+    document.addEventListener('click', function (e) { if (cur && !pop.contains(e.target)) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && cur) close(true); });
+    window.addEventListener('resize', function () { close(); });
+    window.addEventListener('scroll', function (e) { if (cur && !pop.contains(e.target)) close(); }, true);
+    scan(document.body);
+    /* 무한매수법처럼 화면을 다시 그리는 곳: 새로 생긴 목록·날짜 칸도 바로 적용, 열려 있던 대상이 사라지면 닫기 */
+    new MutationObserver(function (ms) {
+      for (var i = 0; i < ms.length; i++) for (var j = 0; j < ms[i].addedNodes.length; j++) scan(ms[i].addedNodes[j]);
+      if (cur && !document.contains(cur)) close();
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
+<script>
+/* [HUB] 좁은 화면에서 단계 줄(가로 스크롤)이 지금 단계를 보이게 */
+(function () {
+  function fit() { document.querySelectorAll('.hub-path').forEach(function (n) { var a = n.querySelector('a.on'); if (a && n.scrollWidth > n.clientWidth) n.scrollLeft = Math.max(0, a.offsetLeft - n.offsetLeft - 16); }); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fit); else fit();
+})();
+
+/* ════════════════════════════════════════════════════════════
+   [SEARCH] 사이트 검색 — 메뉴의 모든 도구(드롭다운 버튼)를 이름·주소 설명(#etfmd-routes)으로 찾아 바로 이동
+════════════════════════════════════════════════════════════ */
+(function () {
+  function go(tab) { var b = document.getElementById('drop-' + tab); if (b) { b.click(); window.scrollTo(0, 0); } }
+  var inp = document.getElementById('ss-input'), list = document.getElementById('ss-list'); if (!inp || !list) return;
+  var reg = {}; try { JSON.parse((document.getElementById('etfmd-routes') || {}).textContent || '[]').forEach(function (r) { reg[r.tab] = r; }); } catch (e) {}
+  var norm = function (t) { return String(t || '').toLowerCase().replace(/&amp;/g, '&').replace(/[\s·,()\-—]/g, ''); };
+  var items = null, hits = [], cur = -1;
+  function build() {
+    items = [];
+    document.querySelectorAll('.tab-dropdown .drop-item[id^="drop-"]').forEach(function (b) {
+      var tab = b.id.slice(5); if (tab === 'home') return;
+      var drop = b.closest('.tab-dropdown'), gb = drop && document.getElementById(drop.id.replace(/-drop$/, '-btn'));
+      var r = reg[tab] || {}, name = b.textContent.replace(/\s+/g, ' ').trim();
+      items.push({ tab: tab, name: name, area: gb ? gb.textContent.replace('▼', '').trim() : '', key: norm(name), more: norm((r.title || '') + (r.short || '') + (r.desc || '')) });
+    });
+  }
+  function close() { list.hidden = true; inp.setAttribute('aria-expanded', 'false'); cur = -1; }
+  function paint() {
+    list.innerHTML = hits.length ? hits.map(function (x, i) {
+      return '<button type="button" class="ss-opt' + (i === cur ? ' on' : '') + '" role="option" data-i="' + i + '"><span></span><small></small></button>';
+    }).join('') : '<div class="ss-none">찾는 도구가 없습니다</div>';
+    list.querySelectorAll('.ss-opt').forEach(function (o, i) { o.firstChild.textContent = hits[i].name; o.lastChild.textContent = hits[i].area; });
+    list.hidden = false; inp.setAttribute('aria-expanded', 'true');
+  }
+  function search() {
+    if (!items) build();
+    var q = inp.value.trim(); if (!q) { close(); return; }
+    var words = q.split(/\s+/).map(norm).filter(Boolean);
+    hits = items.map(function (x) {
+      var all = x.key + ' ' + x.more, ok = words.every(function (w) { return all.indexOf(w) >= 0; });
+      return ok ? { x: x, s: words.reduce(function (a, w) { return a + (x.key.indexOf(w) >= 0 ? 2 : 0) + (x.key.indexOf(w) === 0 ? 1 : 0); }, 0) } : null;
+    }).filter(Boolean).sort(function (a, b) { return b.s - a.s; }).slice(0, 8).map(function (h) { return h.x; });
+    cur = hits.length ? 0 : -1; paint();
+  }
+  function pick(i) { var h = hits[i]; if (!h) return; inp.value = ''; close(); inp.blur(); go(h.tab); }
+  inp.addEventListener('input', search);
+  inp.addEventListener('focus', function () { if (inp.value.trim()) search(); });
+  inp.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { if (!hits.length) return; e.preventDefault(); cur = (cur + (e.key === 'ArrowDown' ? 1 : -1) + hits.length) % hits.length; paint(); }
+    else if (e.key === 'Enter') { e.preventDefault(); if (cur >= 0) pick(cur); }
+    else if (e.key === 'Escape') { inp.value = ''; close(); }
+  });
+  list.addEventListener('mousedown', function (e) { e.preventDefault(); });   /* 고르기 전에 입력칸 포커스가 빠져 목록이 닫히지 않게 */
+  list.addEventListener('click', function (e) { var o = e.target.closest('.ss-opt'); if (o) pick(+o.getAttribute('data-i')); });
+  inp.addEventListener('blur', function () { setTimeout(close, 120); });
+  document.addEventListener('keydown', function (e) {   /* '/' 키로 검색칸 열기 (입력 중이 아닐 때) */
+    if (e.key === '/' && !/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || '') && !document.activeElement.isContentEditable) { e.preventDefault(); inp.focus(); }
+  });
+})();
+</script>
+<script>
+/* ════════════════════════════════════════════════════════════
+   [ROUTER] 도구(탭)별 고유 주소 — /loan/, /fx/ … (scripts/build_pages.py 가 각 주소의 index.html 생성)
+   · 탭을 바꾸면 주소·제목·설명이 함께 바뀜 (뒤로/앞으로 가기 지원)
+   · 하위 주소로 바로 들어오면 그 도구 화면으로 시작
+   · 등록 정보: <head> 의 #etfmd-routes (scripts/routes.json 에서 생성)
+════════════════════════════════════════════════════════════ */
+(function () {
+  var reg = [];
+  try { reg = JSON.parse((document.getElementById('etfmd-routes') || {}).textContent || '[]'); } catch (e) {}
+  if (!reg.length || typeof window.switchSubTab !== 'function') return;
+  var byTab = {}, byPath = {};
+  reg.forEach(function (r) { byTab[r.tab] = r; byPath[r.path] = r; });
+  var meta = document.querySelector('meta[name="etfmd-route"]');
+  var route0 = meta ? meta.getAttribute('content') || '' : '';
+  /* 사이트 루트 경로: 현재 주소에서 'index.html' 과 하위 경로를 떼어 냄 */
+  var p = location.pathname.replace(/index\.html$/, '');
+  if (p.slice(-1) !== '/') p += '/';
+  if (route0 && p.slice(-(route0.length + 2)) === '/' + route0 + '/') p = p.slice(0, -(route0.length + 1));
+  /* 영어 페이지(/en/<도구>/): 사이트 루트는 /en/ 의 상위 · 영어판이 있는 도구는 /en/ 주소로, 없는 도구는 한국어 주소로 이동 */
+  var EN = (document.documentElement.getAttribute('lang') || '').indexOf('en') === 0;
+  if (EN && /\/en\/$/.test(p)) p = p.slice(0, -3);
+  var ROOT_PATH = p, canPush = /^https?:$/.test(location.protocol) && !!(history && history.pushState);
+  function urlOf(r) { return ROOT_PATH + (EN && r.en ? 'en/' : '') + (r.path ? r.path + '/' : ''); }
+  function setMeta(sel, attr, val) { var e = document.querySelector(sel); if (e) e.setAttribute(attr, val); }
+  function applyHead(r) {
+    var en = EN && r.en, title = en ? r.enTitle : r.title, desc = en ? r.enDesc : r.desc;
+    document.title = title;
+    setMeta('meta[name="description"]', 'content', desc);
+    setMeta('meta[property="og:title"]', 'content', en ? r.enTitle : (r.share || r.title));
+    setMeta('meta[property="og:description"]', 'content', desc);
+    var abs = location.origin + urlOf(r);
+    setMeta('link[rel="canonical"]', 'href', abs);
+    setMeta('meta[property="og:url"]', 'content', abs);
+  }
+  var orig = window.switchSubTab, silent = false;
+  window.switchSubTab = function (tab, grpId, btn) {
+    /* 도구별 페이지 분리: 이 페이지에 없는 도구는 그 도구의 주소로 이동 (각 주소의 HTML 에는 자기 화면만 들어 있음) */
+    if (byTab[tab] && !document.getElementById('page-' + tab)) { location.href = urlOf(byTab[tab]); return; }
+    var res = orig.apply(this, arguments);
+    var r = byTab[tab];
+    if (r) {
+      applyHead(r);
+      if (!silent && canPush && location.pathname.replace(/index\.html$/, '') !== urlOf(r)) {
+        try { history.pushState({ tab: tab }, '', urlOf(r)); } catch (e) {}
+      }
+    }
+    return res;
+  };
+  function go(r) {
+    var btn = document.getElementById('drop-' + r.tab);
+    if (!document.getElementById('page-' + r.tab)) { location.reload(); return; }   /* 뒤로 가기로 다른 도구 주소가 되면 그 페이지를 새로 엶 */
+    if (!btn) return;
+    silent = true;
+    try { window.switchSubTab(r.tab, r.group, btn); } finally { silent = false; }
+  }
+  window.addEventListener('popstate', function () {
+    var rel = location.pathname.replace(/index\.html$/, '');
+    rel = rel.indexOf(ROOT_PATH) === 0 ? rel.slice(ROOT_PATH.length).replace(/\/+$/, '') : '';
+    rel = rel.replace(/^en(\/|$)/, '');
+    go(byPath[rel] || byPath['']);
+  });
+  /* 하위 주소로 들어온 경우: 그 도구의 진입 처리(시세 조회 등)를 실행 */
+  function start() { if (route0 && byPath[route0]) go(byPath[route0]); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+</script>
+</body>
+</html>
