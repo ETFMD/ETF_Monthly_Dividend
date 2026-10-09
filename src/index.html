@@ -1780,6 +1780,12 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .shc-open svg { flex-shrink:0; }
   .shc-open[hidden] { display:none; }
   .shc-wide { width:100%; margin-top:16px; padding:12px 16px; font-size:14px; }
+  .rt-grade { font-size:64px !important; line-height:1 !important; }
+  .rt-scale { display:flex; gap:6px; margin:14px 0 4px; flex-wrap:wrap; }
+  .rt-g { min-width:38px; text-align:center; padding:5px 8px; border-radius:8px; border:1px solid var(--card-border); color:var(--text3); font-family:var(--mono); font-size:13px; font-weight:600; }
+  .rt-g.on { color:#fff; }
+  .rt-quick .rt-pre b { font-weight:600; margin-left:3px; }
+  #rt-tips li { margin-bottom:6px; }
   .wif-quick { margin-top:-4px; } .wif-pre.on { border-color:var(--accent); color:var(--accent); } .wif-pre:disabled { opacity:.35; cursor:not-allowed; }
   #wif-y, #wif-m { width:100%; background:var(--bg3); border:1px solid var(--card-border); border-radius:10px; padding:9px 10px; color:var(--text); font-family:var(--font); font-size:13px; color-scheme:dark; }
   .shc-ov { position:fixed; inset:0; z-index:9999; display:none; align-items:center; justify-content:center; padding:16px; background:rgba(0,0,0,.62); backdrop-filter:blur(3px); }
@@ -6646,6 +6652,67 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     </section>
     <!-- [/GUIDE:houseyears] -->
   </div><!-- /page-houseyears -->
+
+  <!-- ── 노후 준비 성적표 ── [RETIRE] ── -->
+  <div class="app-page" id="page-retire">
+    <div class="header"><div class="header-left">
+      <span class="badge">RETIREMENT REPORT CARD</span>
+      <h1>노후 준비 <span>성적표</span></h1>
+      <p class="subtitle">국민연금·퇴직연금·개인연금·저축으로 은퇴 후 월 얼마를 받을 수 있는지, 적정 노후생활비의 몇 %를 준비했는지 A+~F 성적으로 — 2026년 개정 국민연금 반영</p>
+    </div></div>
+    <div class="layout">
+      <div class="card fc-in">
+<div class="fc-field"><span>가구</span><div class="mode-toggle fc-seg" data-name="rt-hh"><button type="button" class="mode-btn active" data-v="single">1인 (나 혼자)</button><button type="button" class="mode-btn" data-v="couple">부부</button></div></div>
+<div class="fc-row2"><label class="fc-field"><span>지금 나이</span><span class="fc-input"><input type="text" inputmode="decimal" id="rt-age" value="35" data-fc="rt"><em>세</em></span></label>
+<label class="fc-field"><span>은퇴 나이 <small>일을 그만두는 나이</small></span><span class="fc-input"><input type="text" inputmode="decimal" id="rt-retire" value="60" data-fc="rt"><em>세</em></span></label>
+</div>
+<label class="fc-field"><span>노후 계획 나이 <small>2024 생명표: 60세 기대여명 남 23.7년 · 여 28.4년</small></span><select id="rt-plan" data-fc="rt"><option value="85">85세까지</option><option value="90" selected>90세까지</option><option value="95">95세까지</option><option value="100">100세까지</option></select></label>
+<label class="fc-field"><span>은퇴 후 목표 월 생활비 <small>지금 물가 기준</small></span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="rt-target" value="1,976,000" data-fc="rt" data-unit="won"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="rt-target" data-unit="eok">억원</button><button type="button" class="unit-btn" data-fc-unit="rt-target" data-unit="man">만원</button><button type="button" class="unit-btn active" data-fc-unit="rt-target" data-unit="won">원</button></span></span></label>
+<div class="fc-quick rt-quick"><button type="button" class="rt-pre" data-k="min">최소 <b>—</b></button><button type="button" class="rt-pre" data-k="fit">적정 <b>—</b></button><button type="button" class="rt-pre" data-k="rich">여유 <b>—</b></button></div>
+<p class="fc-note" style="margin:-8px 0 12px;">최소·적정: 국민연금연구원 국민노후보장패널 10차(2025.12 발표) · 여유는 적정의 1.5배</p>
+<p class="fc-sec-title">국민연금</p>
+<div class="fc-field"><span>예상 연금액</span><div class="mode-toggle fc-seg" data-name="rt-npsmode"><button type="button" class="mode-btn active" data-v="auto">소득으로 추정</button><button type="button" class="mode-btn" data-v="direct">예상액 직접 입력</button></div><small class="fc-hint">정확한 금액은 국민연금공단 「내 연금 알아보기」(내곁에국민연금 앱)에서 확인할 수 있습니다</small></div>
+<label class="fc-field"><span>월 소득 (세전) <small>국민연금 기준소득월액 · 퇴직연금 적립에도 사용</small></span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="rt-income" value="3,500,000" data-fc="rt" data-unit="won"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="rt-income" data-unit="eok">억원</button><button type="button" class="unit-btn" data-fc-unit="rt-income" data-unit="man">만원</button><button type="button" class="unit-btn active" data-fc-unit="rt-income" data-unit="won">원</button></span></span></label>
+<div id="rt-auto-box"><label class="fc-field"><span>국민연금 가입 시작 나이 <small>은퇴 나이(최대 60세)까지 계속 낸다고 가정</small></span><span class="fc-input"><input type="text" inputmode="decimal" id="rt-npsstart" value="27" data-fc="rt"><em>세</em></span></label>
+</div>
+<label class="fc-field" id="rt-direct-f" style="display:none;"><span>국민연금 예상 월액 <small>공단 조회 금액 (지금 돈 가치)</small></span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="rt-npsdirect" value="1,000,000" data-fc="rt" data-unit="won"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="rt-npsdirect" data-unit="eok">억원</button><button type="button" class="unit-btn" data-fc-unit="rt-npsdirect" data-unit="man">만원</button><button type="button" class="unit-btn active" data-fc-unit="rt-npsdirect" data-unit="won">원</button></span></span></label>
+<label class="fc-field"><span>국민연금 받기 시작하는 나이</span><select id="rt-claim" data-fc="rt"></select></label>
+<label class="fc-field" id="rt-spouse-f" style="display:none;"><span>배우자 국민연금 예상 월액 <small>지금 돈 가치 · 없으면 0</small></span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="rt-spouse" value="800,000" data-fc="rt" data-unit="won"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="rt-spouse" data-unit="eok">억원</button><button type="button" class="unit-btn" data-fc-unit="rt-spouse" data-unit="man">만원</button><button type="button" class="unit-btn active" data-fc-unit="rt-spouse" data-unit="won">원</button></span></span></label>
+<p class="fc-sec-title">퇴직연금·개인연금·저축</p>
+<label class="fc-field"><span>퇴직연금·퇴직금 지금 적립액 <small>DB형이면 지금 퇴사 시 받을 퇴직금</small></span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="rt-dc" value="15,000,000" data-fc="rt" data-unit="won"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="rt-dc" data-unit="eok">억원</button><button type="button" class="unit-btn" data-fc-unit="rt-dc" data-unit="man">만원</button><button type="button" class="unit-btn active" data-fc-unit="rt-dc" data-unit="won">원</button></span></span></label>
+<label class="fc-check" style="margin-bottom:12px;"><input type="checkbox" id="rt-dcon" data-fc="rt" checked> <span>은퇴까지 계속 쌓임 <small class="fc-hint" style="display:block;margin:2px 0 0;">해마다 연봉(월 소득 × 12)의 1/12 적립 — 중간정산·이직 때 써 버리지 않는다고 가정</small></span></label>
+<label class="fc-field"><span>연금저축·IRP 지금 적립액</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="rt-ps" value="3,000,000" data-fc="rt" data-unit="won"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="rt-ps" data-unit="eok">억원</button><button type="button" class="unit-btn" data-fc-unit="rt-ps" data-unit="man">만원</button><button type="button" class="unit-btn active" data-fc-unit="rt-ps" data-unit="won">원</button></span></span></label>
+<label class="fc-field"><span>연금저축·IRP 매달 납입액 <small>연 900만원까지 세액공제</small></span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="rt-psadd" value="100,000" data-fc="rt" data-unit="won"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="rt-psadd" data-unit="eok">억원</button><button type="button" class="unit-btn" data-fc-unit="rt-psadd" data-unit="man">만원</button><button type="button" class="unit-btn active" data-fc-unit="rt-psadd" data-unit="won">원</button></span></span></label>
+<label class="fc-field"><span>그 밖의 노후 자산 (집 제외) <small>예적금·주식·ETF 등 노후에 쓸 돈</small></span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="rt-other" value="20,000,000" data-fc="rt" data-unit="won"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="rt-other" data-unit="eok">억원</button><button type="button" class="unit-btn" data-fc-unit="rt-other" data-unit="man">만원</button><button type="button" class="unit-btn active" data-fc-unit="rt-other" data-unit="won">원</button></span></span></label>
+<label class="fc-field"><span>그 밖의 매달 저축액</span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="rt-otheradd" value="300,000" data-fc="rt" data-unit="won"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="rt-otheradd" data-unit="eok">억원</button><button type="button" class="unit-btn" data-fc-unit="rt-otheradd" data-unit="man">만원</button><button type="button" class="unit-btn active" data-fc-unit="rt-otheradd" data-unit="won">원</button></span></span></label>
+<p class="fc-sec-title">가정</p>
+<div class="fc-row2"><label class="fc-field"><span>연 수익률 <small>세후</small></span><span class="fc-input"><input type="text" inputmode="decimal" id="rt-ret" value="4" data-fc="rt"><em>%</em></span></label>
+<label class="fc-field"><span>물가상승률</span><span class="fc-input"><input type="text" inputmode="decimal" id="rt-infl" value="2.5" data-fc="rt"><em>%</em></span></label>
+</div>
+      </div>
+      <div>
+<div class="card fc-hero"><p class="fc-hero-label">나의 노후 준비 성적</p><p class="fc-hero-val rt-grade" id="rt-grade">—</p><p class="fc-hero-sub" id="rt-sub">—</p><div class="rt-scale" id="rt-scale"></div>
+<div class="fc-kpis"><div><p>은퇴 후 월 평균 소득</p><b id="rt-k1">—</b></div><div><p>국민연금 예상 월액</p><b id="rt-k2">—</b></div><div><p id="rt-k3-l">100% 채우려면 매달 더</p><b id="rt-k3">—</b></div></div>
+<button type="button" class="shc-open shc-wide" id="rt-share" hidden><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v8M4.8 5.2 8 2l3.2 3.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 9.5V13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>내 성적표 이미지로 공유하기</button></div>
+<div class="card" style="margin-top:16px;"><p class="card-title" style="margin-bottom:12px;">노후 소득 구성 <small class="fc-sub-inline">지금 돈 가치 · 월 기준</small></p><div class="table-scroll"><table class="cagr-table fc-table fc-wrap"><tbody id="rt-table"></tbody></table></div></div>
+<div class="card" style="margin-top:16px;"><p class="card-title" style="margin-bottom:10px;">나이별 월 소득 <small class="fc-sub-inline">빨간 점선 = 목표 생활비</small></p><div class="chart-wrap" style="height:320px;"><canvas id="rt-chart" role="img" aria-label="나이별 노후 소득 구성 그래프"></canvas></div></div>
+<div class="card" style="margin-top:16px;"><p class="card-title" style="margin-bottom:8px;">진단과 처방</p><ul class="g-list" id="rt-tips" style="margin:0;"></ul>
+<p class="fc-note" style="margin:12px 0 0;">참고: 2025년 가계금융복지조사에서 은퇴하지 않은 가구 중 노후 준비가 '잘 되어 있다'는 9.6%, 은퇴한 가구의 55.6%는 생활비가 '부족하다'고 답했습니다.</p></div>
+<div class="notice fc-notice">※ 모든 금액은 지금 돈 가치(물가를 뺀 실질 금액)입니다. 수익률에서 물가상승률을 뺀 실질 수익률로 굴리고, 국민연금은 매년 물가만큼 오르므로 지금 가치 그대로 봅니다.<br>※ 국민연금 추정: 2026년 개정 국민연금법(소득대체율 43%, 비례상수 1.29)과 과거 가입기간의 연도별 상수, A값 3,193,511원(2026년), 기준소득월액 상한 659만원·하한 41만원으로 계산합니다. 소득이 앞으로도 지금 가치로 같다고 보고 가입 기간을 빠짐없이 냈다고 가정하므로 실제 가입 이력과 다르면 공단 조회 금액을 넣으세요. 출산·군복무 크레딧, 부양가족연금, 기초연금(소득·재산 기준)은 넣지 않았습니다.<br>※ 퇴직연금·연금저축·IRP·그 밖의 자산은 은퇴부터 계획 나이까지 매달 같은 금액으로 나눠 받는다고 계산하며, 연금저축·IRP·퇴직연금은 연금소득세(70세 미만 5.5%, 80세 미만 4.4%, 그 이상 3.3%)를 뺍니다. 퇴직금을 연금으로 받을 때의 퇴직소득세 감면(30~50%)과 연 1,500만원 초과 시 종합과세 선택은 단순화했습니다.<br>※ 성적: 은퇴 기간 전체 목표 생활비 대비 준비된 소득의 비율 — A+ 120% 이상 · A 100% · B+ 90% · B 80% · C 65% · D 50% · F 50% 미만.</div>
+      </div>
+    </div>
+    <!-- [GUIDE:retire] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
+    <section class="guide" aria-labelledby="g-retire-h">
+      <h2 id="g-retire-h">노후 준비 성적은 이렇게 매깁니다</h2>
+      <p class="g-lead">노후 준비는 '얼마를 모았나'보다 '은퇴 후 매달 얼마를 받을 수 있나'가 중요합니다. 이 성적표는 국민연금(1층)·퇴직연금(2층)·개인연금(3층)과 저축으로 은퇴부터 계획한 나이까지 받을 월 소득을 계산해, 목표 생활비의 몇 %를 채우는지로 성적을 매깁니다.</p>
+      <div class="g-grid">
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>국민연금</b>: 기본연금액 = 비례상수 × (A값 + 내 소득) × (1 + 0.05 × 20년 넘는 가입연수) — 2026년부터 상수 1.29(소득대체율 43%)</li><li><b>조기·연기 수령</b>: 1년 당길 때마다 6% 감액, 늦출 때마다 7.2% 증액</li><li><b>퇴직연금·개인연금·저축</b>: 은퇴 때까지 실질 수익률로 불린 뒤 계획 나이까지 매달 같은 금액으로 나눠 받음</li><li><b>준비율</b> = 은퇴 기간 받을 소득 합계 ÷ 목표 생활비 합계</li><li><b>성적</b>: A+ 120%↑ · A 100%↑ · B+ 90%↑ · B 80%↑ · C 65%↑ · D 50%↑ · F</li></ul></article>
+        <article class="g-card"><h3>노후 생활비는 얼마가 필요할까</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>월 생활비</th><th>개인</th><th>부부</th></tr></thead><tbody><tr><td>최소 생활비</td><td>139만 2천원</td><td>216만 6천원</td></tr><tr><td>적정 생활비</td><td>197만 6천원</td><td>298만 1천원</td></tr></tbody></table></div><p class="g-cap">국민연금연구원 국민노후보장패널 10차 조사(2024년 조사, 2025년 12월 발표) — 50대 이상이 답한 금액입니다.</p></article>
+      </div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>국민연금은 얼마나 받을 수 있나요?</summary><div class="g-ans"><p>2026년 개정으로 소득대체율이 43%가 됐습니다. 평균 소득자(A값 약 319만원)가 40년 가입하면 은퇴 전 소득의 43%를 받는 구조인데, 실제로는 의무 가입 나이(60세 미만)와 늦은 취업 때문에 가입 기간이 30년 안팎인 경우가 많아 30% 중반이 됩니다. 이 계산기는 가입 기간과 소득으로 추정하며, 공단에서 조회한 금액을 직접 넣을 수도 있습니다.</p></div></details><details class="g-faq"><summary>은퇴 후 국민연금 받기 전까지는 어떻게 하나요?</summary><div class="g-ans"><p>1969년생 이후는 65세부터 국민연금을 받기 때문에 60세에 은퇴하면 5년의 '소득 공백기'가 생깁니다. 조기 수령(1년당 6% 감액)으로 당길 수도 있지만 평생 줄어든 금액을 받으므로, 연금저축·IRP·퇴직연금으로 이 기간을 먼저 채우는 계획이 일반적입니다. 그래프에서 은퇴 직후 몇 년의 막대가 목표선보다 낮다면 이 공백기입니다.</p></div></details><details class="g-faq"><summary>집은 왜 넣지 않나요?</summary><div class="g-ans"><p>살고 있는 집은 팔지 않는 한 생활비로 쓸 수 없어 기본 계산에서 뺍니다. 55세 이상이면 주택연금으로 집을 맡기고 평생 월 연금을 받을 수 있으니, 주택연금 예상액을 '그 밖의 노후 자산' 대신 계산에 더해 보는 것도 방법입니다.</p></div></details><details class="g-faq"><summary>성적을 올리려면?</summary><div class="g-ans"><p>가장 효과가 큰 순서는 ① 은퇴를 늦추기(모으는 기간은 늘고 쓰는 기간은 줄어듦), ② 연금저축·IRP 납입(연 900만원까지 13.2~16.5% 세액공제), ③ 국민연금 연기 수령(1년당 7.2% 증액), ④ 생활비 목표 조정입니다. 입력값을 바꿔 가며 성적이 어떻게 달라지는지 확인해 보세요.</p></div></details></div>
+    </section>
+    <!-- [/GUIDE:retire] -->
+  </div><!-- /page-retire -->
 
   <div class="app-page" id="page-fx">
     <div class="header">
@@ -22838,7 +22905,8 @@ var JBX = (function () {
       var mx = gx + gw * pos / 100;
       ctx.beginPath(); ctx.arc(Math.max(gx + 16, Math.min(gx + gw - 16, mx)), y + gh / 2, 22, 0, Math.PI * 2); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.lineWidth = 7; ctx.strokeStyle = '#3182f6'; ctx.stroke();
       y += gh + 48; ctx.font = font(500, 26); ctx.fillStyle = '#7d8390';
-      ctx.textAlign = 'left'; ctx.fillText('하위', gx, y); ctx.textAlign = 'center'; ctx.fillText('중위', gx + gw / 2, y); ctx.textAlign = 'right'; ctx.fillText('상위', gx + gw, y); ctx.textAlign = 'left';
+      var gl = o.gaugeLabels || ['하위', '중위', '상위'];
+      ctx.textAlign = 'left'; ctx.fillText(gl[0], gx, y); ctx.textAlign = 'center'; ctx.fillText(gl[1], gx + gw / 2, y); ctx.textAlign = 'right'; ctx.fillText(gl[2], gx + gw, y); ctx.textAlign = 'left';
     }
     /* 숫자 상자 */
     var rows = (o.rows || []).filter(function (r) { return r && r[1] != null && r[1] !== ''; }).slice(0, 4);
@@ -22940,7 +23008,7 @@ var JBX = (function () {
     st.el.classList.add('open'); document.documentElement.classList.add('shc-lock');
     st.el.querySelector('.shc-x').focus();
     /* 구글 한글 글꼴은 글자 범위별로 나뉘어 있어, 카드에 쓸 글자를 넘겨 그 조각까지 받아 둔 뒤 그림 */
-    var txt = [o.chip, o.title, o.label, o.big, o.sub, o.source, '디코딩 자본주의 나도 계산해 보기 → 하위 중위 상위 자료: 비공개 d-capitalism.com/' + o.key]
+    var txt = [o.chip, o.title, o.label, o.big, o.sub, o.source, (o.gaugeLabels || []).join(' '), '디코딩 자본주의 나도 계산해 보기 → 하위 중위 상위 자료: 비공개 d-capitalism.com/' + o.key]
       .concat((o.rows || []).map(function (r) { return r ? r[0] + ' ' + r[1] : ''; })).join(' ');
     var ready = document.fonts && document.fonts.load ? Promise.all([700, 500, 400].map(function (w) { return document.fonts.load(font(w, 40), txt); })).catch(function () {}) : Promise.resolve();
     ready.then(render);
@@ -23369,6 +23437,197 @@ var HYC = (function () {
   document.addEventListener('click', function (e) { if (share && e.target.closest && e.target.closest('#hy-share')) window.shareCard.open(share); });
   window.fcRegister('hy', render, 'houseyears');
 })();
+
+/* ════════════════════════════════════════
+   [RETIRE] 노후 준비 성적표 — 모든 금액은 '지금 돈 가치'(실질) 기준
+   근거(2026-10 확인)
+   · 국민연금법(2026.1.1 시행 개정): 기본연금액 = Σ(구간 비례상수 × (A + B) × 구간 가입월수 ÷ 총 가입월수) × (1 + 0.05 × 20년 초과 가입연수)
+       비례상수 1988~98년 2.4(A + 0.75B) · 1999~2007년 1.8 · 2008년 1.5 → 매년 0.015 감소 → 2025년 1.245 · 2026년~ 1.29(소득대체율 43%)
+       가입 20년 미만: × (0.5 + 0.05 × 10년 초과 연수), 10년 미만은 연금 없음(반환일시금) · A값(2026년) 3,193,511원
+       기준소득월액 41만~659만원(2026.7~) · 수급 개시 1969년생 이후 65세(출생연도별 60~65세)
+       조기 수령 1년당 −6%(최대 5년) · 연기 1년당 +7.2%(최대 5년) · 매년 물가만큼 인상(실질 가치 유지)
+   · 적정 노후생활비: 국민연금연구원 국민노후보장패널 10차(2025.12 발표) — 개인 적정 197.6만·최소 139.2만, 부부 적정 298.1만·최소 216.6만
+   · 사적연금 연금소득세(소득세법 §129): 70세 미만 5.5% · 80세 미만 4.4% · 80세 이상 3.3% (지방세 포함)
+   · 퇴직연금: 해마다 연봉의 1/12 적립(DC 최소 부담금 · 퇴직금 30일분과 같은 크기)
+   · 은퇴 후: 퇴직연금·개인연금·그 밖의 자산을 은퇴부터 계획 나이까지 매달 같은 실질 금액으로 나눠 씀(실질 수익률로 굴리며)
+════════════════════════════════════════ */
+var RTC = (function () {
+  var A2026 = 3193511, BMIN = 41e4, BMAX = 659e4;
+  function constAt(y) { return y >= 2026 ? 1.29 : y >= 2008 ? 1.5 - 0.015 * (y - 2008) : y >= 1999 ? 1.8 : 2.4; }
+  function pensionAge(birth) { return birth <= 1952 ? 60 : birth <= 1956 ? 61 : birth <= 1960 ? 62 : birth <= 1964 ? 63 : birth <= 1968 ? 64 : 65; }
+  /* 국민연금 예상 월액(지금 돈 가치) — o: {birth, startAge, endAge, income(월 세전), claimAge} */
+  function nps(o) {
+    var B = Math.min(BMAX, Math.max(BMIN, o.income || 0)), A = A2026;
+    var y0 = Math.max(1988, o.birth + o.startAge), y1 = o.birth + Math.min(60, o.endAge);   /* 가입: 시작 나이 ~ min(은퇴, 60세) 직전 */
+    var years = Math.max(0, y1 - y0);
+    var r = { years: years, B: B, A: A, base: pensionAge(o.birth) };
+    if (years < 10) { r.monthly = 0; r.short = true; return r; }
+    var sum = 0;
+    for (var y = y0; y < y1; y++) sum += (y < 1999 ? constAt(y) * (A + 0.75 * B) : constAt(y) * (A + B));
+    var avg = sum / years;                                   /* Σ 상수 × (A+B) × 구간 비중 */
+    var annual = years >= 20 ? avg * (1 + 0.05 * (years - 20)) : avg * (0.5 + 0.05 * (years - 10));
+    var claim = Math.max(r.base - 5, Math.min(r.base + 5, o.claimAge || r.base));
+    var adj = claim < r.base ? 1 - 0.06 * (r.base - claim) : 1 + 0.072 * (claim - r.base);
+    r.claim = claim; r.adj = adj; r.annual = annual; r.monthly = annual / 12 * adj;
+    r.ratio = r.monthly / B;                                 /* 내 소득 대비 (소득대체율) */
+    return r;
+  }
+  function taxRate(age) { return age < 70 ? 0.055 : age < 80 ? 0.044 : 0.033; }
+  /* 지금부터 은퇴까지 적립 → 은퇴~계획 나이까지 매달 같은 실질 금액 인출 */
+  function grow(pv, monthly, months, rm) { var v = pv; for (var i = 0; i < months; i++) v = v * (1 + rm) + monthly; return v; }
+  function annuity(pv, months, rm) { if (!(months > 0)) return 0; return rm ? pv * rm / (1 - Math.pow(1 + rm, -months)) : pv / months; }
+  /* o: {age, retire, plan, household, target, income, salaryYear, npsMode, npsDirect, npsStart, npsClaim, spouseNps,
+         dc, dcAdd, ps, psAdd, other, otherAdd, ret, infl} */
+  function calc(o) {
+    var rr = (1 + o.ret) / (1 + o.infl) - 1, rm = Math.pow(1 + rr, 1 / 12) - 1;
+    var nAcc = Math.max(0, Math.round((o.retire - o.age) * 12)), nPay = Math.max(1, Math.round((o.plan - o.retire) * 12));
+    var birth = 2026 - Math.round(o.age);
+    var r = { rr: rr, nAcc: nAcc, nPay: nPay, birth: birth };
+    r.np = o.npsMode === 'direct' ? { monthly: o.npsDirect, claim: o.npsClaim || pensionAge(birth), base: pensionAge(birth), direct: true }
+                                  : nps({ birth: birth, startAge: o.npsStart, endAge: o.retire, income: o.income, claimAge: o.npsClaim });
+    if (r.np.direct) { var b0 = r.np.base, c0 = Math.max(b0 - 5, Math.min(b0 + 5, r.np.claim)); r.np.claim = c0; }
+    r.spouse = o.household === 'couple' ? (o.spouseNps || 0) : 0;
+    var dcAdd = o.dcOn ? o.salaryYear / 12 / 12 : 0;            /* 연봉 1/12 을 해마다 → 매달 1/144 */
+    r.pots = [
+      ['퇴직연금·퇴직금', grow(o.dc, dcAdd, nAcc, rm), true],
+      ['연금저축·IRP', grow(o.ps, o.psAdd, nAcc, rm), true],
+      ['그 밖의 노후 자산', grow(o.other, o.otherAdd, nAcc, rm), false]
+    ].map(function (p) { return { name: p[0], pv: p[1], gross: annuity(p[1], nPay, rm), taxed: p[2] }; });
+    /* 나이별 월 소득 (실질) */
+    var rows = [], sumInc = 0, sumNeed = 0, gap = 0, gapNeed = 0;
+    for (var a = Math.floor(o.retire); a < o.plan; a++) {
+      var t = taxRate(a), npm = a >= r.np.claim ? r.np.monthly : 0, spm = a >= r.np.claim ? r.spouse : 0;   /* 배우자도 같은 나이 기준으로 단순화 */
+      var pots = r.pots.map(function (p) { return p.taxed ? p.gross * (1 - t) : p.gross; });
+      var inc = npm + spm + pots.reduce(function (s, v) { return s + v; }, 0);
+      rows.push({ age: a, nps: npm + spm, pots: pots, inc: inc });
+      sumInc += inc; sumNeed += o.target;
+      if (inc < o.target) { gap += o.target - inc; }
+    }
+    r.rows = rows;
+    r.avgInc = rows.length ? sumInc / rows.length : 0;
+    r.cover = sumNeed > 0 ? sumInc / sumNeed : 0;
+    /* 모자란 돈을 채우려면 은퇴까지 매달 더 모아야 할 돈 (실질) — 부족분의 은퇴 시점 현재가치 */
+    var short = 0;
+    rows.forEach(function (x, i) { var d = o.target - x.inc; if (d > 0) short += d * 12 / Math.pow(1 + rr, i + 0.5); });
+    r.shortPV = short;
+    r.needMonthly = short > 0 ? (nAcc > 0 ? (rm ? short * rm / (Math.pow(1 + rm, nAcc) - 1) : short / nAcc) : null) : 0;
+    r.grade = gradeOf(r.cover);
+    return r;
+  }
+  function gradeOf(c) { return c >= 1.2 ? 'A+' : c >= 1 ? 'A' : c >= 0.9 ? 'B+' : c >= 0.8 ? 'B' : c >= 0.65 ? 'C' : c >= 0.5 ? 'D' : 'F'; }
+  return { calc: calc, nps: nps, pensionAge: pensionAge, constAt: constAt, gradeOf: gradeOf, A2026: A2026 };
+})();
+
+/* [RETIRE] 화면 — 입력(data-fc="rt")은 [FC-UI] 공통 처리 */
+(function () {
+  if (!document.getElementById('page-retire')) return;
+  function $(id) { return document.getElementById(id); }
+  function setT(id, v) { var e = $(id); if (e) e.textContent = v; }
+  function setH(id, v) { var e = $(id); if (e) e.innerHTML = v; }
+  function numOf(id) { var e = $(id); return e ? (parseFloat(String(e.value).replace(/,/g, '')) || 0) : 0; }
+  var UNIT = { eok: 1e8, man: 1e4, won: 1 };
+  function amt(id) { var e = $(id); return Math.round(numOf(id) * (UNIT[e && e.getAttribute('data-unit')] || 1)); }
+  function seg(name) { var b = document.querySelector('.fc-seg[data-name="' + name + '"] .mode-btn.active'); return b ? b.getAttribute('data-v') : null; }
+  function won(n) { return (n < 0 ? '−' : '') + Math.round(Math.abs(n)).toLocaleString('ko-KR') + '원'; }
+  function man(n) { var v = Math.round(n / 1e3) / 10; return (v >= 100 ? Math.round(v).toLocaleString('ko-KR') : v.toLocaleString('ko-KR')) + '만원'; }
+  function eok(n) {
+    var neg = n < 0; n = Math.round(Math.abs(n) / 1e4) * 1e4;
+    var e = Math.floor(n / 1e8), m = Math.round((n - e * 1e8) / 1e4), s;
+    if (!e) s = m.toLocaleString('ko-KR') + '만원'; else s = e.toLocaleString('ko-KR') + '억' + (m ? ' ' + m.toLocaleString('ko-KR') + '만원' : '원');
+    return (neg ? '−' : '') + s;
+  }
+  var LIVING = { single: { min: 1392000, fit: 1976000 }, couple: { min: 2166000, fit: 2981000 } };
+  var GRADES = ['F', 'D', 'C', 'B', 'B+', 'A', 'A+'], GCOL = { 'A+': '#3182f6', A: '#3182f6', 'B+': '#22a06b', B: '#22a06b', C: '#fe9800', D: '#f04452', F: '#f04452' };
+  var chart = null, share = null, lastHh = 'single', lastBase = null;
+  function claimOpts(base) {   /* 수령 시작 나이: 기본 나이 ± 5년 (조기 −6%/년 · 연기 +7.2%/년) — 기본 나이를 고른 상태였으면 새 기본 나이로 */
+    if (lastBase === base) return;
+    var sel = $('rt-claim'), prev = lastBase, cur = +sel.value, h = '';
+    for (var a = base - 5; a <= base + 5; a++) h += '<option value="' + a + '">' + a + '세' + (a < base ? ' (조기 수령 ' + (6 * (base - a)) + '% 감액)' : a > base ? ' (연기 +' + (7.2 * (a - base)).toFixed(1) + '%)' : ' (정상 수령)') + '</option>';
+    sel.innerHTML = h;
+    sel.value = String(!cur || cur === prev ? base : Math.max(base - 5, Math.min(base + 5, cur)));
+    lastBase = base;
+  }
+  function render() {
+    var hh = seg('rt-hh') || 'single', age = numOf('rt-age'), birth = 2026 - Math.round(age), base = RTC.pensionAge(birth);
+    claimOpts(base);
+    if (hh !== lastHh) {   /* 1인 ↔ 부부: 목표 생활비가 적정값 그대로면 새 가구의 적정값으로 */
+      if (amt('rt-target') === LIVING[lastHh].fit || amt('rt-target') === LIVING[lastHh].min) { var k = amt('rt-target') === LIVING[lastHh].min ? 'min' : 'fit'; $('rt-target').value = LIVING[hh][k].toLocaleString('ko-KR'); $('rt-target').setAttribute('data-unit', 'won'); document.querySelectorAll('.unit-btn[data-fc-unit="rt-target"]').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-unit') === 'won'); }); }
+      lastHh = hh;
+    }
+    document.querySelectorAll('.rt-pre').forEach(function (b) { var v = b.getAttribute('data-k') === 'rich' ? LIVING[hh].fit * 1.5 : LIVING[hh][b.getAttribute('data-k')]; b.setAttribute('data-won', v); b.querySelector('b').textContent = man(v); });
+    var mode = seg('rt-npsmode') || 'auto';
+    $('rt-auto-box').style.display = mode === 'auto' ? '' : 'none'; $('rt-direct-f').style.display = mode === 'direct' ? '' : 'none';
+    $('rt-spouse-f').style.display = hh === 'couple' ? '' : 'none';
+    var o = { age: age, retire: numOf('rt-retire'), plan: +$('rt-plan').value, household: hh, target: amt('rt-target'), income: amt('rt-income'),
+      salaryYear: amt('rt-income') * 12, npsMode: mode, npsDirect: amt('rt-npsdirect'), npsStart: numOf('rt-npsstart'), npsClaim: +$('rt-claim').value,
+      spouseNps: amt('rt-spouse'), dc: amt('rt-dc'), dcOn: $('rt-dcon').checked, ps: amt('rt-ps'), psAdd: amt('rt-psadd'), other: amt('rt-other'), otherAdd: amt('rt-otheradd'),
+      ret: numOf('rt-ret') / 100, infl: numOf('rt-infl') / 100 };
+    var err = !(age >= 18 && age < 100) ? '나이를 넣어 주세요 (18~99세).' : !(o.retire >= age) ? '은퇴 나이는 지금 나이 이상이어야 합니다.' : !(o.plan > o.retire) ? '계획 나이는 은퇴 나이보다 많아야 합니다.' : !(o.target > 0) ? '목표 월 생활비를 넣어 주세요.' : '';
+    if (err) { setT('rt-grade', '—'); setT('rt-sub', err); share = null; $('rt-share').hidden = true; return; }
+    var r = RTC.calc(o), np = r.np, pct = Math.round(r.cover * 100);
+    setT('rt-grade', r.grade); $('rt-grade').style.color = GCOL[r.grade];
+    setH('rt-sub', '노후 생활비의 <b>' + pct + '%</b>를 준비했습니다 · 은퇴 후 월 평균 <b>' + man(r.avgInc) + '</b> / 목표 ' + man(o.target) + ' <small>(지금 돈 가치)</small>');
+    var gi = GRADES.indexOf(r.grade);
+    setH('rt-scale', GRADES.map(function (g, i) { return '<span class="rt-g' + (i === gi ? ' on' : '') + '" style="' + (i === gi ? 'background:' + GCOL[g] + ';border-color:' + GCOL[g] + ';' : '') + '">' + g + '</span>'; }).join(''));
+    setT('rt-k1', man(r.avgInc)); setT('rt-k2', man(np.monthly + r.spouse));
+    setT('rt-k3', r.needMonthly == null ? '은퇴 후라 해당 없음' : r.needMonthly > 0 ? won(Math.ceil(r.needMonthly / 1e3) * 1e3) : '0원 (충분)');
+    setT('rt-k3-l', r.cover >= 1 && r.needMonthly > 0 ? '모자란 해(공백기)까지 채우려면 매달 더' : '100% 채우려면 매달 더');
+    /* 소득원 표 */
+    var taxNote = '연금소득세 3.3~5.5% 뺀 금액';
+    var first = r.rows[0], afterNp = r.rows.find(function (x) { return x.nps > 0; }) || first;
+    var lines = [
+      ['<b>국민연금</b> <small>(' + (np.direct ? '직접 넣은 예상액' : '가입 ' + np.years + '년 · 기준소득 ' + man(np.B) + ' · 소득대체율 ' + (np.ratio * 100).toFixed(1) + '%') + ' · ' + np.claim + '세부터' + (np.adj && np.adj !== 1 ? ' · ' + (np.adj < 1 ? '조기 ' : '연기 ') + ((np.adj - 1) * 100).toFixed(1) + '%' : '') + ')</small>', np.short ? '<span style="color:#f04452;">가입 10년 미만 — 연금 없음</span>' : man(np.monthly)],
+      o.household === 'couple' ? ['배우자 국민연금 <small>(' + np.claim + '세부터로 계산)</small>', man(r.spouse)] : null
+    ].concat(r.pots.map(function (p, i) {
+      var net = r.rows.reduce(function (s2, x) { return s2 + x.pots[i]; }, 0) / Math.max(1, r.rows.length);   /* 나이별 세율을 반영한 평균 */
+      return [p.name + ' <small>(은퇴 때 ' + eok(p.pv) + ' → ' + o.retire + '~' + o.plan + '세 ' + (o.plan - o.retire) + '년간 나눠 받음' + (p.taxed ? ' · ' + taxNote + ', 평균' : '') + ')</small>', man(net)];
+    })).concat([
+      ['<b>은퇴 직후 월 소득</b> <small>(' + first.age + '세' + (afterNp.age > first.age ? ' — 국민연금 받기 전 ' + (afterNp.age - first.age) + '년' : '') + ')</small>', man(first.inc), first.inc < o.target ? 'fc-hl' : ''],
+      afterNp.age > first.age ? ['<b>국민연금 받은 뒤 월 소득</b> <small>(' + afterNp.age + '세~)</small>', man(afterNp.inc)] : null,
+      ['<b>은퇴 기간 월 평균</b> <small>(' + o.retire + '~' + o.plan + '세)</small>', man(r.avgInc), 'fc-total'],
+      ['목표 월 생활비', man(o.target)],
+      ['<b>노후 생활비 준비율</b>', pct + '% · ' + r.grade, 'fc-hl']
+    ]);
+    if (r.needMonthly > 0) lines.push([(r.cover >= 1 ? '평균은 충분하지만 목표보다 모자란 해까지 모두 채우려면' : '모자란 달을 모두 채우려면') + ' <small>(은퇴 시점에 ' + eok(r.shortPV) + ' 더 필요 → 은퇴까지 매달)</small>', '+' + won(Math.ceil(r.needMonthly / 1e3) * 1e3)]);
+    else if (r.needMonthly == null && r.shortPV > 0) lines.push(['목표보다 모자란 해를 채우는 데 필요한 돈 <small>(은퇴 시점 기준)</small>', eok(r.shortPV)]);
+    setH('rt-table', lines.filter(Boolean).map(function (x) { return '<tr' + (x[2] ? ' class="' + x[2] + '"' : '') + '><td>' + x[0] + '</td><td style="text-align:right;">' + x[1] + '</td></tr>'; }).join(''));
+    /* 진단 */
+    var tips = [], gapYrs = afterNp.age - first.age;
+    if (np.short) tips.push('국민연금은 최소 10년 가입해야 받을 수 있습니다. 임의가입·추후납부로 가입 기간을 채우세요.');
+    if (gapYrs > 0 && first.inc < o.target) tips.push('은퇴 후 국민연금을 받기 전 ' + gapYrs + '년(' + first.age + '~' + (afterNp.age - 1) + '세)은 월 ' + man(o.target - first.inc) + '이 모자랍니다 — 이 \'소득 공백기\'를 메울 연금저축·IRP를 따로 준비하거나 은퇴를 늦추는 것이 효과적입니다.');
+    if ((np.monthly + r.spouse) / o.target < 0.4) tips.push('국민연금이 목표 생활비의 ' + Math.round((np.monthly + r.spouse) / o.target * 100) + '%만 채웁니다. 연금저축·IRP는 연 900만원까지 세액공제(13.2~16.5%)를 받아 노후 소득을 늘리기 좋습니다.');
+    if (o.psAdd < 25e4 && r.cover < 1) tips.push('연금저축·IRP에 매달 ' + man(75e4) + '(연 900만원)까지 넣으면 연말정산에서 최대 148만5천원을 돌려받습니다.');
+    if (r.cover >= 1) tips.push('목표 생활비를 은퇴 기간 내내 채울 수 있습니다. 수익률을 1%p 낮춰도 괜찮은지 확인해 보세요.');
+    setH('rt-tips', tips.map(function (t) { return '<li>' + t + '</li>'; }).join(''));
+    /* 그래프: 나이별 소득원 (누적 막대) + 목표 */
+    if (typeof Chart !== 'undefined') {
+      var labels = r.rows.map(function (x) { return x.age + '세'; });
+      var ds = [{ label: '국민연금' + (o.household === 'couple' ? '(부부)' : ''), data: r.rows.map(function (x) { return Math.round(x.nps); }), backgroundColor: '#3182f6', stack: 's' }];
+      var pc = ['#22a06b', '#a855f7', '#fe9800'];
+      r.pots.forEach(function (p, i) { ds.push({ label: p.name, data: r.rows.map(function (x) { return Math.round(x.pots[i]); }), backgroundColor: pc[i], stack: 's' }); });
+      ds.push({ type: 'line', label: '목표 생활비', data: r.rows.map(function () { return o.target; }), borderColor: '#f04452', borderDash: [6, 4], pointRadius: 0, borderWidth: 1.6, fill: false });
+      var opt = { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { display: true, position: 'bottom', labels: { color: '#9e9ea4', boxWidth: 10, boxHeight: 10, font: { size: 11 } } }, tooltip: { backgroundColor: '#202027', borderColor: fgA(0.1), borderWidth: 1, titleColor: '#9e9ea4', bodyColor: '#e4e4e5', padding: 12, callbacks: { label: function (c) { return ' ' + c.dataset.label + ': ' + man(c.parsed.y); } } } },
+        scales: { x: { stacked: true, ticks: { color: '#6d6d76', font: { size: 11 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 }, grid: { display: false }, border: { display: false } },
+                  y: { stacked: true, beginAtZero: true, ticks: { color: '#6d6d76', font: { size: 11 }, callback: function (v) { return Math.round(v / 1e4).toLocaleString('ko-KR') + '만'; } }, grid: { color: fgA(0.04) }, border: { display: false } } } };
+      if (chart) { chart.destroy(); }
+      chart = new Chart($('rt-chart'), { type: 'bar', data: { labels: labels, datasets: ds }, options: opt });
+    }
+    share = { key: 'retirement-score', chip: '노후 준비 성적표', title: '나의 노후 준비 성적표', label: Math.round(age) + '세 · ' + o.retire + '세 은퇴 · ' + o.plan + '세까지 · ' + (hh === 'couple' ? '부부' : '1인 가구'),
+      big: r.grade + '  ' + pct + '%', sub: '노후 생활비의 ' + pct + '%를 준비했어요', gauge: Math.min(100, pct / 1.2), gaugeLabels: ['0%', '60%', '120% 이상'],
+      rows: [['은퇴 후 월 평균 소득', man(r.avgInc), true], ['목표 월 생활비', man(o.target), true], ['국민연금 예상 월액', man(np.monthly + r.spouse), true],
+             r.needMonthly > 0 ? ['100% 채우려면 매달', '+' + man(r.needMonthly), true] : ['준비 상태', '목표 달성']],
+      source: '국민연금법(2026 개정) · 국민연금연구원 노후보장패널 · 지금 돈 가치 기준' };
+    $('rt-share').hidden = false;
+  }
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest) return;
+    var b = e.target.closest('.rt-pre');
+    if (b) { var t = $('rt-target'); t.setAttribute('data-unit', 'won'); t.value = Math.round(+b.getAttribute('data-won')).toLocaleString('ko-KR'); document.querySelectorAll('.unit-btn[data-fc-unit="rt-target"]').forEach(function (u) { u.classList.toggle('active', u.getAttribute('data-unit') === 'won'); }); render(); return; }
+    if (share && e.target.closest('#rt-share')) window.shareCard.open(share);
+  });
+  window.fcRegister('rt', render, 'retire');
+})();
 </script>
   <!-- ── 하단 후원/문의 배너 ── -->
   <div style="max-width:1280px;margin:0 auto;padding:0 32px 40px;">
@@ -23510,6 +23769,7 @@ var HYC = (function () {
     </div>
     <button class="drop-item" id="drop-divcalc" onclick="switchSubTab('divcalc','passive',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M3 14.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><rect x="4" y="9.5" width="2.2" height="5" rx=".6" stroke="currentColor" stroke-width="1.2"/><rect x="7.9" y="7" width="2.2" height="7.5" rx=".6" stroke="currentColor" stroke-width="1.2"/><rect x="11.8" y="4.5" width="2.2" height="10" rx=".6" stroke="currentColor" stroke-width="1.2"/><circle cx="5.1" cy="5.2" r="1.7" stroke="currentColor" stroke-width="1.1"/></svg>배당금 계산기</button>
     <button class="drop-item" id="drop-fire" onclick="switchSubTab('fire','passive',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M9 2.2c.4 2.3 3.8 3.9 3.8 7.6A3.8 3.8 0 0 1 9 13.6a3.8 3.8 0 0 1-3.8-3.8c0-1.6.9-2.6 1.6-3.3.1 1.2.7 1.9 1.4 2.2C8 7.1 7.8 4.4 9 2.2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M3 16h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>파이어족 계산기</button>
+    <button class="drop-item" id="drop-retire" onclick="switchSubTab('retire','passive',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="3" y="2.5" width="12" height="13" rx="1.6" stroke="currentColor" stroke-width="1.3"/><path d="M6 6.5h6M6 9.5h3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M10.2 12.6l1.2 1.1 2.1-2.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>노후 준비 성적표</button>
     <button class="drop-item" id="drop-pension" onclick="switchSubTab('pension','passive',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M3 15.5h12M4.5 15.5V8.5M8 15.5V8.5M11.5 15.5V8.5M14 15.5V8.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M2.5 7.5 9 3l6.5 4.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>연금저축·IRP 세액공제 계산기</button>
     <button class="drop-item" id="drop-dividend" onclick="switchSubTab('dividend','passive',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.8" stroke="currentColor" stroke-width="1.3"/><path d="M9 5.2v7.6M11.2 6.8c-.4-.9-1.3-1.3-2.3-1.3-1.3 0-2.2.7-2.2 1.7 0 2.3 4.6 1.2 4.6 3.6 0 1-1 1.8-2.4 1.8-1.1 0-2-.5-2.4-1.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>배당소득세 계산기</button>
   </div>

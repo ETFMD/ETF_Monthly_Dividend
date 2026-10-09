@@ -12558,7 +12558,8 @@ var JBX = (function () {
       var mx = gx + gw * pos / 100;
       ctx.beginPath(); ctx.arc(Math.max(gx + 16, Math.min(gx + gw - 16, mx)), y + gh / 2, 22, 0, Math.PI * 2); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.lineWidth = 7; ctx.strokeStyle = '#3182f6'; ctx.stroke();
       y += gh + 48; ctx.font = font(500, 26); ctx.fillStyle = '#7d8390';
-      ctx.textAlign = 'left'; ctx.fillText('하위', gx, y); ctx.textAlign = 'center'; ctx.fillText('중위', gx + gw / 2, y); ctx.textAlign = 'right'; ctx.fillText('상위', gx + gw, y); ctx.textAlign = 'left';
+      var gl = o.gaugeLabels || ['하위', '중위', '상위'];
+      ctx.textAlign = 'left'; ctx.fillText(gl[0], gx, y); ctx.textAlign = 'center'; ctx.fillText(gl[1], gx + gw / 2, y); ctx.textAlign = 'right'; ctx.fillText(gl[2], gx + gw, y); ctx.textAlign = 'left';
     }
     /* 숫자 상자 */
     var rows = (o.rows || []).filter(function (r) { return r && r[1] != null && r[1] !== ''; }).slice(0, 4);
@@ -12660,7 +12661,7 @@ var JBX = (function () {
     st.el.classList.add('open'); document.documentElement.classList.add('shc-lock');
     st.el.querySelector('.shc-x').focus();
     /* 구글 한글 글꼴은 글자 범위별로 나뉘어 있어, 카드에 쓸 글자를 넘겨 그 조각까지 받아 둔 뒤 그림 */
-    var txt = [o.chip, o.title, o.label, o.big, o.sub, o.source, '디코딩 자본주의 나도 계산해 보기 → 하위 중위 상위 자료: 비공개 d-capitalism.com/' + o.key]
+    var txt = [o.chip, o.title, o.label, o.big, o.sub, o.source, (o.gaugeLabels || []).join(' '), '디코딩 자본주의 나도 계산해 보기 → 하위 중위 상위 자료: 비공개 d-capitalism.com/' + o.key]
       .concat((o.rows || []).map(function (r) { return r ? r[0] + ' ' + r[1] : ''; })).join(' ');
     var ready = document.fonts && document.fonts.load ? Promise.all([700, 500, 400].map(function (w) { return document.fonts.load(font(w, 40), txt); })).catch(function () {}) : Promise.resolve();
     ready.then(render);
@@ -13088,4 +13089,195 @@ var HYC = (function () {
   }
   document.addEventListener('click', function (e) { if (share && e.target.closest && e.target.closest('#hy-share')) window.shareCard.open(share); });
   window.fcRegister('hy', render, 'houseyears');
+})();
+
+/* ════════════════════════════════════════
+   [RETIRE] 노후 준비 성적표 — 모든 금액은 '지금 돈 가치'(실질) 기준
+   근거(2026-10 확인)
+   · 국민연금법(2026.1.1 시행 개정): 기본연금액 = Σ(구간 비례상수 × (A + B) × 구간 가입월수 ÷ 총 가입월수) × (1 + 0.05 × 20년 초과 가입연수)
+       비례상수 1988~98년 2.4(A + 0.75B) · 1999~2007년 1.8 · 2008년 1.5 → 매년 0.015 감소 → 2025년 1.245 · 2026년~ 1.29(소득대체율 43%)
+       가입 20년 미만: × (0.5 + 0.05 × 10년 초과 연수), 10년 미만은 연금 없음(반환일시금) · A값(2026년) 3,193,511원
+       기준소득월액 41만~659만원(2026.7~) · 수급 개시 1969년생 이후 65세(출생연도별 60~65세)
+       조기 수령 1년당 −6%(최대 5년) · 연기 1년당 +7.2%(최대 5년) · 매년 물가만큼 인상(실질 가치 유지)
+   · 적정 노후생활비: 국민연금연구원 국민노후보장패널 10차(2025.12 발표) — 개인 적정 197.6만·최소 139.2만, 부부 적정 298.1만·최소 216.6만
+   · 사적연금 연금소득세(소득세법 §129): 70세 미만 5.5% · 80세 미만 4.4% · 80세 이상 3.3% (지방세 포함)
+   · 퇴직연금: 해마다 연봉의 1/12 적립(DC 최소 부담금 · 퇴직금 30일분과 같은 크기)
+   · 은퇴 후: 퇴직연금·개인연금·그 밖의 자산을 은퇴부터 계획 나이까지 매달 같은 실질 금액으로 나눠 씀(실질 수익률로 굴리며)
+════════════════════════════════════════ */
+var RTC = (function () {
+  var A2026 = 3193511, BMIN = 41e4, BMAX = 659e4;
+  function constAt(y) { return y >= 2026 ? 1.29 : y >= 2008 ? 1.5 - 0.015 * (y - 2008) : y >= 1999 ? 1.8 : 2.4; }
+  function pensionAge(birth) { return birth <= 1952 ? 60 : birth <= 1956 ? 61 : birth <= 1960 ? 62 : birth <= 1964 ? 63 : birth <= 1968 ? 64 : 65; }
+  /* 국민연금 예상 월액(지금 돈 가치) — o: {birth, startAge, endAge, income(월 세전), claimAge} */
+  function nps(o) {
+    var B = Math.min(BMAX, Math.max(BMIN, o.income || 0)), A = A2026;
+    var y0 = Math.max(1988, o.birth + o.startAge), y1 = o.birth + Math.min(60, o.endAge);   /* 가입: 시작 나이 ~ min(은퇴, 60세) 직전 */
+    var years = Math.max(0, y1 - y0);
+    var r = { years: years, B: B, A: A, base: pensionAge(o.birth) };
+    if (years < 10) { r.monthly = 0; r.short = true; return r; }
+    var sum = 0;
+    for (var y = y0; y < y1; y++) sum += (y < 1999 ? constAt(y) * (A + 0.75 * B) : constAt(y) * (A + B));
+    var avg = sum / years;                                   /* Σ 상수 × (A+B) × 구간 비중 */
+    var annual = years >= 20 ? avg * (1 + 0.05 * (years - 20)) : avg * (0.5 + 0.05 * (years - 10));
+    var claim = Math.max(r.base - 5, Math.min(r.base + 5, o.claimAge || r.base));
+    var adj = claim < r.base ? 1 - 0.06 * (r.base - claim) : 1 + 0.072 * (claim - r.base);
+    r.claim = claim; r.adj = adj; r.annual = annual; r.monthly = annual / 12 * adj;
+    r.ratio = r.monthly / B;                                 /* 내 소득 대비 (소득대체율) */
+    return r;
+  }
+  function taxRate(age) { return age < 70 ? 0.055 : age < 80 ? 0.044 : 0.033; }
+  /* 지금부터 은퇴까지 적립 → 은퇴~계획 나이까지 매달 같은 실질 금액 인출 */
+  function grow(pv, monthly, months, rm) { var v = pv; for (var i = 0; i < months; i++) v = v * (1 + rm) + monthly; return v; }
+  function annuity(pv, months, rm) { if (!(months > 0)) return 0; return rm ? pv * rm / (1 - Math.pow(1 + rm, -months)) : pv / months; }
+  /* o: {age, retire, plan, household, target, income, salaryYear, npsMode, npsDirect, npsStart, npsClaim, spouseNps,
+         dc, dcAdd, ps, psAdd, other, otherAdd, ret, infl} */
+  function calc(o) {
+    var rr = (1 + o.ret) / (1 + o.infl) - 1, rm = Math.pow(1 + rr, 1 / 12) - 1;
+    var nAcc = Math.max(0, Math.round((o.retire - o.age) * 12)), nPay = Math.max(1, Math.round((o.plan - o.retire) * 12));
+    var birth = 2026 - Math.round(o.age);
+    var r = { rr: rr, nAcc: nAcc, nPay: nPay, birth: birth };
+    r.np = o.npsMode === 'direct' ? { monthly: o.npsDirect, claim: o.npsClaim || pensionAge(birth), base: pensionAge(birth), direct: true }
+                                  : nps({ birth: birth, startAge: o.npsStart, endAge: o.retire, income: o.income, claimAge: o.npsClaim });
+    if (r.np.direct) { var b0 = r.np.base, c0 = Math.max(b0 - 5, Math.min(b0 + 5, r.np.claim)); r.np.claim = c0; }
+    r.spouse = o.household === 'couple' ? (o.spouseNps || 0) : 0;
+    var dcAdd = o.dcOn ? o.salaryYear / 12 / 12 : 0;            /* 연봉 1/12 을 해마다 → 매달 1/144 */
+    r.pots = [
+      ['퇴직연금·퇴직금', grow(o.dc, dcAdd, nAcc, rm), true],
+      ['연금저축·IRP', grow(o.ps, o.psAdd, nAcc, rm), true],
+      ['그 밖의 노후 자산', grow(o.other, o.otherAdd, nAcc, rm), false]
+    ].map(function (p) { return { name: p[0], pv: p[1], gross: annuity(p[1], nPay, rm), taxed: p[2] }; });
+    /* 나이별 월 소득 (실질) */
+    var rows = [], sumInc = 0, sumNeed = 0, gap = 0, gapNeed = 0;
+    for (var a = Math.floor(o.retire); a < o.plan; a++) {
+      var t = taxRate(a), npm = a >= r.np.claim ? r.np.monthly : 0, spm = a >= r.np.claim ? r.spouse : 0;   /* 배우자도 같은 나이 기준으로 단순화 */
+      var pots = r.pots.map(function (p) { return p.taxed ? p.gross * (1 - t) : p.gross; });
+      var inc = npm + spm + pots.reduce(function (s, v) { return s + v; }, 0);
+      rows.push({ age: a, nps: npm + spm, pots: pots, inc: inc });
+      sumInc += inc; sumNeed += o.target;
+      if (inc < o.target) { gap += o.target - inc; }
+    }
+    r.rows = rows;
+    r.avgInc = rows.length ? sumInc / rows.length : 0;
+    r.cover = sumNeed > 0 ? sumInc / sumNeed : 0;
+    /* 모자란 돈을 채우려면 은퇴까지 매달 더 모아야 할 돈 (실질) — 부족분의 은퇴 시점 현재가치 */
+    var short = 0;
+    rows.forEach(function (x, i) { var d = o.target - x.inc; if (d > 0) short += d * 12 / Math.pow(1 + rr, i + 0.5); });
+    r.shortPV = short;
+    r.needMonthly = short > 0 ? (nAcc > 0 ? (rm ? short * rm / (Math.pow(1 + rm, nAcc) - 1) : short / nAcc) : null) : 0;
+    r.grade = gradeOf(r.cover);
+    return r;
+  }
+  function gradeOf(c) { return c >= 1.2 ? 'A+' : c >= 1 ? 'A' : c >= 0.9 ? 'B+' : c >= 0.8 ? 'B' : c >= 0.65 ? 'C' : c >= 0.5 ? 'D' : 'F'; }
+  return { calc: calc, nps: nps, pensionAge: pensionAge, constAt: constAt, gradeOf: gradeOf, A2026: A2026 };
+})();
+
+/* [RETIRE] 화면 — 입력(data-fc="rt")은 [FC-UI] 공통 처리 */
+(function () {
+  if (!document.getElementById('page-retire')) return;
+  function $(id) { return document.getElementById(id); }
+  function setT(id, v) { var e = $(id); if (e) e.textContent = v; }
+  function setH(id, v) { var e = $(id); if (e) e.innerHTML = v; }
+  function numOf(id) { var e = $(id); return e ? (parseFloat(String(e.value).replace(/,/g, '')) || 0) : 0; }
+  var UNIT = { eok: 1e8, man: 1e4, won: 1 };
+  function amt(id) { var e = $(id); return Math.round(numOf(id) * (UNIT[e && e.getAttribute('data-unit')] || 1)); }
+  function seg(name) { var b = document.querySelector('.fc-seg[data-name="' + name + '"] .mode-btn.active'); return b ? b.getAttribute('data-v') : null; }
+  function won(n) { return (n < 0 ? '−' : '') + Math.round(Math.abs(n)).toLocaleString('ko-KR') + '원'; }
+  function man(n) { var v = Math.round(n / 1e3) / 10; return (v >= 100 ? Math.round(v).toLocaleString('ko-KR') : v.toLocaleString('ko-KR')) + '만원'; }
+  function eok(n) {
+    var neg = n < 0; n = Math.round(Math.abs(n) / 1e4) * 1e4;
+    var e = Math.floor(n / 1e8), m = Math.round((n - e * 1e8) / 1e4), s;
+    if (!e) s = m.toLocaleString('ko-KR') + '만원'; else s = e.toLocaleString('ko-KR') + '억' + (m ? ' ' + m.toLocaleString('ko-KR') + '만원' : '원');
+    return (neg ? '−' : '') + s;
+  }
+  var LIVING = { single: { min: 1392000, fit: 1976000 }, couple: { min: 2166000, fit: 2981000 } };
+  var GRADES = ['F', 'D', 'C', 'B', 'B+', 'A', 'A+'], GCOL = { 'A+': '#3182f6', A: '#3182f6', 'B+': '#22a06b', B: '#22a06b', C: '#fe9800', D: '#f04452', F: '#f04452' };
+  var chart = null, share = null, lastHh = 'single', lastBase = null;
+  function claimOpts(base) {   /* 수령 시작 나이: 기본 나이 ± 5년 (조기 −6%/년 · 연기 +7.2%/년) — 기본 나이를 고른 상태였으면 새 기본 나이로 */
+    if (lastBase === base) return;
+    var sel = $('rt-claim'), prev = lastBase, cur = +sel.value, h = '';
+    for (var a = base - 5; a <= base + 5; a++) h += '<option value="' + a + '">' + a + '세' + (a < base ? ' (조기 수령 ' + (6 * (base - a)) + '% 감액)' : a > base ? ' (연기 +' + (7.2 * (a - base)).toFixed(1) + '%)' : ' (정상 수령)') + '</option>';
+    sel.innerHTML = h;
+    sel.value = String(!cur || cur === prev ? base : Math.max(base - 5, Math.min(base + 5, cur)));
+    lastBase = base;
+  }
+  function render() {
+    var hh = seg('rt-hh') || 'single', age = numOf('rt-age'), birth = 2026 - Math.round(age), base = RTC.pensionAge(birth);
+    claimOpts(base);
+    if (hh !== lastHh) {   /* 1인 ↔ 부부: 목표 생활비가 적정값 그대로면 새 가구의 적정값으로 */
+      if (amt('rt-target') === LIVING[lastHh].fit || amt('rt-target') === LIVING[lastHh].min) { var k = amt('rt-target') === LIVING[lastHh].min ? 'min' : 'fit'; $('rt-target').value = LIVING[hh][k].toLocaleString('ko-KR'); $('rt-target').setAttribute('data-unit', 'won'); document.querySelectorAll('.unit-btn[data-fc-unit="rt-target"]').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-unit') === 'won'); }); }
+      lastHh = hh;
+    }
+    document.querySelectorAll('.rt-pre').forEach(function (b) { var v = b.getAttribute('data-k') === 'rich' ? LIVING[hh].fit * 1.5 : LIVING[hh][b.getAttribute('data-k')]; b.setAttribute('data-won', v); b.querySelector('b').textContent = man(v); });
+    var mode = seg('rt-npsmode') || 'auto';
+    $('rt-auto-box').style.display = mode === 'auto' ? '' : 'none'; $('rt-direct-f').style.display = mode === 'direct' ? '' : 'none';
+    $('rt-spouse-f').style.display = hh === 'couple' ? '' : 'none';
+    var o = { age: age, retire: numOf('rt-retire'), plan: +$('rt-plan').value, household: hh, target: amt('rt-target'), income: amt('rt-income'),
+      salaryYear: amt('rt-income') * 12, npsMode: mode, npsDirect: amt('rt-npsdirect'), npsStart: numOf('rt-npsstart'), npsClaim: +$('rt-claim').value,
+      spouseNps: amt('rt-spouse'), dc: amt('rt-dc'), dcOn: $('rt-dcon').checked, ps: amt('rt-ps'), psAdd: amt('rt-psadd'), other: amt('rt-other'), otherAdd: amt('rt-otheradd'),
+      ret: numOf('rt-ret') / 100, infl: numOf('rt-infl') / 100 };
+    var err = !(age >= 18 && age < 100) ? '나이를 넣어 주세요 (18~99세).' : !(o.retire >= age) ? '은퇴 나이는 지금 나이 이상이어야 합니다.' : !(o.plan > o.retire) ? '계획 나이는 은퇴 나이보다 많아야 합니다.' : !(o.target > 0) ? '목표 월 생활비를 넣어 주세요.' : '';
+    if (err) { setT('rt-grade', '—'); setT('rt-sub', err); share = null; $('rt-share').hidden = true; return; }
+    var r = RTC.calc(o), np = r.np, pct = Math.round(r.cover * 100);
+    setT('rt-grade', r.grade); $('rt-grade').style.color = GCOL[r.grade];
+    setH('rt-sub', '노후 생활비의 <b>' + pct + '%</b>를 준비했습니다 · 은퇴 후 월 평균 <b>' + man(r.avgInc) + '</b> / 목표 ' + man(o.target) + ' <small>(지금 돈 가치)</small>');
+    var gi = GRADES.indexOf(r.grade);
+    setH('rt-scale', GRADES.map(function (g, i) { return '<span class="rt-g' + (i === gi ? ' on' : '') + '" style="' + (i === gi ? 'background:' + GCOL[g] + ';border-color:' + GCOL[g] + ';' : '') + '">' + g + '</span>'; }).join(''));
+    setT('rt-k1', man(r.avgInc)); setT('rt-k2', man(np.monthly + r.spouse));
+    setT('rt-k3', r.needMonthly == null ? '은퇴 후라 해당 없음' : r.needMonthly > 0 ? won(Math.ceil(r.needMonthly / 1e3) * 1e3) : '0원 (충분)');
+    setT('rt-k3-l', r.cover >= 1 && r.needMonthly > 0 ? '모자란 해(공백기)까지 채우려면 매달 더' : '100% 채우려면 매달 더');
+    /* 소득원 표 */
+    var taxNote = '연금소득세 3.3~5.5% 뺀 금액';
+    var first = r.rows[0], afterNp = r.rows.find(function (x) { return x.nps > 0; }) || first;
+    var lines = [
+      ['<b>국민연금</b> <small>(' + (np.direct ? '직접 넣은 예상액' : '가입 ' + np.years + '년 · 기준소득 ' + man(np.B) + ' · 소득대체율 ' + (np.ratio * 100).toFixed(1) + '%') + ' · ' + np.claim + '세부터' + (np.adj && np.adj !== 1 ? ' · ' + (np.adj < 1 ? '조기 ' : '연기 ') + ((np.adj - 1) * 100).toFixed(1) + '%' : '') + ')</small>', np.short ? '<span style="color:#f04452;">가입 10년 미만 — 연금 없음</span>' : man(np.monthly)],
+      o.household === 'couple' ? ['배우자 국민연금 <small>(' + np.claim + '세부터로 계산)</small>', man(r.spouse)] : null
+    ].concat(r.pots.map(function (p, i) {
+      var net = r.rows.reduce(function (s2, x) { return s2 + x.pots[i]; }, 0) / Math.max(1, r.rows.length);   /* 나이별 세율을 반영한 평균 */
+      return [p.name + ' <small>(은퇴 때 ' + eok(p.pv) + ' → ' + o.retire + '~' + o.plan + '세 ' + (o.plan - o.retire) + '년간 나눠 받음' + (p.taxed ? ' · ' + taxNote + ', 평균' : '') + ')</small>', man(net)];
+    })).concat([
+      ['<b>은퇴 직후 월 소득</b> <small>(' + first.age + '세' + (afterNp.age > first.age ? ' — 국민연금 받기 전 ' + (afterNp.age - first.age) + '년' : '') + ')</small>', man(first.inc), first.inc < o.target ? 'fc-hl' : ''],
+      afterNp.age > first.age ? ['<b>국민연금 받은 뒤 월 소득</b> <small>(' + afterNp.age + '세~)</small>', man(afterNp.inc)] : null,
+      ['<b>은퇴 기간 월 평균</b> <small>(' + o.retire + '~' + o.plan + '세)</small>', man(r.avgInc), 'fc-total'],
+      ['목표 월 생활비', man(o.target)],
+      ['<b>노후 생활비 준비율</b>', pct + '% · ' + r.grade, 'fc-hl']
+    ]);
+    if (r.needMonthly > 0) lines.push([(r.cover >= 1 ? '평균은 충분하지만 목표보다 모자란 해까지 모두 채우려면' : '모자란 달을 모두 채우려면') + ' <small>(은퇴 시점에 ' + eok(r.shortPV) + ' 더 필요 → 은퇴까지 매달)</small>', '+' + won(Math.ceil(r.needMonthly / 1e3) * 1e3)]);
+    else if (r.needMonthly == null && r.shortPV > 0) lines.push(['목표보다 모자란 해를 채우는 데 필요한 돈 <small>(은퇴 시점 기준)</small>', eok(r.shortPV)]);
+    setH('rt-table', lines.filter(Boolean).map(function (x) { return '<tr' + (x[2] ? ' class="' + x[2] + '"' : '') + '><td>' + x[0] + '</td><td style="text-align:right;">' + x[1] + '</td></tr>'; }).join(''));
+    /* 진단 */
+    var tips = [], gapYrs = afterNp.age - first.age;
+    if (np.short) tips.push('국민연금은 최소 10년 가입해야 받을 수 있습니다. 임의가입·추후납부로 가입 기간을 채우세요.');
+    if (gapYrs > 0 && first.inc < o.target) tips.push('은퇴 후 국민연금을 받기 전 ' + gapYrs + '년(' + first.age + '~' + (afterNp.age - 1) + '세)은 월 ' + man(o.target - first.inc) + '이 모자랍니다 — 이 \'소득 공백기\'를 메울 연금저축·IRP를 따로 준비하거나 은퇴를 늦추는 것이 효과적입니다.');
+    if ((np.monthly + r.spouse) / o.target < 0.4) tips.push('국민연금이 목표 생활비의 ' + Math.round((np.monthly + r.spouse) / o.target * 100) + '%만 채웁니다. 연금저축·IRP는 연 900만원까지 세액공제(13.2~16.5%)를 받아 노후 소득을 늘리기 좋습니다.');
+    if (o.psAdd < 25e4 && r.cover < 1) tips.push('연금저축·IRP에 매달 ' + man(75e4) + '(연 900만원)까지 넣으면 연말정산에서 최대 148만5천원을 돌려받습니다.');
+    if (r.cover >= 1) tips.push('목표 생활비를 은퇴 기간 내내 채울 수 있습니다. 수익률을 1%p 낮춰도 괜찮은지 확인해 보세요.');
+    setH('rt-tips', tips.map(function (t) { return '<li>' + t + '</li>'; }).join(''));
+    /* 그래프: 나이별 소득원 (누적 막대) + 목표 */
+    if (typeof Chart !== 'undefined') {
+      var labels = r.rows.map(function (x) { return x.age + '세'; });
+      var ds = [{ label: '국민연금' + (o.household === 'couple' ? '(부부)' : ''), data: r.rows.map(function (x) { return Math.round(x.nps); }), backgroundColor: '#3182f6', stack: 's' }];
+      var pc = ['#22a06b', '#a855f7', '#fe9800'];
+      r.pots.forEach(function (p, i) { ds.push({ label: p.name, data: r.rows.map(function (x) { return Math.round(x.pots[i]); }), backgroundColor: pc[i], stack: 's' }); });
+      ds.push({ type: 'line', label: '목표 생활비', data: r.rows.map(function () { return o.target; }), borderColor: '#f04452', borderDash: [6, 4], pointRadius: 0, borderWidth: 1.6, fill: false });
+      var opt = { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { display: true, position: 'bottom', labels: { color: '#9e9ea4', boxWidth: 10, boxHeight: 10, font: { size: 11 } } }, tooltip: { backgroundColor: '#202027', borderColor: fgA(0.1), borderWidth: 1, titleColor: '#9e9ea4', bodyColor: '#e4e4e5', padding: 12, callbacks: { label: function (c) { return ' ' + c.dataset.label + ': ' + man(c.parsed.y); } } } },
+        scales: { x: { stacked: true, ticks: { color: '#6d6d76', font: { size: 11 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 }, grid: { display: false }, border: { display: false } },
+                  y: { stacked: true, beginAtZero: true, ticks: { color: '#6d6d76', font: { size: 11 }, callback: function (v) { return Math.round(v / 1e4).toLocaleString('ko-KR') + '만'; } }, grid: { color: fgA(0.04) }, border: { display: false } } } };
+      if (chart) { chart.destroy(); }
+      chart = new Chart($('rt-chart'), { type: 'bar', data: { labels: labels, datasets: ds }, options: opt });
+    }
+    share = { key: 'retirement-score', chip: '노후 준비 성적표', title: '나의 노후 준비 성적표', label: Math.round(age) + '세 · ' + o.retire + '세 은퇴 · ' + o.plan + '세까지 · ' + (hh === 'couple' ? '부부' : '1인 가구'),
+      big: r.grade + '  ' + pct + '%', sub: '노후 생활비의 ' + pct + '%를 준비했어요', gauge: Math.min(100, pct / 1.2), gaugeLabels: ['0%', '60%', '120% 이상'],
+      rows: [['은퇴 후 월 평균 소득', man(r.avgInc), true], ['목표 월 생활비', man(o.target), true], ['국민연금 예상 월액', man(np.monthly + r.spouse), true],
+             r.needMonthly > 0 ? ['100% 채우려면 매달', '+' + man(r.needMonthly), true] : ['준비 상태', '목표 달성']],
+      source: '국민연금법(2026 개정) · 국민연금연구원 노후보장패널 · 지금 돈 가치 기준' };
+    $('rt-share').hidden = false;
+  }
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest) return;
+    var b = e.target.closest('.rt-pre');
+    if (b) { var t = $('rt-target'); t.setAttribute('data-unit', 'won'); t.value = Math.round(+b.getAttribute('data-won')).toLocaleString('ko-KR'); document.querySelectorAll('.unit-btn[data-fc-unit="rt-target"]').forEach(function (u) { u.classList.toggle('active', u.getAttribute('data-unit') === 'won'); }); render(); return; }
+    if (share && e.target.closest('#rt-share')) window.shareCard.open(share);
+  });
+  window.fcRegister('rt', render, 'retire');
 })();
