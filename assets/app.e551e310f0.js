@@ -5729,7 +5729,7 @@ var TAX = (function () {
     var med = Q(50);
     setT('sr-k-med', eok(med)); setT('sr-k-avg', eok(M.mean)); setT('sr-k-mon', x > 0 ? money(x / 12) : '—');
     if (x <= 0) {
-      setT('sr-rank', '—'); setT('sr-rank-sub', '연봉을 넣으면 전체 근로자 가운데 내 위치를 보여 줍니다.'); setT('sr-next', ''); share = null; $('sr-share').hidden = true;
+      setT('sr-rank', '—'); setT('sr-rank-sub', '연봉을 넣으면 전체 근로자 가운데 내 위치를 보여 줍니다.'); setT('sr-next', ''); share = null; (window.dcShareSpec = window.dcShareSpec || {})['salary-rank'] = null;
       $('sr-gauge-mk').style.left = '0%'; draw(0); table(null); return;
     }
     var p = Math.min(100, Math.max(0, P(x))), rank = Math.max(1, Math.round(p / 100 * M.total));
@@ -5745,7 +5745,7 @@ var TAX = (function () {
       rows: [['내 연봉', money(x), true], ['중위 연봉 대비', (x / med).toFixed(2) + '배'], ['월 환산 (세전)', money(x / 12), true],
              g != null ? ['상위 ' + pctTxt(g) + '까지', '연 ' + money(Q(g) - x) + ' 더', true] : ['국세청 자료 최고 구간', '상위 0.1% 안']],
       source: '국세청 「근로소득 백분위(천분위) 자료」' + (M.yr ? ' ' + M.yr + '년 귀속' : '') };
-    $('sr-share').hidden = false;
+    (window.dcShareSpec = window.dcShareSpec || {})['salary-rank'] = share;   /* 오른쪽 아래 공유 창이 이 카드를 씀 */
     draw(x); table(p);
   }
   function table(myP) {
@@ -5769,7 +5769,6 @@ var TAX = (function () {
     }).catch(function () { loading = false; setT('sr-src', '자료를 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.'); });
   }
   var share = null;
-  document.addEventListener('click', function (e) { if (share && e.target.closest && e.target.closest('#sr-share')) window.shareCard.open(share); });
   window.fcRegister('srk', render, 'srank');
 })();
 
@@ -5867,7 +5866,7 @@ var TAX = (function () {
     setT('ar-k-age', age ? eok(age[2] * 1e4) : '연령대를 고르세요');
     var empty = !amt('ar-asset') && !amt('ar-debt');
     if (empty) {
-      setT('ar-rank', '—'); setT('ar-rank-sub', '자산과 부채를 넣으면 전체 가구 가운데 우리 집 위치를 보여 줍니다.'); setT('ar-next', ''); share = null; $('ar-share').hidden = true;
+      setT('ar-rank', '—'); setT('ar-rank-sub', '자산과 부채를 넣으면 전체 가구 가운데 우리 집 위치를 보여 줍니다.'); setT('ar-next', ''); share = null; (window.dcShareSpec = window.dcShareSpec || {})['asset-rank'] = null;
       $('ar-gauge-mk').style.left = '0%'; draw(null); table(null); ages(null); return;
     }
     var p = Math.min(100, Math.max(0, P(x))), low = p > 90;
@@ -5885,7 +5884,7 @@ var TAX = (function () {
              age ? [age[0] + ' 중앙값 대비', x > 0 ? (x / (age[2] * 1e4)).toFixed(2) + '배' : '—'] : null,
              g != null ? ['상위 ' + pctTxt(g) + '까지', money(Q(g) - x) + ' 더', true] : ['통계 최고 구간', '상위 1% 안']],
       source: '통계청 가계금융복지조사' + (M.yr ? ' ' + M.yr + '년' : '') + (p < 10 ? ' · 상위 10% 안은 추정' : '') };
-    $('ar-share').hidden = false;
+    (window.dcShareSpec = window.dcShareSpec || {})['asset-rank'] = share;   /* 오른쪽 아래 공유 창이 이 카드를 씀 */
     draw(p); table(p); ages(x);
   }
   function table(myP) {
@@ -5918,7 +5917,6 @@ var TAX = (function () {
     }).catch(function () { loading = false; setT('ar-src', '자료를 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.'); });
   }
   var share = null;
-  document.addEventListener('click', function (e) { if (share && e.target.closest && e.target.closest('#ar-share')) window.shareCard.open(share); });
   window.fcRegister('ark', render, 'arank');
 })();
 
@@ -12761,7 +12759,6 @@ var JBX = (function () {
     cagr: ['cagr-result', 'cagr-monthly-rate', 'cagr-daily-rate'],
     health: ['h-w-total', 'h-w-employer', 'h-w-annual', 'h-l-total', 'h-l-annual']
   };
-  var SHARE_BTNS = '#sr-share, #ar-share, #wif-share, #hy-share, #rt-share';
   function pageKey() { var m = location.pathname.match(/^\/([a-z0-9\-]+)\/?$/); return m ? m[1] : ''; }
   function route(k) { for (var i = 0; i < REG.length; i++) if (REG[i].path === k) return REG[i]; return null; }
   function txt(e) { return e ? String(e.textContent || '').replace(/\s+/g, ' ').trim() : ''; }
@@ -12799,7 +12796,7 @@ var JBX = (function () {
   /* ════════ 공유 창 (오른쪽 아래 버튼) ════════ */
   var KSDK = 'https://t1.kakaocdn.net/kakao_js_sdk/2.8.3/kakao.min.js', KSRI = 'sha384-oroumrnFVE0xtgqyDZJARgERibXg2C28380uaUZz2kHDS5CR7tu20eGiOU6GkTpy';
   var OPT_KEY = 'dc_share_opt', IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  var st = { el: null, fab: null, spec: null, override: null, capturing: false, cap: null, openedAt: 0, lastFocus: null,
+  var st = { el: null, fab: null, spec: null, override: null, openedAt: 0, lastFocus: null, ogBlob: {},
              kimg: {}, kup: {}, pblob: {}, prevUrl: null, sdkP: null, opt: { inp: true, amt: true } };
   try { var so = JSON.parse(localStorage.getItem(OPT_KEY) || 'null'); if (so) { st.opt.inp = so.inp !== false; st.opt.amt = so.amt !== false; } } catch (e) {}
   var ICON = {
@@ -12847,7 +12844,12 @@ var JBX = (function () {
   /* 창을 열 때 미리: 미리보기 · 저장용 카드 · 카카오 서버에 카드 올리기 (누르는 순간 바로 보내야 팝업이 막히지 않음) */
   function prepare() {
     var o = st.spec, k = sig(), hide = !st.opt.amt, img = st.el.querySelector('.dsh-prev');
-    if (!o) { img.removeAttribute('src'); return; }
+    if (!o) {                                                        /* 결과 카드가 없는 화면: 공유창에 붙일 대표 이미지를 미리 받아 둠 */
+      img.removeAttribute('src');
+      var key = pageKey() || 'home';
+      if (!st.ogBlob[key]) fetch('/assets/og/' + (route(pageKey()) ? key : 'home') + '.png').then(function (r) { return r.ok ? r.blob() : null; }).then(function (b) { if (b) st.ogBlob[key] = b; }).catch(function () {});
+      return;
+    }
     fontsReady(o).then(function () {
       if (sig() !== k) return;
       blobOf(drawWide(o, hide)).then(function (b) {
@@ -12896,7 +12898,7 @@ var JBX = (function () {
       } catch (e) {}
     }
     /* 카카오 공유를 쓸 수 없을 때: 휴대폰은 공유창(카카오톡 선택), 컴퓨터는 링크 복사 */
-    if (navigator.share && (IOS || /Android/i.test(navigator.userAgent))) navigator.share({ title: m.title, text: m.title, url: L.result }).catch(function () {});
+    if (navigator.share && (IOS || /Android/i.test(navigator.userAgent))) more();
     else copy(L.result, function () { toast('링크를 복사했어요. 카카오톡 대화창에 붙여 넣어 주세요'); });
   }
   function saveCard() {
@@ -12912,21 +12914,26 @@ var JBX = (function () {
     setTimeout(function () { URL.revokeObjectURL(u); }, 5000);
     toast('카드 이미지를 저장했어요');
   }
+  /* 휴대폰·PC 공유창: 결과 카드(없으면 대표 이미지)를 글·링크와 함께 보냄 */
+  function cardFile() {
+    var key = pageKey() || 'home', b = st.spec ? st.pblob[sig()] : st.ogBlob[key];
+    return b ? new File([b], 'd-capitalism-' + (st.spec ? st.spec.key : key) + '.png', { type: 'image/png' }) : null;
+  }
   function more() {
-    var L = links(), m = message(), b = st.spec && st.pblob[sig()];
-    var f = b ? new File([b], 'd-capitalism-' + st.spec.key + '.png', { type: 'image/png' }) : null;
-    var data = f && navigator.canShare && navigator.canShare({ files: [f] }) ? { files: [f], title: m.title, text: m.title + '\n' + L.result } : { title: m.title, text: m.title, url: L.result };
-    navigator.share(data).catch(function () {});
+    if (!navigator.share) return copy(links().result, function () { toast('링크를 복사했어요'); });
+    var L = links(), m = message(), f = cardFile();
+    var withImg = f && navigator.canShare && navigator.canShare({ files: [f] });
+    var data = withImg ? { files: [f], title: m.title, text: m.title + '\n' + L.result } : { title: m.title, text: m.title, url: L.result };
+    navigator.share(data).catch(function (e) {
+      if (withImg && e && e.name !== 'AbortError') navigator.share({ title: m.title, text: m.title, url: L.result }).catch(function () {});   /* 이미지를 못 받는 곳이면 링크만 */
+    });
+    if (!f) prepare();
   }
   function currentSpec() {
     var key = pageKey(), pg = State.page();
     if (!key || !pg) return null;
-    var b = pg.querySelector(SHARE_BTNS);                     /* 계산기에 자기 공유 카드가 있으면 그 내용을 받아 옴 */
-    if (b && !b.hidden) {
-      st.cap = null; st.capturing = true;
-      try { b.click(); } catch (e) {} finally { st.capturing = false; }
-      if (st.cap) return st.cap;
-    }
+    var reg = window.dcShareSpec || {};                       /* 계산기가 직접 만들어 둔 카드 (순위·성적표 등) — 결과가 없으면 null */
+    if (Object.prototype.hasOwnProperty.call(reg, key)) return reg[key] && reg[key].big ? reg[key] : null;
     if (st.override && st.override.key === key) return st.override;
     return generic();
   }
@@ -12970,7 +12977,7 @@ var JBX = (function () {
       '<button type="button" class="dsh-b" data-a="copy">' + ICON.link + '<span>링크 복사</span></button>' +
       '<button type="button" class="dsh-b dsh-kakao" data-a="kakao">' + ICON.kakao + '<span>카카오톡 공유</span></button>' +
       '<button type="button" class="dsh-b" data-a="card">' + ICON.card + '<span>카드 이미지 저장</span></button>' +
-      '<button type="button" class="dsh-b" data-a="more">' + ICON.more + '<span>다른 앱으로 공유</span></button>';
+      '<button type="button" class="dsh-b" data-a="more">' + ICON.more + '<span>카드와 함께 공유하기</span></button>';
     document.body.appendChild(el); document.body.appendChild(fab);
     st.el = el; st.fab = fab;
     fab.addEventListener('click', function () { if (el.hidden) openPanel(); else closePanel(true); });
@@ -12989,7 +12996,7 @@ var JBX = (function () {
       else if (a === 'more') more();
     });
     document.addEventListener('click', function (e) {
-      if (st.capturing || el.hidden || Date.now() - st.openedAt < 80) return;
+      if (el.hidden || Date.now() - st.openedAt < 80) return;
       var path = e.composedPath ? e.composedPath() : [];                 /* 버튼 아이콘을 바꾸면 눌린 요소가 문서에서 빠지므로 경로로 판단 */
       if (path.indexOf(el) >= 0 || path.indexOf(fab) >= 0 || el.contains(e.target) || fab.contains(e.target)) return;
       closePanel(false);
@@ -12997,10 +13004,9 @@ var JBX = (function () {
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !el.hidden) closePanel(true); });
     window.addEventListener('popstate', function () { closePanel(false); st.override = null; });
   }
-  /* 계산기 안의 '공유하기' 버튼(순위·성적표 등)이 부르는 입구 */
+  /* 계산기 안의 개별 공유 버튼(아파트 순위표의 단지별 '순위 공유')이 부르는 입구 */
   function open(o) {
     if (!o || !o.big) return;
-    if (st.capturing) { st.cap = o; return; }
     st.override = o;
     openPanel(o);
   }
@@ -13175,7 +13181,7 @@ var WIF = (function () {
     if (r.err || !(o.amount > 0)) {
       setT('wif-label', '그때 샀더라면'); setT('wif-val', '—');
       setT('wif-sub', r.err === 'future' ? '미래 날짜는 계산할 수 없습니다.' : !(o.amount > 0) ? '투자 금액을 넣어 주세요.' : as.name + ' 자료가 없는 기간입니다.');
-      ['wif-k1', 'wif-k2', 'wif-k3'].forEach(function (k) { setT(k, '—'); }); setH('wif-cmp', ''); share = null; $('wif-share').hidden = true;
+      ['wif-k1', 'wif-k2', 'wif-k3'].forEach(function (k) { setT(k, '—'); }); setH('wif-cmp', ''); share = null; (window.dcShareSpec = window.dcShareSpec || {})['what-if'] = null;
       if (chart) { chart.destroy(); chart = null; } return;
     }
     if (r.clamped) notes.push(as.name + ' 자료는 ' + ymTxt(r.P.start, as.yearly) + '부터 있어 그때부터 계산했습니다.');
@@ -13224,7 +13230,7 @@ var WIF = (function () {
              ks && !ks.err && !ks.clamped && as.id !== '^KS11' ? ['같은 기간 코스피', pctS(ks.ret)] : null,
              sp && !sp.err && !sp.clamped && as.id !== 'SPY' ? ['같은 기간 S&P 500', pctS(sp.ret)] : (rank >= 0 ? ['비교 자산 ' + rows.length + '개 중', (rank + 1) + '위'] : null)],
       source: (as.yearly ? '국토교통부 실거래가 (연도별 중위가격)' : '네이버 금융·Yahoo Finance 월봉') + (as.a && o.div ? ' · 배당 재투자' : '') + (as.cur === 'USD' && o.krw ? ' · 원화 환산' : '') };
-    $('wif-share').hidden = false;
+    (window.dcShareSpec = window.dcShareSpec || {})['what-if'] = share;   /* 오른쪽 아래 공유 창이 이 카드를 씀 */
   }
   function txt2(k) { return String(Math.floor(k / 12)).slice(2) + '.' + String(k % 12 + 1).padStart(2, '0'); }
   function load() {
@@ -13247,7 +13253,6 @@ var WIF = (function () {
       document.querySelectorAll('.wif-pre').forEach(function (x) { x.classList.toggle('on', x === b); });
       render(); return;
     }
-    if (share && e.target.closest('#wif-share')) window.shareCard.open(share);
   });
   function pick(e) {   /* 연·월을 직접 고르면 그 시점을 기억 — FC-UI 가 input·change 에서 다시 그리기 전에(캡처 단계) 먼저 반영 */
     if (!e.target || !D || (e.target.id !== 'wif-y' && e.target.id !== 'wif-m')) return;
@@ -13368,7 +13373,7 @@ var HYC = (function () {
     setT('hy-net', o.salary > 0 ? '월 실수령 약 ' + won(net0) + (o.mode === 'rate' ? ' → 매달 ' + won(net0 * o.rate) + ' 저축' : '') : '');
     var sc = seoulCagr(); if (sc) setT('hy-grow-hint', '참고: 서울 아파트 실거래 중위가 ' + sc[1] + '→' + sc[2] + '년 연평균 ' + (sc[0] * 100).toFixed(1) + '%');
     if (!(o.price > 0) || !(o.salary > 0)) {
-      setT('hy-val', '—'); setT('hy-sub', !(o.salary > 0) ? '연봉을 넣어 주세요.' : '집값을 넣어 주세요.'); share = null; $('hy-share').hidden = true; return;
+      setT('hy-val', '—'); setT('hy-sub', !(o.salary > 0) ? '연봉을 넣어 주세요.' : '집값을 넣어 주세요.'); share = null; (window.dcShareSpec = window.dcShareSpec || {})['house-years'] = null; return;
     }
     var r = HYC.calc(o, 100), place = o.size === 'custom' ? '이 집' : (o.reg === 'all' ? '전국' : o.reg) + ' ' + (o.size === 'any' ? '아파트' : o.size + '㎡ 아파트');
     var pir = o.price / Math.max(1, net0 * 12), pirG = o.price / o.salary;
@@ -13436,7 +13441,7 @@ var HYC = (function () {
       rows: [['목표 집값 (지금)', eok(o.price)], ['한 푼도 안 쓰고 모으면', pir.toFixed(1) + '년'], ['연봉 대비 집값', pirG.toFixed(1) + '배'],
              rk >= 0 && o.size !== 'custom' ? ['전국 ' + cmp.length + '개 지역 중', '빠른 순 ' + (rk + 1) + '위'] : (o.ltv ? ['대출 비율', Math.round(o.ltv * 100) + '%'] : null)],
       source: '국토교통부 아파트 실거래가 (단지별 최근 거래 중위값) · ' + (D.updated || '').slice(0, 10) };
-    $('hy-share').hidden = false;
+    (window.dcShareSpec = window.dcShareSpec || {})['house-years'] = share;   /* 오른쪽 아래 공유 창이 이 카드를 씀 */
   }
   function load() {
     if (loading || !window.mdLoad) return; loading = true;
@@ -13448,7 +13453,6 @@ var HYC = (function () {
       var pg = $('page-houseyears'); if (pg && pg.classList.contains('active')) render();
     }).catch(function () { loading = false; setT('hy-sub', '자료를 불러오지 못했습니다.'); });
   }
-  document.addEventListener('click', function (e) { if (share && e.target.closest && e.target.closest('#hy-share')) window.shareCard.open(share); });
   window.fcRegister('hy', render, 'houseyears');
 })();
 
@@ -13577,7 +13581,7 @@ var RTC = (function () {
       spouseNps: amt('rt-spouse'), dc: amt('rt-dc'), dcOn: $('rt-dcon').checked, ps: amt('rt-ps'), psAdd: amt('rt-psadd'), other: amt('rt-other'), otherAdd: amt('rt-otheradd'),
       ret: numOf('rt-ret') / 100, infl: numOf('rt-infl') / 100 };
     var err = !(age >= 18 && age < 100) ? '나이를 넣어 주세요 (18~99세).' : !(o.retire >= age) ? '은퇴 나이는 지금 나이 이상이어야 합니다.' : !(o.plan > o.retire) ? '계획 나이는 은퇴 나이보다 많아야 합니다.' : !(o.target > 0) ? '목표 월 생활비를 넣어 주세요.' : '';
-    if (err) { setT('rt-grade', '—'); setT('rt-sub', err); share = null; $('rt-share').hidden = true; return; }
+    if (err) { setT('rt-grade', '—'); setT('rt-sub', err); share = null; (window.dcShareSpec = window.dcShareSpec || {})['retirement-score'] = null; return; }
     var r = RTC.calc(o), np = r.np, pct = Math.round(r.cover * 100);
     setT('rt-grade', r.grade); $('rt-grade').style.color = GCOL[r.grade];
     setH('rt-sub', '노후 생활비의 <b>' + pct + '%</b>를 준비했습니다 · 은퇴 후 월 평균 <b>' + man(r.avgInc) + '</b> / 목표 ' + man(o.target) + ' <small>(지금 돈 가치)</small>');
@@ -13632,13 +13636,12 @@ var RTC = (function () {
       rows: [['은퇴 후 월 평균 소득', man(r.avgInc), true], ['목표 월 생활비', man(o.target), true], ['국민연금 예상 월액', man(np.monthly + r.spouse), true],
              r.needMonthly > 0 ? ['100% 채우려면 매달', '+' + man(r.needMonthly), true] : ['준비 상태', '목표 달성']],
       source: '국민연금법(2026 개정) · 국민연금연구원 노후보장패널 · 지금 돈 가치 기준' };
-    $('rt-share').hidden = false;
+    (window.dcShareSpec = window.dcShareSpec || {})['retirement-score'] = share;   /* 오른쪽 아래 공유 창이 이 카드를 씀 */
   }
   document.addEventListener('click', function (e) {
     if (!e.target.closest) return;
     var b = e.target.closest('.rt-pre');
     if (b) { var t = $('rt-target'); t.setAttribute('data-unit', 'won'); t.value = Math.round(+b.getAttribute('data-won')).toLocaleString('ko-KR'); document.querySelectorAll('.unit-btn[data-fc-unit="rt-target"]').forEach(function (u) { u.classList.toggle('active', u.getAttribute('data-unit') === 'won'); }); render(); return; }
-    if (share && e.target.closest('#rt-share')) window.shareCard.open(share);
   });
   window.fcRegister('rt', render, 'retire');
 })();
