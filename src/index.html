@@ -1975,7 +1975,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .dcl-google { background:#fff; color:#1f1f1f; border:1px solid #dadce0; }
   .dcl-b:hover { filter:brightness(.97); }
   .dcl-s { font-size:11.5px; color:var(--text3); margin:16px 0 0; line-height:1.6; text-align:left; }
-  @media (max-width: 600px) { .top-bar #dc-auth { order:1; } .dca-nm { display:none; } }
+  @media (max-width: 600px) { .top-bar #dc-auth { order:2; } .top-bar:has(#dc-auth:not([hidden])) .site-search { flex:1 1 150px; } .dca-nm { display:none; } }   /* 좁은 화면: 둘째 줄(방문자 수 · 로그인 · 검색칸)에 넣어 상단이 한 줄 더 늘어나지 않게 */
 
   /* [BRAND] [SEARCH] 상단 줄: 로고 · 검색 · 테마 · 언어 */
   .brand { display:inline-flex; align-items:center; gap:9px; margin-right:auto; text-decoration:none; color:var(--text); font-size:17px; font-weight:800; letter-spacing:-0.02em; white-space:nowrap; }
