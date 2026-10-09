@@ -12946,7 +12946,7 @@ var JBX = (function () {
     if (!st.el) build();
     st.spec = spec || currentSpec();
     st.lastFocus = document.activeElement;
-    sync(); prepare();
+    sync(); prepare(); sdk();                                          /* 카드가 없는 화면도 카카오 공유는 쓰므로 SDK 는 항상 미리 */
     st.el.hidden = false; st.openedAt = Date.now();
     st.fab.classList.add('on'); st.fab.setAttribute('aria-expanded', 'true'); st.fab.setAttribute('aria-label', '공유 닫기'); st.fab.innerHTML = ICON.x;
     var f = st.el.querySelector('[data-a="copy"]'); if (f) f.focus({ preventScroll: true });
