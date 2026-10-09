@@ -840,7 +840,7 @@
 
   /* ── fixed 드롭다운 (overflow 탈출) ── */
   .tab-dropdown {
-    position: fixed;
+    position: absolute;   /* 문서 기준: 열린 자리(탭 바로 아래)에 붙어 있고, 스크롤하면 페이지와 함께 움직임 */
     display: none;
     flex-direction: column;
     gap: 3px;
@@ -1789,6 +1789,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   #wif-y, #wif-m { width:100%; background:var(--bg3); border:1px solid var(--card-border); border-radius:10px; padding:9px 10px; color:var(--text); font-family:var(--font); font-size:13px; color-scheme:dark; }
   /* [SHARE] 오른쪽 아래 공유 버튼 · 공유 창 */
   .dsh-fab { position:fixed; right:max(18px, env(safe-area-inset-right)); bottom:calc(20px + env(safe-area-inset-bottom)); z-index:9000; width:56px; height:56px; border-radius:50%; border:0; display:flex; align-items:center; justify-content:center; background:var(--accent); color:#fff; cursor:pointer; box-shadow:0 8px 24px rgba(49,130,246,.38), 0 2px 6px rgba(0,0,0,.25); transition:transform .15s, background .15s; }
+  body:has(.tab-dropdown.open) .dsh-fab { opacity:0; pointer-events:none; }   /* 위 메뉴가 열려 있는 동안은 메뉴 항목을 가리지 않게 */
   .dsh-fab:hover { transform:translateY(-1px); filter:brightness(1.06); } .dsh-fab:active { transform:scale(.96); }
   .dsh-fab.on { background:var(--dsh-s); color:var(--text); box-shadow:var(--dsh-sh), inset 0 0 0 1px var(--dsh-bd); }
   .dsh-fab:focus-visible { outline:3px solid rgba(49,130,246,.55); outline-offset:3px; }
@@ -18131,6 +18132,18 @@ document.addEventListener('mouseover', function (e) {
   var par = e.target.closest && e.target.closest('.drop-parent'); if (par && !par._fitAt) { navSubFit(par); par._fitAt = 1; setTimeout(function () { par._fitAt = 0; }, 400); }
 });
 
+/* 탭 버튼 바로 아래에 드롭다운 놓기 — 문서 좌표(absolute)라 스크롤해도 화면에 붙어 따라오지 않음 · 화면 오른쪽 밖이면 안쪽으로 */
+function placeTabDrop(btn, drop) {
+  var rect = btn.getBoundingClientRect(), op = drop.offsetParent || document.body, base = op.getBoundingClientRect();
+  var left = Math.min(rect.left, document.documentElement.clientWidth - drop.offsetWidth - 8);
+  drop.style.top = (rect.bottom + 4 - base.top - op.clientTop) + 'px';
+  drop.style.left = (Math.max(8, left) - base.left - op.clientLeft) + 'px';
+}
+window.addEventListener('resize', function () {                       /* 화면 크기·방향이 바뀌면 열린 메뉴 자리 다시 맞춤 */
+  var drop = document.querySelector('.tab-dropdown.open'), btn = drop && document.getElementById(drop.id.replace(/-drop$/, '-btn'));
+  if (btn) placeTabDrop(btn, drop);
+});
+
 function toggleTabGroup(grpId) {
   const btn  = document.getElementById('grp-' + grpId + '-btn');
   const drop = document.getElementById('grp-' + grpId + '-drop');
@@ -18139,16 +18152,8 @@ function toggleTabGroup(grpId) {
   document.querySelectorAll('.tab-dropdown').forEach(d => d.classList.remove('open'));
   document.querySelectorAll('.tab-group-btn').forEach(b => b.classList.remove('open'));
   if (!isOpen) {
-    // 버튼 위치 기준으로 드롭다운 위치 계산 (fixed)
-    const rect = btn.getBoundingClientRect();
-    drop.style.top  = (rect.bottom + 4) + 'px';
-    drop.style.left = rect.left + 'px';
-    // 화면 오른쪽 밖으로 나가면 조정
     drop.classList.add('open');
-    const dw = drop.offsetWidth;
-    if (rect.left + dw > window.innerWidth - 8) {
-      drop.style.left = (window.innerWidth - dw - 8) + 'px';
-    }
+    placeTabDrop(btn, drop);
     btn.classList.add('open');
     /* 하위 메뉴가 있는 그룹: 지금 보고 있는 도구가 든 하위 메뉴를 펼친 채로 (터치·좁은 화면) */
     drop.querySelectorAll('.drop-parent').forEach(function (p) {
@@ -24215,7 +24220,7 @@ var RTC = (function () {
     <p class="sf-note">이 사이트의 모든 계산 결과와 자료는 참고용이며 투자 판단의 책임은 이용자 본인에게 있습니다.</p>
   </div></footer>
 
-  <!-- ── 탭 드롭다운 (fixed, overflow 탈출) — 노동자→자본가 사다리 순서의 영역별 메뉴 [NAV-AREAS] ── -->
+  <!-- ── 탭 드롭다운 (문서 기준 absolute, 메뉴 줄의 가로 스크롤 영역 밖에 둠) — 노동자→자본가 사다리 순서의 영역별 메뉴 [NAV-AREAS] ── -->
   <div class="tab-dropdown" id="grp-money-drop">
     <button class="drop-item" id="drop-home" style="display:none" onclick="switchSubTab('home','home',this)">홈</button>
     <button class="drop-item" id="drop-salary" onclick="switchSubTab('salary','money',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="9" cy="9" r="2.2" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 6.5h1M12.5 11.5h1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>연봉 실수령액 계산기</button>

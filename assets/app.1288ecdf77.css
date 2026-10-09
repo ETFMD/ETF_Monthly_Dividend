@@ -588,7 +588,7 @@
 
   /* ── fixed 드롭다운 (overflow 탈출) ── */
   .tab-dropdown {
-    position: fixed;
+    position: absolute;   /* 문서 기준: 열린 자리(탭 바로 아래)에 붙어 있고, 스크롤하면 페이지와 함께 움직임 */
     display: none;
     flex-direction: column;
     gap: 3px;
@@ -1537,6 +1537,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   #wif-y, #wif-m { width:100%; background:var(--bg3); border:1px solid var(--card-border); border-radius:10px; padding:9px 10px; color:var(--text); font-family:var(--font); font-size:13px; color-scheme:dark; }
   /* [SHARE] 오른쪽 아래 공유 버튼 · 공유 창 */
   .dsh-fab { position:fixed; right:max(18px, env(safe-area-inset-right)); bottom:calc(20px + env(safe-area-inset-bottom)); z-index:9000; width:56px; height:56px; border-radius:50%; border:0; display:flex; align-items:center; justify-content:center; background:var(--accent); color:#fff; cursor:pointer; box-shadow:0 8px 24px rgba(49,130,246,.38), 0 2px 6px rgba(0,0,0,.25); transition:transform .15s, background .15s; }
+  body:has(.tab-dropdown.open) .dsh-fab { opacity:0; pointer-events:none; }   /* 위 메뉴가 열려 있는 동안은 메뉴 항목을 가리지 않게 */
   .dsh-fab:hover { transform:translateY(-1px); filter:brightness(1.06); } .dsh-fab:active { transform:scale(.96); }
   .dsh-fab.on { background:var(--dsh-s); color:var(--text); box-shadow:var(--dsh-sh), inset 0 0 0 1px var(--dsh-bd); }
   .dsh-fab:focus-visible { outline:3px solid rgba(49,130,246,.55); outline-offset:3px; }

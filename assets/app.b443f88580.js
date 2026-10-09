@@ -7731,6 +7731,18 @@ document.addEventListener('mouseover', function (e) {
   var par = e.target.closest && e.target.closest('.drop-parent'); if (par && !par._fitAt) { navSubFit(par); par._fitAt = 1; setTimeout(function () { par._fitAt = 0; }, 400); }
 });
 
+/* 탭 버튼 바로 아래에 드롭다운 놓기 — 문서 좌표(absolute)라 스크롤해도 화면에 붙어 따라오지 않음 · 화면 오른쪽 밖이면 안쪽으로 */
+function placeTabDrop(btn, drop) {
+  var rect = btn.getBoundingClientRect(), op = drop.offsetParent || document.body, base = op.getBoundingClientRect();
+  var left = Math.min(rect.left, document.documentElement.clientWidth - drop.offsetWidth - 8);
+  drop.style.top = (rect.bottom + 4 - base.top - op.clientTop) + 'px';
+  drop.style.left = (Math.max(8, left) - base.left - op.clientLeft) + 'px';
+}
+window.addEventListener('resize', function () {                       /* 화면 크기·방향이 바뀌면 열린 메뉴 자리 다시 맞춤 */
+  var drop = document.querySelector('.tab-dropdown.open'), btn = drop && document.getElementById(drop.id.replace(/-drop$/, '-btn'));
+  if (btn) placeTabDrop(btn, drop);
+});
+
 function toggleTabGroup(grpId) {
   const btn  = document.getElementById('grp-' + grpId + '-btn');
   const drop = document.getElementById('grp-' + grpId + '-drop');
@@ -7739,16 +7751,8 @@ function toggleTabGroup(grpId) {
   document.querySelectorAll('.tab-dropdown').forEach(d => d.classList.remove('open'));
   document.querySelectorAll('.tab-group-btn').forEach(b => b.classList.remove('open'));
   if (!isOpen) {
-    // 버튼 위치 기준으로 드롭다운 위치 계산 (fixed)
-    const rect = btn.getBoundingClientRect();
-    drop.style.top  = (rect.bottom + 4) + 'px';
-    drop.style.left = rect.left + 'px';
-    // 화면 오른쪽 밖으로 나가면 조정
     drop.classList.add('open');
-    const dw = drop.offsetWidth;
-    if (rect.left + dw > window.innerWidth - 8) {
-      drop.style.left = (window.innerWidth - dw - 8) + 'px';
-    }
+    placeTabDrop(btn, drop);
     btn.classList.add('open');
     /* 하위 메뉴가 있는 그룹: 지금 보고 있는 도구가 든 하위 메뉴를 펼친 채로 (터치·좁은 화면) */
     drop.querySelectorAll('.drop-parent').forEach(function (p) {
