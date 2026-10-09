@@ -13891,6 +13891,283 @@ var NPR = (function () {
 })();
 
 /* ════════════════════════════════════════
+   [AVG] 주식 물타기·불타기 계산기 — 추가 매수 후 평균 단가 · 목표 평단 역산 · 분할 물타기 계획
+   · 평균 단가 = (기존 수량 × 기존 평단 + Σ 추가 수량 × 매수가) ÷ 전체 수량   (증권사 평균단가처럼 수수료 제외)
+   · 매입 원가(비용 포함) = Σ 수량 × 가격 × (1 + 매수 수수료)
+   · 본전 가격 = 매입 원가 ÷ (수량 × (1 − 매도 수수료 − 매도 세금))   → 이 가격에 팔아야 비용까지 빼고 0원
+   · 평가 손익 = 현재가 × 수량 × (1 − 매도 수수료 − 매도 세금) − 매입 원가
+   · 목표 평단 T 를 가격 P 로 만들 추가 수량 q = 기존 수량 × (기존 평단 − T) ÷ (T − P)   (T 가 기존 평단과 P 사이일 때만)
+   · 2026년 증권거래세(매도): 코스피 0.20%(거래세 0.05 + 농특세 0.15) · 코스닥 0.20% · 해외주식 거래세 없음
+════════════════════════════════════════ */
+var AVG = (function () {
+  /* pos: {avg, qty} · buys: [{price, qty}] · cost: {buy, sell, tax} (비율, 0.00015 = 0.015%) · cur: 현재가 */
+  function state(avg, qty, cost, cur) {
+    var c = cost || { buy: 0, sell: 0, tax: 0 }, out = 1 - c.sell - c.tax;
+    var basis = avg * qty * (1 + c.buy);
+    var r = { avg: avg, qty: qty, amount: avg * qty, basis: basis };
+    r.breakeven = qty > 0 && out > 0 ? basis / (qty * out) : null;
+    if (cur > 0) {
+      r.value = cur * qty; r.net = cur * qty * out; r.pl = r.net - basis; r.plPct = basis > 0 ? r.pl / basis : 0;
+      r.need = r.breakeven != null ? r.breakeven / cur - 1 : null;      /* 현재가에서 본전까지 필요한 상승률 */
+    }
+    return r;
+  }
+  function apply(pos, buys, cost, cur) {
+    var qty = pos.qty, amt = pos.avg * pos.qty, add = 0, addQty = 0, addCost = 0, rows = [];
+    (buys || []).forEach(function (b) {
+      if (!(b.price > 0 && b.qty > 0)) return;
+      qty += b.qty; amt += b.price * b.qty; add += b.price * b.qty; addQty += b.qty;
+      addCost += b.price * b.qty * (1 + (cost ? cost.buy : 0));
+      rows.push({ price: b.price, qty: b.qty, amount: b.price * b.qty, avg: amt / qty, totalQty: qty });
+    });
+    var before = state(pos.avg, pos.qty, cost, cur), after = state(qty > 0 ? amt / qty : 0, qty, cost, cur);
+    return { before: before, after: after, add: add, addQty: addQty, addCost: addCost, rows: rows, drop: pos.avg > 0 ? after.avg / pos.avg - 1 : 0 };
+  }
+  /* 목표 평단 T 를 가격 P 로 사서 만들 때 필요한 수량 (정수 주식이면 올림) */
+  function target(pos, T, P, whole) {
+    var num = pos.qty * (pos.avg - T), den = T - P;
+    if (!(pos.qty > 0 && pos.avg > 0 && T > 0 && P > 0)) return { err: 'input' };
+    if (Math.abs(T - pos.avg) < 1e-12) return { err: 'same' };
+    if (Math.abs(den) < 1e-12) return { err: 'price-eq' };                                 /* 목표와 같은 가격으로는 영원히 못 맞춤 */
+    if (!(num / den > 0)) return { err: T < pos.avg ? 'price-high' : 'price-low' };   /* 물타기는 P < T, 불타기는 P > T 여야 함 */
+    var q = num / den;
+    if (whole) q = Math.ceil(q - 1e-9);
+    var avg = (pos.avg * pos.qty + P * q) / (pos.qty + q);
+    return { qty: q, amount: q * P, avg: avg, exact: num / den };
+  }
+  /* 분할 물타기 계획: 현재가에서 step 만큼씩 내릴 때마다 매수
+     mode 'amount'(같은 금액) | 'qty'(같은 수량) | 'double'(직전의 2배 금액) · first: 1회차 금액 또는 수량 */
+  function plan(pos, cur, o, cost) {
+    var qty = pos.qty, amt = pos.avg * pos.qty, invested = 0, rows = [], prevAmt = 0;
+    for (var k = 1; k <= o.steps; k++) {
+      var price = cur * (1 - o.step * k);
+      if (!(price > 0)) break;
+      var q;
+      if (o.mode === 'qty') q = o.first;
+      else {
+        var money = o.mode === 'double' ? (k === 1 ? o.first : prevAmt * 2) : o.first;
+        q = o.whole ? Math.floor(money / (price * (1 + (cost ? cost.buy : 0)))) : money / price;
+      }
+      if (!(q > 0)) { rows.push({ k: k, price: price, qty: 0, amount: 0, invested: invested, avg: qty ? amt / qty : 0, skip: true }); continue; }
+      var a = price * q; prevAmt = a;
+      qty += q; amt += a; invested += a * (1 + (cost ? cost.buy : 0));
+      var st = state(amt / qty, qty, cost, price);
+      rows.push({ k: k, price: price, qty: q, amount: a, invested: invested, avg: amt / qty, totalQty: qty, basis: st.basis, breakeven: st.breakeven, need: st.need, pl: st.pl, plPct: st.plPct });
+    }
+    return rows;
+  }
+  return { state: state, apply: apply, target: target, plan: plan };
+})();
+
+/* [AVG] 화면 — 입력(data-fc="av")은 [FC-UI] 공통 처리 */
+(function () {
+  if (!document.getElementById('page-avgdown')) return;
+  function $(id) { return document.getElementById(id); }
+  function setT(id, v) { var e = $(id); if (e) e.textContent = v; }
+  function setH(id, v) { var e = $(id); if (e) e.innerHTML = v; }
+  function numOf(id) { var e = $(id); if (!e) return 0; var s = String(e.value).replace(/,/g, '').trim(); return s === '' ? NaN : parseFloat(s); }
+  function seg(name) { var b = document.querySelector('.fc-seg[data-name="' + name + '"] .mode-btn.active'); return b ? b.getAttribute('data-v') : null; }
+  var FEES = { kr: { fb: '0.015', fs: '0.015', tax: '0.2' }, us: { fb: '0.25', fs: '0.25', tax: '0' } };
+  var mkt = 'kr', lastMkt = 'kr', chart = null, share = null;
+  function nfmt(v, max) { return (+v).toLocaleString('ko-KR', { maximumFractionDigits: max }); }
+  function price(v) { if (v == null || !isFinite(v)) return '—'; return mkt === 'us' ? '$' + nfmt(v, 2) : nfmt(v, v < 1000 ? 2 : (Math.abs(v - Math.round(v)) < 1e-6 ? 0 : 1)) + '원'; }
+  function money(v) {
+    if (v == null || !isFinite(v)) return '—';
+    var neg = v < 0, a = Math.abs(v);
+    if (mkt === 'us') return (neg ? '−' : '') + '$' + nfmt(a, 2);
+    return (neg ? '−' : '') + Math.round(a).toLocaleString('ko-KR') + '원';
+  }
+  function sMoney(v) { return (v > 0 ? '+' : '') + money(v); }
+  function qtyT(v) { return nfmt(v, 4) + '주'; }
+  function pct(v, d) { return v == null || !isFinite(v) ? '—' : (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v * 100).toFixed(d == null ? 2 : d) + '%'; }
+  function plCls(v) { return v > 0 ? 'av-up' : v < 0 ? 'av-dn' : ''; }
+  function setFees(m) {      /* 시장을 바꾸면, 비용 칸이 이전 시장 기본값 그대로일 때만 새 시장 기본값으로 */
+    var prev = FEES[lastMkt], next = FEES[m];
+    ['fb', 'fs', 'tax'].forEach(function (k) { var e = $('av-' + k); if (String(numOf('av-' + k)) === String(+prev[k]) || e.value === '') e.value = next[k]; });
+  }
+  function clear(msg) {
+    setT('av-val', '—'); setT('av-sub', msg); ['av-k1', 'av-k2', 'av-k3'].forEach(function (k) { setT(k, '—'); });
+    ['av-cmp', 'av-ladder', 'av-steps', 'av-steps-h', 'av-tips'].forEach(function (k) { setH(k, ''); });
+    $('av-chart-wrap').style.display = 'none';
+    share = null; (window.dcShareSpec = window.dcShareSpec || {})['averaging-down'] = null;
+  }
+  /* 전·후 비교 — curA: '후'를 평가할 가격 (분할 매수 계획은 다 산 시점의 마지막 매수가) */
+  function cmpRows(b, a, cur, curA) {
+    curA = curA || cur;
+    var lb = AVG.state(b.avg, b.qty, COST, cur * 0.9), la = AVG.state(a.avg, a.qty, COST, curA * 0.9), same = curA === cur;
+    var rows = [
+      ['평균 단가', price(b.avg), price(a.avg), true],
+      ['보유 수량', qtyT(b.qty), qtyT(a.qty)],
+      ['매입 금액', money(b.amount), money(a.amount)],
+      ['평가 금액 <small>(' + (same ? '현재가' : '전: 현재가 · 후: ' + price(curA)) + ')</small>', money(b.value), money(a.value)],
+      ['평가 손익', '<span class="' + plCls(b.pl) + '">' + sMoney(b.pl) + ' (' + pct(b.plPct) + ')</span>', '<span class="' + plCls(a.pl) + '">' + sMoney(a.pl) + ' (' + pct(a.plPct) + ')</span>'],
+      ['본전 가격' + (FEEON ? ' <small>(비용 포함)</small>' : ''), price(b.breakeven), price(a.breakeven), true],
+      ['본전까지 필요한 상승', pct(b.need, 1), pct(a.need, 1), true],
+      ['추가 10% 하락하면 <small>(' + (same ? price(cur * 0.9) : '각 가격에서') + ')</small>', '<span class="av-dn">' + sMoney(lb.pl) + '</span>', '<span class="av-dn">' + sMoney(la.pl) + '</span>']
+    ];
+    return rows.map(function (x) { return '<tr' + (x[3] ? ' class="fc-hl"' : '') + '><td>' + x[0] + '</td><td style="text-align:right;">' + x[1] + '</td><td style="text-align:right;">' + x[2] + '</td></tr>'; }).join('');
+  }
+  function ladder(items, cur) {
+    items = items.filter(function (x) { return x && x[1] > 0 && isFinite(x[1]); }).sort(function (p, q) { return q[1] - p[1]; });
+    return items.map(function (x) {
+      var d = x[1] / cur - 1;
+      return '<li><i style="background:' + x[2] + ';"></i><span>' + x[0] + '</span><b>' + price(x[1]) + '</b><em class="' + (Math.abs(d) < 5e-5 ? '' : plCls(d)) + '">' + (Math.abs(d) < 5e-5 ? '현재가' : pct(d, 1)) + '</em></li>';
+    }).join('');
+  }
+  var COST = null, FEEON = true;
+  function render() {
+    var m = seg('av-mkt') || 'kr';
+    if (m !== lastMkt) { setFees(m); lastMkt = m; }
+    mkt = m;
+    document.querySelectorAll('#page-avgdown .av-ccy').forEach(function (e) { e.textContent = m === 'us' ? '$' : '원'; });
+    var mode = seg('av-mode') || 'buy', by = seg('av-by') || 'qty', pm = seg('av-pm') || 'amount';
+    $('av-buy-box').style.display = mode === 'buy' ? '' : 'none';
+    $('av-target-box').style.display = mode === 'target' ? '' : 'none';
+    $('av-plan-box').style.display = mode === 'plan' ? '' : 'none';
+    document.querySelectorAll('#page-avgdown .av-qu').forEach(function (e) { e.textContent = by === 'money' ? (m === 'us' ? '$' : '원') : '주'; });
+    for (var i = 1; i <= 5; i++) { var qe = $('av-q' + i); qe.setAttribute('aria-label', i + '차 ' + (by === 'money' ? '매수 금액' : '수량')); if (i > 1) qe.placeholder = by === 'money' ? '금액' : '수량'; }
+    setT('av-by-hint', by === 'money' ? '금액만큼 1주 단위로 삽니다 (수수료 포함) · 빈 줄은 빠짐' : '빈 줄은 계산에서 빠집니다 · 최대 5번');
+    setT('av-first-l', pm === 'qty' ? '1회 매수 수량' : pm === 'double' ? '1회차 매수 금액 (다음부터 2배씩)' : '1회 매수 금액');
+    setT('av-first-u', pm === 'qty' ? '주' : (m === 'us' ? '$' : '원'));
+    FEEON = $('av-fee-on').checked;
+    $('av-fee-box').style.display = FEEON ? '' : 'none'; $('av-fee-note').style.display = FEEON ? '' : 'none';
+    var fb = numOf('av-fb'), fs = numOf('av-fs'), tx = numOf('av-tax');
+    COST = FEEON ? { buy: (fb || 0) / 100, sell: (fs || 0) / 100, tax: (tx || 0) / 100 } : { buy: 0, sell: 0, tax: 0 };
+    var avg = numOf('av-avg'), qty = numOf('av-qty'), cur = numOf('av-cur'), pos = { avg: avg, qty: qty };
+    var err = !(avg > 0) ? '평균 단가를 넣어 주세요.' : !(qty > 0) ? '보유 수량을 넣어 주세요.' : !(cur > 0) ? '현재가를 넣어 주세요.'
+      : FEEON && !(fb >= 0 && fs >= 0 && tx >= 0 && fs + tx < 100 && fb < 100) ? '수수료·세금을 0 이상으로 넣어 주세요.' : '';
+    if (err) return clear(err);
+    var before = AVG.state(avg, qty, COST, cur), tips = [], steps = '', head = '', title = '회차별 매수';
+    $('av-chart-wrap').style.display = 'none'; $('av-cmp-card').style.display = '';
+    if (mode === 'buy' || mode === 'target') {
+      var buys = [], res, t = null;
+      if (mode === 'buy') {
+        for (var k = 1; k <= 5; k++) {
+          var p = numOf('av-p' + k), v = numOf('av-q' + k);
+          if (!(p > 0) || !(v > 0)) continue;
+          var q = by === 'money' ? Math.floor(v / (p * (1 + COST.buy)) + 1e-9) : v;
+          buys.push({ price: p, qty: q, money: by === 'money' ? v : null, k: k });
+        }
+        if (!buys.length) return clear('추가 매수가와 ' + (by === 'money' ? '금액' : '수량') + '을 한 줄 이상 넣어 주세요.');
+        if (!buys.some(function (b) { return b.qty > 0; })) return clear('금액이 1주 가격보다 적습니다.');
+      } else {
+        var T = numOf('av-t'), P = numOf('av-tp');
+        t = AVG.target(pos, T, P, true);
+        if (t.err) return clear({ input: '목표 평단과 추가 매수가를 넣어 주세요.', same: '목표 평단이 지금 평단과 같습니다.', 'price-eq': '추가 매수가가 목표 평단과 같으면 아무리 사도 목표에 닿지 않습니다.',
+          'price-high': '물타기로 평단을 낮추려면 추가 매수가가 목표 평단(' + price(T) + ')보다 낮아야 합니다.', 'price-low': '불타기로 평단을 올리려면 추가 매수가가 목표 평단(' + price(T) + ')보다 높아야 합니다.' }[t.err]);
+        buys = [{ price: P, qty: t.qty, k: 1 }];
+      }
+      res = AVG.apply(pos, buys, COST, cur);
+      var a = res.after, up = a.avg > avg;
+      var word = up ? '불타기' : '물타기';
+      setT('av-cmp-title', word + ' 전 vs 후');
+      if (mode === 'buy') {
+        setT('av-label', word + ' 후 평균 단가'); setT('av-val', price(a.avg));
+        setH('av-sub', '평단 ' + price(avg) + ' → <b>' + price(a.avg) + '</b> (' + pct(res.drop) + ') · 본전까지 ' + pct(before.need, 1) + ' → <b>' + pct(a.need, 1) + '</b>');
+        setT('av-k1-l', '추가 매수 금액'); setT('av-k1', money(res.addCost) + '');
+      } else {
+        setT('av-label', '목표 평단 ' + price(numOf('av-t')) + '까지 필요한 매수'); setT('av-val', qtyT(t.qty));
+        setH('av-sub', price(numOf('av-tp')) + '에 <b>' + qtyT(t.qty) + '</b> · <b>' + money(t.amount * (1 + COST.buy)) + '</b> 더 사면 평단 <b>' + price(a.avg) + '</b>' + (Math.abs(t.exact - t.qty) > 1e-9 ? ' <small>(정확히는 ' + nfmt(t.exact, 2) + '주 → 1주 단위로 올림)</small>' : ''));
+        setT('av-k1-l', '필요한 금액'); setT('av-k1', money(t.amount * (1 + COST.buy)));
+      }
+      setT('av-k2-l', '본전까지 필요한 상승'); setH('av-k2', pct(before.need, 1) + ' → ' + pct(a.need, 1));
+      setT('av-k3-l', '평가 손익 (' + word + ' 후)'); setH('av-k3', '<span class="' + plCls(a.pl) + '">' + sMoney(a.pl) + '</span>');
+      setH('av-cmp', cmpRows(before, a, cur));
+      setH('av-ladder', ladder([['현재가', cur, '#9e9ea4'], ['기존 평단', avg, '#6d6d76'], [word + ' 후 평단', a.avg, '#3182f6'], [FEEON ? '본전 가격 (비용 포함)' : '본전 가격', a.breakeven, '#22a06b']], cur));
+      /* 회차 표 */
+      head = '<tr><th>회차</th><th style="text-align:right;">매수가</th><th style="text-align:right;">수량</th><th style="text-align:right;">금액</th><th style="text-align:right;">누적 평단</th></tr>';
+      steps = '<tr><td>지금</td><td style="text-align:right;">' + price(avg) + '</td><td style="text-align:right;">' + qtyT(qty) + '</td><td style="text-align:right;">' + money(avg * qty) + '</td><td style="text-align:right;">' + price(avg) + '</td></tr>' +
+        res.rows.map(function (rw, i) { var b = buys.filter(function (x) { return x.qty > 0; })[i] || {}; return '<tr><td>' + (mode === 'target' ? '추가' : (b.k || i + 1) + '차') + '</td><td style="text-align:right;">' + price(rw.price) + '</td><td style="text-align:right;">' + qtyT(rw.qty) + '</td><td style="text-align:right;">' + money(rw.amount) + (b.money ? ' <small>(남는 돈 ' + money(b.money - rw.amount * (1 + COST.buy)) + ')</small>' : '') + '</td><td style="text-align:right;">' + price(rw.avg) + '</td></tr>'; }).join('') +
+        '<tr class="fc-total"><td>합계</td><td></td><td style="text-align:right;">' + qtyT(a.qty) + '</td><td style="text-align:right;">' + money(a.amount) + '</td><td style="text-align:right;">' + price(a.avg) + '</td></tr>';
+      title = mode === 'target' ? '매수 내역' : '회차별 매수';
+      /* 체크 포인트 */
+      var ratio = res.add / (avg * qty);
+      if (!up) {
+        tips.push('평단은 ' + pct(res.drop, 1) + ' 내려갔고, 이 종목에 넣은 돈은 ' + money(avg * qty) + ' → ' + money(a.amount) + '로 <b>' + (1 + ratio).toFixed(2) + '배</b>가 됐습니다.');
+        var l0 = AVG.state(avg, qty, COST, cur * 0.9).pl, l1 = AVG.state(a.avg, a.qty, COST, cur * 0.9).pl;
+        tips.push('여기서 10% 더 떨어지면 손실이 ' + money(-l0) + '(물타기 안 했을 때) 대신 <b>' + money(-l1) + '</b>가 됩니다.');
+        if (a.avg > cur) tips.push('현재가 ' + price(cur) + '에서 <b>' + pct(a.need, 1) + '</b> 오르면 본전입니다 (물타기 전에는 ' + pct(before.need, 1) + ').');
+        if (before.plPct < -0.3) tips.push('지금 손실률이 ' + pct(before.plPct, 1) + '입니다. 손실이 커질수록 본전에 필요한 상승률은 급격히 커집니다 (−50%면 +100%).');
+      } else {
+        tips.push('불타기로 평단이 ' + pct(res.drop, 1) + ' 올랐습니다. 수익률은 낮아지지만 오르는 종목의 비중이 커집니다.');
+        tips.push('현재가가 새 평단 ' + price(a.avg) + ' 아래로 ' + pct(a.avg / cur - 1, 1) + '만 떨어져도 손실로 바뀝니다.');
+      }
+      if (by === 'money' && mode === 'buy' && buys.some(function (b) { return b.qty === 0; })) tips.push('금액이 1주 가격보다 적은 줄은 매수하지 않았습니다.');
+      /* 공유 카드 */
+      share = { key: 'averaging-down', chip: up ? '불타기 계산기' : '물타기 계산기', title: '평단 ' + price(avg) + ' → ' + price(a.avg),
+        label: (mode === 'target' ? '목표 평단 만들기 · ' : '') + '현재가 ' + price(cur) + ' · ' + (m === 'us' ? '해외 주식' : '국내 주식'),
+        big: price(a.avg), sub: '본전까지 ' + pct(before.need, 1) + ' → ' + pct(a.need, 1),
+        rows: [['평단 변화', pct(res.drop, 1)], ['추가 매수 금액', money(res.addCost), true], ['보유 수량', qtyT(qty) + ' → ' + qtyT(a.qty)], ['평가 손익', sMoney(a.pl) + ' (' + pct(a.plPct, 1) + ')', true]],
+        source: '평균 단가 = 매입 금액 합 ÷ 전체 수량' + (FEEON ? ' · 수수료·거래세 반영 본전가' : '') };
+    } else {
+      /* 분할 매수 계획 */
+      var n = +$('av-n').value, step = numOf('av-step') / 100, first = numOf('av-first');
+      if (!(step > 0 && step < 1)) return clear('하락 간격을 0~100% 사이로 넣어 주세요.');
+      if (!(first > 0)) return clear(pm === 'qty' ? '1회 매수 수량을 넣어 주세요.' : '1회 매수 금액을 넣어 주세요.');
+      var rows = AVG.plan(pos, cur, { steps: n, step: step, mode: pm, first: first, whole: true }, COST);
+      var done = rows.filter(function (x) { return !x.skip; });
+      if (!done.length) return clear('1회 매수 금액이 1주 가격보다 적습니다.');
+      var last = done[done.length - 1];
+      setH('av-cmp-title', '물타기 전 vs ' + last.k + '번 산 뒤 <small class="fc-sub-inline">전: 현재가 ' + price(cur) + ' · 후: 마지막 매수가 ' + price(last.price) + '에서 평가</small>');
+      setT('av-label', last.k + '번 나눠 산 뒤 평균 단가 (' + price(last.price) + '까지 하락 시)'); setT('av-val', price(last.avg));
+      setH('av-sub', '총 <b>' + money(last.invested) + '</b> 추가 투입 · 평단 ' + price(avg) + ' → <b>' + price(last.avg) + '</b> (' + pct(last.avg / avg - 1, 1) + ')');
+      setT('av-k1-l', '총 추가 투입'); setT('av-k1', money(last.invested));
+      setT('av-k2-l', '마지막 가격에서 본전까지'); setT('av-k2', pct(last.need, 1));
+      setT('av-k3-l', '현재가까지만 회복해도'); var atCur = AVG.state(last.avg, last.totalQty, COST, cur);
+      setH('av-k3', '<span class="' + plCls(atCur.pl) + '">' + sMoney(atCur.pl) + '</span>');
+      setH('av-cmp', cmpRows(before, AVG.state(last.avg, last.totalQty, COST, last.price), cur, last.price));
+      setH('av-ladder', ladder([['현재가', cur, '#9e9ea4'], ['기존 평단', avg, '#6d6d76'], ['계획 후 평단', last.avg, '#3182f6'], ['본전 가격' + (FEEON ? ' (비용 포함)' : ''), last.breakeven, '#22a06b'], ['마지막 매수가', last.price, '#f04452']], cur));
+      head = '<tr><th>회차</th><th style="text-align:right;">매수가</th><th style="text-align:right;">수량</th><th style="text-align:right;">금액</th><th style="text-align:right;">누적 투입</th><th style="text-align:right;">평단</th><th style="text-align:right;">본전까지</th></tr>';
+      steps = rows.map(function (x) {
+        return '<tr' + (x.skip ? ' style="opacity:.5;"' : '') + '><td>' + x.k + '차 <small>(' + pct(-step * x.k, 0) + ')</small></td><td style="text-align:right;">' + price(x.price) + '</td><td style="text-align:right;">' + (x.skip ? '살 수 없음' : qtyT(x.qty)) + '</td><td style="text-align:right;">' + money(x.amount) + '</td><td style="text-align:right;">' + money(x.invested) + '</td><td style="text-align:right;">' + price(x.avg) + '</td><td style="text-align:right;">' + (x.skip ? '—' : pct(x.need, 1)) + '</td></tr>';
+      }).join('');
+      title = '단계별 매수 계획 <small class="fc-sub-inline">현재가에서 ' + Math.round(step * 1000) / 10 + '%씩 내릴 때마다</small>';
+      if (typeof Chart !== 'undefined') {
+        $('av-chart-wrap').style.display = '';
+        var lbl = ['지금'].concat(done.map(function (x) { return x.k + '차'; }));
+        var fmtY = function (v) { return mkt === 'us' ? '$' + nfmt(v, 2) : (v >= 1e4 ? nfmt(Math.round(v / 1e3) / 10, 1) + '만' : nfmt(v, 0)); };
+        var ds = [
+          { label: '매수가', data: [cur].concat(done.map(function (x) { return x.price; })), borderColor: '#f04452', backgroundColor: '#f04452', borderWidth: 2, pointRadius: 3, tension: 0 },
+          { label: '평균 단가', data: [avg].concat(done.map(function (x) { return x.avg; })), borderColor: '#3182f6', backgroundColor: '#3182f6', borderWidth: 2, pointRadius: 3, tension: 0 },
+          { label: '본전 가격', data: [before.breakeven].concat(done.map(function (x) { return x.breakeven; })), borderColor: '#22a06b', borderDash: [5, 4], borderWidth: 1.6, pointRadius: 0, tension: 0 }
+        ];
+        var opt = { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: 'index', intersect: false },
+          plugins: { legend: { display: true, position: 'bottom', labels: { color: '#9e9ea4', boxWidth: 10, boxHeight: 10, font: { size: 11 } } },
+            tooltip: { backgroundColor: '#202027', borderColor: fgA(0.1), borderWidth: 1, titleColor: '#9e9ea4', bodyColor: '#e4e4e5', padding: 12, callbacks: { label: function (c) { return ' ' + c.dataset.label + ': ' + price(c.parsed.y); } } } },
+          scales: { x: { ticks: { color: '#6d6d76', font: { size: 11 } }, grid: { display: false }, border: { display: false } },
+                    y: { ticks: { color: '#6d6d76', font: { size: 11 }, callback: fmtY }, grid: { color: fgA(0.04) }, border: { display: false } } } };
+        if (chart) chart.destroy();
+        chart = new Chart($('av-chart'), { type: 'line', data: { labels: lbl, datasets: ds }, options: opt });
+      }
+      var mult = last.invested / (avg * qty * (1 + COST.buy));
+      tips.push(last.k + '번 모두 사면 지금 보유 금액의 <b>' + mult.toFixed(1) + '배</b>(' + money(last.invested) + ')를 더 넣게 됩니다. 그만큼 현금을 준비해 둘 수 있는지 먼저 확인하세요.');
+      tips.push('주가가 ' + price(last.price) + '까지 내려가 계획대로 다 산 뒤에는 <b>' + pct(last.need, 1) + '</b>만 올라도 본전입니다 — 현재가(' + price(cur) + ')까지만 돌아와도 ' + sMoney(atCur.pl) + '.');
+      if (pm === 'double') tips.push('2배씩 늘리면 마지막 회차 한 번에 ' + money(last.amount) + '이 들어갑니다. 하락이 계획보다 길어지면 감당하기 어려워질 수 있습니다.');
+      if (rows.some(function (x) { return x.skip; })) tips.push('일부 회차는 금액이 1주 가격보다 적어 매수하지 못했습니다.');
+      if (rows.length < n) tips.push(Math.round(step * 1000) / 10 + '%씩 ' + n + '번이면 가격이 0원 아래로 내려가므로 ' + rows.length + '번까지만 계산했습니다. 하락 간격이나 횟수를 줄여 보세요.');
+      share = { key: 'averaging-down', chip: '분할 매수 계획', title: n + '번 나눠 물타기 · ' + Math.round(step * 1000) / 10 + '%씩',
+        label: '현재가 ' + price(cur) + ' → ' + price(last.price) + '까지 · ' + { amount: '같은 금액', qty: '같은 수량', double: '2배씩' }[pm],
+        big: price(last.avg), sub: '평단 ' + price(avg) + ' → ' + price(last.avg) + ' · 본전까지 ' + pct(last.need, 1),
+        rows: [['총 추가 투입', money(last.invested), true], ['평단 변화', pct(last.avg / avg - 1, 1)], ['마지막 매수가', price(last.price)], ['현재가 회복 시', sMoney(atCur.pl), true]],
+        source: '평균 단가 = 매입 금액 합 ÷ 전체 수량' + (FEEON ? ' · 수수료·거래세 반영' : '') };
+    }
+    setH('av-steps-title', title); setH('av-steps-h', head); setH('av-steps', steps);
+    setH('av-tips', tips.map(function (x) { return '<li>' + x + '</li>'; }).join(''));
+    (window.dcShareSpec = window.dcShareSpec || {})['averaging-down'] = share;   /* 오른쪽 아래 공유 창이 이 카드를 씀 */
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.av-tq button'); if (!b) return;
+    var avg = numOf('av-avg'), cur = numOf('av-cur'), k = b.getAttribute('data-k'), v;
+    if (!(avg > 0)) return;
+    v = k === 'mid' ? (avg + (cur > 0 ? cur : avg)) / 2 : avg * (1 + (+k) / 100);
+    $('av-t').value = (mkt === 'us' ? Math.round(v * 100) / 100 : Math.round(v)).toLocaleString('ko-KR', { maximumFractionDigits: 2 });
+    if (cur > 0) $('av-tp').value = $('av-cur').value;
+    render();
+  });
+  window.fcRegister('av', render, 'avgdown');
+})();
+
+/* ════════════════════════════════════════
    [AUTH] 간편 로그인(카카오·네이버·구글) · 내 저장함 — 서버는 방문자 카운터 Worker(worker/src/auth.js)
    · /auth/config 에 켜진 제공자가 하나도 없으면 로그인 버튼 자체를 숨김 (키 등록 전에는 사이트 변화 없음)
    · 로그인: 제공자 로그인 창 → https://d-capitalism.com/auth/callback/ (state·PKCE 확인, 첫 가입이면 약관·개인정보·만 14세 동의) → 토큰을 localStorage 'dc_auth' 에 보관

@@ -1599,6 +1599,19 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .fc-check:has(.fc-sub-inline) { align-items:flex-start; } .fc-check:has(.fc-sub-inline) input { margin-top:2px; }
   #np-reform td:not(:first-child), #np-reform th { white-space:nowrap; }   /* [NPR] 금액이 두 줄로 쪼개지지 않게 */
   @media (max-width: 600px) { #np-reform td, #np-reform th { font-size:11.5px; padding-left:4px; padding-right:4px; } #np-reform small { display:none; } }
+  /* [AVG] 물타기 계산기 — 국내 관례: 수익·상승 빨강 · 손실·하락 파랑 */
+  .fc-row3 { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; }
+  .av-rows { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+  .av-row { display:grid; grid-template-columns:34px minmax(0,1.15fr) minmax(0,1fr); gap:8px; align-items:center; }
+  .av-row b { font-size:12px; font-weight:600; color:var(--text3); }
+  .av-up { color:#f04452; } .av-dn { color:#3182f6; }
+  .av-ladder { list-style:none; margin:0; padding:0; }
+  .av-ladder li { display:grid; grid-template-columns:12px 1fr auto 70px; align-items:center; gap:10px; padding:10px 4px; border-bottom:1px solid var(--card-border); font-size:13px; color:var(--text2); }
+  .av-ladder li:last-child { border-bottom:none; }
+  .av-ladder i { width:10px; height:10px; border-radius:50%; }
+  .av-ladder b { font-family:var(--mono); font-weight:600; color:var(--text); }
+  .av-ladder em { font-style:normal; font-family:var(--mono); font-size:12px; text-align:right; color:var(--text3); }
+  .av-tbl small { color:var(--text3); }
   .fc-sec-title { font-size:12px; font-weight:600; color:var(--text); margin:6px 0 10px; padding-top:12px; border-top:1px solid var(--card-border); }
   .fc-note { font-size:11px; line-height:1.7; color:var(--text3); margin-top:4px; }
   .fc-hero { padding:24px 26px; }
