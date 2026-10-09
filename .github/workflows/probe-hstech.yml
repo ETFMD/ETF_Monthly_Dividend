@@ -1,0 +1,65 @@
+name: 임시 점검 (항셍테크 과거 자료 출처)
+on:
+  workflow_dispatch:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: probe
+        shell: python3 {0}
+        run: |
+          import json, urllib.request, datetime, time
+          UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36'
+          def get(url, ref=None):
+              h = {'User-Agent': UA}
+              if ref: h['Referer'] = ref
+              with urllib.request.urlopen(urllib.request.Request(url, headers=h), timeout=25) as r:
+                  return r.read().decode('utf-8', 'ignore')
+          def show(name, fn):
+              try:
+                  pts = fn()
+                  print(f'OK   {name}: {len(pts)} pts, first {pts[0] if pts else None}, last {pts[-1] if pts else None}')
+              except Exception as e:
+                  print(f'FAIL {name}: {type(e).__name__} {e}')
+          def em(host, ref=None):
+              def f():
+                  d = json.loads(get(f'https://{host}/api/qt/stock/kline/get?secid=124.HSTECH&fields1=f1,f2,f3&fields2=f51,f53&klt=102&fqt=0&beg=19900101&end=20500101&lmt=100000', ref))
+                  return [k.split(',')[:2] for k in ((d.get('data') or {}).get('klines') or [])]
+              return f
+          for h in ['push2his.eastmoney.com', '7.push2his.eastmoney.com', '33.push2his.eastmoney.com', '63.push2his.eastmoney.com', '91.push2his.eastmoney.com', '17.push2his.eastmoney.com']:
+              show('EM ' + h, em(h))
+              show('EM+ref ' + h, em(h, 'https://quote.eastmoney.com/'))
+          def tx(code, kt):
+              def f():
+                  t = get(f'https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param={code},{kt},2014-01-01,2030-12-31,2000,qfq')
+                  d = json.loads(t)['data'][code]
+                  rows = d.get(kt) or d.get('qfq' + kt) or []
+                  return [[r[0], r[2]] for r in rows]
+              return f
+          for c in ['hkHSTECH', 'hkHSTECH.HK']:
+              show('Tencent week ' + c, tx(c, 'week'))
+              show('Tencent day ' + c, tx(c, 'day'))
+          def yh(rng, iv):
+              def f():
+                  d = json.loads(get(f'https://query1.finance.yahoo.com/v8/finance/chart/HSTECH.HK?interval={iv}&range={rng}'))
+                  r = d['chart']['result'][0]; ts = r.get('timestamp') or []; cl = r['indicators']['quote'][0]['close']
+                  return [[datetime.date.fromtimestamp(t).isoformat(), c] for t, c in zip(ts, cl) if c]
+              return f
+          show('Yahoo max 1wk', yh('max', '1wk'))
+          show('Yahoo max 1mo', yh('max', '1mo'))
+          def cn(sym):
+              def f():
+                  d = json.loads(get(f'https://ts-api.cnbc.com/harmony/app/bars/{sym}/1W/20140101000000/20301231000000/adjusted/EST5EDT.json'))
+                  b = (d.get('barData') or {}).get('priceBars') or []
+                  return [[x['tradeTime'][:8], x['close']] for x in b]
+              return f
+          show('CNBC .HSTECH', cn('.HSTECH'))
+          show('CNBC HSTECH', cn('HSTECH'))
+          def stq(s):
+              def f():
+                  t = get(f'https://stooq.com/q/d/l/?s={s}&i=w').strip().splitlines()
+                  return [l.split(',')[:5:4] for l in t[1:]] if len(t) > 1 and t[0].startswith('Date') else []
+              return f
+          show('Stooq ^hstech', stq('%5Ehstech'))
+          show('Stooq hstech', stq('hstech'))
