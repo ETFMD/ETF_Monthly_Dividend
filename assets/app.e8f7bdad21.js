@@ -7124,13 +7124,13 @@ function renderFearComponents(components) {
     var col = fearColor(pct);
     var lbl = fearLabel(pct);
     var isLast = idx === arr.length - 1;
-    return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;' +
+    return '<div class="fg-row" style="display:flex;align-items:center;gap:12px;padding:10px 0;' +
       (isLast ? '' : 'border-bottom:1px solid rgba(var(--fg-rgb),0.05);') + '">' +
-      '<div style="width:160px;font-size:11px;color:var(--text3);flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (SITE_EN ? (FEAR_PART_EN[comp.name] || comp.name || '') : (comp.name||'')) + '</div>' +
-      '<div style="flex:1;background:var(--bg3);border-radius:4px;height:8px;overflow:hidden;">' +
+      '<div class="fg-name" style="font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (SITE_EN ? (FEAR_PART_EN[comp.name] || comp.name || '') : (comp.name||'')) + '</div>' +
+      '<div style="flex:1 1 40px;min-width:40px;background:var(--bg3);border-radius:4px;height:8px;overflow:hidden;">' +
         '<div style="width:'+pct+'%;height:100%;background:'+col+';border-radius:4px;"></div>' +
       '</div>' +
-      '<div style="width:' + (SITE_EN ? 150 : 120) + 'px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:500;color:'+col+';white-space:nowrap;flex-shrink:0;">' +
+      '<div class="fg-val" style="text-align:right;font-family:var(--mono);font-size:12px;font-weight:500;color:'+col+';white-space:nowrap;">' +
         Math.round(pct)+' \u00b7 '+lbl +
       '</div>' +
     '</div>';

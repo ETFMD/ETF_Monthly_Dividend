@@ -250,7 +250,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>(function(){try{var m=localStorage.getItem("site-theme")||"dark";var l=m==="light"||(m==="auto"&&window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches);document.documentElement.setAttribute("data-theme",l?"light":"dark");}catch(e){}})();</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<link rel="stylesheet" href="assets/app.4a7075ed6a.css">
+<link rel="stylesheet" href="assets/app.215988f6a2.css">
 </head>
 <body>
 <div class="wrap">
@@ -516,7 +516,7 @@
       <button class="period-btn" id="hscei-period-all" onclick="setIndexPeriod('hscei',0,this)">전체 기간</button>
     </div>
 
-    <div class="idx-rate-grid" id="hscei-rate-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
+    <div class="idx-rate-grid" id="hscei-rate-grid" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:24px;">
       <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
         <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">연평균 성장률 (CAGR)</p>
         <p class="idx-rate-num" style="font-family:var(--mono);font-size:36px;font-weight:500;color:var(--accent);" id="hscei-annual">—</p>
@@ -602,7 +602,7 @@
 
 </div>
 
-<script src="assets/app.dea48fb8a2.js"></script>
+<script src="assets/app.e8f7bdad21.js"></script>
   <!-- ── 하단 후원/문의 배너 ── -->
   <div style="max-width:1280px;margin:0 auto;padding:0 32px 40px;">
   <!-- ── 카카오 오픈채팅 (커뮤니티) — 모든 화면 아래쪽 ── -->
