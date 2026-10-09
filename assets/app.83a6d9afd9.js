@@ -14405,6 +14405,264 @@ var CGT = (function () {
 })();
 
 /* ════════════════════════════════════════
+   [CY] 청약 가점 계산기 — 주택공급에 관한 규칙 별표1 「가점제 적용기준」 (2026년 현행, 민영주택 일반공급)
+   근거(2026-10 확인)
+   · 총점 84점 = 무주택기간 32 + 부양가족 수 35 + 입주자저축 가입기간 17 · 기준일은 입주자모집공고일
+   · 무주택기간: 만 30세가 되는 날부터 셈(그 전에 혼인했으면 혼인신고일부터). 주택을 처분했다면 무주택이 된 날(가장 최근 처분일)부터
+       1년 미만 2점, 이후 1년마다 2점, 15년 이상 32점 · 만 30세 미만 미혼 0점 · 유주택자 0점
+       소형·저가주택 1호(전용 60㎡ 이하 · 공시가격 수도권 1.6억·지방 1억 이하, 2024.12.18~ 비아파트 85㎡·5억/3억)는 그 보유기간도 무주택으로 인정
+   · 부양가족: 본인 제외 · 0명 5점, 1명마다 5점, 6명 이상 35점
+       배우자(세대 분리여도 인정) · 직계존속(배우자 쪽 포함, 신청자가 세대주이고 3년 이상 같은 등본, 직계존속이나 그 배우자가 주택 소유 시 제외)
+       미혼 자녀(만 30세 이상은 1년 이상 같은 등본)
+   · 가입기간: 6개월 미만 1점 · 6개월~1년 미만 2점 · 1~2년 미만 3점 · 이후 1년마다 1점 · 15년 이상 17점
+       미성년(만 19세 미만) 때 가입한 기간은 최대 5년만 인정
+       배우자 통장: 배우자 가입기간의 50%를 같은 표로 환산해 최대 3점 더함(합계 17점 한도, 2024.3.25~)
+════════════════════════════════════════ */
+var CY = (function () {
+  function parse(d) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d || ''); if (!m) return null; var o = { y: +m[1], m: +m[2], d: +m[3] }; return o.m >= 1 && o.m <= 12 && o.d >= 1 && o.d <= 31 ? o : null; }
+  function iso(x) { return x.y + '-' + String(x.m).padStart(2, '0') + '-' + String(x.d).padStart(2, '0'); }
+  function cmp(a, b) { return iso(a) < iso(b) ? -1 : iso(a) > iso(b) ? 1 : 0; }
+  function lastDay(y, m) { return new Date(Date.UTC(y, m, 0)).getUTCDate(); }
+  /* n개월 뒤 같은 날 (그 달에 그 날이 없으면 말일 — 민법 §160③) */
+  function addMonths(a, n) { var t = a.y * 12 + (a.m - 1) + n, y = Math.floor(t / 12), m = t - y * 12 + 1; return { y: y, m: m, d: Math.min(a.d, lastDay(y, m)) }; }
+  function addYears(a, n) { return addMonths(a, 12 * n); }
+  /* a부터 b까지 꽉 찬 개월 수 (a의 n개월 뒤 같은 날이 b 이하이면 n개월) */
+  function months(a, b) {
+    if (cmp(b, a) < 0) return 0;
+    var n = (b.y - a.y) * 12 + (b.m - a.m);
+    while (n > 0 && cmp(addMonths(a, n), b) > 0) n--;
+    return n;
+  }
+  function homePts(yrs) { return Math.min(32, 2 * (yrs + 1)); }          /* yrs: 꽉 찬 무주택 연수 */
+  function depPts(n) { return Math.min(35, 5 * (Math.min(6, n) + 1)); }
+  function acctPts(mo) { return mo < 6 ? 1 : mo < 12 ? 2 : Math.min(17, Math.floor(mo / 12) + 2); }
+  /* o: {ref, birth, married, marriage, home 'none'|'small'|'disposed'|'own', disposal, head(세대주), spouse(배우자 수 0/1 — married면 1),
+         parents(직계존속), kids(미혼 자녀 30세 미만), kids30(만 30세 이상 미혼 자녀 1년+), join, spAcct, spJoin} */
+  function calc(o) {
+    var ref = parse(o.ref), birth = parse(o.birth), join = parse(o.join);
+    if (!ref) return { err: 'ref' };
+    if (!birth || cmp(birth, ref) >= 0) return { err: 'birth' };
+    if (!join || cmp(join, ref) > 0) return { err: 'join' };
+    if (cmp(join, birth) < 0) return { err: 'joinBirth' };
+    var r = { ref: iso(ref) }, age = Math.floor(months(birth, ref) / 12), at30 = addYears(birth, 30);
+    r.age = age;
+    /* 1) 무주택기간 */
+    var marriage = o.married ? parse(o.marriage) : null;
+    if (o.married && (!marriage || cmp(marriage, ref) > 0)) return { err: 'marriage' };
+    r.homeless = { pts: 0, years: 0, start: null, why: '' };
+    if (o.home === 'own') r.homeless.why = 'own';
+    else {
+      var start = at30, basis = '만 30세';
+      if (marriage && cmp(marriage, at30) < 0) { start = marriage; basis = '혼인신고일'; }
+      if (o.home === 'disposed') {
+        var disp = parse(o.disposal);
+        if (!disp || cmp(disp, ref) > 0) return { err: 'disposal' };
+        if (cmp(disp, start) > 0) { start = disp; basis = '주택 처분일'; }
+      }
+      if (cmp(start, ref) > 0) { r.homeless.why = 'young'; r.homeless.start = iso(start); }   /* 만 30세 전 미혼 */
+      else {
+        var y = Math.floor(months(start, ref) / 12);
+        r.homeless = { pts: homePts(y), years: y, start: iso(start), basis: basis, months: months(start, ref),
+          next: y < 15 ? iso(addYears(start, y + 1)) : null };
+      }
+    }
+    /* 2) 부양가족 */
+    var sp = o.married ? 1 : 0, par = o.head ? Math.max(0, Math.floor(o.parents || 0)) : 0;
+    var kids = Math.max(0, Math.floor(o.kids || 0)), k30 = Math.max(0, Math.floor(o.kids30 || 0));
+    var n = sp + par + kids + k30;
+    r.dep = { pts: depPts(n), n: n, spouse: sp, parents: par, kids: kids + k30, parentsDropped: !o.head && (o.parents || 0) > 0 ? Math.floor(o.parents) : 0 };
+    /* 3) 입주자저축 가입기간 — 미성년 기간은 최대 5년 */
+    var adult = addYears(birth, 19), mo = months(join, ref), minorCut = false, nextBase = join;
+    if (cmp(join, adult) < 0) {
+      var minorEnd = cmp(ref, adult) < 0 ? ref : adult, minorMo = months(join, minorEnd);
+      if (minorMo > 60) {
+        minorCut = true;
+        if (cmp(ref, adult) < 0) mo = 60;                     /* 아직 미성년 — 5년에서 멈춤 */
+        else { nextBase = addYears(adult, -5); mo = months(nextBase, ref); }     /* 성년 이후 기간 + 미성년 5년 */
+      }
+    }
+    var own = acctPts(mo), spP = 0, spMo = 0;
+    if (o.married && o.spAcct) {
+      var sj = parse(o.spJoin);
+      if (!sj || cmp(sj, ref) > 0) return { err: 'spJoin' };
+      spMo = months(sj, ref); spP = Math.min(3, acctPts(spMo / 2));
+    }
+    var need = mo < 6 ? 6 : mo < 12 ? 12 : (Math.floor(mo / 12) + 1) * 12;
+    r.acct = { pts: Math.min(17, own + spP), own: own, spouse: spP, months: mo, spMonths: spMo, minorCut: minorCut, capped: own + spP > 17,
+      next: own < 17 && cmp(ref, adult) >= 0 ? iso(addMonths(nextBase, need)) : null };
+    r.total = r.homeless.pts + r.dep.pts + r.acct.pts;
+    r.max = 32 + depPts(n) + 17;                                            /* 지금 가족 수로 가능한 최고점 */
+    return r;
+  }
+  /* k년 뒤 점수 (가족 수는 그대로) */
+  function project(o, years) {
+    var ref = parse(o.ref), out = [];
+    for (var k = 0; k <= years; k++) {
+      var p = {}; for (var x in o) p[x] = o[x];
+      p.ref = iso(addYears(ref, k));
+      var r = calc(p); if (r.err) break;
+      out.push({ k: k, date: p.ref, total: r.total, h: r.homeless.pts, d: r.dep.pts, a: r.acct.pts });
+    }
+    return out;
+  }
+  /* 목표 점수에 처음 닿는 날 (월 단위 탐색, 최대 years년) */
+  function reach(o, target, years) {
+    var ref = parse(o.ref), r0 = calc(o);
+    if (r0.err) return null; if (r0.total >= target) return { date: iso(ref), months: 0 };
+    for (var k = 1; k <= years * 12; k++) {
+      var p = {}; for (var x in o) p[x] = o[x]; p.ref = iso(addMonths(ref, k));
+      var r = calc(p); if (!r.err && r.total >= target) {
+        /* 그 달 안에서 정확한 날짜 */
+        var lo = addMonths(ref, k - 1), d = lo;
+        for (var j = 0; j < 31; j++) { d = addDays(lo, j + 1); p.ref = iso(d); if (calc(p).total >= target) break; }
+        return { date: iso(d), months: k };
+      }
+    }
+    return null;
+  }
+  function addDays(a, n) { var t = new Date(Date.UTC(a.y, a.m - 1, a.d + n)); return { y: t.getUTCFullYear(), m: t.getUTCMonth() + 1, d: t.getUTCDate() }; }
+  return { calc: calc, project: project, reach: reach, parse: parse, iso: iso, months: months, addYears: addYears, addMonths: addMonths, homePts: homePts, depPts: depPts, acctPts: acctPts };
+})();
+
+/* [CY] 화면 — 입력(data-fc="cy")은 [FC-UI] 공통 처리 */
+(function () {
+  if (!document.getElementById('page-cheongyak')) return;
+  var SEOUL = [['2022', 47.69], ['2023', 56.17], ['2024', 59.68], ['2025', 65.81]], AVG = 65.81;   /* 서울 민영 평균 당첨 가점 — 청약홈(뉴시스 2026.3.30) */
+  function $(id) { return document.getElementById(id); }
+  function setT(id, v) { var e = $(id); if (e) e.textContent = v; }
+  function setH(id, v) { var e = $(id); if (e) e.innerHTML = v; }
+  function seg(name) { var b = document.querySelector('.fc-seg[data-name="' + name + '"] .mode-btn.active'); return b ? b.getAttribute('data-v') : null; }
+  function cnt(id) { var v = parseInt(String($(id).value).replace(/[^\d]/g, ''), 10); return isFinite(v) ? Math.min(9, Math.max(0, v)) : 0; }
+  function dot(d) { return d ? d.replace(/-/g, '.') : ''; }
+  function today() { return new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10); }
+  function ym(mo) { var y = Math.floor(mo / 12), m = mo % 12; return (y ? y + '년' : '') + (m ? (y ? ' ' : '') + m + '개월' : '') || '0개월'; }
+  function pts(n) { return (Math.round(n * 100) / 100) + '점'; }
+  function gap(a, b) { var d = Math.round((a - b) * 100) / 100; return d > 0 ? d + '점 높음' : d < 0 ? (-d) + '점 낮음' : '같음'; }
+  var chart = null, share = null;
+  if (!$('cy-ref').value) $('cy-ref').value = today();
+  function input() {
+    var mar = seg('cy-mar') === '1';
+    return { ref: $('cy-ref').value, birth: $('cy-birth').value, married: mar, marriage: $('cy-mdate').value, home: seg('cy-home') || 'none', disposal: $('cy-disp').value,
+      head: $('cy-head').checked, parents: cnt('cy-par'), kids: cnt('cy-kids'), kids30: cnt('cy-kids30'), join: $('cy-join').value, spAcct: mar && $('cy-spa').checked, spJoin: $('cy-spj').value };
+  }
+  var ERR = { ref: '기준일(입주자모집공고일)을 확인해 주세요.', birth: '생년월일을 기준일보다 앞선 날짜로 넣어 주세요.', join: '청약통장 가입일을 기준일 이전 날짜로 넣어 주세요.',
+    joinBirth: '청약통장 가입일이 생년월일보다 빠릅니다.', marriage: '혼인신고일을 기준일 이전 날짜로 넣어 주세요.', disposal: '무주택이 된 날을 기준일 이전 날짜로 넣어 주세요.', spJoin: '배우자 통장 가입일을 기준일 이전 날짜로 넣어 주세요.' };
+  function clear(msg) {
+    setT('cy-val', '—'); setT('cy-sub', msg); ['cy-k1', 'cy-k2', 'cy-k3'].forEach(function (k) { setT(k, '—'); });
+    ['cy-bars', 'cy-table', 'cy-cmp', 'cy-cmp-note', 'cy-reach', 'cy-scen', 'cy-tips'].forEach(function (k) { setH(k, ''); });
+    if (chart) { chart.destroy(); chart = null; }
+    share = null; (window.dcShareSpec = window.dcShareSpec || {})['cheongyak-score'] = null;
+  }
+  function chartOpts() {
+    return { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: true, position: 'bottom', labels: { color: '#9e9ea4', boxWidth: 10, boxHeight: 10, font: { size: 11 } } },
+        tooltip: { backgroundColor: '#202027', borderColor: fgA(0.1), borderWidth: 1, titleColor: '#9e9ea4', bodyColor: '#e4e4e5', padding: 12,
+          callbacks: { label: function (c) { return ' ' + c.dataset.label + ': ' + (Math.round(c.parsed.y * 100) / 100) + '점'; } } } },
+      scales: { x: { ticks: { color: '#6d6d76', font: { size: 11 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 9 }, grid: { display: false }, border: { display: false } },
+                y: { min: 0, max: 84, ticks: { color: '#6d6d76', font: { size: 11 }, stepSize: 12, callback: function (v) { return v + '점'; } }, grid: { color: fgA(0.04) }, border: { display: false } } } };
+  }
+  function render() {
+    var o = input();
+    $('cy-mdate-f').style.display = o.married ? '' : 'none';
+    $('cy-disp-f').style.display = o.home === 'disposed' ? '' : 'none';
+    $('cy-spa-box').style.display = o.married ? '' : 'none';
+    $('cy-spj-f').style.display = o.spAcct ? '' : 'none';
+    $('cy-head-f').style.opacity = o.parents ? '' : '0.6';
+    setH('cy-home-hint', { none: '세대원 모두 주택을 가진 적이 없음', disposed: '처분해서 지금은 무주택 — 무주택이 된 날부터 다시 셉니다',
+      small: '전용 60㎡ 이하·공시가격 수도권 1.6억·지방 1억 이하 아파트(비아파트 85㎡·5억/3억 이하) 1채 — 민영주택 일반공급에선 무주택으로 봄', own: '주택을 가진 세대는 무주택기간이 0점입니다' }[o.home]);
+    setH('cy-sp-note', o.married ? '배우자 <b>1명</b>은 자동으로 셉니다 (세대가 분리돼 있어도 인정)' : '기혼이면 배우자 1명이 자동으로 더해집니다');
+    var r = CY.calc(o);
+    if (r.err) return clear(ERR[r.err] || '입력을 확인해 주세요.');
+    var h = r.homeless, d = r.dep, a = r.acct, ref = o.ref;
+    /* 히어로 */
+    setT('cy-val', r.total + '점');
+    setH('cy-sub', '84점 만점 · 지금 가족 수로 최고 <b>' + r.max + '점</b> · 서울 2025년 평균 당첨 가점(' + AVG + '점)보다 <b>' + gap(r.total, AVG) + '</b>');
+    setT('cy-k1', h.pts + ' / 32점'); setT('cy-k2', d.pts + ' / 35점'); setT('cy-k3', a.pts + ' / 17점');
+    /* 항목 막대 */
+    var bars = [['무주택기간', h.pts, 32, '#3182f6'], ['부양가족', d.pts, 35, '#22a06b'], ['청약통장', a.pts, 17, '#fe9800']];
+    setH('cy-bars', bars.map(function (b) { return '<div class="cy-bar"><div class="cy-bar-h"><span>' + b[0] + '</span><b>' + b[1] + '<small> / ' + b[2] + '점</small></b></div><div class="cy-bar-t"><span style="width:' + (b[1] / b[2] * 100).toFixed(1) + '%;background:' + b[3] + ';"></span></div></div>'; }).join(''));
+    /* 상세 */
+    var L = [];
+    if (h.why === 'own') L.push(['무주택기간', '주택 보유 중 → 0점']);
+    else if (h.why === 'young') L.push(['무주택기간', '만 30세 전 미혼 → 0점 <small>(' + dot(h.start) + '부터 셈)</small>']);
+    else {
+      L.push(['무주택기간 시작일 <small>(' + h.basis + ')</small>', dot(h.start)]);
+      L.push(['무주택 기간', ym(h.months) + ' → <b>' + h.pts + '점</b>']);
+      if (h.next) L.push(['다음 +2점', dot(h.next)]);
+    }
+    L.push(['부양가족 <small>(' + [d.spouse ? '배우자 1' : '', d.parents ? '직계존속 ' + d.parents : '', d.kids ? '자녀 ' + d.kids : ''].filter(Boolean).join(' · ') + (d.n ? '' : '없음') + ')</small>', d.n + '명 → <b>' + d.pts + '점</b>']);
+    L.push(['통장 가입기간' + (a.minorCut ? ' <small>(미성년 기간 5년만 인정)</small>' : ''), ym(a.months) + ' → <b>' + a.own + '점</b>']);
+    if (o.spAcct) L.push(['배우자 통장 <small>(' + ym(a.spMonths) + '의 50%)</small>', '+' + a.spouse + '점' + (a.capped ? ' <small>(17점 한도로 ' + (17 - a.own) + '점만 반영)</small>' : '')]);
+    if (a.next) L.push(['다음 +1점 <small>(본인 통장)</small>', dot(a.next)]);
+    L.push(['<b>청약 가점 합계</b>', '<b>' + r.total + '점</b>', 'fc-hl']);
+    setH('cy-table', L.map(function (x) { return '<tr' + (x[2] ? ' class="' + x[2] + '"' : '') + '><td>' + x[0] + '</td><td style="text-align:right;">' + x[1] + '</td></tr>'; }).join(''));
+    /* 서울 평균과 비교 */
+    var rows = SEOUL.map(function (s) { return [s[0] + '년 서울 평균', s[1], false]; }).concat([['내 점수', r.total, true], ['우리 가족 만점', r.max, false, true]]);
+    setH('cy-cmp', rows.map(function (x) { return '<div class="cy-cmp-row' + (x[2] ? ' me' : '') + (x[3] ? ' mx' : '') + '"><span>' + x[0] + '</span><div class="cy-bar-t"><span style="width:' + (x[1] / 84 * 100).toFixed(1) + '%;"></span></div><b>' + pts(x[1]) + '</b></div>'; }).join(''));
+    setH('cy-cmp-note', '서울 아파트 평균 당첨 가점은 4년 만에 약 18점 올라 2025년 <b>' + AVG + '점</b>으로 집계 이래 가장 높았습니다. ' + (r.max < AVG ? '지금 가족 수로는 무주택·통장 점수를 모두 채워도 최고 ' + r.max + '점이라 서울 평균에 못 미칩니다 — 추첨제·특별공급을 함께 노리세요.' : r.total >= AVG ? '내 점수는 이미 서울 평균 이상입니다. 인기 단지는 70점대 중반에서 당첨선이 형성되기도 합니다.' : '가족 수가 그대로여도 시간이 지나면 ' + r.max + '점까지 오를 수 있습니다.'));
+    /* 앞으로 */
+    var proj = CY.project(o, 15);
+    if (typeof Chart !== 'undefined') {
+      var lbl = proj.map(function (p) { return p.k ? p.date.slice(0, 4) + '.' + p.date.slice(5, 7) : '지금'; });
+      var ds = [
+        { label: '내 가점', data: proj.map(function (p) { return p.total; }), borderColor: '#3182f6', backgroundColor: 'rgba(49,130,246,0.10)', borderWidth: 2, pointRadius: 2.5, fill: true, stepped: false, tension: 0 },
+        { label: '서울 2025 평균 당첨 (' + AVG + '점)', data: proj.map(function () { return AVG; }), borderColor: '#f04452', borderDash: [5, 4], borderWidth: 1.4, pointRadius: 0, fill: false },
+        { label: '우리 가족 만점 (' + r.max + '점)', data: proj.map(function () { return r.max; }), borderColor: '#9e9ea4', borderDash: [2, 3], borderWidth: 1.2, pointRadius: 0, fill: false }
+      ];
+      if (chart) chart.destroy();
+      chart = new Chart($('cy-chart'), { type: 'line', data: { labels: lbl, datasets: ds }, options: chartOpts() });
+    }
+    var gm = {}, g;
+    for (g = 10; g <= r.max; g += 10) gm[g] = g + '점';
+    gm[Math.ceil(AVG)] = '서울 2025 평균 넘기 (' + Math.ceil(AVG) + '점)';
+    gm[r.max] = '우리 가족 만점 (' + r.max + '점)';
+    var goals = Object.keys(gm).map(Number).filter(function (x) { return x > r.total; }).sort(function (p, q) { return p - q; }).slice(0, 5).map(function (x) { return [x, gm[x]]; });
+    setH('cy-reach', goals.length ? goals.map(function (x) {
+      var hit = x[0] <= r.max ? CY.reach(o, x[0], 40) : null, mo = hit ? CY.months(CY.parse(ref), CY.parse(hit.date)) : 0;
+      return '<tr' + (x[0] === Math.ceil(AVG) ? ' class="fc-hl"' : '') + '><td>' + x[1] + '</td><td>' + (hit ? dot(hit.date) : '<small>가족 수가 그대로면 불가 (최고 ' + r.max + '점)</small>') + '</td><td style="text-align:right;">' + (hit ? (mo ? ym(mo) + ' 뒤' : '곧') : '—') + '</td></tr>';
+    }).join('') : '<tr><td colspan="3">지금 가족 수로 받을 수 있는 최고 점수(' + r.max + '점)를 이미 받고 있습니다.</td></tr>');
+    /* 이렇게 되면 */
+    function alt(p, label, note) { var q = {}; for (var k in o) q[k] = o[k]; for (k in p) q[k] = p[k]; var x = CY.calc(q); return x.err ? null : [label + (note ? ' <small>' + note + '</small>' : ''), x.total]; }
+    var S = [['지금 입력', r.total, true]];
+    if (!o.married) S.push(alt({ married: true, marriage: ref }, '오늘 혼인신고하면', '배우자 +1명' + (h.why === 'young' ? ' · 무주택기간도 오늘부터' : '')));
+    if (o.married && !o.spAcct && a.own < 17) S.push(alt({ spAcct: true, spJoin: CY.iso(CY.addYears(CY.parse(ref), -2)) }, '배우자 통장이 2년 이상이면', '최대 +3점'));
+    S.push(alt({ kids: o.kids + 1 }, '자녀가 1명 더 있으면', '태아 포함'));
+    var in3 = CY.iso(CY.addYears(CY.parse(ref), 3)), p3 = alt({ ref: in3, head: true, parents: o.parents + 2 }, '부모님 두 분과 3년 같이 살면', dot(in3) + ' 기준 · 세대주');
+    var b3 = alt({ ref: in3 }, '그냥 3년 기다리면', dot(in3) + ' 기준');
+    if (b3) S.push(b3); if (p3) S.push(p3);
+    if (o.home === 'own') S.push(alt({ home: 'disposed', disposal: ref }, '오늘 집을 처분하면', '무주택기간이 오늘부터'));
+    setH('cy-scen', S.filter(Boolean).map(function (x) { var df = x[1] - r.total; return '<tr' + (x[2] ? ' class="fc-hl"' : '') + '><td>' + x[0] + '</td><td style="text-align:right;">' + x[1] + '점</td><td style="text-align:right;' + (df > 0 ? 'color:#f04452;' : '') + '">' + (x[2] ? '—' : df > 0 ? '+' + df + '점' : df < 0 ? df + '점' : '같음') + '</td></tr>'; }).join(''));
+    /* 체크 포인트 */
+    var T = [];
+    if (h.why === 'young') T.push('만 30세 전 미혼이라 무주택기간이 0점입니다. 만 30세가 되는 ' + dot(h.start) + '부터 2점으로 시작하고, 그 전에 혼인신고하면 신고일부터 셉니다.');
+    if (h.why === 'own') T.push('주택을 가진 세대는 무주택기간 0점이고, 투기과열지구·조정대상지역의 가점제 물량은 무주택 세대구성원만 신청할 수 있습니다. 유주택자는 기존 주택 처분 조건의 추첨제 물량(1주택자)을 노려야 합니다.');
+    if (o.home === 'disposed' && h.basis === '주택 처분일') T.push('집을 처분한 날부터 무주택기간을 다시 셉니다. 만 30세(혼인신고일)부터 계속 무주택이었다면 받았을 점수보다 낮아졌습니다.');
+    if (d.parentsDropped) T.push('세대주가 아니어서 직계존속 ' + d.parentsDropped + '명이 부양가족에서 빠졌습니다. 직계존속은 신청자가 세대주이고 3년 이상 같은 등본에 있어야 인정됩니다.');
+    if (o.parents) T.push('부모님이 부양가족으로 인정되려면 입주자모집공고일 기준 3년 이상 계속 같은 등본에 있어야 하고, 부모님이나 그 배우자가 집이 있으면 안 됩니다. 실제 같이 살지 않는 위장전입은 부정청약으로 당첨 취소·형사처벌·최대 10년 청약 제한 대상입니다.');
+    if (a.capped) T.push('본인 통장 점수와 배우자 가산을 합치면 17점을 넘어 ' + (17 - a.own) + '점만 반영됐습니다.');
+    if (a.minorCut) T.push('만 19세 전에 가입한 기간 중 5년만 인정돼, 실제 가입기간보다 짧게 계산됐습니다.');
+    if (h.next && !h.why && h.pts < 32) { var dd = CY.months(CY.parse(ref), CY.parse(h.next)); if (dd < 2) T.push('<b>' + dot(h.next) + '</b>에 무주택기간 점수가 2점 오릅니다. 입주자모집공고일이 그 이후인 단지를 노리면 유리합니다.'); }
+    if (r.total < 50) T.push('가점이 낮을 때는 추첨제 물량(투기과열지구 60㎡ 이하 60% · 85㎡ 초과 20%)과 신혼부부·생애최초·신생아 특별공급이 현실적인 경로입니다.');
+    T.push('동점이면 청약통장 가입기간이 긴 사람이 우선이고, 가점을 잘못 입력해 당첨되면 부적격으로 당첨이 취소되고 일정 기간 다른 청약에 당첨될 수 없습니다. 신청 전에 청약홈 ‘청약 가점 계산’으로 한 번 더 확인하세요.');
+    setH('cy-tips', T.map(function (t) { return '<li>' + t + '</li>'; }).join(''));
+    /* 공유 카드 */
+    share = { key: 'cheongyak-score', chip: '청약 가점 계산기', title: '내 청약 가점은 몇 점?',
+      label: (o.married ? '기혼' : '미혼') + ' · 부양가족 ' + d.n + '명 · 통장 ' + ym(a.months) + ' · ' + dot(ref) + ' 기준',
+      big: r.total + '점', sub: '84점 만점 · 서울 2025 평균 당첨 ' + AVG + '점보다 ' + gap(r.total, AVG), gauge: r.total / 84 * 100, gaugeLabels: ['0점', '42점', '84점'],
+      rows: [['무주택기간', h.pts + ' / 32점'], ['부양가족', d.pts + ' / 35점'], ['청약통장', a.pts + ' / 17점']],
+      source: '주택공급에 관한 규칙 별표1 (2026) · 서울 평균 가점: 한국부동산원 청약홈' };
+    (window.dcShareSpec = window.dcShareSpec || {})['cheongyak-score'] = share;
+  }
+  /* 인원 ± 버튼 */
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.cy-step button'); if (!b) return;
+    var inp = b.parentNode.querySelector('input'), v = Math.min(9, Math.max(0, cnt(inp.id) + (+b.getAttribute('data-d'))));
+    inp.value = v; inp.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  window.fcRegister('cy', render, 'cheongyak');
+})();
+
+/* ════════════════════════════════════════
    [AUTH] 간편 로그인(카카오·네이버·구글) · 내 저장함 — 서버는 방문자 카운터 Worker(worker/src/auth.js)
    · /auth/config 에 켜진 제공자가 하나도 없으면 로그인 버튼 자체를 숨김 (키 등록 전에는 사이트 변화 없음)
    · 로그인: 제공자 로그인 창 → https://d-capitalism.com/auth/callback/ (state·PKCE 확인, 첫 가입이면 약관·개인정보·만 14세 동의) → 토큰을 localStorage 'dc_auth' 에 보관
