@@ -10313,6 +10313,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
         .map(function (f) { return '<div><label class="mh-lbl">' + f[1] + '</label><input class="mh-in" type="number" step="' + f[2] + '" placeholder="' + f[3] + '" value="' + esc(u[f[0]]) + '" data-in="su:' + f[0] + '"></div>'; }).join('') + '</div>' :
       '<div><label class="mh-lbl">원금 (' + sym + ')</label><input class="mh-in" type="number" placeholder="' + (u.currency === 'KRW' ? '30000000' : '20000') + '" value="' + esc(u.cap) + '" data-in="su:cap"></div>';
     return '<div style="text-align:center;padding:18px 0 14px"><h1 style="margin:0;font-size:22px;font-weight:800">무한매수법</h1><p class="mh-ac" style="margin:2px 0 10px;font-weight:700">V4.0</p>' +
+      '<button class="mh-btn" style="font-size:12px;margin-right:6px" data-act="guide">📘 처음이라면 가이드북부터</button>' +
       (window.dcAuth && !SY.uid && SY.can ? '<button class="mh-btn mh-btn-p" style="font-size:12px;margin-right:6px" data-act="sync-login">로그인하고 내 기록 불러오기</button>' : '') +
       (window.dcAuth && SY.uid ? '<div style="margin-top:8px;display:flex;justify-content:center;align-items:center;gap:6px"><span class="mh-tiny mh-faint">로그인 상태 — 계정에 자동 저장</span>' + syncChip() + '</div>' :
        window.dcAuth && SY.can ? '<p class="mh-tiny mh-faint" style="margin:8px 0 0">로그인하면 기록이 계정에 자동 저장되어 어느 기기에서든 이어서 쓸 수 있어요</p>' : '') + '</div>' +
@@ -10353,6 +10354,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
     var s = D.s, cur = D.cur, nArch = store.sessions.length - live().length;
     var sb = function (n) { return '<button class="mh-btn' + (s.splits === n ? ' mh-btn-sel' : '') + '" style="padding:6px 4px;font-size:12px" data-act="m-splits" data-v="' + n + '">' + n + '</button>'; };
     return '<div class="mh-overlay" data-act="menu-close"></div><div class="mh-menu" data-noswipe>' +
+      '<div class="mh-msec"><button class="mh-mbtn mh-ac" data-act="guide">📘 무한매수법 가이드북</button></div>' +
       '<div class="mh-msec"><div class="mh-row"><span style="font-size:13px">글자 크기</span><span class="mh-small mh-ac mh-mono">' + Math.round(MH.fontScale * 100) + '%</span></div>' +
       '<input class="mh-slider" type="range" min="1" max="1.3" step="0.05" value="' + MH.fontScale + '" data-in="font"><div class="mh-row mh-tiny mh-faint"><span>보통</span><span>최대</span></div></div>' +
       toggleRow('주문 체크리스트', MH.todo, 'tg-todo', '주문표에서 넣은 주문 체크 · 다음날 자동 초기화') +
@@ -10387,7 +10389,8 @@ if (typeof module !== 'undefined') module.exports = MHE;
       '<button class="mh-ico" style="font-size:20px" data-act="menu" aria-label="설정 메뉴">⋮</button>' + (MH.menu ? viewMenu(D) : '') + '</div></div></div>' +
       '<div class="mh-tabs"><button class="mh-tab' + (MH.view !== 'an' ? ' on' : '') + '" data-act="view" data-v="now">현재</button>' +
       '<button class="mh-tab' + (MH.view === 'an' ? ' on' : '') + '" data-act="view" data-v="an">분석' + (D.ses.archivedCycles.length > 0 ? ' (' + D.ses.archivedCycles.length + ')' : '') + '</button>' +
-      (MH.view === 'an' ? '<button class="mh-btn" style="margin-left:auto;padding:5px 10px;font-size:12px" data-act="export">⤓ 내보내기</button>' : '') + '</div>';
+      '<button class="mh-btn" style="margin-left:auto;padding:5px 10px;font-size:12px" data-act="guide" title="무한매수법 가이드북">📘' + (MH.view === 'an' ? '' : ' 가이드북') + '</button>' +
+      (MH.view === 'an' ? '<button class="mh-btn" style="padding:5px 10px;font-size:12px" data-act="export">⤓ 내보내기</button>' : '') + '</div>';
   }
   /* ── 현재 탭 ── */
   function safe(fn, D) { try { return fn(D); } catch (e) { if (window.console) console.error('[MUHAN] ' + (fn.name || 'card'), e);
@@ -11180,6 +11183,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
       case 'ed-save': saveEdit(); break;
       case 'tx-del': if (confirm('이 기록을 삭제할까요?')) mut(function () { ses.transactions = ses.transactions.filter(function (t) { return t.id !== v; }); }); break;
       case 'realized-detail': MH.sheet = { kind: 'realized', cycleId: v || null }; render(); break;
+      case 'guide': MH.menu = false; render(); if (window.mhGuide) window.mhGuide(); break;
       /* 계정 동기화 */
       case 'sync-login': if (window.dcAuth) window.dcAuth.ready().then(function (ok) { if (ok) window.dcAuth.open(); else if (window.dcAuth.toast) window.dcAuth.toast('로그인을 준비하고 있습니다. 잠시 뒤 다시 눌러 주세요'); }); break;
       case 'sync-info': MH.menu = false; MH.sheet = { kind: 'sync-info' }; render(); break;
@@ -11248,6 +11252,42 @@ if (typeof module !== 'undefined') module.exports = MHE;
   /* 탭 진입 시 호출 ([NAV] switchSubTab 의 훅) */
   window.muhanInit = function () { bind(); MH.now = new Date(); if (!SY.inited) { SY.inited = true; SY.uid = authUid(); if (SY.uid) SY.st = 'pull'; if (window.dcAuth && window.dcAuth.ready) window.dcAuth.ready().then(function (ok) { if (SY.can !== ok) { SY.can = ok; render(); } }).catch(function () {}); } render(); if (SY.uid && SY.st === 'pull') pull(); };
   window.MHdebug = { get store() { return store; }, derive: derive, render: render };
+})();
+
+/* [GUIDEBOOK:muhan] 가이드북 — 읽은 장 표시(이 기기) · 목차/주소(#mhg-…) 이동 · 무한매수법 화면의 📘 버튼에서 열기 */
+(function () {
+  var KEY = 'muhan-guide-read';
+  function root() { return document.getElementById('mhg'); }
+  function readSet() { try { return JSON.parse(localStorage.getItem(KEY) || '[]') || []; } catch (e) { return []; } }
+  function paint() {
+    var g = root(); if (!g) return;
+    var set = readSet(), chs = g.querySelectorAll('.mhg-ch'), n = 0;
+    chs.forEach(function (d) { var on = set.indexOf(d.id) >= 0; d.classList.toggle('read', on); if (on) n++; });
+    var f = document.getElementById('mhg-prog-fill'), t = document.getElementById('mhg-prog-txt');
+    if (f) f.style.width = (chs.length ? n / chs.length * 100 : 0).toFixed(1) + '%';
+    if (t) t.textContent = chs.length + '개 장 중 ' + n + '개 읽음';
+  }
+  function go(id, open) {
+    var el = document.getElementById(id); if (!el) return;
+    if (open && el.tagName === 'DETAILS') el.open = true;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    try { history.replaceState(history.state, '', location.pathname + location.search + '#' + id); } catch (e) {}
+  }
+  function bind() {
+    var g = root(); if (!g || g._mhg) return; g._mhg = true;
+    g.addEventListener('toggle', function (e) {
+      var d = e.target; if (!d.classList || !d.classList.contains('mhg-ch') || !d.open) return;
+      var set = readSet(); if (set.indexOf(d.id) < 0) { set.push(d.id); try { localStorage.setItem(KEY, JSON.stringify(set)); } catch (er) {} } paint();
+    }, true);
+    g.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="#mhg"]'); if (!a) return;
+      e.preventDefault(); e.stopPropagation(); go(a.getAttribute('href').slice(1), true);
+    });
+    paint();
+    var h = location.hash.slice(1); if (/^mhg/.test(h)) setTimeout(function () { go(h, true); }, 300);
+  }
+  window.mhGuide = function (id) { bind(); go(id || 'mhg', !!id); };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind); else bind();
 })();
 
 

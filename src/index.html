@@ -2245,6 +2245,74 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .guide .g-faq[open] summary::after { content:'−'; }
   .guide .g-faq summary:hover { color:var(--accent); }
   .guide .g-ans p { font-size:13px; line-height:1.85; color:var(--text2); margin:0 0 12px; }
+  /* [GUIDEBOOK:muhan] 무한매수법 가이드북 — 기초 · 실전 · 분석 · 용어 (가이드 공통 .guide 스타일 위에) */
+  .mhg { scroll-margin-top:16px; }
+  .mhg-hero { background:linear-gradient(135deg, rgba(49,130,246,.14), rgba(49,130,246,.03)); border:1px solid rgba(49,130,246,.28); border-radius:16px; padding:22px 22px 18px; margin-bottom:14px; }
+  .mhg-kicker { font-size:11px; font-weight:700; letter-spacing:.08em; color:var(--accent); margin:0 0 6px; }
+  .mhg-hero h2 { margin:0 0 8px; font-size:22px; }
+  .mhg-lead { font-size:14px; line-height:1.8; color:var(--text2); margin:0 0 14px; max-width:880px; }
+  .mhg-prog { display:flex; align-items:center; gap:10px; font-size:12px; color:var(--text3); }
+  .mhg-prog-bar { flex:1; max-width:320px; height:6px; border-radius:6px; background:rgba(var(--fg-rgb),.08); overflow:hidden; }
+  .mhg-prog-bar i { display:block; height:100%; width:0; background:var(--accent); border-radius:6px; transition:width .3s; }
+  .mhg-summary { background:var(--card); border:1px solid var(--card-border); border-radius:14px; padding:18px 20px; margin-bottom:14px; }
+  .mhg-summary h3 { margin:0 0 12px; }
+  .mhg-steps3 { list-style:none; counter-reset:s3; margin:0; padding:0; display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; }
+  .mhg-steps3 li { counter-increment:s3; background:rgba(var(--fg-rgb),.03); border:1px solid var(--card-border); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:4px; }
+  .mhg-steps3 li::before { content:counter(s3); width:22px; height:22px; border-radius:50%; background:var(--accent); color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+  .mhg-steps3 b { font-size:14px; } .mhg-steps3 span { font-size:12.5px; line-height:1.65; color:var(--text2); }
+  .mhg-warn { margin:12px 0 0; font-size:12.5px; line-height:1.75; color:var(--text2); background:rgba(254,152,0,.08); border:1px solid rgba(254,152,0,.3); border-radius:10px; padding:10px 12px; }
+  .mhg-toc { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; margin-bottom:10px; }
+  .mhg-toc-c { display:flex; flex-direction:column; gap:3px; padding:14px; border-radius:12px; background:var(--card); border:1px solid var(--card-border); text-decoration:none; color:var(--text); transition:border-color .15s, transform .15s; }
+  .mhg-toc-c:hover { border-color:rgba(49,130,246,.5); transform:translateY(-1px); }
+  .mhg-toc-n { font-size:10.5px; font-weight:700; letter-spacing:.06em; color:var(--accent); } .mhg-toc-c b { font-size:14px; } .mhg-toc-c small { font-size:11.5px; color:var(--text3); }
+  .mhg-path { display:flex; flex-wrap:wrap; align-items:center; gap:6px; font-size:12px; color:var(--text3); margin:0 0 22px; }
+  .mhg-path b { color:var(--text2); margin-right:2px; } .mhg-path span { padding:3px 8px; border-radius:999px; background:rgba(var(--fg-rgb),.05); color:var(--text2); } .mhg-path i { font-style:normal; color:var(--text3); }
+  .mhg-part { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:17px; margin:26px 0 6px; scroll-margin-top:16px; }
+  .mhg-part span { font-size:10.5px; font-weight:700; letter-spacing:.06em; color:#fff; background:var(--accent); border-radius:6px; padding:3px 7px; }
+  .mhg-part-lead { font-size:13px; line-height:1.8; color:var(--text2); margin:0 0 12px; max-width:900px; }
+  .mhg-ch { background:var(--card); border:1px solid var(--card-border); border-radius:14px; margin:0 0 10px; scroll-margin-top:16px; }
+  .mhg-ch > summary { list-style:none; cursor:pointer; display:flex; align-items:center; gap:12px; padding:14px 16px; }
+  .mhg-ch > summary::-webkit-details-marker { display:none; }
+  .mhg-ch > summary::after { content:'▾'; color:var(--text3); font-size:14px; transition:transform .2s; flex-shrink:0; }
+  .mhg-ch[open] > summary::after { transform:rotate(180deg); }
+  .mhg-ch > summary:hover .mhg-t { color:var(--accent); }
+  .mhg-no { flex-shrink:0; min-width:34px; height:26px; padding:0 6px; border-radius:8px; background:rgba(49,130,246,.12); color:var(--accent); font-family:var(--mono); font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+  .mhg-ch.read .mhg-no { background:var(--accent); color:#fff; }
+  .mhg-t { flex:1; min-width:0; font-size:14.5px; font-weight:700; color:var(--text); line-height:1.45; }
+  .mhg-t small { display:block; font-size:12px; font-weight:400; color:var(--text3); margin-top:2px; }
+  .mhg-min { flex-shrink:0; font-size:11px; color:var(--text3); }
+  .mhg-body { padding:2px 18px 16px; border-top:1px solid var(--card-border); }
+  .mhg-body > p { font-size:13.5px; line-height:1.85; color:var(--text2); margin:12px 0 0; }
+  .mhg-body .g-list { margin-top:10px; } .mhg-body .table-scroll { margin-top:12px; }
+  .mhg-key { margin:12px 0 0; font-size:13px; line-height:1.8; color:var(--text2); background:rgba(49,130,246,.07); border-left:3px solid var(--accent); border-radius:0 10px 10px 0; padding:10px 12px; }
+  .mhg-key b:first-child { display:block; color:var(--accent); font-size:12px; margin-bottom:2px; }
+  .mhg-body .mhg-one { margin-top:14px; font-size:13px; font-weight:600; color:var(--text); background:rgba(var(--fg-rgb),.04); border-radius:10px; padding:9px 12px; }
+  .mhg-link { color:var(--accent); font-weight:600; text-decoration:none; } .mhg-link:hover { text-decoration:underline; }
+  .mhg-bars { margin-top:12px; display:flex; flex-direction:column; gap:7px; }
+  .mhg-bar { display:grid; grid-template-columns:72px minmax(0,1fr) 64px; gap:10px; align-items:center; font-size:12px; color:var(--text2); }
+  .mhg-bar > div { height:14px; border-radius:7px; background:rgba(var(--fg-rgb),.06); overflow:hidden; }
+  .mhg-bar i { display:block; height:100%; border-radius:7px; background:var(--accent2); min-width:3px; }
+  .mhg-bars-up .mhg-bar i { background:var(--accent3); }
+  .mhg-bar b { font-family:var(--mono); text-align:right; color:var(--text); }
+  .mhg-flow { list-style:none; counter-reset:fl; margin:12px 0 0; padding:0; display:flex; flex-direction:column; gap:8px; }
+  .mhg-flow li { counter-increment:fl; position:relative; padding:0 0 0 34px; font-size:13px; line-height:1.8; color:var(--text2); }
+  .mhg-flow li::before { content:counter(fl); position:absolute; left:0; top:2px; width:24px; height:24px; border-radius:50%; background:rgba(49,130,246,.14); color:var(--accent); font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+  .mhg-flow li b { margin-right:4px; }
+  .mhg-defs { margin-top:12px; display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; }
+  .mhg-defs > div { background:rgba(var(--fg-rgb),.03); border:1px solid var(--card-border); border-radius:10px; padding:10px 12px; display:flex; flex-direction:column; gap:3px; }
+  .mhg-defs b { font-size:13px; color:var(--accent); } .mhg-defs span { font-size:12.5px; line-height:1.7; color:var(--text2); }
+  .mhg-mistakes { margin:12px 0 0; padding-left:22px; font-size:13px; line-height:1.8; color:var(--text2); } .mhg-mistakes li { margin-bottom:6px; }
+  .mhg-dl { margin:12px 0 0; display:grid; grid-template-columns:minmax(120px, 190px) minmax(0,1fr); }
+  .mhg-dl dt { font-size:13px; font-weight:700; color:var(--text); padding:8px 10px 8px 0; border-bottom:1px solid var(--card-border); }
+  .mhg-dl dd { margin:0; font-size:13px; line-height:1.7; color:var(--text2); padding:8px 0; border-bottom:1px solid var(--card-border); }
+  .mhg-foot { font-size:11.5px; line-height:1.7; color:var(--text3); margin:14px 0 0; }
+  @media (max-width:900px) { .mhg-steps3, .mhg-toc { grid-template-columns:repeat(2, minmax(0,1fr)); } }
+  @media (max-width:600px) {
+    .mhg-hero { padding:18px 16px 16px; } .mhg-hero h2 { font-size:19px; }
+    .mhg-summary { padding:16px 14px; } .mhg-defs { grid-template-columns:1fr; }
+    .mhg-ch > summary { padding:12px 12px; gap:10px; } .mhg-min { display:none; } .mhg-body { padding:2px 14px 14px; }
+    .mhg-dl { grid-template-columns:1fr; } .mhg-dl dt { border-bottom:none; padding-bottom:0; } .mhg-bar { grid-template-columns:62px minmax(0,1fr) 56px; gap:8px; }
+  }
   @media (max-width:900px) { .guide .g-grid { grid-template-columns:1fr; } .guide h2 { font-size:18px; } .guide .g-card { padding:16px 14px; } .guide .g-tbl { min-width:0; } .guide .g-tbl td:first-child { min-width:96px; } }
   .site-footer { max-width:1280px; margin:-16px auto 0; padding:0 32px 36px; text-align:center; font-size:12px; color:var(--text3); }
   .site-footer .sf-in { border-top:1px solid var(--card-border); padding-top:18px; }
@@ -10653,6 +10721,362 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   <!-- ───────────────────────────────────────────── page-muhan ── -->
   <!-- [MUHAN] 무한매수법 기록 — 화면은 JS가 #mh-root 에 그림 -->
   <div class="app-page" id="page-muhan"><div id="mh-root"></div>
+    <!-- [GUIDEBOOK:muhan] 무한매수법·레버리지 ETF 가이드북 — 기초 · 실전 가이드 · 분석 · 용어 사전 (화면 정적 글 · 검색엔진 색인용) -->
+    <section class="guide mhg" id="mhg" aria-labelledby="mhg-h">
+      <div class="mhg-hero">
+        <p class="mhg-kicker">GUIDEBOOK · 처음이라면 여기부터</p>
+        <h2 id="mhg-h">무한매수법 가이드북</h2>
+        <p class="mhg-lead">3배 레버리지 ETF가 어떻게 움직이는지부터 무한매수법 4.0의 규칙, 하루 주문 루틴, 숫자로 보는 분석까지 순서대로 정리했습니다. 처음 듣는 분도 위에서부터 차례로 읽으면 이 기록 도구를 바로 쓸 수 있습니다.</p>
+        <div class="mhg-prog" aria-live="polite"><div class="mhg-prog-bar"><i id="mhg-prog-fill"></i></div><span id="mhg-prog-txt">22개 장 중 0개 읽음</span></div>
+      </div>
+
+      <div class="mhg-summary">
+        <h3>3분 요약 — 무한매수법이란?</h3>
+        <ol class="mhg-steps3">
+          <li><b>돈을 나눈다</b><span>원금을 20·30·40번으로 나눠, 하루에 한 번(1회분)씩만 삽니다.</span></li>
+          <li><b>종가로 산다</b><span>미국장 마감 가격(종가) 기준 LOC 주문으로, 정해진 가격 이하일 때만 체결됩니다.</span></li>
+          <li><b>오르면 판다</b><span>평균 단가보다 일정 %(TQQQ 15%·SOXL 20%) 오르면 나눠 팔고 한 회차를 끝냅니다.</span></li>
+          <li><b>반복한다</b><span>번 돈까지 합친 원금으로 다음 회차를 다시 시작합니다.</span></li>
+        </ol>
+        <p class="mhg-warn">⚠ 무한매수법은 <b>손실을 없애 주는 방법이 아닙니다.</b> 3배 레버리지 ETF는 1년에 −80%까지 떨어진 적이 있고, 규칙대로 해도 원금 손실이 날 수 있습니다. 이 가이드는 학습용 해설이며 투자 권유가 아닙니다. 무한매수법은 라오어님이 공개한 방법론이고, 이 페이지는 공식 문서가 아닌 독립적인 해설입니다.</p>
+      </div>
+
+      <nav class="mhg-toc" aria-label="가이드북 목차">
+        <a class="mhg-toc-c" href="#mhg-p1"><span class="mhg-toc-n">PART 1</span><b>레버리지 ETF 기초</b><small>상품부터 이해하기 · 7장</small></a>
+        <a class="mhg-toc-c" href="#mhg-p2"><span class="mhg-toc-n">PART 2</span><b>무한매수법 실전 가이드</b><small>규칙과 하루 루틴 · 9장</small></a>
+        <a class="mhg-toc-c" href="#mhg-p3"><span class="mhg-toc-n">PART 3</span><b>숫자로 보는 분석</b><small>규칙 뒤의 계산 · 5장</small></a>
+        <a class="mhg-toc-c" href="#mhg-dict"><span class="mhg-toc-n">부록</span><b>용어 사전</b><small>헷갈리는 말 한곳에</small></a>
+      </nav>
+      <div class="mhg-path"><b>추천 순서</b> <span>1-1 레버리지 구조</span><i>→</i><span>1-2 변동성 끌림</span><i>→</i><span>2-1 한눈에 보기</span><i>→</i><span>2-2 자금 설계</span><i>→</i><span>2-3 핵심 용어</span><i>→</i><span>2-4 하루 루틴</span><i>→</i><span>2-9 흔한 실수</span></div>
+
+      <!-- ═════ PART 1 ═════ -->
+      <h3 class="mhg-part" id="mhg-p1"><span>PART 1</span>레버리지 ETF 기초 — 상품부터 이해하기</h3>
+      <p class="mhg-part-lead">무한매수법은 TQQQ·SOXL 같은 3배 레버리지 ETF를 대상으로 합니다. 규칙을 외우기 전에, 이 상품이 일반 주식과 어떻게 다르게 움직이는지부터 알아야 같은 하락을 보고도 덜 흔들립니다.</p>
+
+      <details class="mhg-ch" id="mhg-1-1"><summary><span class="mhg-no">1-1</span><span class="mhg-t">3배 레버리지 ETF는 어떻게 움직이나<small>‘하루’ 수익률의 3배를 목표로 하는 상품</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
+        <p><b>TQQQ</b>(ProShares UltraPro QQQ)는 나스닥100 지수, <b>SOXL</b>(Direxion Daily Semiconductor Bull 3X)은 미국 반도체 지수의 <b>하루 수익률 3배</b>를 목표로 하는 ETF입니다. 운용사는 주식을 3배어치 사 두는 것이 아니라 스왑·선물 같은 파생상품으로 지수 노출을 순자산의 약 3배로 맞추고, <b>매일 장 마감 무렵 그 비율을 다시 맞춥니다(리밸런싱)</b>.</p>
+        <div class="mhg-key"><b>핵심</b> 3배는 ‘하루’ 기준입니다. 지수가 1년에 20% 올라도 3배 ETF가 60% 오르는 것이 아닙니다. 기간이 길어질수록 결과는 3배에서 멀어집니다.</div>
+        <div class="table-scroll"><table class="g-tbl"><thead><tr><th>지수 하루 변동</th><th>1배 (QQQ 등)</th><th>3배 (TQQQ 등)</th></tr></thead><tbody>
+          <tr><td>+2%</td><td>+2%</td><td>+6%</td></tr><tr><td>−2%</td><td>−2%</td><td>−6%</td></tr><tr><td>−10%</td><td>−10%</td><td>−30%</td></tr><tr><td>−33.4%</td><td>−33.4%</td><td>약 −100% (사실상 소멸)</td></tr></tbody></table></div>
+        <p>그래서 레버리지 ETF에는 일반 주식에 없는 비용과 위험이 붙습니다.</p>
+        <ul class="g-list"><li><b>운용보수</b>: 연 1% 안팎(운용사 홈페이지에서 최신값 확인). 가격에 매일 조금씩 반영됩니다.</li><li><b>파생상품 조달 비용</b>: 금리가 높을수록 레버리지를 유지하는 비용이 커집니다.</li><li><b>변동성 끌림</b>: 지수가 오르내리기만 해도 손실이 쌓입니다 (다음 장).</li></ul>
+        <p class="mhg-one">한 줄 요약 — 3배 ETF는 “3배 오르는 주식”이 아니라 “매일 3배로 다시 맞추는 상품”입니다.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-1-2"><summary><span class="mhg-no">1-2</span><span class="mhg-t">변동성 끌림 — 제자리여도 손실이 나는 이유<small>오르내림이 클수록 수익이 깎입니다</small></span><span class="mhg-min">4분</span></summary><div class="mhg-body">
+        <p>지수가 하루 +10%, 다음 날 −9.09% 움직이면 이틀 뒤 정확히 제자리(100 → 110 → 100)입니다. 같은 이틀 동안 3배 ETF는 100 → 130 → 94.5로 <b>5.5% 손실</b>입니다. 내려갈 때 줄어든 금액에서 다시 3배를 곱하기 때문입니다. 이것을 <b>변동성 끌림(volatility decay)</b>이라고 합니다.</p>
+        <p>아래는 지수가 1년(252거래일) 동안 매일 같은 폭으로 오르내리다 <b>정확히 제자리로 끝난</b> 경우의 계산입니다 (보수·비용 제외).</p>
+        <div class="mhg-bars" role="img" aria-label="하루 변동폭별 1년 뒤 3배 ETF 손실: ±1% −7.2%, ±2% −25.7%, ±3% −48.4%, ±5% −83.7%">
+          <div class="mhg-bar"><span>하루 ±1%</span><div><i style="width:7.2%"></i></div><b>−7.2%</b></div>
+          <div class="mhg-bar"><span>하루 ±2%</span><div><i style="width:25.7%"></i></div><b>−25.7%</b></div>
+          <div class="mhg-bar"><span>하루 ±3%</span><div><i style="width:48.4%"></i></div><b>−48.4%</b></div>
+          <div class="mhg-bar"><span>하루 ±5%</span><div><i style="width:83.7%"></i></div><b>−83.7%</b></div>
+        </div>
+        <p class="g-cap">지수는 1년 뒤 0% (제자리) · 3배 ETF의 1년 뒤 손익. 2배 ETF는 같은 조건에서 −2.5% · −9.4% · −19.8% · −45.2%.</p>
+        <p>반대로 한 방향으로 꾸준히 움직이면 3배보다 더 크게 벌거나 덜 잃습니다. 지수가 10일 연속 +1%면 지수 +10.5%, 3배 ETF +34.4%(3배인 31.5%보다 큼)이고, 10일 연속 −1%면 지수 −9.6%, 3배 ETF −26.3%(3배인 −28.7%보다 작음)입니다.</p>
+        <div class="mhg-key"><b>무한매수법과의 관계</b> 3배 ETF를 그냥 들고 있으면 횡보장에서 녹아내립니다. 무한매수법은 떨어질 때 나눠 사서 평단을 낮추고, 반등에서 목표 수익만 챙겨 빠져나와 이 끌림을 피하려는 매매 규칙입니다. 다만 긴 하락·횡보가 이어지면 무한매수법도 손실이 날 수 있습니다.</div>
+        <p class="mhg-one">한 줄 요약 — 3배 ETF는 방향이 분명할 때 유리하고, 오르내림만 반복하면 불리합니다.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-1-3"><summary><span class="mhg-no">1-3</span><span class="mhg-t">실제로는 얼마나 떨어졌나 — 2022년 기록<small>숫자로 보는 최악의 구간</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
+        <p>2022년 미국 기술주 하락장에서 1·2·3배 ETF의 실제 결과입니다 (종가 기준, 분배금 제외).</p>
+        <div class="table-scroll"><table class="g-tbl"><thead><tr><th>ETF</th><th>2022년 한 해</th><th>고점 대비 최대 하락</th><th>고점 회복까지</th></tr></thead><tbody>
+          <tr><td>QQQ (나스닥100 1배)</td><td>−34.2%</td><td>−35.6%</td><td>약 2년 (2021.11 → 2023.12)</td></tr>
+          <tr><td>QLD (나스닥100 2배)</td><td>−62.0%</td><td>−63.8%</td><td>약 2년 6개월 (→ 2024.5)</td></tr>
+          <tr><td><b>TQQQ</b> (나스닥100 3배)</td><td>−80.2%</td><td>−81.8%</td><td>약 3년 (→ 2024.12)</td></tr>
+          <tr><td>SOXX (반도체 1배)</td><td>−37.7%</td><td>−46.2%</td><td>약 2년 (2021.12 → 2023.12)</td></tr>
+          <tr><td><b>SOXL</b> (반도체 3배)</td><td>−87.0%</td><td>−90.5%</td><td>약 4년 3개월 (→ 2026.4)</td></tr></tbody></table></div>
+        <p class="g-cap">자료: 이 사이트의 ETF CAGR 비교 데이터(일별 종가) 계산 · 고점 회복은 직전 최고 종가를 다시 넘은 날 기준.</p>
+        <p>같은 기간 1배 ETF는 1년 남짓 떨어진 뒤 2년 만에 회복했지만, 3배 ETF는 −80~−90%까지 내려가 회복에 3~4년이 걸렸습니다. 무한매수법을 시작한다는 것은 <b>이런 구간이 다시 올 수 있다는 것을 받아들이고</b> 시작한다는 뜻입니다.</p>
+        <p class="mhg-one">한 줄 요약 — 3배 ETF의 −80%는 이론이 아니라 실제로 있었던 일입니다.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-1-4"><summary><span class="mhg-no">1-4</span><span class="mhg-t">손실 회복의 비대칭<small>−50%는 +100%가 있어야 원금</small></span><span class="mhg-min">2분</span></summary><div class="mhg-body">
+        <p>100만 원이 50% 떨어지면 50만 원이고, 이것이 다시 100만 원이 되려면 <b>100%</b> 올라야 합니다. 떨어진 폭이 클수록 필요한 상승률은 기하급수적으로 커집니다.</p>
+        <div class="mhg-bars mhg-bars-up" role="img" aria-label="손실별 원금 회복에 필요한 상승률">
+          <div class="mhg-bar"><span>−20%</span><div><i style="width:2.8%"></i></div><b>+25%</b></div>
+          <div class="mhg-bar"><span>−50%</span><div><i style="width:11.1%"></i></div><b>+100%</b></div>
+          <div class="mhg-bar"><span>−70%</span><div><i style="width:25.9%"></i></div><b>+233%</b></div>
+          <div class="mhg-bar"><span>−80%</span><div><i style="width:44.4%"></i></div><b>+400%</b></div>
+          <div class="mhg-bar"><span>−90%</span><div><i style="width:100%"></i></div><b>+900%</b></div>
+        </div>
+        <p class="g-cap">막대 길이 = 원금 회복에 필요한 상승률 (+900%를 100%로 놓은 비율)</p>
+        <p>3배 ETF가 −80%가 되면 +400%가 필요합니다. 그래서 무한매수법은 <b>한 번에 다 사지 않고</b>, 떨어질수록 나눠 사서 평균 단가를 함께 낮춥니다. 평단이 내려가면 회복에 필요한 상승폭도 줄어듭니다.</p>
+        <p class="mhg-one">한 줄 요약 — 큰 손실은 회복이 훨씬 어렵기 때문에, ‘나눠 사기’와 ‘원금 관리’가 수익률보다 먼저입니다.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-1-5"><summary><span class="mhg-no">1-5</span><span class="mhg-t">1배·2배·3배, 무엇이 다른가<small>같은 지수, 다른 결과</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
+        <p>장기 상승장에서는 배수가 높을수록 결과가 컸지만, 하락장에서는 배수가 높을수록 상처가 깊었습니다.</p>
+        <div class="table-scroll"><table class="g-tbl"><thead><tr><th>구간</th><th>QQQ (1배)</th><th>QLD (2배)</th><th>TQQQ (3배)</th></tr></thead><tbody>
+          <tr><td>2010.3 → 2026.10 연평균 (CAGR)</td><td>+18.1%</td><td>+32.0%</td><td>+41.0%</td></tr>
+          <tr><td>2021.11.19 고점 → 2023.12.15 (QQQ가 고점을 되찾은 날)</td><td>+0.3%</td><td>−19.6%</td><td>−44.4%</td></tr></tbody></table></div>
+        <p class="g-cap">종가 기준(분배금 제외) · 이 사이트 ETF CAGR 비교 데이터 계산. 반도체도 같은 모습: 같은 2년 동안 SOXX +2.1%, SOXL −58.6%.</p>
+        <p>두 번째 줄이 핵심입니다. <b>지수는 2년 만에 제자리로 돌아왔는데 3배 ETF는 −44%</b>였습니다. 변동성 끌림이 실제로 이만큼 작동합니다. 3배 ETF는 “오래 들고 있으면 결국 오른다”는 전략과 잘 맞지 않고, 무한매수법 같은 <b>규칙적인 분할 매수·익절</b>과 함께 써야 하는 이유가 여기에 있습니다.</p>
+        <p class="mhg-one">한 줄 요약 — 배수가 높을수록 기대 수익도, 하락 폭과 회복 기간도 커집니다.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-1-6"><summary><span class="mhg-no">1-6</span><span class="mhg-t">미국 주식 시간과 주문이 체결되는 순간<small>한국 시간 기준 정리</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
+        <div class="table-scroll"><table class="g-tbl"><thead><tr><th>구분 (한국 시간)</th><th>서머타임 (3월 둘째 일요일 ~ 11월 첫째 일요일)</th><th>그 외 기간</th></tr></thead><tbody>
+          <tr><td>프리마켓</td><td>17:00 ~ 22:30</td><td>18:00 ~ 23:30</td></tr>
+          <tr><td><b>정규장</b></td><td><b>22:30 ~ 다음 날 05:00</b></td><td><b>23:30 ~ 다음 날 06:00</b></td></tr>
+          <tr><td>애프터마켓</td><td>05:00 ~ 09:00</td><td>06:00 ~ 10:00</td></tr></tbody></table></div>
+        <p class="g-cap">2026년 서머타임은 3월 8일 시작, 11월 1일 끝. 미국 휴장일(추수감사절·크리스마스 등)에는 체결이 없습니다. 국내 증권사의 주간거래(낮 시간 거래)는 증권사마다 다릅니다.</p>
+        <p>무한매수법은 하루 한 번, <b>정규장 종가</b>를 기준으로 거래합니다. 그래서 주로 <b>LOC 주문</b>(종가가 정한 가격 이하면 종가로 매수, 이상이면 종가로 매도)을 씁니다. 정규장이 끝나는 순간 종가가 정해지고, 그때 조건에 맞는 LOC 주문만 체결됩니다.</p>
+        <div class="mhg-key"><b>주의</b> 증권사마다 LOC 주문 접수 마감이 장 마감 몇 분~십수 분 전입니다. 마감을 넘기면 그날 주문은 들어가지 않습니다. 저녁에 미리 넣어 두는 습관이 가장 안전합니다.</div>
+        <p class="mhg-one">한 줄 요약 — 주문은 저녁에, 체결 확인은 다음 날 아침에.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-1-7"><summary><span class="mhg-no">1-7</span><span class="mhg-t">환율·수수료·세금<small>달러로 벌어도 원화로는 다를 수 있습니다</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
+        <p><b>환율</b>: TQQQ를 달러로 사고팔면, 원화로 바꿨을 때 결과는 환율에 따라 달라집니다. 예를 들어 1,400원에 환전해 달러로 10% 벌었는데 그사이 환율이 1,260원으로 10% 내리면, 원화로는 거의 0%입니다(1.10 × 0.90 = 0.99). 반대로 환율이 오르면 원화 수익이 더 커집니다.</p>
+        <p><b>수수료</b>: 미국 주식 매매 수수료(보통 0.25% 안팎, 이벤트로 더 낮기도 함)와 환전 스프레드가 붙습니다. 무한매수법은 거래 횟수가 많아서 작은 수수료도 쌓입니다. 계좌 개설 전에 수수료·환전 우대를 꼭 비교하세요.</p>
+        <p><b>세금</b>: 해외 주식을 팔아 생긴 이익은 1월 1일 ~ 12월 31일 손익을 모두 합쳐 <b>연 250만 원을 공제한 나머지에 22%</b>(지방소득세 포함)의 양도소득세가 붙고, 다음 해 5월에 신고합니다. 같은 해에 난 손실은 이익에서 빠집니다.</p>
+        <p><a href="/stocktax/" class="mhg-link">해외주식 양도소득세 계산기로 내 세금 계산하기 →</a></p>
+        <p class="mhg-one">한 줄 요약 — 수익률은 ‘달러 수익률 × 환율 변화 − 수수료 − 세금’으로 봐야 합니다.</p>
+      </div></details>
+
+      <!-- ═════ PART 2 ═════ -->
+      <h3 class="mhg-part" id="mhg-p2"><span>PART 2</span>무한매수법 실전 가이드 — 규칙과 하루 루틴</h3>
+      <p class="mhg-part-lead">여기서는 무한매수법 4.0의 규칙을 이 기록 도구가 계산하는 방식 그대로 설명합니다. 공식은 외우지 않아도 됩니다. 기록만 하면 도구가 매일 주문표를 만들어 줍니다. 다만 ‘왜 그런 주문이 나오는지’를 알면 급락장에서도 규칙을 지키기 쉬워집니다.</p>
+
+      <details class="mhg-ch" id="mhg-2-1"><summary><span class="mhg-no">2-1</span><span class="mhg-t">무한매수법 한눈에 보기<small>한 회차가 시작해서 끝나기까지</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
+        <ol class="mhg-flow">
+          <li><b>설정</b> 종목(TQQQ·SOXL), 분할 수(20·30·40), 원금을 정합니다.</li>
+          <li><b>처음 매수</b> 첫날은 1회분을 전날 종가보다 12% 높은 가격에 LOC로 넣어 사실상 종가에 삽니다.</li>
+          <li><b>매일 분할 매수</b> 평단가·별지점 근처로 떨어지면 1회분(또는 절반)을 더 삽니다. 살 때마다 <b>T값</b>(산 횟수)이 올라갑니다.</li>
+          <li><b>나눠 팔기</b> 종가가 별지점 이상이면 보유량의 ¼을 팔고(쿼터매도), 평단보다 목표%(TQQQ 15%·SOXL 20%) 오르면 나머지를 지정가로 팝니다.</li>
+          <li><b>회차 종료</b> 보유량이 0이 되면 한 회차가 끝납니다. 번 돈을 합쳐 다음 회차를 시작합니다.</li>
+          <li><b>원금이 바닥나면</b> T값이 분할 수에 가까워지면 ‘소진모드’ → ‘리버스모드’로 들고 있는 주식을 조금씩 팔며 버팁니다.</li>
+        </ol>
+        <div class="mhg-key"><b>이 도구가 하는 일</b> 거래를 기록하면 T값·평단가·별지점·1회 매수금을 계산해 <b>오늘 넣을 주문표</b>(LOC 매수·쿼터매도·지정가 매도)를 만들어 줍니다. 로그인하면 기록이 계정에 저장되어 휴대폰·PC 어디서든 이어서 볼 수 있습니다.</div>
+        <p class="mhg-one">한 줄 요약 — 나눠서 사고, 목표만큼 오르면 나눠서 팔고, 다시 시작합니다.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-2-2"><summary><span class="mhg-no">2-2</span><span class="mhg-t">시작 전 자금 설계<small>규칙보다 원금 준비가 먼저</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
+        <ul class="g-list">
+          <li><b>잃어도 생활이 흔들리지 않는 돈</b>만 넣습니다. 1-3장의 −80% 구간을 다시 보고, 그만큼 줄어도 버틸 수 있는 금액인지 점검하세요.</li>
+          <li><b>1회 매수금 = 원금 ÷ 분할 수</b>입니다. $20,000을 40분할하면 1회 $500입니다. 1회 매수금이 1주 가격보다 충분히 커야 매일 살 수 있습니다(1주 가격의 최소 3~5배 권장).</li>
+          <li><b>종목마다 원금을 따로</b> 둡니다. TQQQ와 SOXL을 함께 하려면 이 도구에서 세션을 두 개 만들고 각각 원금을 정하세요.</li>
+          <li><b>달러는 미리</b> 환전해 둡니다. 매일 사는 구조라 달러가 모자라면 그날 주문이 빠집니다.</li>
+          <li><b>중간에 돈을 넣고 빼지 않는 것이 원칙</b>입니다. 꼭 넣어야 한다면 메뉴의 ‘원금’ 변경으로 기록해 1회 매수금이 다시 계산되게 하세요.</li>
+        </ul>
+        <div class="table-scroll"><table class="g-tbl"><thead><tr><th>원금</th><th>20분할 1회</th><th>30분할 1회</th><th>40분할 1회</th></tr></thead><tbody>
+          <tr><td>$10,000 (약 1,400만 원)</td><td>$500</td><td>$333</td><td>$250</td></tr>
+          <tr><td>$20,000 (약 2,800만 원)</td><td>$1,000</td><td>$667</td><td>$500</td></tr>
+          <tr><td>$40,000 (약 5,600만 원)</td><td>$2,000</td><td>$1,333</td><td>$1,000</td></tr></tbody></table></div>
+        <p class="g-cap">원화 환산은 1달러 1,400원 가정. 실제 1회 매수금은 ‘남은 현금 ÷ (분할 수 − T값)’이라 회차가 진행되며 조금씩 달라집니다.</p>
+        <p class="mhg-one">한 줄 요약 — 원금은 ‘최악에도 버틸 돈’, 1회 매수금은 ‘1주 값의 여러 배’가 되게.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-2-3"><summary><span class="mhg-no">2-3</span><span class="mhg-t">핵심 용어와 계산 — T값·별%·별지점<small>예시 하나로 끝내기</small></span><span class="mhg-min">5분</span></summary><div class="mhg-body">
+        <div class="mhg-defs">
+          <div><b>T값</b><span>지금까지 몇 회분을 샀는지. 1회분 매수 +1, 절반 매수 +0.5, 쿼터매도 ×0.75, 지정가 매도 ×0.25</span></div>
+          <div><b>1회 매수금</b><span>남은 현금 ÷ (분할 수 − T값)</span></div>
+          <div><b>별%</b><span>목표% − 목표% × 2 ÷ 분할 수 × T값. T값이 커질수록 낮아집니다 (TQQQ 목표 15%, SOXL 20%)</span></div>
+          <div><b>별지점</b><span>평단가 × (1 + 별%). 매수는 별지점보다 1센트 낮게, 쿼터매도는 별지점에 LOC로 넣습니다</span></div>
+          <div><b>전반전·후반전</b><span>T값이 분할 수의 절반보다 작으면 전반전, 크거나 같으면 후반전</span></div>
+        </div>
+        <p><b>예시</b> — TQQQ · 원금 $10,000 · 20분할 · 목표 15%. $50에 10주씩 5번 샀습니다.</p>
+        <div class="table-scroll"><table class="g-tbl"><thead><tr><th>항목</th><th>계산</th><th>값</th></tr></thead><tbody>
+          <tr><td>T값</td><td>1회분 매수 5번</td><td>5</td></tr>
+          <tr><td>평단가 · 보유</td><td>$2,500 ÷ 50주</td><td>$50.00 · 50주</td></tr>
+          <tr><td>남은 현금</td><td>$10,000 − $2,500</td><td>$7,500</td></tr>
+          <tr><td>1회 매수금</td><td>$7,500 ÷ (20 − 5)</td><td>$500</td></tr>
+          <tr><td>별%</td><td>15 − 15 × 2 ÷ 20 × 5</td><td>7.5%</td></tr>
+          <tr><td>별지점</td><td>$50 × 1.075</td><td>$53.75</td></tr>
+          <tr><td>목표 지정가</td><td>$50 × 1.15</td><td>$57.50</td></tr></tbody></table></div>
+        <p>이날 도구가 만드는 주문표(전날 종가 $51 가정):</p>
+        <div class="table-scroll"><table class="g-tbl mhg-orders"><thead><tr><th>주문</th><th>방식</th><th>가격 · 수량</th></tr></thead><tbody>
+          <tr><td>★ 별지점 매수 (1회분의 절반)</td><td>LOC 매수</td><td>$53.74 × 4주</td></tr>
+          <tr><td>평단가 매수 (나머지 절반)</td><td>LOC 매수</td><td>$50.00 × 6주</td></tr>
+          <tr><td>하방 매수 사다리 (8줄)</td><td>LOC 매수</td><td>$45.45 · $41.66 · … × 1주씩</td></tr>
+          <tr><td>★ 쿼터매도 (보유의 ¼)</td><td>LOC 매도</td><td>$53.75 × 12주</td></tr>
+          <tr><td>15% 지정가 매도 (나머지)</td><td>지정가 매도</td><td>$57.50 × 38주</td></tr></tbody></table></div>
+        <ul class="g-list">
+          <li>종가가 <b>$50 이하</b>면 두 매수가 모두 체결 → 1회분 매수(T +1).</li>
+          <li>종가가 <b>$50 초과 ~ $53.74 이하</b>면 별지점 매수만 체결 → 절반 매수(T +0.5).</li>
+          <li>종가가 <b>$53.75 이상</b>이면 매수 없이 쿼터매도 체결(T × 0.75). 장중에 <b>$57.50</b>에 닿으면 나머지도 지정가로 팔립니다.</li>
+          <li>하방 사다리는 급락했을 때 같은 돈으로 더 많은 주식을 사도록 낮은 가격에 1주씩 깔아 두는 주문입니다(가격 = 1회 매수금 ÷ (기준 수량 + 줄 번호)).</li>
+        </ul>
+        <p class="mhg-one">한 줄 요약 — 많이 살수록(T값↑) 별%가 내려가 더 싸게 사고 더 빨리 팝니다.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-2-4"><summary><span class="mhg-no">2-4</span><span class="mhg-t">하루 루틴 — 이 도구로 따라 하기<small>저녁 5분, 아침 2분</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
+        <ol class="mhg-flow">
+          <li><b>처음 한 번</b> 위 도구에서 종목·분할 수·원금을 고르고 시작합니다. 이미 진행 중이었다면 ‘중간 진입’을 골라 평단가·보유 수량·남은 현금·T값을 넣습니다.</li>
+          <li><b>저녁 (장 시작 전)</b> ‘현재’ 탭의 주문표를 보고 증권사 앱에 LOC·지정가 주문을 그대로 넣습니다. 다 넣었으면 <b>오늘 주문 다 넣었어요</b>를 눌러 표시해 둡니다(위쪽에 ‘주문 ✓’로 보임).</li>
+          <li><b>다음 날 아침 (장 마감 후)</b> 증권사에서 체결 내역을 확인하고 <b>＋ 오늘 기록하기</b>를 누릅니다. 도구가 종가를 보고 체결됐을 만한 유형을 추천하니, 실제 체결 가격·수량과 맞는지 확인하고 저장합니다.</li>
+          <li><b>체결이 없던 날</b>도 기록할 것은 없지만, 다음 날 주문표는 그대로 다시 넣습니다(LOC는 당일만 유효).</li>
+          <li><b>회차가 끝나면</b> 축하 화면에서 같은 원금 또는 수익을 합친 원금으로 다음 회차를 바로 시작할 수 있습니다. 지난 회차는 ‘분석’ 탭에 남습니다.</li>
+        </ol>
+        <div class="mhg-key"><b>기록은 정확히</b> 주문표와 다르게 체결됐다면(일부만 체결, 가격 차이) 실제 체결 값으로 기록하세요. T값과 평단이 실제와 어긋나면 다음 날 주문표도 틀어집니다. 잘못 기록했으면 기록 목록에서 고치거나 지울 수 있습니다.</div>
+        <p class="mhg-one">한 줄 요약 — 저녁에 주문표대로 넣고, 아침에 체결을 기록한다. 이것이 전부입니다.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-2-5"><summary><span class="mhg-no">2-5</span><span class="mhg-t">LOC · MOC · 지정가 주문 정리<small>어떤 주문이 언제 체결되나</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
+        <div class="table-scroll"><table class="g-tbl"><thead><tr><th>주문</th><th>체결 조건</th><th>무한매수법에서 쓰는 곳</th></tr></thead><tbody>
+          <tr><td><b>LOC 매수</b> (Limit On Close)</td><td>종가 ≤ 내가 정한 가격이면 <b>종가로</b> 체결</td><td>별지점·평단가 매수, 하방 사다리</td></tr>
+          <tr><td><b>LOC 매도</b></td><td>종가 ≥ 내가 정한 가격이면 종가로 체결</td><td>쿼터매도(별지점), 리버스 매도</td></tr>
+          <tr><td><b>MOC</b> (Market On Close)</td><td>가격과 관계없이 무조건 종가로 체결</td><td>리버스모드 첫날 매도</td></tr>
+          <tr><td><b>지정가</b></td><td>장중 그 가격에 닿으면 바로 체결 (증권사에 따라 프리·애프터장 포함)</td><td>목표% 지정가 매도</td></tr></tbody></table></div>
+        <p>예를 들어 LOC 매수 $53.74를 넣었는데 종가가 $52.10이면, $53.74가 아니라 <b>$52.10에</b> 체결됩니다. 종가가 $54.00이면 체결되지 않습니다. 그래서 LOC 매수 가격은 ‘이 가격까지는 사도 좋다’는 상한선입니다.</p>
+        <div class="mhg-key"><b>지정가가 애프터장에 체결됐다면</b> 같은 날 LOC 매수도 체결됐을 수 있습니다. 기록할 때 ‘지정가+매수’ 또는 ‘매수+지정가(AF)’ 유형을 고르면 T값이 순서에 맞게 계산됩니다.</div>
+        <p class="mhg-one">한 줄 요약 — LOC는 ‘종가가 조건에 맞으면 종가로’, 지정가는 ‘그 가격에 닿는 순간’.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-2-6"><summary><span class="mhg-no">2-6</span><span class="mhg-t">전반전과 후반전, 큰수 매수<small>매수 방식이 바뀌는 지점</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
+        <ul class="g-list">
+          <li><b>전반전</b>(T값 &lt; 분할 수의 절반): 1회 매수금을 반으로 나눠 절반은 <b>별지점 −1센트</b>, 절반은 <b>평단가</b>에 LOC로 넣습니다. 평단 근처까지 떨어진 날만 1회분을 다 사고, 조금 오른 날은 절반만 삽니다.</li>
+          <li><b>후반전</b>(T값 ≥ 분할 수의 절반): 별%가 0% 아래로 내려가 별지점이 평단보다 낮아집니다. 1회 매수금 전부를 <b>별지점 −1센트</b> 한 곳에 넣습니다. 남은 돈을 더 아껴 쓰는 단계입니다.</li>
+          <li><b>큰수</b>: 전날 종가 × 1.12(기본 12%)가 별지점보다 낮으면, 매수 가격을 이 ‘큰수’로 낮춰 넣습니다. 하루에 급등한 날 비싸게 사지 않게 막는 장치입니다. 메뉴에서 % 를 바꿀 수 있습니다.</li>
+        </ul>
+        <div class="table-scroll"><table class="g-tbl"><thead><tr><th>T값 (20분할 · TQQQ)</th><th>0</th><th>5</th><th>10</th><th>15</th><th>19</th></tr></thead><tbody>
+          <tr><td>별%</td><td>+15%</td><td>+7.5%</td><td>0%</td><td>−7.5%</td><td>−13.5%</td></tr>
+          <tr><td>단계</td><td>전반전</td><td>전반전</td><td>후반전</td><td>후반전</td><td>후반전 (곧 소진)</td></tr></tbody></table></div>
+        <p class="mhg-one">한 줄 요약 — 전반전은 넉넉히 사고, 후반전은 아껴 사며 평단 아래에서도 탈출 기회를 엽니다.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-2-7"><summary><span class="mhg-no">2-7</span><span class="mhg-t">쿼터매도와 회차 종료<small>나눠 파는 이유</small></span><span class="mhg-min">2분</span></summary><div class="mhg-body">
+        <p>매도는 두 갈래입니다. <b>쿼터매도</b>는 종가가 별지점 이상이면 보유량의 ¼을 LOC로 팔아 현금을 조금 회수합니다(T값 × 0.75). <b>지정가 매도</b>는 평단 대비 목표%(TQQQ 15%·SOXL 20%) 가격에 나머지 ¾을 걸어 두는 주문으로, 체결되면 보통 그 회차가 끝납니다(T값 × 0.25 → 보유 0).</p>
+        <p>후반전에는 별지점이 평단보다 낮아서, 쿼터매도가 <b>손실을 보며</b> 체결되기도 합니다. 이것은 실수가 아니라 원금이 바닥나기 전에 현금을 되살려 다음 매수 여력을 만드는 규칙입니다.</p>
+        <div class="mhg-key"><b>회차가 끝나면</b> 이 도구가 축하 화면과 함께 실현 손익을 보여 주고, 지난 회차를 ‘분석’ 탭에 보관합니다. 다음 회차는 같은 원금 또는 손익을 반영한 원금으로 시작할 수 있습니다.</div>
+        <p class="mhg-one">한 줄 요약 — ¼은 자주 팔아 숨통을 틔우고, ¾은 목표가에서 한 번에 익절합니다.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-2-8"><summary><span class="mhg-no">2-8</span><span class="mhg-t">원금이 바닥나면 — 소진모드와 리버스모드<small>긴 하락장에서 버티는 규칙</small></span><span class="mhg-min">4분</span></summary><div class="mhg-body">
+        <p>계속 떨어져 T값이 <b>분할 수 − 1</b>을 넘으면 1회분도 안 되는 돈만 남습니다. 이 도구는 이것을 <b>소진모드</b>로 알려 주고, <b>리버스모드</b>로 바꾸기를 권합니다.</p>
+        <ol class="mhg-flow">
+          <li><b>첫날</b> 보유량 ÷ (분할 수 ÷ 2)만큼 <b>MOC로</b> 팝니다. 예: 20분할에 400주라면 40주.</li>
+          <li><b>다음 날부터</b> 최근 5거래일 종가 평균을 ‘리버스 별지점’으로 삼아, 종가가 그 이상이면 같은 양을 LOC로 팔고(리버스 매도), 그 아래면 남은 현금의 ¼로 LOC 쿼터매수를 합니다.</li>
+          <li><b>T값</b>: 리버스 매도는 T × 0.9(20분할) · × 0.95(40분할) · 그 밖은 × (1 − 2 ÷ 분할 수), 쿼터매수는 T + (분할 수 − T) × 0.25.</li>
+          <li><b>복귀</b> 종가가 평단가 × (1 − 목표%) 이상으로 회복하면 일반모드로 돌아갑니다. 도구가 복귀 가격을 알려 줍니다.</li>
+        </ol>
+        <div class="mhg-key"><b>리버스모드의 뜻</b> 들고 있는 주식 일부를 반등 때마다 팔아 현금을 만들고, 그 현금으로 더 싼 가격에 다시 사서 평단을 끌어내리는 단계입니다. 회복이 길어질수록 손실이 확정될 수 있으니, 이 단계까지 오지 않도록 분할 수와 원금을 처음부터 넉넉히 잡는 것이 가장 좋은 대비입니다.</div>
+        <p class="mhg-one">한 줄 요약 — 돈이 떨어지면 팔면서 사는 방식으로 바꿔 평단을 낮추며 버팁니다.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-2-9"><summary><span class="mhg-no">2-9</span><span class="mhg-t">초보가 흔히 하는 실수 10가지<small>첫 주문 전 마지막 점검</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
+        <ol class="mhg-mistakes">
+          <li><b>LOC 접수 마감을 놓침</b> — 증권사 마감 시각을 확인하고 저녁에 미리 넣으세요.</li>
+          <li><b>서머타임 착각</b> — 11월 첫째 일요일부터 3월 둘째 일요일까지는 정규장이 1시간 늦습니다.</li>
+          <li><b>기록을 미룸</b> — 며칠 밀리면 T값·평단이 틀어져 주문표가 엉뚱해집니다. 매일 아침 기록하세요.</li>
+          <li><b>주문표와 다른 체결을 그대로 기록</b> — 일부 체결이면 실제 수량으로 기록합니다.</li>
+          <li><b>LOC를 일반 지정가로 넣음</b> — 장중에 체결돼 종가 기준 규칙이 깨집니다. 주문 유형을 꼭 LOC로.</li>
+          <li><b>급락에 놀라 규칙을 멈춤</b> — 가장 싼 구간에서 사지 못하면 평단이 내려가지 않습니다. 감당 못 할 원금이었다면 처음부터 줄였어야 합니다.</li>
+          <li><b>급등에 욕심내 지정가를 취소</b> — 목표 익절을 놓치면 다시 끌림 구간에 갇힙니다.</li>
+          <li><b>여러 종목을 한 원금으로 섞음</b> — 종목마다 세션과 원금을 따로 두세요.</li>
+          <li><b>달러 부족</b> — 매수일에 달러가 모자라면 그날 주문이 통째로 빠집니다.</li>
+          <li><b>세금·환율을 잊음</b> — 연 250만 원 넘는 이익은 22% 세금, 원화 수익은 환율에 따라 달라집니다.</li>
+        </ol>
+        <p class="mhg-one">한 줄 요약 — 무한매수법의 실패는 대부분 계산이 아니라 ‘주문 실수’와 ‘규칙 이탈’에서 옵니다.</p>
+      </div></details>
+
+      <!-- ═════ PART 3 ═════ -->
+      <h3 class="mhg-part" id="mhg-p3"><span>PART 3</span>숫자로 보는 분석 — 규칙 뒤의 계산</h3>
+      <p class="mhg-part-lead">규칙의 숫자가 실제로 무엇을 바꾸는지 직접 계산해 봤습니다. 아래 가상 시나리오는 이 도구와 같은 계산 엔진으로 TQQQ · 원금 $20,000 · 처음 가격 $100에서 돌린 결과이며, 장중 고가·일부 체결·수수료·세금은 빼고 종가만으로 체결을 판단한 단순화 모델입니다.</p>
+
+      <details class="mhg-ch" id="mhg-3-1"><summary><span class="mhg-no">3-1</span><span class="mhg-t">20분할과 40분할은 무엇을 바꾸나<small>분할 수는 ‘평단’이 아니라 ‘버티는 시간’을 바꿉니다</small></span><span class="mhg-min">5분</span></summary><div class="mhg-body">
+        <div class="table-scroll"><table class="g-tbl mhg-sim"><thead><tr><th>시나리오 (60거래일)</th><th>20분할</th><th>30분할</th><th>40분할</th></tr></thead><tbody>
+          <tr><td>꾸준한 하락 (매일 −1.5%)</td><td>20일째 소진 · 평단 $84.7</td><td>30일째 소진 · 평단 $77.9</td><td>40일째 소진 · 평단 $71.4</td></tr>
+          <tr><td>V자 (25일간 −35% 후 25일간 회복)</td><td><b>20일째 소진</b> (바닥 전에 돈이 떨어짐)</td><td>43일째 익절로 회차 종료</td><td>43일째 익절로 회차 종료</td></tr>
+          <tr><td>하락 후 횡보 (20일간 −30% 후 ±2%)</td><td>20일째 소진</td><td>60일 후 T 15 · 원금의 53% 사용</td><td>60일 후 T 19.7 · 원금의 51% 사용</td></tr>
+          <tr><td>횡보 (+3% / −3% 반복)</td><td>T 10 · 원금 47% 사용 · +2.0%</td><td>T 13.1 · 42% 사용 · +0.8%</td><td>T 19.4 · 45% 사용 · 0.0%</td></tr>
+          <tr><td>완만한 상승 (매일 +0.5%)</td><td>원금 17% 투입 · <b>+7.1%</b></td><td>9% 투입 · +5.4%</td><td>5% 투입 · +4.9%</td></tr></tbody></table></div>
+        <p class="g-cap">손익(%)은 원금 전체 대비 평가 손익. 소진 이후의 리버스모드는 계산에 넣지 않았습니다. 가상 가격 흐름이며 미래 수익을 뜻하지 않습니다.</p>
+        <ul class="g-list">
+          <li><b>20분할</b>은 1회 매수금이 커서 상승장에서 더 많이 벌지만, 한 달(약 20거래일) 넘게 이어지는 하락에서는 바닥 전에 돈이 떨어질 수 있습니다.</li>
+          <li><b>40분할</b>은 매수 속도가 절반이라 같은 하락을 두 배 오래 버티지만, 오를 때 들어간 돈이 적어 수익도 작습니다.</li>
+          <li>V자 반등처럼 <b>바닥까지의 기간</b>이 승부를 가르는 장에서는 분할 수가 결과를 정반대로 바꿉니다.</li>
+        </ul>
+        <p class="mhg-one">한 줄 요약 — 분할 수는 “얼마나 오래 버틸지”와 “오를 때 얼마나 벌지” 사이의 선택입니다.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-3-2"><summary><span class="mhg-no">3-2</span><span class="mhg-t">별%가 T값에 따라 내려가는 이유<small>규칙이 스스로 브레이크를 거는 구조</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
+        <p>별% = 목표% × (1 − 2T ÷ 분할 수). 분할 수와 상관없이 <b>T값이 분할 수의 절반일 때 0%</b>, 거의 다 썼을 때 −목표%에 가까워집니다.</p>
+        <div class="table-scroll"><table class="g-tbl"><thead><tr><th>진행 (T ÷ 분할 수)</th><th>0%</th><th>25%</th><th>50%</th><th>75%</th><th>거의 소진</th></tr></thead><tbody>
+          <tr><td>TQQQ 별% (목표 15%)</td><td>+15%</td><td>+7.5%</td><td>0%</td><td>−7.5%</td><td>약 −14%</td></tr>
+          <tr><td>SOXL 별% (목표 20%)</td><td>+20%</td><td>+10%</td><td>0%</td><td>−10%</td><td>약 −19%</td></tr></tbody></table></div>
+        <ul class="g-list">
+          <li><b>초반</b>: 별지점이 평단보다 한참 위라, 조금만 올라도 사지 않고 쉽게 쿼터매도도 일어나지 않습니다. 아직 여유가 많으니 큰 반등을 기다립니다.</li>
+          <li><b>중반 이후</b>: 많이 산 상태(위험이 커진 상태)일수록 기준을 낮춰, 평단 근처나 그 아래에서도 일부를 팔아 현금을 되살립니다.</li>
+        </ul>
+        <p class="mhg-one">한 줄 요약 — 많이 살수록 욕심을 줄여 빨리 빠져나오도록 설계돼 있습니다.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-3-3"><summary><span class="mhg-no">3-3</span><span class="mhg-t">분할 매수는 평단을 어떻게 움직이나<small>같은 돈으로 더 많이 사는 효과</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
+        <p>매번 <b>같은 금액</b>으로 사면, 가격이 낮은 날에는 더 많은 주식을 삽니다. 그래서 평단가는 그동안 가격들의 단순 평균보다 낮아집니다.</p>
+        <div class="table-scroll"><table class="g-tbl"><thead><tr><th>날</th><th>가격</th><th>$500으로 산 수량</th><th>누적 평단</th></tr></thead><tbody>
+          <tr><td>1일</td><td>$100</td><td>5주</td><td>$100.00</td></tr>
+          <tr><td>2일</td><td>$80</td><td>6.25주</td><td>$88.89</td></tr>
+          <tr><td>3일</td><td>$60</td><td>8.33주</td><td>$76.60</td></tr>
+          <tr><td>4일</td><td>$80</td><td>6.25주</td><td>$77.42</td></tr></tbody></table></div>
+        <p class="g-cap">가격 단순 평균은 $80이지만 평단은 $77.42 (소수 주 계산). 실제로는 1주 단위라 조금 다릅니다.</p>
+        <p>4일째 가격 $80은 평단 $77.42보다 3.3% 높습니다. 처음 산 $100에서 20% 떨어진 가격인데도 이미 이익 구간입니다. 무한매수법이 −80% 하락장에서도 반등 때 회차를 끝낼 수 있는 원리가 이것입니다. 다만 <b>돈이 다 떨어지기 전에 반등이 와야</b> 합니다(3-1장).</p>
+        <p class="mhg-one">한 줄 요약 — 떨어질수록 많이 사서, 처음 가격까지 회복하지 않아도 이익을 낼 수 있습니다.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-3-4"><summary><span class="mhg-no">3-4</span><span class="mhg-t">TQQQ와 SOXL은 왜 목표가 다른가<small>변동성이 다른 두 종목</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
+        <div class="table-scroll"><table class="g-tbl"><thead><tr><th>항목</th><th>TQQQ</th><th>SOXL</th></tr></thead><tbody>
+          <tr><td>기초 지수</td><td>나스닥100 (대형 기술주 100개)</td><td>미국 반도체 지수 (반도체 30개)</td></tr>
+          <tr><td>2022년 한 해</td><td>−80.2%</td><td>−87.0%</td></tr>
+          <tr><td>고점 대비 최대 하락</td><td>−81.8%</td><td>−90.5%</td></tr>
+          <tr><td>고점 회복까지</td><td>약 3년</td><td>약 4년 3개월</td></tr>
+          <tr><td>2010 ~ 2026 연평균</td><td>+41.0%</td><td>+38.1%</td></tr>
+          <tr><td>목표% (기본값)</td><td>15%</td><td>20%</td></tr></tbody></table></div>
+        <p class="g-cap">이 사이트 ETF CAGR 비교 데이터(종가, 분배금 제외) 계산 · SOXL 연평균은 2010년 3월 상장 이후.</p>
+        <p>SOXL은 종목 수가 적은 업종 지수라 하루 변동이 TQQQ보다 큽니다. 크게 흔들리는 만큼 반등도 크기 때문에 목표를 20%로 높게 잡고, 그만큼 더 깊은 하락을 견딜 각오가 필요합니다. 처음이라면 <b>TQQQ부터</b> 시작하는 사람이 많습니다.</p>
+        <p class="mhg-one">한 줄 요약 — SOXL은 더 크게 오르내리는 대신 목표도 더 높습니다.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-3-5"><summary><span class="mhg-no">3-5</span><span class="mhg-t">백테스트를 어디까지 믿어야 하나<small>과거 수익률을 읽는 법</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
+        <ul class="g-list">
+          <li><b>구간 편향</b> — 2010년 이후 미국 기술주는 역사적으로 드문 강세장이었습니다. 이 구간만 보면 3배 ETF는 무엇을 해도 좋아 보입니다.</li>
+          <li><b>체결 가정</b> — 백테스트는 종가에 원하는 수량이 다 체결됐다고 가정합니다. 실제로는 주문 마감, 일부 체결, 휴장일, 내 실수가 있습니다.</li>
+          <li><b>비용 누락</b> — 수수료·환전 스프레드·세금(22%)을 빼면 연 수익률이 몇 %p 줄어듭니다.</li>
+          <li><b>과최적화</b> — 과거에 가장 잘 맞는 분할 수·목표%를 고르면, 그 숫자는 과거에만 잘 맞을 가능성이 큽니다.</li>
+          <li><b>사람의 한계</b> — −80% 구간에서도 매일 규칙대로 주문하는 것은 계산보다 훨씬 어렵습니다.</li>
+        </ul>
+        <p class="mhg-one">한 줄 요약 — 백테스트는 ‘가능성’을 보여 줄 뿐, 내가 얻을 수익을 약속하지 않습니다.</p>
+      </div></details>
+
+      <!-- ═════ 용어 사전 ═════ -->
+      <h3 class="mhg-part" id="mhg-dict"><span>부록</span>용어 사전</h3>
+      <details class="mhg-ch" id="mhg-4-1"><summary><span class="mhg-no">A</span><span class="mhg-t">무한매수법·레버리지 ETF 용어 30개<small>가나다 순 · 모르는 말이 나오면 여기서</small></span><span class="mhg-min">사전</span></summary><div class="mhg-body">
+        <dl class="mhg-dl">
+          <dt>1회 매수금</dt><dd>하루에 살 최대 금액. 남은 현금 ÷ (분할 수 − T값).</dd>
+          <dt>LOC (Limit On Close)</dt><dd>종가가 정한 가격 이하(매수)·이상(매도)이면 종가로 체결되는 주문.</dd>
+          <dt>MOC (Market On Close)</dt><dd>가격 조건 없이 종가로 체결되는 주문. 리버스모드 첫날 매도에 씁니다.</dd>
+          <dt>T값</dt><dd>지금까지 산 회분 수. 매수로 늘고 매도로 줄며, 별%·1회 매수금을 정합니다.</dd>
+          <dt>V4.0</dt><dd>무한매수법 4번째 개정판. 별%·쿼터매도·리버스모드가 들어간 현재 버전.</dd>
+          <dt>공정가 · 순자산가치(NAV)</dt><dd>ETF가 보유한 자산의 1주당 가치. 시장 가격은 보통 이 값 근처에서 움직입니다.</dd>
+          <dt>기초 지수</dt><dd>ETF가 따라가는 지수. TQQQ는 나스닥100, SOXL은 미국 반도체 지수.</dd>
+          <dt>리밸런싱</dt><dd>레버리지 ETF가 매일 장 마감 무렵 노출을 다시 3배로 맞추는 일.</dd>
+          <dt>리버스 별지점</dt><dd>리버스모드의 기준 가격. 최근 5거래일 종가 평균.</dd>
+          <dt>리버스모드</dt><dd>원금이 바닥난 뒤 보유 주식을 조금씩 팔고 싸게 다시 사며 평단을 낮추는 단계.</dd>
+          <dt>목표%</dt><dd>평단 대비 익절 목표. 기본 TQQQ 15%, SOXL 20%.</dd>
+          <dt>변동성 끌림</dt><dd>오르내림이 반복될 때 레버리지 ETF에 손실이 쌓이는 현상.</dd>
+          <dt>별%</dt><dd>목표% × (1 − 2T ÷ 분할 수). T값이 커질수록 낮아지는 매수·매도 기준 %.</dd>
+          <dt>별지점</dt><dd>평단가 × (1 + 별%). 매수는 1센트 아래, 쿼터매도는 이 가격에 LOC.</dd>
+          <dt>분할 수</dt><dd>원금을 나누는 횟수. 20·30·40분할이 문서 범위.</dd>
+          <dt>서머타임</dt><dd>미국 일광 절약 시간. 3월 둘째 일요일 ~ 11월 첫째 일요일, 정규장이 한국 시간 22:30에 열립니다.</dd>
+          <dt>세션</dt><dd>이 도구에서 종목·원금 하나를 묶은 기록 단위. 종목마다 따로 만듭니다.</dd>
+          <dt>소진모드</dt><dd>T값이 분할 수 − 1을 넘어 1회분도 남지 않은 상태.</dd>
+          <dt>전반전 · 후반전</dt><dd>T값이 분할 수의 절반 미만이면 전반전(평단·별지점 반반 매수), 이상이면 후반전(별지점 집중).</dd>
+          <dt>절반 매수</dt><dd>1회분 중 별지점 몫만 체결된 날. T값 +0.5.</dd>
+          <dt>정규장</dt><dd>미국 주식의 본 거래 시간. 한국 시간 22:30~05:00(서머타임) 또는 23:30~06:00.</dd>
+          <dt>종가</dt><dd>정규장이 끝날 때의 가격. 무한매수법의 모든 기준.</dd>
+          <dt>지정가 매도</dt><dd>평단 × (1 + 목표%)에 걸어 두는 익절 주문. 체결되면 보통 회차 종료.</dd>
+          <dt>처음매수</dt><dd>회차 첫날, 전날 종가 × 1.12에 넣는 1회분 LOC 매수.</dd>
+          <dt>쿼터매도</dt><dd>종가가 별지점 이상일 때 보유량의 ¼을 파는 LOC 매도. T값 × 0.75.</dd>
+          <dt>쿼터매수</dt><dd>리버스모드에서 남은 현금의 ¼로 사는 LOC 매수.</dd>
+          <dt>큰수</dt><dd>전날 종가 × 1.12. 별지점보다 낮으면 이 가격으로 매수해 급등일 고가 매수를 막습니다.</dd>
+          <dt>평단가</dt><dd>지금 보유한 주식의 평균 매수 가격.</dd>
+          <dt>하방 사다리</dt><dd>급락에 대비해 낮은 가격에 1주씩 깔아 두는 LOC 매수(기본 8줄).</dd>
+          <dt>회차 (사이클)</dt><dd>처음매수부터 보유량이 0이 될 때까지의 한 바퀴.</dd>
+        </dl>
+      </div></details>
+      <p class="mhg-foot">이 가이드북은 이 사이트의 무한매수법 기록 도구가 쓰는 계산 규칙(V4.0)을 기준으로 쓴 비공식 해설입니다. 숫자 예시는 이 사이트의 시세 데이터와 계산 엔진으로 직접 계산했습니다. 투자 판단과 그 결과의 책임은 이용자에게 있습니다.</p>
+    </section>
+    <!-- [/GUIDEBOOK:muhan] -->
     <!-- [GUIDE:muhan] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
     <section class="guide" aria-labelledby="g-muhan-h">
       <h2 id="g-muhan-h">무한매수법 4.0 주문표는 이렇게 계산합니다</h2>
@@ -21394,6 +21818,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
         .map(function (f) { return '<div><label class="mh-lbl">' + f[1] + '</label><input class="mh-in" type="number" step="' + f[2] + '" placeholder="' + f[3] + '" value="' + esc(u[f[0]]) + '" data-in="su:' + f[0] + '"></div>'; }).join('') + '</div>' :
       '<div><label class="mh-lbl">원금 (' + sym + ')</label><input class="mh-in" type="number" placeholder="' + (u.currency === 'KRW' ? '30000000' : '20000') + '" value="' + esc(u.cap) + '" data-in="su:cap"></div>';
     return '<div style="text-align:center;padding:18px 0 14px"><h1 style="margin:0;font-size:22px;font-weight:800">무한매수법</h1><p class="mh-ac" style="margin:2px 0 10px;font-weight:700">V4.0</p>' +
+      '<button class="mh-btn" style="font-size:12px;margin-right:6px" data-act="guide">📘 처음이라면 가이드북부터</button>' +
       (window.dcAuth && !SY.uid && SY.can ? '<button class="mh-btn mh-btn-p" style="font-size:12px;margin-right:6px" data-act="sync-login">로그인하고 내 기록 불러오기</button>' : '') +
       (window.dcAuth && SY.uid ? '<div style="margin-top:8px;display:flex;justify-content:center;align-items:center;gap:6px"><span class="mh-tiny mh-faint">로그인 상태 — 계정에 자동 저장</span>' + syncChip() + '</div>' :
        window.dcAuth && SY.can ? '<p class="mh-tiny mh-faint" style="margin:8px 0 0">로그인하면 기록이 계정에 자동 저장되어 어느 기기에서든 이어서 쓸 수 있어요</p>' : '') + '</div>' +
@@ -21434,6 +21859,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
     var s = D.s, cur = D.cur, nArch = store.sessions.length - live().length;
     var sb = function (n) { return '<button class="mh-btn' + (s.splits === n ? ' mh-btn-sel' : '') + '" style="padding:6px 4px;font-size:12px" data-act="m-splits" data-v="' + n + '">' + n + '</button>'; };
     return '<div class="mh-overlay" data-act="menu-close"></div><div class="mh-menu" data-noswipe>' +
+      '<div class="mh-msec"><button class="mh-mbtn mh-ac" data-act="guide">📘 무한매수법 가이드북</button></div>' +
       '<div class="mh-msec"><div class="mh-row"><span style="font-size:13px">글자 크기</span><span class="mh-small mh-ac mh-mono">' + Math.round(MH.fontScale * 100) + '%</span></div>' +
       '<input class="mh-slider" type="range" min="1" max="1.3" step="0.05" value="' + MH.fontScale + '" data-in="font"><div class="mh-row mh-tiny mh-faint"><span>보통</span><span>최대</span></div></div>' +
       toggleRow('주문 체크리스트', MH.todo, 'tg-todo', '주문표에서 넣은 주문 체크 · 다음날 자동 초기화') +
@@ -21468,7 +21894,8 @@ if (typeof module !== 'undefined') module.exports = MHE;
       '<button class="mh-ico" style="font-size:20px" data-act="menu" aria-label="설정 메뉴">⋮</button>' + (MH.menu ? viewMenu(D) : '') + '</div></div></div>' +
       '<div class="mh-tabs"><button class="mh-tab' + (MH.view !== 'an' ? ' on' : '') + '" data-act="view" data-v="now">현재</button>' +
       '<button class="mh-tab' + (MH.view === 'an' ? ' on' : '') + '" data-act="view" data-v="an">분석' + (D.ses.archivedCycles.length > 0 ? ' (' + D.ses.archivedCycles.length + ')' : '') + '</button>' +
-      (MH.view === 'an' ? '<button class="mh-btn" style="margin-left:auto;padding:5px 10px;font-size:12px" data-act="export">⤓ 내보내기</button>' : '') + '</div>';
+      '<button class="mh-btn" style="margin-left:auto;padding:5px 10px;font-size:12px" data-act="guide" title="무한매수법 가이드북">📘' + (MH.view === 'an' ? '' : ' 가이드북') + '</button>' +
+      (MH.view === 'an' ? '<button class="mh-btn" style="padding:5px 10px;font-size:12px" data-act="export">⤓ 내보내기</button>' : '') + '</div>';
   }
   /* ── 현재 탭 ── */
   function safe(fn, D) { try { return fn(D); } catch (e) { if (window.console) console.error('[MUHAN] ' + (fn.name || 'card'), e);
@@ -22261,6 +22688,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
       case 'ed-save': saveEdit(); break;
       case 'tx-del': if (confirm('이 기록을 삭제할까요?')) mut(function () { ses.transactions = ses.transactions.filter(function (t) { return t.id !== v; }); }); break;
       case 'realized-detail': MH.sheet = { kind: 'realized', cycleId: v || null }; render(); break;
+      case 'guide': MH.menu = false; render(); if (window.mhGuide) window.mhGuide(); break;
       /* 계정 동기화 */
       case 'sync-login': if (window.dcAuth) window.dcAuth.ready().then(function (ok) { if (ok) window.dcAuth.open(); else if (window.dcAuth.toast) window.dcAuth.toast('로그인을 준비하고 있습니다. 잠시 뒤 다시 눌러 주세요'); }); break;
       case 'sync-info': MH.menu = false; MH.sheet = { kind: 'sync-info' }; render(); break;
@@ -22329,6 +22757,42 @@ if (typeof module !== 'undefined') module.exports = MHE;
   /* 탭 진입 시 호출 ([NAV] switchSubTab 의 훅) */
   window.muhanInit = function () { bind(); MH.now = new Date(); if (!SY.inited) { SY.inited = true; SY.uid = authUid(); if (SY.uid) SY.st = 'pull'; if (window.dcAuth && window.dcAuth.ready) window.dcAuth.ready().then(function (ok) { if (SY.can !== ok) { SY.can = ok; render(); } }).catch(function () {}); } render(); if (SY.uid && SY.st === 'pull') pull(); };
   window.MHdebug = { get store() { return store; }, derive: derive, render: render };
+})();
+
+/* [GUIDEBOOK:muhan] 가이드북 — 읽은 장 표시(이 기기) · 목차/주소(#mhg-…) 이동 · 무한매수법 화면의 📘 버튼에서 열기 */
+(function () {
+  var KEY = 'muhan-guide-read';
+  function root() { return document.getElementById('mhg'); }
+  function readSet() { try { return JSON.parse(localStorage.getItem(KEY) || '[]') || []; } catch (e) { return []; } }
+  function paint() {
+    var g = root(); if (!g) return;
+    var set = readSet(), chs = g.querySelectorAll('.mhg-ch'), n = 0;
+    chs.forEach(function (d) { var on = set.indexOf(d.id) >= 0; d.classList.toggle('read', on); if (on) n++; });
+    var f = document.getElementById('mhg-prog-fill'), t = document.getElementById('mhg-prog-txt');
+    if (f) f.style.width = (chs.length ? n / chs.length * 100 : 0).toFixed(1) + '%';
+    if (t) t.textContent = chs.length + '개 장 중 ' + n + '개 읽음';
+  }
+  function go(id, open) {
+    var el = document.getElementById(id); if (!el) return;
+    if (open && el.tagName === 'DETAILS') el.open = true;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    try { history.replaceState(history.state, '', location.pathname + location.search + '#' + id); } catch (e) {}
+  }
+  function bind() {
+    var g = root(); if (!g || g._mhg) return; g._mhg = true;
+    g.addEventListener('toggle', function (e) {
+      var d = e.target; if (!d.classList || !d.classList.contains('mhg-ch') || !d.open) return;
+      var set = readSet(); if (set.indexOf(d.id) < 0) { set.push(d.id); try { localStorage.setItem(KEY, JSON.stringify(set)); } catch (er) {} } paint();
+    }, true);
+    g.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="#mhg"]'); if (!a) return;
+      e.preventDefault(); e.stopPropagation(); go(a.getAttribute('href').slice(1), true);
+    });
+    paint();
+    var h = location.hash.slice(1); if (/^mhg/.test(h)) setTimeout(function () { go(h, true); }, 300);
+  }
+  window.mhGuide = function (id) { bind(); go(id || 'mhg', !!id); };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind); else bind();
 })();
 
 
