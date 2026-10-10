@@ -250,7 +250,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>(function(){try{var m=localStorage.getItem("site-theme")||"dark";var l=m==="light"||(m==="auto"&&window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches);document.documentElement.setAttribute("data-theme",l?"light":"dark");}catch(e){}})();</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<link rel="stylesheet" href="assets/app.b415306079.css">
+<link rel="stylesheet" href="assets/app.a95ff21b3f.css">
 </head>
 <body>
 <div class="wrap">
@@ -502,7 +502,7 @@
         <p class="mhg-kicker">GUIDEBOOK · 처음이라면 여기부터</p>
         <h2 id="mhg-h">무한매수법 가이드북</h2>
         <p class="mhg-lead">3배 레버리지 ETF가 어떻게 움직이는지부터 무한매수법 4.0의 규칙, 하루 주문 루틴, 숫자로 보는 분석까지 순서대로 정리했습니다. 처음 듣는 분도 위에서부터 차례로 읽으면 이 기록 도구를 바로 쓸 수 있습니다.</p>
-        <div class="mhg-prog" aria-live="polite"><div class="mhg-prog-bar"><i id="mhg-prog-fill"></i></div><span id="mhg-prog-txt">22개 장 중 0개 읽음</span></div>
+        <div class="mhg-prog" aria-live="polite"><div class="mhg-prog-bar"><i id="mhg-prog-fill"></i></div><span id="mhg-prog-txt">23개 장 중 0개 읽음</span></div>
         <p class="mhg-origin"><span class="mhg-origin-k">창시자</span><span><b>라오어</b> — 무한매수법을 만들고 규칙을 개정해 온 분입니다. 공식 규칙은 라오어님이 운영하는 <a href="https://cafe.naver.com/infinitebuying" target="_blank" rel="noopener">네이버 카페 ↗</a>와 책 『라오어의 미국주식 무한매수법』(알키, 2021)에서 공개됩니다.</span></p>
       </div>
 
@@ -520,7 +520,7 @@
       <nav class="mhg-toc" aria-label="가이드북 목차">
         <a class="mhg-toc-c" href="#mhg-p1"><span class="mhg-toc-n">PART 1</span><b>레버리지 ETF 기초</b><small>상품부터 이해하기 · 7장</small></a>
         <a class="mhg-toc-c" href="#mhg-p2"><span class="mhg-toc-n">PART 2</span><b>무한매수법 실전 가이드</b><small>규칙과 하루 루틴 · 9장</small></a>
-        <a class="mhg-toc-c" href="#mhg-p3"><span class="mhg-toc-n">PART 3</span><b>숫자로 보는 분석</b><small>규칙 뒤의 계산 · 5장</small></a>
+        <a class="mhg-toc-c" href="#mhg-p3"><span class="mhg-toc-n">PART 3</span><b>숫자로 보는 분석</b><small>규칙 뒤의 계산 · 6장</small></a>
         <a class="mhg-toc-c" href="#mhg-dict"><span class="mhg-toc-n">부록</span><b>용어 사전</b><small>헷갈리는 말 한곳에</small></a>
       </nav>
       <div class="mhg-path"><b>추천 순서</b> <span>1-1 레버리지 구조</span><i>→</i><span>1-2 변동성 끌림</span><i>→</i><span>2-1 한눈에 보기</span><i>→</i><span>2-2 자금 설계</span><i>→</i><span>2-3 핵심 용어</span><i>→</i><span>2-4 하루 루틴</span><i>→</i><span>2-9 흔한 실수</span></div>
@@ -751,7 +751,7 @@
 
       <!-- ═════ PART 3 ═════ -->
       <h3 class="mhg-part" id="mhg-p3"><span>PART 3</span>숫자로 보는 분석 — 규칙 뒤의 계산</h3>
-      <p class="mhg-part-lead">규칙의 숫자가 실제로 무엇을 바꾸는지 직접 계산해 봤습니다. 아래 가상 시나리오는 이 도구와 같은 계산 엔진으로 TQQQ · 원금 $20,000 · 처음 가격 $100에서 돌린 결과이며, 장중 고가·일부 체결·수수료·세금은 빼고 종가만으로 체결을 판단한 단순화 모델입니다.</p>
+      <p class="mhg-part-lead">규칙의 숫자가 실제로 무엇을 바꾸는지 직접 계산해 봤습니다. 3-1장의 가상 시나리오는 이 도구와 같은 계산 엔진으로 TQQQ · 원금 $20,000 · 처음 가격 $100에서 돌린 결과이며, 장중 고가·일부 체결·수수료·세금은 빼고 종가만으로 체결을 판단한 단순화 모델이고, <b>3-6장은 TQQQ·SOXL 실제 일봉으로 돌린 백테스트</b>입니다.</p>
 
       <details class="mhg-ch" id="mhg-3-1"><summary><span class="mhg-no">3-1</span><span class="mhg-t">20분할과 40분할은 무엇을 바꾸나<small>분할 수는 ‘평단’이 아니라 ‘버티는 시간’을 바꿉니다</small></span><span class="mhg-min">5분</span></summary><div class="mhg-body">
         <div class="table-scroll"><table class="g-tbl mhg-sim"><thead><tr><th>시나리오 (60거래일)</th><th>20분할</th><th>30분할</th><th>40분할</th></tr></thead><tbody>
@@ -816,6 +816,24 @@
           <li><b>사람의 한계</b> — −80% 구간에서도 매일 규칙대로 주문하는 것은 계산보다 훨씬 어렵습니다.</li>
         </ul>
         <p class="mhg-one">한 줄 요약 — 백테스트는 ‘가능성’을 보여 줄 뿐, 내가 얻을 수익을 약속하지 않습니다.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-3-6"><summary><span class="mhg-no">3-6</span><span class="mhg-t">실제 과거 데이터 백테스트 — TQQQ·SOXL<small>분할 수·목표%·큰수%를 바꾸면 결과가 얼마나 달라졌나</small></span><span class="mhg-min">6분</span></summary><div class="mhg-body">
+        <p>이 기록 도구와 <b>같은 계산 엔진</b>으로 TQQQ·SOXL의 상장 첫날부터 어제까지 실제 일봉을 하루씩 따라가며 무한매수법을 돌렸습니다. 분할 수 3가지 × 목표% 3가지 × 큰수% 3가지 = 27개 설정을 비교하고, <b>그냥 사서 들고 있었을 때</b>와 나란히 놓았습니다. 결과는 매일 새 시세로 자동으로 다시 계산됩니다.</p>
+        <div id="mhbt" data-bt-tk="TQQQ" data-bt-bg="12">
+          <div class="mhbt-ctrl" role="group" aria-label="백테스트 보기 설정">
+            <span>종목</span><span class="mhbt-seg"><button type="button" data-bt-tk="TQQQ" class="on">TQQQ</button><button type="button" data-bt-tk="SOXL">SOXL</button></span>
+            <span>큰수</span><span class="mhbt-seg"><button type="button" data-bt-bg="5">5%</button><button type="button" data-bt-bg="12" class="on">12%</button><button type="button" data-bt-bg="20">20%</button></span>
+          </div>
+          <div id="mhbt-body"><div class="mhbt-cards"><div class="mhbt-card bh"><div class="mhbt-k">그냥 보유했다면</div><div class="mhbt-n">TQQQ 매수 후 그대로</div><div class="mhbt-v">+42.8%</div><div class="mhbt-s">연평균 · 최대 낙폭 −81.8%<br>시작 연도별 중앙값 +39.8% · 최악 +14.4%</div></div><div class="mhbt-card def"><div class="mhbt-k">라오어 기본 설정</div><div class="mhbt-n">20분할 · 목표 15% · 큰수 12%</div><div class="mhbt-v">+22.0%</div><div class="mhbt-s">연평균 · 최대 낙폭 −53.7%<br>시작 연도별 중앙값 +20.5% · 최악 +13.5%</div></div><div class="mhbt-card "><div class="mhbt-k">전체 기간 수익 1위</div><div class="mhbt-n">20분할 · 목표 20% · 큰수 5%</div><div class="mhbt-v">+23.6%</div><div class="mhbt-s">연평균 · 최대 낙폭 −42.3%<br>시작 연도별 중앙값 +23.1% · 최악 +17.0%</div></div><div class="mhbt-card "><div class="mhbt-k">낙폭이 가장 작은 설정</div><div class="mhbt-n">40분할 · 목표 10% · 큰수 20%</div><div class="mhbt-v">+18.2%</div><div class="mhbt-s">연평균 · 최대 낙폭 −40.2%<br>시작 연도별 중앙값 +19.1% · 최악 +13.8%</div></div></div><div class="table-scroll"><table class="g-tbl mhbt-tbl"><thead><tr><th>설정 (큰수 12%)</th><th>연평균</th><th>최대 낙폭</th><th>시작 연도별<small>중앙값 · 최악</small></th></tr></thead><tbody><tr><td><b>20분할 · 10%</b><small>회차 127 · 손실 11 · 리버스 17</small></td><td>+20.7%</td><td>−54.7%</td><td>+19.0%<small>최악 +13.5%</small></td></tr><tr class="best"><td><b>20분할 · 15%</b><span class="mhbt-tag">기본</span><span class="mhbt-tag">★ 1위</span><small>회차 62 · 손실 6 · 리버스 9</small></td><td>+22.0%</td><td>−53.7%</td><td>+20.5%<small>최악 +13.5%</small></td></tr><tr><td><b>20분할 · 20%</b><small>회차 26 · 손실 5 · 리버스 6</small></td><td>+21.3%</td><td>−50.1%</td><td>+20.2%<small>최악 +11.6%</small></td></tr><tr><td><b>30분할 · 10%</b><small>회차 123 · 손실 6 · 리버스 9</small></td><td>+20.8%</td><td>−45.6%</td><td>+20.3%<small>최악 +15.7%</small></td></tr><tr><td><b>30분할 · 15%</b><small>회차 62 · 손실 3 · 리버스 6</small></td><td>+20.7%</td><td>−53.7%</td><td>+19.7%<small>최악 +13.0%</small></td></tr><tr><td><b>30분할 · 20%</b><small>회차 30 · 손실 1 · 리버스 3</small></td><td>+20.5%</td><td>−50.0%</td><td>+20.1%<small>최악 +12.4%</small></td></tr><tr><td><b>40분할 · 10%</b><small>회차 116 · 손실 5 · 리버스 6</small></td><td>+18.6%</td><td>−40.3%</td><td>+19.1%<small>최악 +13.8%</small></td></tr><tr><td><b>40분할 · 15%</b><small>회차 64 · 손실 3 · 리버스 4</small></td><td>+18.9%</td><td>−54.4%</td><td>+18.4%<small>최악 +14.4%</small></td></tr><tr><td><b>40분할 · 20%</b><small>회차 32 · 손실 2 · 리버스 3</small></td><td>+20.6%</td><td>−47.8%</td><td>+20.2%<small>최악 +16.1%</small></td></tr><tr><td><b>그냥 보유</b><small>비교 기준</small></td><td>+42.8%</td><td>−81.8%</td><td>+39.8%<small>최악 +14.4%</small></td></tr></tbody></table></div><p class="g-cap">2010.02 → 2026.10.09 · 시작 연도 14개(2011~2024년) · 최대 낙폭은 평가금(현금 + 보유 주식) 기준 · 계산 2026-10-10</p><div class="mhg-key"><b>TQQQ 결과 요약</b><br>기본 설정(20분할 · 목표 15% · 큰수 12%)은 연 +22.0%로, 그냥 보유(연 +42.8%)보다 수익은 연 20.8%p 낮았지만 최대 낙폭은 −53.7% 대 −81.8%로 28.1%p 얕았습니다.<br>매년 1월에 시작한 14번 중 그냥 보유보다 수익이 컸던 해는 0번입니다.<br>분할 수는 20분할 +21.1% &gt; 30분할 +20.7% &gt; 40분할 +19.1%, 목표%는 20% +20.8% &gt; 15% +20.5% &gt; 10% +19.7% 순(같은 값끼리 평균 연 수익률)이었고, 큰수%는 5% +20.5% · 12% +20.5% · 20% +20.0%로 차이가 작았습니다.</div><details class="mhbt-yrs"><summary class="mhg-link" style="cursor:pointer;margin-top:12px">연도별 수익률 보기 — 기본 설정 vs 그냥 보유</summary><div class="mhbt-yr"><div>2010(상장 후)<br>무한 <b class="pos">+28.4%</b> · 보유 <b class="pos">+78.0%</b></div><div>2011<br>무한 <b class="pos">+24.9%</b> · 보유 <b class="neg">−8.0%</b></div><div>2012<br>무한 <b class="pos">+16.4%</b> · 보유 <b class="pos">+52.3%</b></div><div>2013<br>무한 <b class="pos">+40.0%</b> · 보유 <b class="pos">+139.7%</b></div><div>2014<br>무한 <b class="pos">+27.8%</b> · 보유 <b class="pos">+57.0%</b></div><div>2015<br>무한 <b class="pos">+15.5%</b> · 보유 <b class="pos">+17.2%</b></div><div>2016<br>무한 <b class="pos">+6.6%</b> · 보유 <b class="pos">+11.4%</b></div><div>2017<br>무한 <b class="pos">+32.9%</b> · 보유 <b class="pos">+118.1%</b></div><div>2018<br>무한 <b class="pos">+6.9%</b> · 보유 <b class="neg">−19.9%</b></div><div>2019<br>무한 <b class="pos">+42.6%</b> · 보유 <b class="pos">+133.7%</b></div><div>2020<br>무한 <b class="pos">+42.8%</b> · 보유 <b class="pos">+110.0%</b></div><div>2021<br>무한 <b class="pos">+31.0%</b> · 보유 <b class="pos">+83.0%</b></div><div>2022<br>무한 <b class="neg">−42.7%</b> · 보유 <b class="neg">−79.2%</b></div><div>2023<br>무한 <b class="pos">+45.7%</b> · 보유 <b class="pos">+193.1%</b></div><div>2024<br>무한 <b class="pos">+42.0%</b> · 보유 <b class="pos">+56.1%</b></div><div>2025<br>무한 <b class="pos">+19.0%</b> · 보유 <b class="pos">+33.2%</b></div><div>2026(연중)<br>무한 <b class="pos">+24.6%</b> · 보유 <b class="pos">+54.2%</b></div></div></details><p class="g-cap">기본 설정의 마지막 회차는 2026.9에 시작해 아직 진행 중(평가 +1.2%)입니다.</p></div>
+        </div>
+        <ul class="g-list">
+          <li><b>계산 방식</b> — 원금 $20,000으로 시작해 회차가 끝나면 번 돈까지 다음 회차 원금으로(복리) 이어 갑니다. LOC 주문은 그날 종가로, 목표% 지정가 매도는 그날 정규장 <b>고가</b>가 지정가에 닿으면 지정가로 체결된 것으로 봅니다. 원금이 바닥나면 리버스모드까지 규칙대로 진행합니다.</li>
+          <li><b>‘시작 연도별’</b> — 같은 설정을 매년 1월 첫 거래일에 시작해 오늘까지 돌린 연평균 수익률의 중앙값과 가장 나빴던 해입니다. 언제 시작했는지(운)에 결과가 얼마나 흔들리는지 보여 줍니다.</li>
+          <li><b>빠진 것</b> — 수수료·환전 비용·양도세(22%), 남는 현금의 이자(파킹 통장·MMF), 프리·애프터장 체결, 일부만 체결된 날은 넣지 않았습니다. 수정주가라 분배금도 빠져 있습니다.</li>
+          <li><b>읽는 법</b> — 2010년 이후는 미국 기술주의 보기 드문 강세장이었습니다. 표에서 가장 좋았던 설정은 ‘과거에 가장 잘 맞았던 설정’일 뿐이니(3-5장 과최적화), 수익률 1위보다 <b>최대 낙폭과 시작 연도별 최악</b>을 함께 보고 고르세요.</li>
+        </ul>
+        <p class="mhg-one">한 줄 요약 — 무한매수법은 그냥 들고 있는 것보다 수익을 덜 가져가는 대신, 낙폭을 줄이는 방법입니다. 숫자는 매일 새 시세로 다시 계산됩니다.</p>
       </div></details>
 
       <!-- ═════ 용어 사전 ═════ -->
@@ -900,7 +918,7 @@
 
 </div>
 
-<script src="assets/app.bbcec34369.js"></script>
+<script src="assets/app.36ab6d1950.js"></script>
   <!-- ── 카카오톡 바로가기 (오른쪽 아래 공유 버튼 위, 같은 원형 버튼) — 오픈채팅 커뮤니티 · 후원 및 문의 1:1 채팅 ── -->
   <div class="kk-fabs">
     <button type="button" class="kk-fab" id="kk-fab" aria-label="카카오 오픈채팅" aria-expanded="false" aria-controls="kk-pop"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 4.5c-6.08 0-11 3.86-11 8.62 0 3.03 2 5.7 5.03 7.23l-1.08 3.95c-.1.36.31.65.62.44l4.7-3.12c.56.07 1.14.11 1.73.11 6.08 0 11-3.86 11-8.61S20.08 4.5 14 4.5z" fill="#191919"/><circle cx="9.6" cy="13.1" r="1.45" fill="#FEE500"/><circle cx="14" cy="13.1" r="1.45" fill="#FEE500"/><circle cx="18.4" cy="13.1" r="1.45" fill="#FEE500"/></svg></button>

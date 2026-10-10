@@ -94,6 +94,7 @@ HOME_ECOS_REFRESH_DAYS = 7
 ETF_CAGR = ['QQQ', 'SPY', 'SOXX', 'SSO', 'ROM', 'USD', 'QLD', 'TQQQ', 'TECL', 'SOXL', 'SPXL', 'UPRO']
 ETFCAGR = os.path.join(ROOT, 'etfcagr.json')
 ETFCAGR_MAX_AGE_H = 6
+ETFCAGR_HIGH = ['TQQQ', 'SOXL']   # 무한매수법 백테스트용 일별 고가도 저장 (지정가 매도는 장중 고가에 닿으면 체결)
 ETFCAGR_VERSION = 2   # 2: 월봉 오류 수정 → 형식이 바뀌면 올려서 즉시 다시 수집
 # 야후는 range=max 로 요청하면 긴 종목을 '월봉'으로 바꿔 줌 → 항상 기간(period1~period2)을 지정해 일봉을 받음
 DAILY_ALL = 'period1=504921600&period2={now}&interval=1d&events=div'   # 1986-01-01 ~ 현재
@@ -644,17 +645,20 @@ def build_etfcagr():
     series = dict(old.get('series') or {})
     if old.get('v') != ETFCAGR_VERSION:
         series = {}                               # 이전 형식(월봉 섞임)은 버리고 새로 수집
-    if age_h < ETFCAGR_MAX_AGE_H and old.get('v') == ETFCAGR_VERSION and set(ETF_CAGR) <= set(series) and '--etfcagr' not in sys.argv:
+    if age_h < ETFCAGR_MAX_AGE_H and old.get('v') == ETFCAGR_VERSION and set(ETF_CAGR) <= set(series) and '--etfcagr' not in sys.argv \
+            and all(series.get(t, {}).get('h') for t in ETFCAGR_HIGH):
         print(f'  etfcagr.json: 최근 갱신({age_h:.1f}시간 전) — 건너뜀')
         return
     for sym in ETF_CAGR:
         try:
             res = yahoo_chart(sym, DAILY_ALL.format(now=int(time.time())))
             ny = lambda t: datetime.datetime.fromtimestamp(t, NY).date().toordinal() - 719163   # 미국 거래일 날짜
-            pts = {}
-            for t, cl in zip(res.get('timestamp') or [], ((res.get('indicators') or {}).get('quote') or [{}])[0].get('close') or []):
+            pts, his = {}, {}
+            q = ((res.get('indicators') or {}).get('quote') or [{}])[0]
+            for t, cl, hi in zip(res.get('timestamp') or [], q.get('close') or [], q.get('high') or [None] * len(res.get('timestamp') or [])):
                 if cl is not None and cl > 0:
                     pts[ny(t)] = round(float(cl), 4)
+                    his[ny(t)] = round(max(float(hi), float(cl)), 4) if hi is not None and hi > 0 else round(float(cl), 4)
             days = sorted(pts)
             if len(days) < 250:
                 raise ValueError(f'일봉 부족 ({len(days)}개)')
@@ -664,6 +668,8 @@ def build_etfcagr():
             divs = sorted([ny(int(d['date'])), round(float(d['amount']), 4)]
                           for d in ((res.get('events') or {}).get('dividends') or {}).values() if d.get('amount'))
             series[sym] = {'d0': days[0], 'dd': [b - a for a, b in zip(days, days[1:])], 'c': [pts[d] for d in days], 'div': divs}
+            if sym in ETFCAGR_HIGH:
+                series[sym]['h'] = [his[d] for d in days]   # 같은 날짜 순서의 일별 고가 (고가 없는 날은 종가)
             print(f'  CAGR {sym} {len(days)}일 (상장 {datetime.date.fromordinal(719163 + days[0])}) · 분배 {len(divs)}회')
         except Exception as e:
             print(f'  CAGR {sym} 실패(직전값 유지): {e}')

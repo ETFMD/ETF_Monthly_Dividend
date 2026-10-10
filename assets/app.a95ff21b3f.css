@@ -1985,6 +1985,30 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   /* 가이드북 3-1 분할 수 비교 — 칸마다 '진행 상태'(작게) + '결과'(굵게) 두 줄 */
   .guide .mhg-sim td, .guide .mhg-sim td:last-child { text-align:left; font-family:var(--font); font-size:12px; color:var(--text2); min-width:7.6em; }
   .guide .mhg-sim td:first-child { min-width:8.4em; }
+  /* 3-6 실제 일봉 백테스트 (data/muhan_bt.json) */
+  .mhbt-ctrl { display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; margin:12px 0 10px; font-size:12px; color:var(--text3); }
+  .mhbt-seg { display:inline-flex; border:1px solid var(--card-border); border-radius:10px; overflow:hidden; }
+  .mhbt-seg button { border:0; background:transparent; color:var(--text2); font:inherit; font-size:12.5px; font-weight:600; padding:6px 12px; cursor:pointer; }
+  .mhbt-seg button + button { border-left:1px solid var(--card-border); }
+  .mhbt-seg button.on { background:var(--accent); color:#fff; }
+  .mhbt-cards { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:8px; margin:0 0 12px; }
+  .mhbt-card { background:rgba(var(--fg-rgb),.035); border:1px solid var(--card-border); border-radius:12px; padding:11px 12px; min-width:0; }
+  .mhbt-card.bh { background:rgba(254,152,0,.07); border-color:rgba(254,152,0,.3); }
+  .mhbt-card.def { background:rgba(49,130,246,.07); border-color:rgba(49,130,246,.3); }
+  .mhbt-k { font-size:11px; font-weight:700; color:var(--text3); }
+  .mhbt-n { font-size:11.5px; color:var(--text2); margin-top:2px; overflow-wrap:anywhere; }
+  .mhbt-v { font-family:var(--mono); font-size:20px; font-weight:800; color:var(--text); margin:4px 0 2px; }
+  .mhbt-s { font-size:11.5px; line-height:1.55; color:var(--text3); }
+  .guide .mhbt-tbl td, .guide .mhbt-tbl th { text-align:right; font-family:var(--mono); font-size:12.5px; }
+  .guide .mhbt-tbl td:first-child, .guide .mhbt-tbl th:first-child { text-align:left; font-family:var(--font); }
+  .mhbt-tbl small { display:block; font-family:var(--font); font-size:11px; color:var(--text3); font-weight:400; }
+  .mhbt-tbl tr.best td { background:rgba(49,130,246,.08); }
+  .mhbt-tag { display:inline-block; margin-left:4px; font-size:10px; font-weight:700; color:var(--accent); }
+  .mhbt-yr { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:6px; margin-top:10px; }
+  .mhbt-yr div { background:rgba(var(--fg-rgb),.035); border-radius:8px; padding:6px 8px; font-size:11.5px; color:var(--text3); }
+  .mhbt-yr b { color:var(--text); font-family:var(--mono); font-weight:700; } .mhbt-yr .neg { color:var(--down, #3182f6); } .mhbt-yr .pos { color:var(--up, #f04452); }
+  @media (max-width:900px) { .mhbt-cards { grid-template-columns:repeat(2, minmax(0,1fr)); } }
+  @media (max-width:600px) { .mhbt-yr { grid-template-columns:repeat(2, minmax(0,1fr)); } .mhbt-v { font-size:18px; } .guide .mhbt-tbl td, .guide .mhbt-tbl th { padding-left:6px; padding-right:6px; } }
   .mhg-sim .sim-s { display:block; color:var(--text3); font-size:11.5px; line-height:1.45; }
   .mhg-sim .sim-r { display:block; margin-top:2px; font-weight:700; color:var(--text); font-family:var(--mono); word-break:keep-all; }
   .guide .g-tbl tr:last-child td { border-bottom:none; }

@@ -1,0 +1,48 @@
+name: 무한매수법 백테스트 갱신
+
+# 가이드북 3-6 '실제 과거 데이터 백테스트' 자료(data/muhan_bt.json)를 다시 계산
+#  · 매일 미국장 마감 뒤(시세 봇이 data/etfcagr.json 일봉·고가를 갱신한 다음) 한 번
+#  · 계산 엔진(src/index.html 의 [MUHAN-ENGINE])이나 계산 스크립트가 바뀌면 바로
+on:
+  schedule:
+    - cron: '10 23 * * *'   # 매일 KST 08:10
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['src/index.html', 'scripts/update_muhan_bt.js', '.github/workflows/update-muhan-bt.yml']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: muhan-bt
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: 백테스트 계산 (TQQQ·SOXL × 27개 설정 × 시작 연도별)
+        run: node scripts/update_muhan_bt.js
+      - name: 결과가 바뀐 경우에만 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898099+github-actions[bot]@users.noreply.github.com'
+          # 계산 시각(updated)만 바뀐 경우는 커밋하지 않음
+          if git show HEAD:data/muhan_bt.json > /tmp/old.json 2>/dev/null && \
+             node -e "const f=require('fs'),a=JSON.parse(f.readFileSync('/tmp/old.json')),b=JSON.parse(f.readFileSync('data/muhan_bt.json'));delete a.updated;delete b.updated;process.exit(JSON.stringify(a)===JSON.stringify(b)?0:1)"; then
+            echo "결과 변경 없음"; exit 0
+          fi
+          git add data/muhan_bt.json
+          git commit -m "chore: 무한매수법 백테스트 갱신"
+          for i in 1 2 3; do
+            git pull --rebase -X theirs --autostash && git push && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep 5
+          done
+          exit 1

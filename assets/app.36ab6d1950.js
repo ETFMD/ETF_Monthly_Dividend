@@ -35,7 +35,7 @@ var SITE_EN = (document.documentElement.getAttribute('lang') || '').indexOf('en'
     return Promise.race([p, new Promise(function (_, rej) { setTimeout(function () { rej(new Error('timeout')); }, ms); })]);
   }
   /* 파일별 갱신 주기(신선도)와 다운로드 제한 시간 — 큰 파일을 불필요하게 두 번 받지 않도록 */
-  var FRESH_MS = { 'apt_rank.json': 4 * 3600e3, 'salary_rank.json': 7 * 86400e3, 'asset_rank.json': 7 * 86400e3, 'mcap.json': 26 * 3600e3, 'etfcagr.json': 7 * 3600e3, 'history.json': 22 * 3600e3, 'dxy.json': 7 * 3600e3, 'home.json': 7 * 3600e3, 'whatif.json': 20 * 3600e3, 'apt_area.json': 26 * 3600e3, 'realty.json': 7 * 86400e3 };   /* 기본 40분 */
+  var FRESH_MS = { 'apt_rank.json': 4 * 3600e3, 'salary_rank.json': 7 * 86400e3, 'asset_rank.json': 7 * 86400e3, 'mcap.json': 26 * 3600e3, 'etfcagr.json': 7 * 3600e3, 'history.json': 22 * 3600e3, 'dxy.json': 7 * 3600e3, 'home.json': 7 * 3600e3, 'whatif.json': 20 * 3600e3, 'muhan_bt.json': 26 * 3600e3, 'apt_area.json': 26 * 3600e3, 'realty.json': 7 * 86400e3 };   /* 기본 40분 */
   var BIG = { 'apt_rank.json': 1, 'dxy.json': 1, 'etfcagr.json': 1, 'history.json': 1, 'compare.json': 1, 'muhan.json': 1, 'whatif.json': 1 };
   function getJSON(url, ms) {
     return timeout(nativeFetch(url, { cache: 'no-cache' }), ms || 6000)
@@ -9934,11 +9934,13 @@ var MHE = (function () {
      closes[0] = 시작 전날 종가, closes[1..] = 매일 종가. 주문표는 orders()를 그대로 쓰고,
      소진(T > 분할−1)되면 다음 날부터 리버스모드(첫날 MOC → 직전 5일 종가 평균 별지점), 종가 > 평단×(1−목표%)이면 다음 날 일반모드 복귀.
      회차가 끝나면(보유 0) 멈춤 */
-  function simulate(s, closes) {
+  /* highs(선택): 같은 날짜 순서의 일별 고가 — 지정가 매도는 장중 고가가 지정가에 닿으면 체결 (없으면 종가로 판단) */
+  function simulate(s, closes, highs) {
     var txs = [], rev = false, revFirst = false, exhaustDay = 0, revDays = 0, backs = 0, endDay = 0, maxT = 0;
     var dt = function (i) { var d = new Date(Date.UTC(2026, 9, 1) + i * 864e5); return d.toISOString().slice(0, 10); };
     for (var i = 1; i < closes.length; i++) {
       var st = compute(s, txs), pc = closes[i - 1], c = closes[i], date = dt(i), tx = null;
+      var h = highs && highs[i] > c ? highs[i] : c;
       if (st.phase === '종료') break;
       if (rev) {
         revDays++;
@@ -9949,23 +9951,25 @@ var MHE = (function () {
           if (o.type === 'buy' && c <= o.price) bq += o.quantity;
         });
         revFirst = false;
-        if (sq > 0) tx = { date: date, type: 'reverse_sell', price: c, quantity: Math.min(sq, st.totalQuantity) };
-        else if (bq > 0) tx = { date: date, type: 'reverse_quarter_buy', price: c, quantity: bq };
+        if (sq > 0) tx = { date: date, k: i, type: 'reverse_sell', price: c, quantity: Math.min(sq, st.totalQuantity) };
+        else if (bq > 0) tx = { date: date, k: i, type: 'reverse_quarter_buy', price: c, quantity: bq };
         if (tx) txs.push(tx);
         var a = compute(s, txs);
         if (a.totalQuantity > 0 && c > a.avgPrice * (1 - targetOf(s.ticker, s.targetProfit) / 100)) { rev = false; backs++; }
       } else {
-        var q = 0;
+        var q = 0, hold = st.totalQuantity;
         orders(st, s, undefined, pc).forEach(function (o) { if (o.type === 'buy' && c <= o.price) q += o.quantity; });
-        if (q > 0) {
-          /* 전반전에 평단 위·별지점 아래로 마감하면 별지점 몫만 → 절반 매수(+0.5), 그 밖은 1회 매수(+1) */
-          var half = st.phase === '전반전' && c > st.avgPrice;
-          txs.push({ date: date, type: half ? 'half_buy' : 'full_buy', price: c, quantity: q });
-        } else if (st.totalQuantity > 0) {
-          var qs = st.sellPoint > 0 && c >= st.sellPoint, ls = st.limitSellPrice > 0 && c >= st.limitSellPrice;
-          var qq = Math.max(1, Math.floor(st.totalQuantity / 4));
-          if (qs) txs.push({ date: date, type: 'quarter_sell', price: c, quantity: qq });
-          if (ls) txs.push({ date: date, type: 'limit_sell', price: st.limitSellPrice, quantity: st.totalQuantity - (qs ? qq : 0) });
+        /* 매도 주문표: 쿼터매도 ¼(별지점 LOC) + 나머지 ¾(목표% 지정가) */
+        var qq = hold > 0 ? Math.max(1, Math.floor(hold / 4)) : 0, rest = hold - qq;
+        var ls = rest > 0 && st.limitSellPrice > 0 && h >= st.limitSellPrice, qs = qq > 0 && st.sellPoint > 0 && c >= st.sellPoint;
+        /* 전반전에 평단 위·별지점 아래로 마감하면 별지점 몫만 → 절반 매수(+0.5), 그 밖은 1회 매수(+1) */
+        var half = st.phase === '전반전' && c > st.avgPrice;
+        if (q > 0 && ls) txs.push({ date: date, k: i, type: half ? 'limit_sell_buy_half' : 'limit_sell_buy_full', price: c, quantity: q,
+                                    sellPrice: st.limitSellPrice, sellQuantity: rest });          /* 장중 지정가 체결 뒤 종가 LOC 매수 */
+        else if (q > 0) txs.push({ date: date, k: i, type: half ? 'half_buy' : 'full_buy', price: c, quantity: q });
+        else {
+          if (qs) txs.push({ date: date, k: i, type: 'quarter_sell', price: c, quantity: qq });
+          if (ls) txs.push({ date: date, k: i, type: 'limit_sell', price: st.limitSellPrice, quantity: rest });
         }
       }
       var e = compute(s, txs); maxT = Math.max(maxT, e.tValue);
@@ -9980,8 +9984,38 @@ var MHE = (function () {
              pnlPct: (value - s.totalCapital) / s.totalCapital * 100, txs: txs };
   }
 
+  /* 실제 일봉 백테스트 — simulate(한 회차)를 회차가 끝날 때마다 이어서 돌림 (번 돈까지 다음 회차 원금 = 복리)
+     · 회차가 끝나면 보유가 0주라, 회차마다 가격 단위를 시작가 $50으로 바꿔도 수익률은 그대로이고
+       수정주가(예: TQQQ 2010년 $0.2)의 1센트·1주 반올림 왜곡만 사라짐
+     · highs: 일별 고가(지정가 매도 체결 판단) — 같은 배율로 바꿔 simulate 에 넘김
+     · eq[i] = i번째 날 종가 기준 평가금(현금 + 보유 × 종가) · cycles = 회차별 {시작일, 거래일 수, 손익, 리버스 여부} */
+  function backtest(s0, closes, cap, highs) {
+    var i = 0, cash = cap, eq = new Array(closes.length), cycles = [], open = false;
+    eq[0] = cap;
+    while (i < closes.length - 1) {
+      var k = 50 / closes[i], cl = closes.slice(i).map(function (x) { return x * k; }), s = {}, key;
+      var hl = highs ? highs.slice(i).map(function (x) { return x * k; }) : null;
+      for (key in s0) s[key] = s0[key];
+      s.totalCapital = cash;
+      var r = simulate(s, cl, hl), end = r.endDay || cl.length - 1, c = cash, q = 0, t = 0, txs = r.txs;
+      for (var j = 1; j <= end; j++) {
+        while (t < txs.length && txs[t].k === j) {
+          var x = txs[t++];
+          if (x.type === 'quarter_sell' || x.type === 'limit_sell' || x.type === 'reverse_sell') { c += x.price * x.quantity; q -= x.quantity; }
+          else { if (x.sellQuantity) { c += x.sellPrice * x.sellQuantity; q -= x.sellQuantity; } c -= x.price * x.quantity; q += x.quantity; }
+        }
+        eq[i + j] = c + q * cl[j];
+      }
+      cycles.push({ start: i, days: end, pnl: eq[i + end] / cash - 1, rev: r.exhaustDay > 0 });
+      cash = eq[i + end];
+      if (!r.endDay) { open = true; break; }
+      i += end;
+    }
+    return { eq: eq, cycles: cycles, open: open, final: cash };
+  }
+
   return {
-    simulate: simulate,
+    simulate: simulate, backtest: backtest,
     STD_SPLITS: STD_SPLITS, EXT_SPLITS: EXT_SPLITS, EXT_WARN: EXT_WARN, DEF_BIGNUM: DEF_BIGNUM,
     DEF_LOC_SHARES: DEF_LOC_SHARES, DEF_LOC_LINES: DEF_LOC_LINES, COMBO: COMBO, REVERSE: REVERSE,
     isExtSplits: isExtSplits, reverseMult: reverseMult, nextT: nextT, defaultTarget: defaultTarget, targetOf: targetOf,
@@ -11321,6 +11355,88 @@ if (typeof module !== 'undefined') module.exports = MHE;
   /* 탭 진입 시 호출 ([NAV] switchSubTab 의 훅) */
   window.muhanInit = function () { bind(); MH.now = new Date(); if (!SY.inited) { SY.inited = true; SY.uid = authUid(); if (SY.uid) SY.st = 'pull'; if (window.dcAuth && window.dcAuth.ready) window.dcAuth.ready().then(function (ok) { if (SY.can !== ok) { SY.can = ok; render(); } }).catch(function () {}); } render(); if (SY.uid && SY.st === 'pull') pull(); };
   window.MHdebug = { get store() { return store; }, derive: derive, render: render };
+})();
+
+/* [MHBT] 무한매수법 실제 일봉 백테스트 표 (가이드북 3-6) — data/muhan_bt.json(매일 Actions 가 엔진으로 계산)을 그림
+   render 는 순수 함수: 화면과 정적 HTML(검색엔진용) 스냅숏이 같은 함수로 만들어짐 */
+var MHBT = (function () {
+  /* [MHBT-RENDER] */
+  function render(d, tk, bg) {
+    var T = d && d.t && d.t[tk]; if (!T || !T.rows || !T.rows.length) return '';
+    var M = '−';
+    function p(v) { return v == null ? '-' : (v > 0 ? '+' : v < 0 ? M : '') + Math.abs(v).toFixed(1) + '%'; }
+    function e(x) { return String(x).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    function nm(r) { return r.sp + '분할 · 목표 ' + r.tg + '% · 큰수 ' + r.bg + '%'; }
+    function pick(f) { return T.rows.reduce(function (a, b) { return f(b, a) ? b : a; }); }
+    var rows = T.rows, def = rows.filter(function (r) { return r.id === d.def[tk]; })[0] || rows[0];
+    var best = pick(function (b, a) { return b.cagr > a.cagr; });
+    var steady = pick(function (b, a) { return b.rollMin > a.rollMin || (b.rollMin === a.rollMin && b.cagr > a.cagr); });
+    var calm = pick(function (b, a) { return b.mdd > a.mdd || (b.mdd === a.mdd && b.cagr > a.cagr); });
+    var bh = T.bh, ym = function (s) { return s ? +s.slice(0, 4) + '.' + +s.slice(5, 7) : ''; }, N = T.starts.length;
+    function card(cls, k, n, r) {
+      return '<div class="mhbt-card ' + cls + '"><div class="mhbt-k">' + k + '</div><div class="mhbt-n">' + e(n) + '</div><div class="mhbt-v">' + p(r.cagr) + '</div>' +
+        '<div class="mhbt-s">연평균 · 최대 낙폭 ' + p(r.mdd) + '<br>시작 연도별 중앙값 ' + p(r.rollMed) + ' · 최악 ' + p(r.rollMin) + '</div></div>';
+    }
+    var h = '<div class="mhbt-cards">' + card('bh', '그냥 보유했다면', tk + ' 매수 후 그대로', bh) + card('def', '라오어 기본 설정', nm(def), def) +
+      card('', '전체 기간 수익 1위', nm(best), best) +
+      (steady !== best ? card('', '가장 꾸준한 설정', nm(steady) + ' (어느 해에 시작해도 최악이 가장 좋았음)', steady)
+                       : card('', '낙폭이 가장 작은 설정', nm(calm), calm)) + '</div>';
+    var list = rows.filter(function (r) { return r.bg === +bg; }), top = list.reduce(function (a, b) { return b.cagr > a.cagr ? b : a; }, list[0]);
+    h += '<div class="table-scroll"><table class="g-tbl mhbt-tbl"><thead><tr><th>설정 (큰수 ' + e(bg) + '%)</th><th>연평균</th><th>최대 낙폭</th><th>시작 연도별<small>중앙값 · 최악</small></th></tr></thead><tbody>';
+    list.forEach(function (r) {
+      h += '<tr' + (r === top ? ' class="best"' : '') + '><td><b>' + r.sp + '분할 · ' + r.tg + '%</b>' + (r.id === def.id ? '<span class="mhbt-tag">기본</span>' : '') + (r === top ? '<span class="mhbt-tag">★ 1위</span>' : '') +
+        '<small>회차 ' + r.cycles + ' · 손실 ' + r.loss + ' · 리버스 ' + r.rev + '</small></td><td>' + p(r.cagr) + '</td><td>' + p(r.mdd) + '</td><td>' + p(r.rollMed) + '<small>최악 ' + p(r.rollMin) + '</small></td></tr>';
+    });
+    h += '<tr><td><b>그냥 보유</b><small>비교 기준</small></td><td>' + p(bh.cagr) + '</td><td>' + p(bh.mdd) + '</td><td>' + p(bh.rollMed) + '<small>최악 ' + p(bh.rollMin) + '</small></td></tr></tbody></table></div>';
+    h += '<p class="g-cap">' + e(T.from.slice(0, 7).replace('-', '.') + ' → ' + T.to.replace(/-/g, '.')) + ' · 시작 연도 ' + N + '개(' + T.starts[0] + '~' + T.starts[N - 1] + '년) · ' +
+      '최대 낙폭은 평가금(현금 + 보유 주식) 기준 · 계산 ' + e((d.updated || '').slice(0, 10)) + '</p>';
+    /* 자동 해설 */
+    function avg(f, v) { var a = rows.filter(function (r) { return r[f] === v; }); return a.reduce(function (s, r) { return s + r.cagr; }, 0) / a.length; }
+    function spread(f, vals) { var a = vals.map(function (v) { return [v, avg(f, v)]; }).sort(function (x, y) { return y[1] - x[1]; }); return a; }
+    var sp = spread('sp', d.splits), tg = spread('tg', d.targets[tk]), bgs = spread('bg', d.bigs);
+    var gap = Math.round((bh.cagr - def.cagr) * 10) / 10, mddGap = Math.round((def.mdd - bh.mdd) * 10) / 10;
+    var line1 = '기본 설정(' + nm(def) + ')은 연 ' + p(def.cagr) + '로, 그냥 보유(연 ' + p(bh.cagr) + ')보다 ' +
+      (gap > 0 ? '수익은 연 ' + gap.toFixed(1) + '%p 낮았지만' : '수익도 연 ' + Math.abs(gap).toFixed(1) + '%p 높았고') +
+      ' 최대 낙폭은 ' + p(def.mdd) + ' 대 ' + p(bh.mdd) + (mddGap > 0 ? '로 ' + mddGap.toFixed(1) + '%p 얕았습니다.' : '였습니다.');
+    var line2 = '매년 1월에 시작한 ' + N + '번 중 그냥 보유보다 수익이 컸던 해는 ' + def.beat + '번입니다.';
+    var line3 = '분할 수는 ' + sp.map(function (x) { return x[0] + '분할 ' + p(Math.round(x[1] * 10) / 10); }).join(' > ') + ', 목표%는 ' +
+      tg.map(function (x) { return x[0] + '% ' + p(Math.round(x[1] * 10) / 10); }).join(' > ') + ' 순(같은 값끼리 평균 연 수익률)이었고, 큰수%는 ' +
+      bgs.map(function (x) { return x[0] + '% ' + p(Math.round(x[1] * 10) / 10); }).join(' · ') + '로 차이가 ' + (Math.abs(bgs[0][1] - bgs[bgs.length - 1][1]) < 1.5 ? '작았습니다.' : '있었습니다.');
+    h += '<div class="mhg-key"><b>' + tk + ' 결과 요약</b><br>' + e(line1) + '<br>' + e(line2) + '<br>' + e(line3) + '</div>';
+    /* 연도별 (기본 설정 vs 보유) */
+    var yr = '';
+    T.years.forEach(function (y, i) {
+      var a = def.ye[i] / (i ? def.ye[i - 1] : 1) - 1, b = bh.ye[i] / (i ? bh.ye[i - 1] : 1) - 1;
+      var c = function (v) { return '<b class="' + (v < 0 ? 'neg' : 'pos') + '">' + p(Math.round(v * 1000) / 10) + '</b>'; };
+      yr += '<div>' + y + (i === 0 ? '(상장 후)' : i === T.years.length - 1 ? '(연중)' : '') + '<br>무한 ' + c(a) + ' · 보유 ' + c(b) + '</div>';
+    });
+    h += '<details class="mhbt-yrs"><summary class="mhg-link" style="cursor:pointer;margin-top:12px">연도별 수익률 보기 — 기본 설정 vs 그냥 보유</summary><div class="mhbt-yr">' + yr + '</div></details>';
+    if (def.open) h += '<p class="g-cap">기본 설정의 마지막 회차는 ' + ym(def.open.from) + '에 시작해 아직 진행 중(평가 ' + p(def.open.pnl) + (def.open.rev ? ' · 리버스모드' : '') + ')입니다.</p>';
+    return h;
+  }
+  /* [/MHBT-RENDER] */
+  var data = null;
+  function paint() {
+    var w = document.getElementById('mhbt'), b = document.getElementById('mhbt-body'); if (!w || !b || !data) return;
+    var tk = w.getAttribute('data-bt-tk'), bg = w.getAttribute('data-bt-bg'), h = render(data, tk, bg);
+    if (h) b.innerHTML = h;
+    w.querySelectorAll('.mhbt-seg button').forEach(function (x) {
+      var on = x.hasAttribute('data-bt-tk') ? x.getAttribute('data-bt-tk') === tk : x.getAttribute('data-bt-bg') === bg;
+      x.classList.toggle('on', on); x.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+  }
+  function init() {
+    var w = document.getElementById('mhbt'); if (!w || w._bt) return; w._bt = true;
+    w.addEventListener('click', function (ev) {
+      var x = ev.target.closest && ev.target.closest('.mhbt-seg button'); if (!x) return;
+      if (x.hasAttribute('data-bt-tk')) w.setAttribute('data-bt-tk', x.getAttribute('data-bt-tk'));
+      if (x.hasAttribute('data-bt-bg')) w.setAttribute('data-bt-bg', x.getAttribute('data-bt-bg'));
+      paint();
+    });
+    if (window.mdLoad) window.mdLoad('muhan_bt.json').then(function (j) { data = j; paint(); }).catch(function () {});
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  return { render: render, paint: paint };
 })();
 
 /* [GUIDEBOOK:muhan] 가이드북 — 읽은 장 표시(이 기기) · 목차/주소(#mhg-…) 이동 · 무한매수법 화면의 📘 버튼에서 열기 */

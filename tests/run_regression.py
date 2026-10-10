@@ -6,7 +6,7 @@
      가로 넘침(문서 폭 > 화면 폭)과 화면 밖으로 잘리는 요소(가로 스크롤 상자 안은 제외)를 찾음
   2. 콘솔 오류·페이지 스크립트 오류 0 (로컬에서 막히는 외부 Worker 호출의 CORS·네트워크 오류는 제외)
   3. 메뉴 항목 수(홈 + 도구 수) · 검색 결과 · 허브 카드 수(같은 그룹 도구 수)
-  4. 무한매수법 — 라오어 카페 원문 예시 숫자로 계산 엔진 검사, 기록 화면 그리기, 가이드북(22장 · 용어 31개 · 자동 숫자 · 장 열기)
+  4. 무한매수법 — 라오어 카페 원문 예시 숫자로 계산 엔진 검사, 기록 화면 그리기, 가이드북(23장 · 용어 31개 · 자동 숫자 · 장 열기 · 3-6 실제 일봉 백테스트 표)
 
 사용법
   pip install playwright && python -m playwright install chromium
@@ -77,6 +77,28 @@ MUHAN_JS = """async () => {
     eq('모의: V자 20분할 소진→복귀→회차 종료', [v20.exhaustDay > 0, v20.backs > 0, v20.endDay > 0], [true, true, true]);
     eq('모의: V자 40분할 소진 없이 종료', [v40.exhaustDay, v40.endDay > 0, v40.pnlPct > 0], [0, true, true]);
   } else R.push({ name: 'mhGuideFill 없음', ok: false });
+  // 고가 체결 (3-6 백테스트) — 지정가만 장중 체결되면 ¾ 매도·¼ 남김(T×0.25), 같은 날 LOC 매수도 되면 '지정가+매수'
+  const base = [50, 50, 49, 48];                                  // 처음매수 → 매수 2번 (평단 약 49)
+  // ① 큰수(전날 종가 +5%)보다 높고 별지점보다 낮게 마감 → 매수·쿼터매도 없이 지정가만: ¾ 매도·¼ 남김
+  const SB = S({ splits: 20, targetProfit: 15, bigNumPercent: 5 });
+  const f1 = E.compute(SB, E.simulate(SB, base).txs);
+  const c1 = Math.round((f1.starPrice - 0.5) * 100) / 100, b1 = E.simulate(SB, base.concat([c1]), base.concat([60])), l1 = b1.txs[b1.txs.length - 1];
+  eq('고가 체결: 지정가만 → ¾ 매도·¼ 남김', [c1 > base[3] * 1.05, l1.type, l1.quantity, l1.price, E.compute(SB, b1.txs).totalQuantity],
+     [true, 'limit_sell', f1.totalQuantity - Math.max(1, Math.floor(f1.totalQuantity / 4)), f1.limitSellPrice, Math.max(1, Math.floor(f1.totalQuantity / 4))]);
+  // ② 별지점 이상 마감 + 고가가 지정가에 닿음 → 쿼터매도 + 지정가 → 보유 0 · 회차 종료
+  const b4 = E.simulate(SB, base.concat([Math.round((f1.starPrice + 0.5) * 100) / 100]), base.concat([60]));
+  eq('고가 체결: 쿼터매도 + 지정가 → 회차 종료', [b4.endDay, E.compute(SB, b4.txs).totalQuantity], [4, 0]);
+  // ③ 고가가 지정가에 닿은 뒤 급락해 LOC 매수도 체결 → '지정가+매수' (T×0.25+1/0.5)
+  const b2 = E.simulate(S({ splits: 20, targetProfit: 15 }), base.concat([47]), base.concat([60])), l2 = b2.txs[b2.txs.length - 1];
+  eq('고가 체결: 지정가 + 종가 매수', [l2.type.indexOf('limit_sell_buy') === 0, l2.sellPrice, l2.sellQuantity > 0, l2.quantity > 0], [true, f1.limitSellPrice, true, true]);
+  const b3 = E.simulate(S({ splits: 20, targetProfit: 15 }), base.concat([52]));
+  eq('고가 없으면 종가로 판단 (지정가 미체결)', b3.txs.some(t => t.type === 'limit_sell'), false);
+  // 여러 회차 백테스트: 매일 평가금 = 엔진 compute 결과와 일치
+  const px = [], hx = []; for (let i = 0; i < 400; i++) { const p = 50 * Math.exp(0.35 * Math.sin(i / 23) + i / 900) ; px.push(Math.round(p * 100) / 100); hx.push(Math.round(p * 1.02 * 100) / 100); }
+  const bt = E.backtest(S({ splits: 20 }), px, 20000, hx), c0 = bt.cycles[0];
+  const s0 = E.simulate(S({ splits: 20, totalCapital: 20000 }), px.map(x => x * 50 / px[0]), hx.map(x => x * 50 / px[0]));
+  const v0 = E.compute(S({ splits: 20, totalCapital: 20000 }), s0.txs);
+  eq('백테스트: 회차 여러 번 · 첫 회차 평가금 일치', [bt.cycles.length > 2, Math.abs(bt.eq[c0.days] - v0.remainingCapital) < 0.01, bt.eq.filter(v => v == null).length], [true, true, 0]);
   return R;
 }"""
 
@@ -204,17 +226,27 @@ def main():
           const sim = [...g.querySelectorAll('[data-sim]')].filter(e => !e.textContent.trim()).length;
           window.mhGuide('mhg-3-1'); await new Promise(r => setTimeout(r, 400));
           const prog = document.getElementById('mhg-prog-txt').textContent;
+          const bt = () => { const b = document.getElementById('mhbt-body'); return b ? { rows: b.querySelectorAll('.mhbt-tbl tbody tr').length, cards: b.querySelectorAll('.mhbt-card').length, txt: b.textContent } : null; };
+          for (let i = 0; i < 40 && !(bt() && /계산 \\d{4}-/.test(bt().txt) && document.getElementById('mhbt')._bt); i++) await new Promise(r => setTimeout(r, 250));
+          const bt0 = bt(); document.querySelector('#mhbt [data-bt-tk="SOXL"]').click(); await new Promise(r => setTimeout(r, 300));
+          const bt1 = bt(); document.querySelector('#mhbt [data-bt-bg="5"]').click(); await new Promise(r => setTimeout(r, 300));
+          const bt2 = bt(), btOn = [...document.querySelectorAll('#mhbt .mhbt-seg button.on')].map(b => b.textContent);
           return { chapters: g.querySelectorAll('details.mhg-ch').length, terms: g.querySelectorAll('dl.mhg-dl dt').length,
-                   asof, sim, opened: document.getElementById('mhg-3-1').open, hash: location.hash, prog,
+                   bt0, bt1, bt2, btOn, asof, sim, opened: document.getElementById('mhg-3-1').open, hash: location.hash, prog,
                    ui: root ? root.children.length : 0, store: !!(window.MHdebug && window.MHdebug.store) };
         }""")
         if g.get('none'):
             fail('muhan', '가이드북(#mhg) 없음')
         else:
-            if g['chapters'] != 22: fail('muhan', '가이드북 장 %d개 (기대 22)' % g['chapters'])
+            if g['chapters'] != 23: fail('muhan', '가이드북 장 %d개 (기대 23)' % g['chapters'])
             if g['terms'] != 31: fail('muhan', '용어 %d개 (기대 31)' % g['terms'])
             if not g['asof'] or not all(s.strip() for s in g['asof']): fail('muhan', 'PART 1·3 자동 숫자 미적용 (기준일 표시 없음): %s' % g['asof'])
             if g['sim']: fail('muhan', '3-1 모의 계산 빈 칸 %d개' % g['sim'])
+            b0, b1, b2 = g.get('bt0') or {}, g.get('bt1') or {}, g.get('bt2') or {}
+            if b0.get('rows') != 10 or b0.get('cards') != 4: fail('muhan', '3-6 백테스트 표 이상 (행 %s · 카드 %s, 기대 10 · 4)' % (b0.get('rows'), b0.get('cards')))
+            if 'SOXL' not in (b1.get('txt') or '') or b1.get('txt') == b0.get('txt'): fail('muhan', '3-6 종목 전환(SOXL) 안 됨')
+            if '큰수 5%' not in (b2.get('txt') or '') or b2.get('rows') != 10: fail('muhan', '3-6 큰수 전환(5%) 안 됨')
+            if g.get('btOn') != ['SOXL', '5%']: fail('muhan', '3-6 선택 버튼 표시 이상: %s' % g.get('btOn'))
             if not g['opened'] or g['hash'] != '#mhg-3-1': fail('muhan', 'mhGuide 장 열기 실패 (%s, %s)' % (g['opened'], g['hash']))
             if not g['prog'].endswith('1개 읽음'): fail('muhan', '읽음 진행률 표시 이상 (새 브라우저에서 1개 장을 열었는데): ' + g['prog'])
             if not g['ui']: fail('muhan', '기록 화면(#mh-root)이 그려지지 않음')

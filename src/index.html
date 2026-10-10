@@ -2237,6 +2237,30 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   /* 가이드북 3-1 분할 수 비교 — 칸마다 '진행 상태'(작게) + '결과'(굵게) 두 줄 */
   .guide .mhg-sim td, .guide .mhg-sim td:last-child { text-align:left; font-family:var(--font); font-size:12px; color:var(--text2); min-width:7.6em; }
   .guide .mhg-sim td:first-child { min-width:8.4em; }
+  /* 3-6 실제 일봉 백테스트 (data/muhan_bt.json) */
+  .mhbt-ctrl { display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; margin:12px 0 10px; font-size:12px; color:var(--text3); }
+  .mhbt-seg { display:inline-flex; border:1px solid var(--card-border); border-radius:10px; overflow:hidden; }
+  .mhbt-seg button { border:0; background:transparent; color:var(--text2); font:inherit; font-size:12.5px; font-weight:600; padding:6px 12px; cursor:pointer; }
+  .mhbt-seg button + button { border-left:1px solid var(--card-border); }
+  .mhbt-seg button.on { background:var(--accent); color:#fff; }
+  .mhbt-cards { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:8px; margin:0 0 12px; }
+  .mhbt-card { background:rgba(var(--fg-rgb),.035); border:1px solid var(--card-border); border-radius:12px; padding:11px 12px; min-width:0; }
+  .mhbt-card.bh { background:rgba(254,152,0,.07); border-color:rgba(254,152,0,.3); }
+  .mhbt-card.def { background:rgba(49,130,246,.07); border-color:rgba(49,130,246,.3); }
+  .mhbt-k { font-size:11px; font-weight:700; color:var(--text3); }
+  .mhbt-n { font-size:11.5px; color:var(--text2); margin-top:2px; overflow-wrap:anywhere; }
+  .mhbt-v { font-family:var(--mono); font-size:20px; font-weight:800; color:var(--text); margin:4px 0 2px; }
+  .mhbt-s { font-size:11.5px; line-height:1.55; color:var(--text3); }
+  .guide .mhbt-tbl td, .guide .mhbt-tbl th { text-align:right; font-family:var(--mono); font-size:12.5px; }
+  .guide .mhbt-tbl td:first-child, .guide .mhbt-tbl th:first-child { text-align:left; font-family:var(--font); }
+  .mhbt-tbl small { display:block; font-family:var(--font); font-size:11px; color:var(--text3); font-weight:400; }
+  .mhbt-tbl tr.best td { background:rgba(49,130,246,.08); }
+  .mhbt-tag { display:inline-block; margin-left:4px; font-size:10px; font-weight:700; color:var(--accent); }
+  .mhbt-yr { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:6px; margin-top:10px; }
+  .mhbt-yr div { background:rgba(var(--fg-rgb),.035); border-radius:8px; padding:6px 8px; font-size:11.5px; color:var(--text3); }
+  .mhbt-yr b { color:var(--text); font-family:var(--mono); font-weight:700; } .mhbt-yr .neg { color:var(--down, #3182f6); } .mhbt-yr .pos { color:var(--up, #f04452); }
+  @media (max-width:900px) { .mhbt-cards { grid-template-columns:repeat(2, minmax(0,1fr)); } }
+  @media (max-width:600px) { .mhbt-yr { grid-template-columns:repeat(2, minmax(0,1fr)); } .mhbt-v { font-size:18px; } .guide .mhbt-tbl td, .guide .mhbt-tbl th { padding-left:6px; padding-right:6px; } }
   .mhg-sim .sim-s { display:block; color:var(--text3); font-size:11.5px; line-height:1.45; }
   .mhg-sim .sim-r { display:block; margin-top:2px; font-weight:700; color:var(--text); font-family:var(--mono); word-break:keep-all; }
   .guide .g-tbl tr:last-child td { border-bottom:none; }
@@ -10736,7 +10760,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <p class="mhg-kicker">GUIDEBOOK · 처음이라면 여기부터</p>
         <h2 id="mhg-h">무한매수법 가이드북</h2>
         <p class="mhg-lead">3배 레버리지 ETF가 어떻게 움직이는지부터 무한매수법 4.0의 규칙, 하루 주문 루틴, 숫자로 보는 분석까지 순서대로 정리했습니다. 처음 듣는 분도 위에서부터 차례로 읽으면 이 기록 도구를 바로 쓸 수 있습니다.</p>
-        <div class="mhg-prog" aria-live="polite"><div class="mhg-prog-bar"><i id="mhg-prog-fill"></i></div><span id="mhg-prog-txt">22개 장 중 0개 읽음</span></div>
+        <div class="mhg-prog" aria-live="polite"><div class="mhg-prog-bar"><i id="mhg-prog-fill"></i></div><span id="mhg-prog-txt">23개 장 중 0개 읽음</span></div>
         <p class="mhg-origin"><span class="mhg-origin-k">창시자</span><span><b>라오어</b> — 무한매수법을 만들고 규칙을 개정해 온 분입니다. 공식 규칙은 라오어님이 운영하는 <a href="https://cafe.naver.com/infinitebuying" target="_blank" rel="noopener">네이버 카페 ↗</a>와 책 『라오어의 미국주식 무한매수법』(알키, 2021)에서 공개됩니다.</span></p>
       </div>
 
@@ -10754,7 +10778,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <nav class="mhg-toc" aria-label="가이드북 목차">
         <a class="mhg-toc-c" href="#mhg-p1"><span class="mhg-toc-n">PART 1</span><b>레버리지 ETF 기초</b><small>상품부터 이해하기 · 7장</small></a>
         <a class="mhg-toc-c" href="#mhg-p2"><span class="mhg-toc-n">PART 2</span><b>무한매수법 실전 가이드</b><small>규칙과 하루 루틴 · 9장</small></a>
-        <a class="mhg-toc-c" href="#mhg-p3"><span class="mhg-toc-n">PART 3</span><b>숫자로 보는 분석</b><small>규칙 뒤의 계산 · 5장</small></a>
+        <a class="mhg-toc-c" href="#mhg-p3"><span class="mhg-toc-n">PART 3</span><b>숫자로 보는 분석</b><small>규칙 뒤의 계산 · 6장</small></a>
         <a class="mhg-toc-c" href="#mhg-dict"><span class="mhg-toc-n">부록</span><b>용어 사전</b><small>헷갈리는 말 한곳에</small></a>
       </nav>
       <div class="mhg-path"><b>추천 순서</b> <span>1-1 레버리지 구조</span><i>→</i><span>1-2 변동성 끌림</span><i>→</i><span>2-1 한눈에 보기</span><i>→</i><span>2-2 자금 설계</span><i>→</i><span>2-3 핵심 용어</span><i>→</i><span>2-4 하루 루틴</span><i>→</i><span>2-9 흔한 실수</span></div>
@@ -10985,7 +11009,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
       <!-- ═════ PART 3 ═════ -->
       <h3 class="mhg-part" id="mhg-p3"><span>PART 3</span>숫자로 보는 분석 — 규칙 뒤의 계산</h3>
-      <p class="mhg-part-lead">규칙의 숫자가 실제로 무엇을 바꾸는지 직접 계산해 봤습니다. 아래 가상 시나리오는 이 도구와 같은 계산 엔진으로 TQQQ · 원금 $20,000 · 처음 가격 $100에서 돌린 결과이며, 장중 고가·일부 체결·수수료·세금은 빼고 종가만으로 체결을 판단한 단순화 모델입니다.</p>
+      <p class="mhg-part-lead">규칙의 숫자가 실제로 무엇을 바꾸는지 직접 계산해 봤습니다. 3-1장의 가상 시나리오는 이 도구와 같은 계산 엔진으로 TQQQ · 원금 $20,000 · 처음 가격 $100에서 돌린 결과이며, 장중 고가·일부 체결·수수료·세금은 빼고 종가만으로 체결을 판단한 단순화 모델이고, <b>3-6장은 TQQQ·SOXL 실제 일봉으로 돌린 백테스트</b>입니다.</p>
 
       <details class="mhg-ch" id="mhg-3-1"><summary><span class="mhg-no">3-1</span><span class="mhg-t">20분할과 40분할은 무엇을 바꾸나<small>분할 수는 ‘평단’이 아니라 ‘버티는 시간’을 바꿉니다</small></span><span class="mhg-min">5분</span></summary><div class="mhg-body">
         <div class="table-scroll"><table class="g-tbl mhg-sim"><thead><tr><th>시나리오 (60거래일)</th><th>20분할</th><th>30분할</th><th>40분할</th></tr></thead><tbody>
@@ -11050,6 +11074,24 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <li><b>사람의 한계</b> — −80% 구간에서도 매일 규칙대로 주문하는 것은 계산보다 훨씬 어렵습니다.</li>
         </ul>
         <p class="mhg-one">한 줄 요약 — 백테스트는 ‘가능성’을 보여 줄 뿐, 내가 얻을 수익을 약속하지 않습니다.</p>
+      </div></details>
+
+      <details class="mhg-ch" id="mhg-3-6"><summary><span class="mhg-no">3-6</span><span class="mhg-t">실제 과거 데이터 백테스트 — TQQQ·SOXL<small>분할 수·목표%·큰수%를 바꾸면 결과가 얼마나 달라졌나</small></span><span class="mhg-min">6분</span></summary><div class="mhg-body">
+        <p>이 기록 도구와 <b>같은 계산 엔진</b>으로 TQQQ·SOXL의 상장 첫날부터 어제까지 실제 일봉을 하루씩 따라가며 무한매수법을 돌렸습니다. 분할 수 3가지 × 목표% 3가지 × 큰수% 3가지 = 27개 설정을 비교하고, <b>그냥 사서 들고 있었을 때</b>와 나란히 놓았습니다. 결과는 매일 새 시세로 자동으로 다시 계산됩니다.</p>
+        <div id="mhbt" data-bt-tk="TQQQ" data-bt-bg="12">
+          <div class="mhbt-ctrl" role="group" aria-label="백테스트 보기 설정">
+            <span>종목</span><span class="mhbt-seg"><button type="button" data-bt-tk="TQQQ" class="on">TQQQ</button><button type="button" data-bt-tk="SOXL">SOXL</button></span>
+            <span>큰수</span><span class="mhbt-seg"><button type="button" data-bt-bg="5">5%</button><button type="button" data-bt-bg="12" class="on">12%</button><button type="button" data-bt-bg="20">20%</button></span>
+          </div>
+          <div id="mhbt-body"><div class="mhbt-cards"><div class="mhbt-card bh"><div class="mhbt-k">그냥 보유했다면</div><div class="mhbt-n">TQQQ 매수 후 그대로</div><div class="mhbt-v">+42.8%</div><div class="mhbt-s">연평균 · 최대 낙폭 −81.8%<br>시작 연도별 중앙값 +39.8% · 최악 +14.4%</div></div><div class="mhbt-card def"><div class="mhbt-k">라오어 기본 설정</div><div class="mhbt-n">20분할 · 목표 15% · 큰수 12%</div><div class="mhbt-v">+22.0%</div><div class="mhbt-s">연평균 · 최대 낙폭 −53.7%<br>시작 연도별 중앙값 +20.5% · 최악 +13.5%</div></div><div class="mhbt-card "><div class="mhbt-k">전체 기간 수익 1위</div><div class="mhbt-n">20분할 · 목표 20% · 큰수 5%</div><div class="mhbt-v">+23.6%</div><div class="mhbt-s">연평균 · 최대 낙폭 −42.3%<br>시작 연도별 중앙값 +23.1% · 최악 +17.0%</div></div><div class="mhbt-card "><div class="mhbt-k">낙폭이 가장 작은 설정</div><div class="mhbt-n">40분할 · 목표 10% · 큰수 20%</div><div class="mhbt-v">+18.2%</div><div class="mhbt-s">연평균 · 최대 낙폭 −40.2%<br>시작 연도별 중앙값 +19.1% · 최악 +13.8%</div></div></div><div class="table-scroll"><table class="g-tbl mhbt-tbl"><thead><tr><th>설정 (큰수 12%)</th><th>연평균</th><th>최대 낙폭</th><th>시작 연도별<small>중앙값 · 최악</small></th></tr></thead><tbody><tr><td><b>20분할 · 10%</b><small>회차 127 · 손실 11 · 리버스 17</small></td><td>+20.7%</td><td>−54.7%</td><td>+19.0%<small>최악 +13.5%</small></td></tr><tr class="best"><td><b>20분할 · 15%</b><span class="mhbt-tag">기본</span><span class="mhbt-tag">★ 1위</span><small>회차 62 · 손실 6 · 리버스 9</small></td><td>+22.0%</td><td>−53.7%</td><td>+20.5%<small>최악 +13.5%</small></td></tr><tr><td><b>20분할 · 20%</b><small>회차 26 · 손실 5 · 리버스 6</small></td><td>+21.3%</td><td>−50.1%</td><td>+20.2%<small>최악 +11.6%</small></td></tr><tr><td><b>30분할 · 10%</b><small>회차 123 · 손실 6 · 리버스 9</small></td><td>+20.8%</td><td>−45.6%</td><td>+20.3%<small>최악 +15.7%</small></td></tr><tr><td><b>30분할 · 15%</b><small>회차 62 · 손실 3 · 리버스 6</small></td><td>+20.7%</td><td>−53.7%</td><td>+19.7%<small>최악 +13.0%</small></td></tr><tr><td><b>30분할 · 20%</b><small>회차 30 · 손실 1 · 리버스 3</small></td><td>+20.5%</td><td>−50.0%</td><td>+20.1%<small>최악 +12.4%</small></td></tr><tr><td><b>40분할 · 10%</b><small>회차 116 · 손실 5 · 리버스 6</small></td><td>+18.6%</td><td>−40.3%</td><td>+19.1%<small>최악 +13.8%</small></td></tr><tr><td><b>40분할 · 15%</b><small>회차 64 · 손실 3 · 리버스 4</small></td><td>+18.9%</td><td>−54.4%</td><td>+18.4%<small>최악 +14.4%</small></td></tr><tr><td><b>40분할 · 20%</b><small>회차 32 · 손실 2 · 리버스 3</small></td><td>+20.6%</td><td>−47.8%</td><td>+20.2%<small>최악 +16.1%</small></td></tr><tr><td><b>그냥 보유</b><small>비교 기준</small></td><td>+42.8%</td><td>−81.8%</td><td>+39.8%<small>최악 +14.4%</small></td></tr></tbody></table></div><p class="g-cap">2010.02 → 2026.10.09 · 시작 연도 14개(2011~2024년) · 최대 낙폭은 평가금(현금 + 보유 주식) 기준 · 계산 2026-10-10</p><div class="mhg-key"><b>TQQQ 결과 요약</b><br>기본 설정(20분할 · 목표 15% · 큰수 12%)은 연 +22.0%로, 그냥 보유(연 +42.8%)보다 수익은 연 20.8%p 낮았지만 최대 낙폭은 −53.7% 대 −81.8%로 28.1%p 얕았습니다.<br>매년 1월에 시작한 14번 중 그냥 보유보다 수익이 컸던 해는 0번입니다.<br>분할 수는 20분할 +21.1% &gt; 30분할 +20.7% &gt; 40분할 +19.1%, 목표%는 20% +20.8% &gt; 15% +20.5% &gt; 10% +19.7% 순(같은 값끼리 평균 연 수익률)이었고, 큰수%는 5% +20.5% · 12% +20.5% · 20% +20.0%로 차이가 작았습니다.</div><details class="mhbt-yrs"><summary class="mhg-link" style="cursor:pointer;margin-top:12px">연도별 수익률 보기 — 기본 설정 vs 그냥 보유</summary><div class="mhbt-yr"><div>2010(상장 후)<br>무한 <b class="pos">+28.4%</b> · 보유 <b class="pos">+78.0%</b></div><div>2011<br>무한 <b class="pos">+24.9%</b> · 보유 <b class="neg">−8.0%</b></div><div>2012<br>무한 <b class="pos">+16.4%</b> · 보유 <b class="pos">+52.3%</b></div><div>2013<br>무한 <b class="pos">+40.0%</b> · 보유 <b class="pos">+139.7%</b></div><div>2014<br>무한 <b class="pos">+27.8%</b> · 보유 <b class="pos">+57.0%</b></div><div>2015<br>무한 <b class="pos">+15.5%</b> · 보유 <b class="pos">+17.2%</b></div><div>2016<br>무한 <b class="pos">+6.6%</b> · 보유 <b class="pos">+11.4%</b></div><div>2017<br>무한 <b class="pos">+32.9%</b> · 보유 <b class="pos">+118.1%</b></div><div>2018<br>무한 <b class="pos">+6.9%</b> · 보유 <b class="neg">−19.9%</b></div><div>2019<br>무한 <b class="pos">+42.6%</b> · 보유 <b class="pos">+133.7%</b></div><div>2020<br>무한 <b class="pos">+42.8%</b> · 보유 <b class="pos">+110.0%</b></div><div>2021<br>무한 <b class="pos">+31.0%</b> · 보유 <b class="pos">+83.0%</b></div><div>2022<br>무한 <b class="neg">−42.7%</b> · 보유 <b class="neg">−79.2%</b></div><div>2023<br>무한 <b class="pos">+45.7%</b> · 보유 <b class="pos">+193.1%</b></div><div>2024<br>무한 <b class="pos">+42.0%</b> · 보유 <b class="pos">+56.1%</b></div><div>2025<br>무한 <b class="pos">+19.0%</b> · 보유 <b class="pos">+33.2%</b></div><div>2026(연중)<br>무한 <b class="pos">+24.6%</b> · 보유 <b class="pos">+54.2%</b></div></div></details><p class="g-cap">기본 설정의 마지막 회차는 2026.9에 시작해 아직 진행 중(평가 +1.2%)입니다.</p></div>
+        </div>
+        <ul class="g-list">
+          <li><b>계산 방식</b> — 원금 $20,000으로 시작해 회차가 끝나면 번 돈까지 다음 회차 원금으로(복리) 이어 갑니다. LOC 주문은 그날 종가로, 목표% 지정가 매도는 그날 정규장 <b>고가</b>가 지정가에 닿으면 지정가로 체결된 것으로 봅니다. 원금이 바닥나면 리버스모드까지 규칙대로 진행합니다.</li>
+          <li><b>‘시작 연도별’</b> — 같은 설정을 매년 1월 첫 거래일에 시작해 오늘까지 돌린 연평균 수익률의 중앙값과 가장 나빴던 해입니다. 언제 시작했는지(운)에 결과가 얼마나 흔들리는지 보여 줍니다.</li>
+          <li><b>빠진 것</b> — 수수료·환전 비용·양도세(22%), 남는 현금의 이자(파킹 통장·MMF), 프리·애프터장 체결, 일부만 체결된 날은 넣지 않았습니다. 수정주가라 분배금도 빠져 있습니다.</li>
+          <li><b>읽는 법</b> — 2010년 이후는 미국 기술주의 보기 드문 강세장이었습니다. 표에서 가장 좋았던 설정은 ‘과거에 가장 잘 맞았던 설정’일 뿐이니(3-5장 과최적화), 수익률 1위보다 <b>최대 낙폭과 시작 연도별 최악</b>을 함께 보고 고르세요.</li>
+        </ul>
+        <p class="mhg-one">한 줄 요약 — 무한매수법은 그냥 들고 있는 것보다 수익을 덜 가져가는 대신, 낙폭을 줄이는 방법입니다. 숫자는 매일 새 시세로 다시 계산됩니다.</p>
       </div></details>
 
       <!-- ═════ 용어 사전 ═════ -->
@@ -11555,7 +11597,7 @@ var SITE_EN = (document.documentElement.getAttribute('lang') || '').indexOf('en'
     return Promise.race([p, new Promise(function (_, rej) { setTimeout(function () { rej(new Error('timeout')); }, ms); })]);
   }
   /* 파일별 갱신 주기(신선도)와 다운로드 제한 시간 — 큰 파일을 불필요하게 두 번 받지 않도록 */
-  var FRESH_MS = { 'apt_rank.json': 4 * 3600e3, 'salary_rank.json': 7 * 86400e3, 'asset_rank.json': 7 * 86400e3, 'mcap.json': 26 * 3600e3, 'etfcagr.json': 7 * 3600e3, 'history.json': 22 * 3600e3, 'dxy.json': 7 * 3600e3, 'home.json': 7 * 3600e3, 'whatif.json': 20 * 3600e3, 'apt_area.json': 26 * 3600e3, 'realty.json': 7 * 86400e3 };   /* 기본 40분 */
+  var FRESH_MS = { 'apt_rank.json': 4 * 3600e3, 'salary_rank.json': 7 * 86400e3, 'asset_rank.json': 7 * 86400e3, 'mcap.json': 26 * 3600e3, 'etfcagr.json': 7 * 3600e3, 'history.json': 22 * 3600e3, 'dxy.json': 7 * 3600e3, 'home.json': 7 * 3600e3, 'whatif.json': 20 * 3600e3, 'muhan_bt.json': 26 * 3600e3, 'apt_area.json': 26 * 3600e3, 'realty.json': 7 * 86400e3 };   /* 기본 40분 */
   var BIG = { 'apt_rank.json': 1, 'dxy.json': 1, 'etfcagr.json': 1, 'history.json': 1, 'compare.json': 1, 'muhan.json': 1, 'whatif.json': 1 };
   function getJSON(url, ms) {
     return timeout(nativeFetch(url, { cache: 'no-cache' }), ms || 6000)
@@ -21454,11 +21496,13 @@ var MHE = (function () {
      closes[0] = 시작 전날 종가, closes[1..] = 매일 종가. 주문표는 orders()를 그대로 쓰고,
      소진(T > 분할−1)되면 다음 날부터 리버스모드(첫날 MOC → 직전 5일 종가 평균 별지점), 종가 > 평단×(1−목표%)이면 다음 날 일반모드 복귀.
      회차가 끝나면(보유 0) 멈춤 */
-  function simulate(s, closes) {
+  /* highs(선택): 같은 날짜 순서의 일별 고가 — 지정가 매도는 장중 고가가 지정가에 닿으면 체결 (없으면 종가로 판단) */
+  function simulate(s, closes, highs) {
     var txs = [], rev = false, revFirst = false, exhaustDay = 0, revDays = 0, backs = 0, endDay = 0, maxT = 0;
     var dt = function (i) { var d = new Date(Date.UTC(2026, 9, 1) + i * 864e5); return d.toISOString().slice(0, 10); };
     for (var i = 1; i < closes.length; i++) {
       var st = compute(s, txs), pc = closes[i - 1], c = closes[i], date = dt(i), tx = null;
+      var h = highs && highs[i] > c ? highs[i] : c;
       if (st.phase === '종료') break;
       if (rev) {
         revDays++;
@@ -21469,23 +21513,25 @@ var MHE = (function () {
           if (o.type === 'buy' && c <= o.price) bq += o.quantity;
         });
         revFirst = false;
-        if (sq > 0) tx = { date: date, type: 'reverse_sell', price: c, quantity: Math.min(sq, st.totalQuantity) };
-        else if (bq > 0) tx = { date: date, type: 'reverse_quarter_buy', price: c, quantity: bq };
+        if (sq > 0) tx = { date: date, k: i, type: 'reverse_sell', price: c, quantity: Math.min(sq, st.totalQuantity) };
+        else if (bq > 0) tx = { date: date, k: i, type: 'reverse_quarter_buy', price: c, quantity: bq };
         if (tx) txs.push(tx);
         var a = compute(s, txs);
         if (a.totalQuantity > 0 && c > a.avgPrice * (1 - targetOf(s.ticker, s.targetProfit) / 100)) { rev = false; backs++; }
       } else {
-        var q = 0;
+        var q = 0, hold = st.totalQuantity;
         orders(st, s, undefined, pc).forEach(function (o) { if (o.type === 'buy' && c <= o.price) q += o.quantity; });
-        if (q > 0) {
-          /* 전반전에 평단 위·별지점 아래로 마감하면 별지점 몫만 → 절반 매수(+0.5), 그 밖은 1회 매수(+1) */
-          var half = st.phase === '전반전' && c > st.avgPrice;
-          txs.push({ date: date, type: half ? 'half_buy' : 'full_buy', price: c, quantity: q });
-        } else if (st.totalQuantity > 0) {
-          var qs = st.sellPoint > 0 && c >= st.sellPoint, ls = st.limitSellPrice > 0 && c >= st.limitSellPrice;
-          var qq = Math.max(1, Math.floor(st.totalQuantity / 4));
-          if (qs) txs.push({ date: date, type: 'quarter_sell', price: c, quantity: qq });
-          if (ls) txs.push({ date: date, type: 'limit_sell', price: st.limitSellPrice, quantity: st.totalQuantity - (qs ? qq : 0) });
+        /* 매도 주문표: 쿼터매도 ¼(별지점 LOC) + 나머지 ¾(목표% 지정가) */
+        var qq = hold > 0 ? Math.max(1, Math.floor(hold / 4)) : 0, rest = hold - qq;
+        var ls = rest > 0 && st.limitSellPrice > 0 && h >= st.limitSellPrice, qs = qq > 0 && st.sellPoint > 0 && c >= st.sellPoint;
+        /* 전반전에 평단 위·별지점 아래로 마감하면 별지점 몫만 → 절반 매수(+0.5), 그 밖은 1회 매수(+1) */
+        var half = st.phase === '전반전' && c > st.avgPrice;
+        if (q > 0 && ls) txs.push({ date: date, k: i, type: half ? 'limit_sell_buy_half' : 'limit_sell_buy_full', price: c, quantity: q,
+                                    sellPrice: st.limitSellPrice, sellQuantity: rest });          /* 장중 지정가 체결 뒤 종가 LOC 매수 */
+        else if (q > 0) txs.push({ date: date, k: i, type: half ? 'half_buy' : 'full_buy', price: c, quantity: q });
+        else {
+          if (qs) txs.push({ date: date, k: i, type: 'quarter_sell', price: c, quantity: qq });
+          if (ls) txs.push({ date: date, k: i, type: 'limit_sell', price: st.limitSellPrice, quantity: rest });
         }
       }
       var e = compute(s, txs); maxT = Math.max(maxT, e.tValue);
@@ -21500,8 +21546,38 @@ var MHE = (function () {
              pnlPct: (value - s.totalCapital) / s.totalCapital * 100, txs: txs };
   }
 
+  /* 실제 일봉 백테스트 — simulate(한 회차)를 회차가 끝날 때마다 이어서 돌림 (번 돈까지 다음 회차 원금 = 복리)
+     · 회차가 끝나면 보유가 0주라, 회차마다 가격 단위를 시작가 $50으로 바꿔도 수익률은 그대로이고
+       수정주가(예: TQQQ 2010년 $0.2)의 1센트·1주 반올림 왜곡만 사라짐
+     · highs: 일별 고가(지정가 매도 체결 판단) — 같은 배율로 바꿔 simulate 에 넘김
+     · eq[i] = i번째 날 종가 기준 평가금(현금 + 보유 × 종가) · cycles = 회차별 {시작일, 거래일 수, 손익, 리버스 여부} */
+  function backtest(s0, closes, cap, highs) {
+    var i = 0, cash = cap, eq = new Array(closes.length), cycles = [], open = false;
+    eq[0] = cap;
+    while (i < closes.length - 1) {
+      var k = 50 / closes[i], cl = closes.slice(i).map(function (x) { return x * k; }), s = {}, key;
+      var hl = highs ? highs.slice(i).map(function (x) { return x * k; }) : null;
+      for (key in s0) s[key] = s0[key];
+      s.totalCapital = cash;
+      var r = simulate(s, cl, hl), end = r.endDay || cl.length - 1, c = cash, q = 0, t = 0, txs = r.txs;
+      for (var j = 1; j <= end; j++) {
+        while (t < txs.length && txs[t].k === j) {
+          var x = txs[t++];
+          if (x.type === 'quarter_sell' || x.type === 'limit_sell' || x.type === 'reverse_sell') { c += x.price * x.quantity; q -= x.quantity; }
+          else { if (x.sellQuantity) { c += x.sellPrice * x.sellQuantity; q -= x.sellQuantity; } c -= x.price * x.quantity; q += x.quantity; }
+        }
+        eq[i + j] = c + q * cl[j];
+      }
+      cycles.push({ start: i, days: end, pnl: eq[i + end] / cash - 1, rev: r.exhaustDay > 0 });
+      cash = eq[i + end];
+      if (!r.endDay) { open = true; break; }
+      i += end;
+    }
+    return { eq: eq, cycles: cycles, open: open, final: cash };
+  }
+
   return {
-    simulate: simulate,
+    simulate: simulate, backtest: backtest,
     STD_SPLITS: STD_SPLITS, EXT_SPLITS: EXT_SPLITS, EXT_WARN: EXT_WARN, DEF_BIGNUM: DEF_BIGNUM,
     DEF_LOC_SHARES: DEF_LOC_SHARES, DEF_LOC_LINES: DEF_LOC_LINES, COMBO: COMBO, REVERSE: REVERSE,
     isExtSplits: isExtSplits, reverseMult: reverseMult, nextT: nextT, defaultTarget: defaultTarget, targetOf: targetOf,
@@ -22841,6 +22917,88 @@ if (typeof module !== 'undefined') module.exports = MHE;
   /* 탭 진입 시 호출 ([NAV] switchSubTab 의 훅) */
   window.muhanInit = function () { bind(); MH.now = new Date(); if (!SY.inited) { SY.inited = true; SY.uid = authUid(); if (SY.uid) SY.st = 'pull'; if (window.dcAuth && window.dcAuth.ready) window.dcAuth.ready().then(function (ok) { if (SY.can !== ok) { SY.can = ok; render(); } }).catch(function () {}); } render(); if (SY.uid && SY.st === 'pull') pull(); };
   window.MHdebug = { get store() { return store; }, derive: derive, render: render };
+})();
+
+/* [MHBT] 무한매수법 실제 일봉 백테스트 표 (가이드북 3-6) — data/muhan_bt.json(매일 Actions 가 엔진으로 계산)을 그림
+   render 는 순수 함수: 화면과 정적 HTML(검색엔진용) 스냅숏이 같은 함수로 만들어짐 */
+var MHBT = (function () {
+  /* [MHBT-RENDER] */
+  function render(d, tk, bg) {
+    var T = d && d.t && d.t[tk]; if (!T || !T.rows || !T.rows.length) return '';
+    var M = '−';
+    function p(v) { return v == null ? '-' : (v > 0 ? '+' : v < 0 ? M : '') + Math.abs(v).toFixed(1) + '%'; }
+    function e(x) { return String(x).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    function nm(r) { return r.sp + '분할 · 목표 ' + r.tg + '% · 큰수 ' + r.bg + '%'; }
+    function pick(f) { return T.rows.reduce(function (a, b) { return f(b, a) ? b : a; }); }
+    var rows = T.rows, def = rows.filter(function (r) { return r.id === d.def[tk]; })[0] || rows[0];
+    var best = pick(function (b, a) { return b.cagr > a.cagr; });
+    var steady = pick(function (b, a) { return b.rollMin > a.rollMin || (b.rollMin === a.rollMin && b.cagr > a.cagr); });
+    var calm = pick(function (b, a) { return b.mdd > a.mdd || (b.mdd === a.mdd && b.cagr > a.cagr); });
+    var bh = T.bh, ym = function (s) { return s ? +s.slice(0, 4) + '.' + +s.slice(5, 7) : ''; }, N = T.starts.length;
+    function card(cls, k, n, r) {
+      return '<div class="mhbt-card ' + cls + '"><div class="mhbt-k">' + k + '</div><div class="mhbt-n">' + e(n) + '</div><div class="mhbt-v">' + p(r.cagr) + '</div>' +
+        '<div class="mhbt-s">연평균 · 최대 낙폭 ' + p(r.mdd) + '<br>시작 연도별 중앙값 ' + p(r.rollMed) + ' · 최악 ' + p(r.rollMin) + '</div></div>';
+    }
+    var h = '<div class="mhbt-cards">' + card('bh', '그냥 보유했다면', tk + ' 매수 후 그대로', bh) + card('def', '라오어 기본 설정', nm(def), def) +
+      card('', '전체 기간 수익 1위', nm(best), best) +
+      (steady !== best ? card('', '가장 꾸준한 설정', nm(steady) + ' (어느 해에 시작해도 최악이 가장 좋았음)', steady)
+                       : card('', '낙폭이 가장 작은 설정', nm(calm), calm)) + '</div>';
+    var list = rows.filter(function (r) { return r.bg === +bg; }), top = list.reduce(function (a, b) { return b.cagr > a.cagr ? b : a; }, list[0]);
+    h += '<div class="table-scroll"><table class="g-tbl mhbt-tbl"><thead><tr><th>설정 (큰수 ' + e(bg) + '%)</th><th>연평균</th><th>최대 낙폭</th><th>시작 연도별<small>중앙값 · 최악</small></th></tr></thead><tbody>';
+    list.forEach(function (r) {
+      h += '<tr' + (r === top ? ' class="best"' : '') + '><td><b>' + r.sp + '분할 · ' + r.tg + '%</b>' + (r.id === def.id ? '<span class="mhbt-tag">기본</span>' : '') + (r === top ? '<span class="mhbt-tag">★ 1위</span>' : '') +
+        '<small>회차 ' + r.cycles + ' · 손실 ' + r.loss + ' · 리버스 ' + r.rev + '</small></td><td>' + p(r.cagr) + '</td><td>' + p(r.mdd) + '</td><td>' + p(r.rollMed) + '<small>최악 ' + p(r.rollMin) + '</small></td></tr>';
+    });
+    h += '<tr><td><b>그냥 보유</b><small>비교 기준</small></td><td>' + p(bh.cagr) + '</td><td>' + p(bh.mdd) + '</td><td>' + p(bh.rollMed) + '<small>최악 ' + p(bh.rollMin) + '</small></td></tr></tbody></table></div>';
+    h += '<p class="g-cap">' + e(T.from.slice(0, 7).replace('-', '.') + ' → ' + T.to.replace(/-/g, '.')) + ' · 시작 연도 ' + N + '개(' + T.starts[0] + '~' + T.starts[N - 1] + '년) · ' +
+      '최대 낙폭은 평가금(현금 + 보유 주식) 기준 · 계산 ' + e((d.updated || '').slice(0, 10)) + '</p>';
+    /* 자동 해설 */
+    function avg(f, v) { var a = rows.filter(function (r) { return r[f] === v; }); return a.reduce(function (s, r) { return s + r.cagr; }, 0) / a.length; }
+    function spread(f, vals) { var a = vals.map(function (v) { return [v, avg(f, v)]; }).sort(function (x, y) { return y[1] - x[1]; }); return a; }
+    var sp = spread('sp', d.splits), tg = spread('tg', d.targets[tk]), bgs = spread('bg', d.bigs);
+    var gap = Math.round((bh.cagr - def.cagr) * 10) / 10, mddGap = Math.round((def.mdd - bh.mdd) * 10) / 10;
+    var line1 = '기본 설정(' + nm(def) + ')은 연 ' + p(def.cagr) + '로, 그냥 보유(연 ' + p(bh.cagr) + ')보다 ' +
+      (gap > 0 ? '수익은 연 ' + gap.toFixed(1) + '%p 낮았지만' : '수익도 연 ' + Math.abs(gap).toFixed(1) + '%p 높았고') +
+      ' 최대 낙폭은 ' + p(def.mdd) + ' 대 ' + p(bh.mdd) + (mddGap > 0 ? '로 ' + mddGap.toFixed(1) + '%p 얕았습니다.' : '였습니다.');
+    var line2 = '매년 1월에 시작한 ' + N + '번 중 그냥 보유보다 수익이 컸던 해는 ' + def.beat + '번입니다.';
+    var line3 = '분할 수는 ' + sp.map(function (x) { return x[0] + '분할 ' + p(Math.round(x[1] * 10) / 10); }).join(' > ') + ', 목표%는 ' +
+      tg.map(function (x) { return x[0] + '% ' + p(Math.round(x[1] * 10) / 10); }).join(' > ') + ' 순(같은 값끼리 평균 연 수익률)이었고, 큰수%는 ' +
+      bgs.map(function (x) { return x[0] + '% ' + p(Math.round(x[1] * 10) / 10); }).join(' · ') + '로 차이가 ' + (Math.abs(bgs[0][1] - bgs[bgs.length - 1][1]) < 1.5 ? '작았습니다.' : '있었습니다.');
+    h += '<div class="mhg-key"><b>' + tk + ' 결과 요약</b><br>' + e(line1) + '<br>' + e(line2) + '<br>' + e(line3) + '</div>';
+    /* 연도별 (기본 설정 vs 보유) */
+    var yr = '';
+    T.years.forEach(function (y, i) {
+      var a = def.ye[i] / (i ? def.ye[i - 1] : 1) - 1, b = bh.ye[i] / (i ? bh.ye[i - 1] : 1) - 1;
+      var c = function (v) { return '<b class="' + (v < 0 ? 'neg' : 'pos') + '">' + p(Math.round(v * 1000) / 10) + '</b>'; };
+      yr += '<div>' + y + (i === 0 ? '(상장 후)' : i === T.years.length - 1 ? '(연중)' : '') + '<br>무한 ' + c(a) + ' · 보유 ' + c(b) + '</div>';
+    });
+    h += '<details class="mhbt-yrs"><summary class="mhg-link" style="cursor:pointer;margin-top:12px">연도별 수익률 보기 — 기본 설정 vs 그냥 보유</summary><div class="mhbt-yr">' + yr + '</div></details>';
+    if (def.open) h += '<p class="g-cap">기본 설정의 마지막 회차는 ' + ym(def.open.from) + '에 시작해 아직 진행 중(평가 ' + p(def.open.pnl) + (def.open.rev ? ' · 리버스모드' : '') + ')입니다.</p>';
+    return h;
+  }
+  /* [/MHBT-RENDER] */
+  var data = null;
+  function paint() {
+    var w = document.getElementById('mhbt'), b = document.getElementById('mhbt-body'); if (!w || !b || !data) return;
+    var tk = w.getAttribute('data-bt-tk'), bg = w.getAttribute('data-bt-bg'), h = render(data, tk, bg);
+    if (h) b.innerHTML = h;
+    w.querySelectorAll('.mhbt-seg button').forEach(function (x) {
+      var on = x.hasAttribute('data-bt-tk') ? x.getAttribute('data-bt-tk') === tk : x.getAttribute('data-bt-bg') === bg;
+      x.classList.toggle('on', on); x.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+  }
+  function init() {
+    var w = document.getElementById('mhbt'); if (!w || w._bt) return; w._bt = true;
+    w.addEventListener('click', function (ev) {
+      var x = ev.target.closest && ev.target.closest('.mhbt-seg button'); if (!x) return;
+      if (x.hasAttribute('data-bt-tk')) w.setAttribute('data-bt-tk', x.getAttribute('data-bt-tk'));
+      if (x.hasAttribute('data-bt-bg')) w.setAttribute('data-bt-bg', x.getAttribute('data-bt-bg'));
+      paint();
+    });
+    if (window.mdLoad) window.mdLoad('muhan_bt.json').then(function (j) { data = j; paint(); }).catch(function () {});
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  return { render: render, paint: paint };
 })();
 
 /* [GUIDEBOOK:muhan] 가이드북 — 읽은 장 표시(이 기기) · 목차/주소(#mhg-…) 이동 · 무한매수법 화면의 📘 버튼에서 열기 */
