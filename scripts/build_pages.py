@@ -79,6 +79,20 @@ def load_nav_labels(src):
         sys.exit(f'메뉴에서 탭 이름을 찾지 못했습니다: {missing}')
 
 
+def fill_icons(src):
+    """<i class="dc-ico" data-ico="drop-salary"></i> → 그 id 를 가진 메뉴 버튼의 아이콘(SVG)을 그대로 넣음.
+    홈 카드·탭 아이콘이 메뉴 아이콘과 한 곳(메뉴 버튼)에서만 정의되도록 (메뉴 아이콘을 바꾸면 따라 바뀜)"""
+    def one(m):
+        i = src.find(f'id="{m.group(1)}"')
+        if i < 0:
+            sys.exit(f'아이콘 원본 id="{m.group(1)}" 이 없습니다 (data-ico)')
+        a = src.find('<svg', i); b = src.find('</svg>', a) + 6
+        svg = src[a:b]; e = svg.index('>') + 1                        # 여는 태그에서만 크기·인라인 스타일을 뺌 (크기는 CSS 가 정함)
+        svg = re.sub(r'\s(?:style|width|height)="[^"]*"', '', svg[:e]) + svg[e:]
+        return f'<i class="dc-ico"{m.group(2) or ""} aria-hidden="true">{svg}</i>'
+    return re.sub(r'<i class="dc-ico" data-ico="([\w-]+)"([^>]*)></i>', one, src)
+
+
 def tab_title(r):
     """브라우저 탭 제목: '디코딩 자본주의 | 탭 이름' (탭 이름은 메뉴 글자 그대로 — 메뉴를 바꾸면 제목도 따라 바뀜)"""
     if r['tab'] == 'home':   # 홈은 메뉴 글자('홈') 대신 사이트 한 줄 소개 — 검색 결과 제목
@@ -424,6 +438,7 @@ def write_if_changed(path, text):
 
 def main():
     src = open(SRC, encoding='utf-8').read()
+    src = fill_icons(src)
     check_structure(src)
     load_nav_labels(src)
     load_drop_tree(src)

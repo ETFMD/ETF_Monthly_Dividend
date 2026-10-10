@@ -283,6 +283,7 @@ def main():
           const R = [], ok = (name, v, info) => R.push({ name, ok: !!v, info }), t = id => (document.getElementById(id) || {}).textContent || '', W = ms => new Promise(r => setTimeout(r, ms));
           ok('제목에 "노동자에서 자본가로"', /노동자에서 자본가로/.test(document.querySelector('#page-home h1').textContent) && /AI/.test(document.querySelector('#page-home h1').textContent), '');
           ok('두 힘·하나의 답 카드 3개 · 숫자 채워짐', document.querySelectorAll('.hm-f').length === 3 && ['hm-k-cpi', 'hm-k-seoul', 'hm-k-spy'].every(id => /^연 [+−-]?\\d/.test(t(id))), ['hm-k-cpi', 'hm-k-seoul', 'hm-k-spy'].map(t));
+          ok('아이콘: 메뉴와 같은 선 아이콘(SVG) · 그림 문자 없음', document.querySelectorAll('.hm-tools .dc-ico svg').length === 12 && document.querySelectorAll('.hm-f-k .dc-ico svg, .hm-dtabs .dc-ico svg').length === 7 && !/\\p{Extended_Pictographic}/u.test(document.getElementById('page-home').textContent), (document.getElementById('page-home').textContent.match(/\\p{Extended_Pictographic}/gu) || []).slice(0, 5));
           ok('많이 찾는 도구 12개 · 6단계', document.querySelectorAll('.hm-tools .hm-tool').length === 12 && document.querySelectorAll('.hm-ps').length === 6, '');
           const panels = () => [...document.querySelectorAll('[data-hp-panel]')].map(p => p.hidden);
           ok('데이터 탭: 처음엔 첫 주제만', JSON.stringify(panels()) === '[false,true,true,true]', panels());
@@ -326,6 +327,7 @@ def main():
               ok('검색: 별칭·부분 일치', J.find('자산운용가').n === '펀드매니저' && J.find('개발자').n === '소프트웨어 개발자' && J.suggest('간호', 8).length >= 3 && J.POP.every(n => J.byName(n)), '');
               const t = id => document.getElementById(id).textContent, res = document.getElementById('jl-res');
               ok('주소 #job=간호사 로 결과가 열림', !res.hidden && t('jl-r-name') === '간호사' && /\\d/.test(t('jl-r-big')) && document.querySelectorAll('#jl-r-tl li').length >= 3, t('jl-r-name'));
+              ok('분야 아이콘: 선 아이콘(SVG) · 그림 문자 없음', document.querySelectorAll('#jl-all .jl-ico svg').length === 30 && document.querySelectorAll('#jl-pop .e svg').length === 8 && document.querySelectorAll('#jl-cats svg').length === 21 && !!document.querySelector('#jl-r-ico svg') && !/\\p{Extended_Pictographic}/u.test(['jl-pop', 'jl-top', 'jl-all', 'jl-cats', 'jl-rand', 'jl-r-ico'].map(t).join('')), '');
               ok('많이 찾는 직업 8개 · TOP 5 · 순위 30줄 · 분야 버튼 22개', document.querySelectorAll('#jl-pop .jl-card').length === 8 && document.querySelectorAll('#jl-top .jl-row').length === 5 && document.querySelectorAll('#jl-all .jl-row').length === 30 && document.querySelectorAll('#jl-cats button').length === 22, '');
               const q = document.getElementById('jl-q'); q.value = '자산운용가'; q.dispatchEvent(new Event('input', { bubbles: true })); await W(80);
               const first = (document.querySelector('#jl-sug li[data-job]') || {}).textContent || '';

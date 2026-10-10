@@ -1522,7 +1522,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .hm-job-sug a { font-size:12px; text-decoration:none; color:var(--text2); border:1px solid var(--card-border); border-radius:999px; padding:4px 10px; }
   .hm-job-sug a:hover { border-color:var(--c, #fe9800); color:var(--text); }
   .hm-job-sug .none { font-size:12px; color:var(--text3); }
-  .hm-tool i { font-style:normal; font-size:20px; line-height:1; margin-bottom:4px; }
+  /* 선 아이콘 공통 (메뉴 아이콘과 같은 SVG · 색은 글자색을 따름) — 메뉴 아이콘은 빌드 때 data-ico 로 그대로 복사 */
+  .dc-ico { display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; font-style:normal; line-height:0; }
+  .dc-ico svg, .jl-svg { width:18px; height:18px; display:block; flex-shrink:0; }
+  .hm-tool .dc-ico { width:34px; height:34px; border-radius:10px; background:var(--accent-dim); color:var(--accent); margin-bottom:6px; }
+  .hm-tool.hot .dc-ico { background:rgba(254,152,0,.14); color:#fe9800; }
+  .hm-f-k { display:flex; align-items:center; gap:6px; }
+  .hm-f-k .dc-ico svg { width:16px; height:16px; }
+  .hm-dtabs button { display:inline-flex; align-items:center; gap:6px; }
+  .hm-dtabs .dc-ico svg { width:15px; height:15px; }
+  .hm-job-sug a { display:inline-flex; align-items:center; gap:5px; }
+  .hm-job-sug .jl-svg { width:14px; height:14px; color:var(--text3); }
   .hm-tool.hot { border-color:rgba(254,152,0,.45); background:rgba(254,152,0,.06); }
   .hm-data { margin-top:36px; }
   .hm-dtabs { display:flex; flex-wrap:wrap; gap:6px; }
@@ -2049,26 +2059,29 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .jl-enter { position:absolute; right:14px; top:50%; transform:translateY(-50%); font:600 11.5px var(--font); color:var(--text3); border:1px solid var(--card-border); border-radius:8px; padding:4px 8px; background:rgba(var(--fg-rgb),.03); pointer-events:none; }
   .jl-sug { position:absolute; z-index:30; left:0; right:0; top:calc(100% + 6px); margin:0; padding:6px; list-style:none; background:var(--card); border:1px solid var(--card-border); border-radius:14px; box-shadow:0 12px 32px rgba(0,0,0,.14); max-height:360px; overflow-y:auto; background:var(--bg2); }
   .jl-sug li { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; cursor:pointer; font-size:14.5px; color:var(--text); }
+  .jl-sug li .jl-svg { color:var(--text3); }
   .jl-sug li small { margin-left:auto; font-size:11.5px; color:var(--text3); white-space:nowrap; }
   .jl-sug li.on, .jl-sug li:hover { background:rgba(49,130,246,.1); }
   .jl-sug li.none { cursor:default; color:var(--text3); font-size:13px; }
   .jl-sug li.none:hover { background:none; }
   .jl-or { margin:16px 0 0; font-size:13px; color:var(--text3); }
-  .jl-link { border:0; background:none; padding:0; font:inherit; font-weight:700; color:var(--accent); cursor:pointer; }
+  .jl-link { display:inline-flex; align-items:center; gap:5px; vertical-align:middle; border:0; background:none; padding:0; font:inherit; font-weight:700; color:var(--accent); cursor:pointer; }
+  .jl-link .dc-ico svg { width:15px; height:15px; }
   .jl-sec { margin-top:34px; }
   .jl-h2 { margin:0 0 12px; font-size:19px; font-weight:800; color:var(--text); }
   .jl-sub2 { margin:-6px 0 12px; font-size:12.5px; color:var(--text3); }
   .jl-pop { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; }
   .jl-card { display:flex; flex-direction:column; align-items:flex-start; gap:6px; min-width:0; text-align:left; border:1px solid var(--card-border); background:var(--card); border-radius:14px; padding:14px; cursor:pointer; font:inherit; color:var(--text); transition:border-color .15s, transform .15s; }
   .jl-card:hover { border-color:var(--accent); transform:translateY(-1px); }
-  .jl-card .e { font-size:22px; line-height:1; }
+  .jl-card .e { display:grid; place-items:center; width:34px; height:34px; border-radius:10px; background:var(--accent-dim); color:var(--accent); margin-bottom:2px; }
   .jl-card b { font-size:14px; font-weight:700; line-height:1.35; word-break:keep-all; }
   .jl-card small { font-size:12px; color:var(--text3); }
   .jl-card small em { font-style:normal; font-weight:800; font-family:var(--mono); color:var(--text); }
   /* 결과 카드 */
   .jl-res { margin-top:26px; background:var(--card); border:1.5px solid var(--card-border); border-radius:20px; padding:22px 22px 18px; scroll-margin-top:12px; }
   .jl-res-top { display:flex; align-items:center; gap:12px; }
-  .jl-res-ico { width:46px; height:46px; flex-shrink:0; display:grid; place-items:center; font-size:24px; border-radius:14px; background:rgba(var(--fg-rgb),.05); }
+  .jl-res-ico { width:46px; height:46px; flex-shrink:0; display:grid; place-items:center; border-radius:14px; background:var(--accent-dim); color:var(--accent); }
+  .jl-res-ico .jl-svg { width:24px; height:24px; }
   .jl-res-nm { min-width:0; flex:1; }
   .jl-res-nm p { margin:0; font-size:12px; color:var(--text3); }
   .jl-res-nm h2 { margin:2px 0 0; font-size:20px; font-weight:800; color:var(--text); word-break:keep-all; }
@@ -2112,6 +2125,8 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .jl-chip:hover, .jl-chips button:hover { border-color:var(--accent); color:var(--accent); }
   .jl-chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
   .jl-chips button.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .jl-chips button { display:inline-flex; align-items:center; gap:5px; }
+  .jl-chips .jl-svg { width:14px; height:14px; }
   .jl-bar { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
   .jl-bar-n { font-size:12px; color:var(--text3); }
   .jl-sort { display:inline-flex; border:1px solid var(--card-border); border-radius:10px; overflow:hidden; }
@@ -2126,7 +2141,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .jl-row:hover { background:rgba(49,130,246,.06); }
   .jl-row.cur { background:rgba(49,130,246,.1); }
   .jl-no { font-family:var(--mono); font-size:12.5px; color:var(--text3); text-align:right; }
-  .jl-ico { font-size:18px; text-align:center; }
+  .jl-ico { display:flex; justify-content:center; color:var(--text2); }
   .jl-nm { min-width:0; } .jl-nm b { display:block; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .jl-nm small { display:block; font-size:11.5px; color:var(--text3); }
   .jl-yr { font-family:var(--mono); font-weight:800; font-size:14px; }
   .jl-dt { font-size:12.5px; color:var(--text2); }
