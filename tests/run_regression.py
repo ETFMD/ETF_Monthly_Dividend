@@ -6,6 +6,7 @@
      가로 넘침(문서 폭 > 화면 폭)과 화면 밖으로 잘리는 요소(가로 스크롤 상자 안은 제외)를 찾음
   2. 콘솔 오류·페이지 스크립트 오류 0 (로컬에서 막히는 외부 Worker 호출의 CORS·네트워크 오류는 제외)
   3. 메뉴 항목 수(홈 + 도구 수) · 검색 결과 · 허브 카드 수(같은 그룹 도구 수)
+  5. 나의 직업 수명 계산기 — 직업 데이터·모델 방향(판단·면허·속도)·연구 순서·검색·주소·공유
   4. 무한매수법 — 라오어 카페 원문 예시 숫자로 계산 엔진 검사, 기록 화면 그리기, 가이드북(23장 · 용어 31개 · 자동 숫자 · 장 열기 · 3-6 실제 일봉 백테스트 표)
 
 사용법
@@ -254,6 +255,42 @@ def main():
         bad = [t for t, u in errs if not ignorable(t, u)]
         for t in bad[:3]:
             fail('muhan', '콘솔 오류: ' + t[:200])
+        # 나의 직업 수명 계산기 — 데이터·모델 방향·연구 순서·화면 동작
+        if os.path.isdir(os.path.join(ROOT, 'job-life')):
+            print('[4] 나의 직업 수명 계산기', flush=True)
+            errs.clear()
+            page.goto(base + 'job-life/#job=' + '간호사', wait_until='load'); page.wait_for_timeout(2000)
+            z = page.evaluate("""async () => {
+              const J = window.JL, D = window.JLdebug, R = [];
+              if (!J || !D) return [{ name: 'JL·JLdebug 없음', ok: false }];
+              const ok = (name, v, info) => R.push({ name, ok: !!v, info });
+              const jobs = D.jobs(), on = (x, sp) => { const r = J.calc(J.fromRow(x), sp || 'mid'); return r.onset == null ? 99 : r.onset; };
+              ok('직업 163개 · 업무 합 10 · 이름 중복 없음', jobs.length === 163 && jobs.every(x => x.D + x.P + x.H === 10) && new Set(jobs.map(x => x.n)).size === 163, jobs.length);
+              let mono = 0;
+              jobs.forEach(x => {
+                const a = on(x), j = on(Object.assign({}, x, { J: Math.min(5, x.J + 1) })), l = on(Object.assign({}, x, { L: Math.min(3, x.L + 1) })), r = on(Object.assign({}, x, { R: Math.max(1, x.R - 1) }));
+                if (j < a - 1e-9 || l < a - 1e-9 || r < a - 1e-9 || !(on(x, 'fast') <= a && a <= on(x, 'slow'))) mono++;
+              });
+              ok('모델 방향: 판단·면허↑ 반복성↓ 이면 늦어짐 · 빠름 ≤ 보통 ≤ 느림', mono === 0, mono + '개 위반');
+              const by = n => on(jobs.find(x => x.n === n));
+              const early = ['콜센터 상담원', '번역가', '데이터 입력원', '경리·회계사무원'].map(by), late = ['요양보호사', '배관공', '간호사', '외과 의사', '미용사'].map(by);
+              ok('연구 순서: 고노출(상담·번역·입력·경리) < 저노출(돌봄·설비·간호·외과·미용)', Math.max(...early) < Math.min(...late), [early, late]);
+              ok('한국은행 고노출 직업(회계사·자산운용가)이 돌봄·현장보다 이름', Math.max(by('공인회계사'), by('자산운용가(펀드매니저)')) < Math.min(by('요양보호사'), by('배관공')), '');
+              const t = id => document.getElementById(id).textContent;
+              ok('주소 #job=간호사 로 열림', /간호사/.test(t('jl-label')) && /\d/.test(t('jl-val')), t('jl-label'));
+              const q = document.getElementById('jl-q'); q.value = '개발자'; q.dispatchEvent(new Event('input', { bubbles: true }));
+              await new Promise(r => setTimeout(r, 150));
+              ok('검색(별칭 개발자 → 소프트웨어 개발자)', /소프트웨어 개발자/.test(t('jl-label')), t('jl-label'));
+              const mid = t('jl-val'); document.querySelector('.fc-seg[data-name="jl-spd"] [data-v="slow"]').click(); await new Promise(r => setTimeout(r, 150));
+              ok('속도 느림으로 바꾸면 수명이 바뀜', t('jl-val') !== mid, [mid, t('jl-val')]);
+              ok('자본소득 카드·비교표·공유 카드', /4% 규칙/.test(t('jl-cap')) && document.querySelectorAll('#jl-cmp tr').length >= 5 && window.dcShareSpec && window.dcShareSpec['job-life'], '');
+              return R;
+            }""")
+            for t in z:
+                if not t['ok']:
+                    fail('job-life', '%s: %s' % (t['name'], json.dumps(t.get('info'), ensure_ascii=False)))
+            for t in [t for t, u in errs if not ignorable(t, u)][:3]:
+                fail('job-life', '콘솔 오류: ' + t[:200])
         # 영어판 무한매수법 — 가이드북·3-6·자동 숫자가 영어로, 일부러 남긴 원어(translate=no) 밖에는 한글 없음
         if os.path.isdir(os.path.join(ROOT, 'en', 'muhan')):
             errs.clear()
