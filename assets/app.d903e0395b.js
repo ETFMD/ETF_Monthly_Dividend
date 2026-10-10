@@ -9772,6 +9772,20 @@ var MHE = (function () {
       list.push({ label: '', type: 'buy', method: 'LOC', price: p, quantity: perLine });
     }
   }
+  /* 큰수 매수 (cafe.naver.com/infinitebuying/53077 「<큰수 매수>에 대해서 정리드립니다」):
+     원래 주문표에서 큰수 가격 P 이상인 줄의 수량을 모두 더해 P 한 줄로 걸고, P 아래로는 1주씩 이어 건다
+     rows = 원래 주문표(메인 nMain줄 + 사다리) · 아래 줄이 lines개가 되도록 같은 식으로 사다리를 더 이어 감 */
+  function collapseBig(rows, nMain, P, amount, base, lines, perLine, tick, label, alt) {
+    var q = 0, below = [];
+    rows.forEach(function (r) { if (r.price >= P) q += r.quantity; else below.push(r); });
+    if (q === 0) return rows;
+    for (var i = rows.length - nMain + 1; below.length < lines && i < 10000; i++) {
+      var p = snap(Math.floor(amount / (base + i * perLine) * 100) / 100, tick);
+      if (p < 1) break;
+      if (p < P) below.push({ label: '', type: 'buy', method: 'LOC', price: p, quantity: perLine });
+    }
+    return [{ label: label, type: 'buy', method: 'LOC', price: P, quantity: q, altPrice: alt }].concat(below);
+  }
   /* 오늘의 주문표. rev = {starPrice, isFirstDay} (리버스모드) · close = 직전 종가 */
   function orders(st, s, rev, close) {
     var out = [];
@@ -9800,31 +9814,31 @@ var MHE = (function () {
                         : { label: 'MOC 매도', type: 'sell', method: 'MOC', price: 0, quantity: sq });
       }
       if (canBuy) {
-        var bq = Math.max(1, Math.floor(quarter / bp));
-        var o = { label: useBig ? '★ 큰수 쿼터매수' : '★ 쿼터매수', type: 'buy', method: 'LOC', price: bp, quantity: bq };
-        if (useBig) o.altPrice = revBuy;
-        out.push(o);
-        ladder(out, quarter, bq, locLines(s.lowerLocLines), locShares(s.lowerLocShares), s.tickSize);
+        var bq = Math.max(1, Math.floor(quarter / revBuy)), rl = locLines(s.lowerLocLines), rRows = [];
+        rRows.push({ label: '★ 쿼터매수', type: 'buy', method: 'LOC', price: revBuy, quantity: bq });
+        ladder(rRows, quarter, bq, rl, locShares(s.lowerLocShares), s.tickSize);
+        if (useBig) rRows = collapseBig(rRows, 1, bigNum, quarter, bq, rl, locShares(s.lowerLocShares), s.tickSize, '★ 큰수 쿼터매수', revBuy);
+        out = out.concat(rRows);
       }
       return out;
     }
-    var big = s.disableBigNum !== true && bigNum > 0 && bigNum <= st.buyPoint, mainP = big ? bigNum : st.buyPoint;
+    var big = s.disableBigNum !== true && bigNum > 0 && bigNum <= st.buyPoint;
     if (st.buyAmount > 0 && st.buyPoint > 0) {
-      var label = big ? '★ 큰수' : '★ 별지점', base, main;
+      var rows = [], base, nMain, per = locShares(s.lowerLocShares);
+      var lines = st.isFirstHalf ? Math.max(1, locLines(s.lowerLocLines) - 1) : locLines(s.lowerLocLines);
       if (st.isFirstHalf) {
-        var nStar = Math.max(1, Math.floor(st.buyAmount / 2 / mainP));
+        var nStar = Math.max(1, Math.floor(st.buyAmount / 2 / st.buyPoint));
         var nAvg = Math.max(1, Math.max(1, Math.floor(st.buyAmount / st.avgPrice)) - nStar);
-        base = nStar + nAvg;
-        main = { label: label, type: 'buy', method: 'LOC', price: mainP, quantity: nStar };
-        if (big) main.altPrice = st.buyPoint;
-        out.push(main, { label: '평단가', type: 'buy', method: 'LOC', price: snap(st.avgPrice, s.tickSize), quantity: nAvg });
+        base = nStar + nAvg; nMain = 2;
+        rows.push({ label: '★ 별지점', type: 'buy', method: 'LOC', price: st.buyPoint, quantity: nStar },
+                  { label: '평단가', type: 'buy', method: 'LOC', price: snap(st.avgPrice, s.tickSize), quantity: nAvg });
       } else {
-        base = Math.max(1, Math.floor(st.buyAmount / mainP));
-        main = { label: label, type: 'buy', method: 'LOC', price: mainP, quantity: base };
-        if (big) main.altPrice = st.buyPoint;
-        out.push(main);
+        base = Math.max(1, Math.floor(st.buyAmount / st.buyPoint)); nMain = 1;
+        rows.push({ label: '★ 별지점', type: 'buy', method: 'LOC', price: st.buyPoint, quantity: base });
       }
-      ladder(out, st.buyAmount, base, st.isFirstHalf ? Math.max(1, locLines(s.lowerLocLines) - 1) : locLines(s.lowerLocLines), locShares(s.lowerLocShares), s.tickSize);
+      ladder(rows, st.buyAmount, base, lines, per, s.tickSize);
+      if (big) rows = collapseBig(rows, nMain, bigNum, st.buyAmount, base, lines, per, s.tickSize, '★ 큰수', st.buyPoint);
+      out = out.concat(rows);
     }
     if (st.totalQuantity > 0 && st.sellPoint > 0) {
       var qs = Math.max(1, Math.floor(st.totalQuantity / 4)), rest = st.totalQuantity - qs;
