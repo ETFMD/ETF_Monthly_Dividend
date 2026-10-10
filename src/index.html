@@ -2253,6 +2253,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .mhg-lead { font-size:14px; line-height:1.8; color:var(--text2); margin:0 0 14px; max-width:880px; }
   .mhg-prog { display:flex; align-items:center; gap:10px; font-size:12px; color:var(--text3); }
   .mhg-prog-bar { flex:1; max-width:320px; height:6px; border-radius:6px; background:rgba(var(--fg-rgb),.08); overflow:hidden; }
+  .mhg-origin { display:flex; gap:10px; align-items:flex-start; margin:14px 0 0; max-width:880px; font-size:13px; line-height:1.7; color:var(--text2); }
+  .mhg-origin-k { flex-shrink:0; font-size:11px; font-weight:800; letter-spacing:.02em; color:var(--accent); background:rgba(49,130,246,.1); border-radius:6px; padding:2px 8px; margin-top:2px; }
+  .mhg-origin b { color:var(--text); }
+  .mhg-origin a { color:var(--accent); font-weight:600; }
   .mhg-prog-bar i { display:block; height:100%; width:0; background:var(--accent); border-radius:6px; transition:width .3s; }
   .mhg-summary { background:var(--card); border:1px solid var(--card-border); border-radius:14px; padding:18px 20px; margin-bottom:14px; }
   .mhg-summary h3 { margin:0 0 12px; }
@@ -10728,6 +10732,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <h2 id="mhg-h">무한매수법 가이드북</h2>
         <p class="mhg-lead">3배 레버리지 ETF가 어떻게 움직이는지부터 무한매수법 4.0의 규칙, 하루 주문 루틴, 숫자로 보는 분석까지 순서대로 정리했습니다. 처음 듣는 분도 위에서부터 차례로 읽으면 이 기록 도구를 바로 쓸 수 있습니다.</p>
         <div class="mhg-prog" aria-live="polite"><div class="mhg-prog-bar"><i id="mhg-prog-fill"></i></div><span id="mhg-prog-txt">22개 장 중 0개 읽음</span></div>
+        <p class="mhg-origin"><span class="mhg-origin-k">창시자</span><span><b>라오어</b> — 무한매수법을 만들고 규칙을 개정해 온 분입니다. 공식 규칙은 라오어님이 운영하는 <a href="https://cafe.naver.com/infinitebuying" target="_blank" rel="noopener">네이버 카페 ↗</a>와 책 『라오어의 미국주식 무한매수법』(알키, 2021)에서 공개됩니다.</span></p>
       </div>
 
       <div class="mhg-summary">
@@ -10738,7 +10743,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <li><b>오르면 판다</b><span>평균 단가보다 일정 %(TQQQ 15%·SOXL 20%) 오르면 나눠 팔고 한 회차를 끝냅니다.</span></li>
           <li><b>반복한다</b><span>번 돈까지 합친 원금으로 다음 회차를 다시 시작합니다.</span></li>
         </ol>
-        <p class="mhg-warn">⚠ 무한매수법은 <b>손실을 없애 주는 방법이 아닙니다.</b> 3배 레버리지 ETF는 1년에 −80%까지 떨어진 적이 있고, 규칙대로 해도 원금 손실이 날 수 있습니다. 이 가이드는 학습용 해설이며 투자 권유가 아닙니다. 무한매수법은 라오어님이 공개한 방법론이고, 이 페이지는 공식 문서가 아닌 독립적인 해설입니다.</p>
+        <p class="mhg-warn">⚠ 무한매수법은 <b>손실을 없애 주는 방법이 아닙니다.</b> 3배 레버리지 ETF는 1년에 −80%까지 떨어진 적이 있고, 규칙대로 해도 원금 손실이 날 수 있습니다. 이 가이드는 학습용 해설이며 투자 권유가 아닙니다. 무한매수법은 라오어님이 공개한 방법론이고, 이 페이지는 공식 문서가 아닌 독립적인 해설입니다. 규칙이 개정되면 라오어 카페의 공지가 우선합니다.</p>
       </div>
 
       <nav class="mhg-toc" aria-label="가이드북 목차">
@@ -10820,9 +10825,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <tr><td>프리마켓</td><td>17:00 ~ 22:30</td><td>18:00 ~ 23:30</td></tr>
           <tr><td><b>정규장</b></td><td><b>22:30 ~ 다음 날 05:00</b></td><td><b>23:30 ~ 다음 날 06:00</b></td></tr>
           <tr><td>애프터마켓</td><td>05:00 ~ 09:00</td><td>06:00 ~ 10:00</td></tr></tbody></table></div>
-        <p class="g-cap">2026년 서머타임은 3월 8일 시작, 11월 1일 끝. 미국 휴장일(추수감사절·크리스마스 등)에는 체결이 없습니다. 국내 증권사의 주간거래(낮 시간 거래)는 증권사마다 다릅니다.</p>
+        <p class="g-cap">2026년 서머타임은 3월 8일 시작, 11월 1일 끝. 미국 휴장일(추수감사절·크리스마스 등)에는 체결이 없습니다. 국내 증권사의 주간거래(한국 낮 시간 거래)는 무한매수법에서 쓰지 않습니다.</p>
         <p>무한매수법은 하루 한 번, <b>정규장 종가</b>를 기준으로 거래합니다. 그래서 주로 <b>LOC 주문</b>(종가가 정한 가격 이하면 종가로 매수, 이상이면 종가로 매도)을 씁니다. 정규장이 끝나는 순간 종가가 정해지고, 그때 조건에 맞는 LOC 주문만 체결됩니다.</p>
-        <div class="mhg-key"><b>주의</b> 증권사마다 LOC 주문 접수 마감이 장 마감 몇 분~십수 분 전입니다. 마감을 넘기면 그날 주문은 들어가지 않습니다. 저녁에 미리 넣어 두는 습관이 가장 안전합니다.</div>
+        <div class="mhg-key"><b>주문 넣는 시각</b> 지정가 매도는 <b>프리마켓이 열릴 때(서머타임 17:00 · 그 외 18:00)</b> 걸어 애프터마켓까지 유지하고, LOC 주문은 정규장 마감 전까지 넣습니다. 증권사마다 LOC 접수 마감이 장 마감 몇 분~십수 분 전이라, 저녁에 미리 넣어 두는 습관이 가장 안전합니다.</div>
         <p class="mhg-one">한 줄 요약 — 주문은 저녁에, 체결 확인은 다음 날 아침에.</p>
       </div></details>
 
@@ -10840,8 +10845,8 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
       <details class="mhg-ch" id="mhg-2-1"><summary><span class="mhg-no">2-1</span><span class="mhg-t">무한매수법 한눈에 보기<small>한 회차가 시작해서 끝나기까지</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
         <ol class="mhg-flow">
-          <li><b>설정</b> 종목(TQQQ·SOXL), 분할 수(20·30·40), 원금을 정합니다.</li>
-          <li><b>처음 매수</b> 첫날은 1회분을 전날 종가보다 12% 높은 가격에 LOC로 넣어 사실상 종가에 삽니다.</li>
+          <li><b>설정</b> 종목(TQQQ·SOXL), 분할 수(원문 규칙은 20·40분할, 이 도구는 30분할도 지원), 원금을 정합니다.</li>
+          <li><b>처음 매수</b> 첫날은 1회분을 전날 종가보다 10~15%(이 도구 기본 12%) 높은 ‘큰수’ 가격에 LOC로 넣어 사실상 종가에 사고, 그 아래에 LOC 몇 줄을 함께 겁니다.</li>
           <li><b>매일 분할 매수</b> 평단가·별지점 근처로 떨어지면 1회분(또는 절반)을 더 삽니다. 살 때마다 <b>T값</b>(산 횟수)이 올라갑니다.</li>
           <li><b>나눠 팔기</b> 종가가 별지점 이상이면 보유량의 ¼을 팔고(쿼터매도), 평단보다 목표%(TQQQ 15%·SOXL 20%) 오르면 나머지를 지정가로 팝니다.</li>
           <li><b>회차 종료</b> 보유량이 0이 되면 한 회차가 끝납니다. 번 돈을 합쳐 다음 회차를 시작합니다.</li>
@@ -10863,7 +10868,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <tr><td>$10,000 (약 1,400만 원)</td><td>$500</td><td>$333</td><td>$250</td></tr>
           <tr><td>$20,000 (약 2,800만 원)</td><td>$1,000</td><td>$667</td><td>$500</td></tr>
           <tr><td>$40,000 (약 5,600만 원)</td><td>$2,000</td><td>$1,333</td><td>$1,000</td></tr></tbody></table></div>
-        <p class="g-cap">원화 환산은 1달러 1,400원 가정. 실제 1회 매수금은 ‘남은 현금 ÷ (분할 수 − T값)’이라 회차가 진행되며 조금씩 달라집니다.</p>
+        <p class="g-cap">원화 환산은 1달러 1,400원 가정. 실제 1회 매수금은 ‘남은 현금 ÷ (분할 수 − T값)’이라 회차가 진행되며 조금씩 달라집니다. 30분할은 라오어 원문(20·40분할)에 없는 값으로, 같은 공식으로 계산한 중간 단계입니다.</p>
         <p class="mhg-one">한 줄 요약 — 원금은 ‘최악에도 버틸 돈’, 1회 매수금은 ‘1주 값의 여러 배’가 되게.</p>
       </div></details>
 
@@ -10887,7 +10892,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <p>이날 도구가 만드는 주문표(전날 종가 $51 가정):</p>
         <div class="table-scroll"><table class="g-tbl mhg-orders"><thead><tr><th>주문</th><th>방식</th><th>가격 · 수량</th></tr></thead><tbody>
           <tr><td>★ 별지점 매수 (1회분의 절반)</td><td>LOC 매수</td><td>$53.74 × 4주</td></tr>
-          <tr><td>평단가 매수 (나머지 절반)</td><td>LOC 매수</td><td>$50.00 × 6주</td></tr>
+          <tr><td>평단가 매수 (나머지)</td><td>LOC 매수</td><td>$50.00 × 6주</td></tr>
           <tr><td>하방 매수 사다리 (8줄)</td><td>LOC 매수</td><td>$45.45 · $41.66 · … × 1주씩</td></tr>
           <tr><td>★ 쿼터매도 (보유의 ¼)</td><td>LOC 매도</td><td>$53.75 × 12주</td></tr>
           <tr><td>15% 지정가 매도 (나머지)</td><td>지정가 매도</td><td>$57.50 × 38주</td></tr></tbody></table></div>
@@ -10895,7 +10900,8 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <li>종가가 <b>$50 이하</b>면 두 매수가 모두 체결 → 1회분 매수(T +1).</li>
           <li>종가가 <b>$50 초과 ~ $53.74 이하</b>면 별지점 매수만 체결 → 절반 매수(T +0.5).</li>
           <li>종가가 <b>$53.75 이상</b>이면 매수 없이 쿼터매도 체결(T × 0.75). 장중에 <b>$57.50</b>에 닿으면 나머지도 지정가로 팔립니다.</li>
-          <li>하방 사다리는 급락했을 때 같은 돈으로 더 많은 주식을 사도록 낮은 가격에 1주씩 깔아 두는 주문입니다(가격 = 1회 매수금 ÷ (기준 수량 + 줄 번호)).</li>
+          <li>하방 사다리는 급락했을 때 같은 돈으로 더 많은 주식을 사도록 낮은 가격에 1주씩 깔아 두는 주문입니다(가격 = 1회 매수금 ÷ (기준 수량 + 줄 번호)). 원문은 ‘큰 하락에 대비해 아래로 LOC 매수 추가’라고만 정하고, 줄 수(기본 8줄)는 이 도구의 설정입니다.</li>
+          <li>수량 나누기: 원문은 1회 매수금을 ‘절반씩’ 나눈다고만 정하고 주 수 계산식은 따로 두지 않습니다. 이 도구는 별지점 수량 = 1회 매수금 ÷ 2 ÷ 별지점 가격(소수점 버림), 평단가 수량 = 1회 매수금 ÷ 평단가 − 별지점 수량으로 잡아, 종가가 평단 이하인 날 두 주문을 합쳐 1회 매수금만큼(10주 × $50 = $500) 사지도록 합니다.</li>
         </ul>
         <p class="mhg-one">한 줄 요약 — 많이 살수록(T값↑) 별%가 내려가 더 싸게 사고 더 빨리 팝니다.</p>
       </div></details>
@@ -10903,7 +10909,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <details class="mhg-ch" id="mhg-2-4"><summary><span class="mhg-no">2-4</span><span class="mhg-t">하루 루틴 — 이 도구로 따라 하기<small>저녁 5분, 아침 2분</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
         <ol class="mhg-flow">
           <li><b>처음 한 번</b> 위 도구에서 종목·분할 수·원금을 고르고 시작합니다. 이미 진행 중이었다면 ‘중간 진입’을 골라 평단가·보유 수량·남은 현금·T값을 넣습니다.</li>
-          <li><b>저녁 (장 시작 전)</b> ‘현재’ 탭의 주문표를 보고 증권사 앱에 LOC·지정가 주문을 그대로 넣습니다. 다 넣었으면 <b>오늘 주문 다 넣었어요</b>를 눌러 표시해 둡니다(위쪽에 ‘주문 ✓’로 보임).</li>
+          <li><b>저녁 (프리마켓 시작 ~ 정규장 마감 전)</b> ‘현재’ 탭의 주문표를 보고 증권사 앱에 지정가 매도는 프리마켓이 열릴 때(17:00·18:00), LOC 주문은 정규장 마감 전까지 그대로 넣습니다. 다 넣었으면 <b>오늘 주문 다 넣었어요</b>를 눌러 표시해 둡니다(위쪽에 ‘주문 ✓’로 보임).</li>
           <li><b>다음 날 아침 (장 마감 후)</b> 증권사에서 체결 내역을 확인하고 <b>＋ 오늘 기록하기</b>를 누릅니다. 도구가 종가를 보고 체결됐을 만한 유형을 추천하니, 실제 체결 가격·수량과 맞는지 확인하고 저장합니다.</li>
           <li><b>체결이 없던 날</b>도 기록할 것은 없지만, 다음 날 주문표는 그대로 다시 넣습니다(LOC는 당일만 유효).</li>
           <li><b>회차가 끝나면</b> 축하 화면에서 같은 원금 또는 수익을 합친 원금으로 다음 회차를 바로 시작할 수 있습니다. 지난 회차는 ‘분석’ 탭에 남습니다.</li>
@@ -10917,7 +10923,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <tr><td><b>LOC 매수</b> (Limit On Close)</td><td>종가 ≤ 내가 정한 가격이면 <b>종가로</b> 체결</td><td>별지점·평단가 매수, 하방 사다리</td></tr>
           <tr><td><b>LOC 매도</b></td><td>종가 ≥ 내가 정한 가격이면 종가로 체결</td><td>쿼터매도(별지점), 리버스 매도</td></tr>
           <tr><td><b>MOC</b> (Market On Close)</td><td>가격과 관계없이 무조건 종가로 체결</td><td>리버스모드 첫날 매도</td></tr>
-          <tr><td><b>지정가</b></td><td>장중 그 가격에 닿으면 바로 체결 (증권사에 따라 프리·애프터장 포함)</td><td>목표% 지정가 매도</td></tr></tbody></table></div>
+          <tr><td><b>지정가</b></td><td>그 가격에 닿으면 바로 체결 — 프리마켓 시작에 걸어 애프터마켓까지 유지 (주간거래 제외)</td><td>목표% 지정가 매도</td></tr></tbody></table></div>
         <p>예를 들어 LOC 매수 $53.74를 넣었는데 종가가 $52.10이면, $53.74가 아니라 <b>$52.10에</b> 체결됩니다. 종가가 $54.00이면 체결되지 않습니다. 그래서 LOC 매수 가격은 ‘이 가격까지는 사도 좋다’는 상한선입니다.</p>
         <div class="mhg-key"><b>지정가가 애프터장에 체결됐다면</b> 같은 날 LOC 매수도 체결됐을 수 있습니다. 기록할 때 ‘지정가+매수’ 또는 ‘매수+지정가(AF)’ 유형을 고르면 T값이 순서에 맞게 계산됩니다.</div>
         <p class="mhg-one">한 줄 요약 — LOC는 ‘종가가 조건에 맞으면 종가로’, 지정가는 ‘그 가격에 닿는 순간’.</p>
@@ -10927,7 +10933,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <ul class="g-list">
           <li><b>전반전</b>(T값 &lt; 분할 수의 절반): 1회 매수금을 반으로 나눠 절반은 <b>별지점 −1센트</b>, 절반은 <b>평단가</b>에 LOC로 넣습니다. 평단 근처까지 떨어진 날만 1회분을 다 사고, 조금 오른 날은 절반만 삽니다.</li>
           <li><b>후반전</b>(T값 ≥ 분할 수의 절반): 별%가 0% 아래로 내려가 별지점이 평단보다 낮아집니다. 1회 매수금 전부를 <b>별지점 −1센트</b> 한 곳에 넣습니다. 남은 돈을 더 아껴 쓰는 단계입니다.</li>
-          <li><b>큰수</b>: 전날 종가 × 1.12(기본 12%)가 별지점보다 낮으면, 매수 가격을 이 ‘큰수’로 낮춰 넣습니다. 하루에 급등한 날 비싸게 사지 않게 막는 장치입니다. 메뉴에서 % 를 바꿀 수 있습니다.</li>
+          <li><b>큰수</b>: 별지점이 전날 종가보다 크게 높으면(전날 종가 × 1.12보다 높으면) 증권사가 현재가에서 너무 먼 주문을 받지 않을 수 있어, 매수 가격을 ‘큰수’(전날 종가 × 1.12, 기본 12%)로 넣습니다. LOC는 종가로 체결되므로 하루 +12% 넘게 급등한 날이 아니면 결과는 별지점 주문과 같습니다. 라오어 규칙 자체가 아니라 주문을 넣기 위한 실무 장치이며, 메뉴에서 %를 바꾸거나 끌 수 있습니다.</li>
         </ul>
         <div class="table-scroll"><table class="g-tbl"><thead><tr><th>T값 (20분할 · TQQQ)</th><th>0</th><th>5</th><th>10</th><th>15</th><th>19</th></tr></thead><tbody>
           <tr><td>별%</td><td>+15%</td><td>+7.5%</td><td>0%</td><td>−7.5%</td><td>−13.5%</td></tr>
@@ -10936,7 +10942,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       </div></details>
 
       <details class="mhg-ch" id="mhg-2-7"><summary><span class="mhg-no">2-7</span><span class="mhg-t">쿼터매도와 회차 종료<small>나눠 파는 이유</small></span><span class="mhg-min">2분</span></summary><div class="mhg-body">
-        <p>매도는 두 갈래입니다. <b>쿼터매도</b>는 종가가 별지점 이상이면 보유량의 ¼을 LOC로 팔아 현금을 조금 회수합니다(T값 × 0.75). <b>지정가 매도</b>는 평단 대비 목표%(TQQQ 15%·SOXL 20%) 가격에 나머지 ¾을 걸어 두는 주문으로, 체결되면 보통 그 회차가 끝납니다(T값 × 0.25 → 보유 0).</p>
+        <p>매도는 두 갈래입니다. <b>쿼터매도</b>는 종가가 별지점 이상이면 보유량의 ¼을 LOC로 팔아 현금을 조금 회수합니다(T값 × 0.75). <b>지정가 매도</b>는 평단 대비 목표%(TQQQ 15%·SOXL 20%) 가격에 나머지 ¾을 걸어 두는 주문입니다. 지정가만 체결되면 ¼이 남고 T값은 × 0.25가 되며, 같은 날 쿼터매도까지 체결되면 보유가 0이 되어 회차가 끝납니다. 지정가 체결 뒤 급락해 같은 날 LOC 매수까지 체결되면 회차는 끝나지 않고 T값 × 0.25 + 1(절반이면 + 0.5)로 이어갑니다.</p>
         <p>후반전에는 별지점이 평단보다 낮아서, 쿼터매도가 <b>손실을 보며</b> 체결되기도 합니다. 이것은 실수가 아니라 원금이 바닥나기 전에 현금을 되살려 다음 매수 여력을 만드는 규칙입니다.</p>
         <div class="mhg-key"><b>회차가 끝나면</b> 이 도구가 축하 화면과 함께 실현 손익을 보여 주고, 지난 회차를 ‘분석’ 탭에 보관합니다. 다음 회차는 같은 원금 또는 손익을 반영한 원금으로 시작할 수 있습니다.</div>
         <p class="mhg-one">한 줄 요약 — ¼은 자주 팔아 숨통을 틔우고, ¾은 목표가에서 한 번에 익절합니다.</p>
@@ -10946,9 +10952,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
         <p>계속 떨어져 T값이 <b>분할 수 − 1</b>을 넘으면 1회분도 안 되는 돈만 남습니다. 이 도구는 이것을 <b>소진모드</b>로 알려 주고, <b>리버스모드</b>로 바꾸기를 권합니다.</p>
         <ol class="mhg-flow">
           <li><b>첫날</b> 보유량 ÷ (분할 수 ÷ 2)만큼 <b>MOC로</b> 팝니다. 예: 20분할에 400주라면 40주.</li>
-          <li><b>다음 날부터</b> 최근 5거래일 종가 평균을 ‘리버스 별지점’으로 삼아, 종가가 그 이상이면 같은 양을 LOC로 팔고(리버스 매도), 그 아래면 남은 현금의 ¼로 LOC 쿼터매수를 합니다.</li>
-          <li><b>T값</b>: 리버스 매도는 T × 0.9(20분할) · × 0.95(40분할) · 그 밖은 × (1 − 2 ÷ 분할 수), 쿼터매수는 T + (분할 수 − T) × 0.25.</li>
-          <li><b>복귀</b> 종가가 평단가 × (1 − 목표%) 이상으로 회복하면 일반모드로 돌아갑니다. 도구가 복귀 가격을 알려 줍니다.</li>
+          <li><b>다음 날부터</b> 직전 5거래일 종가 평균을 ‘리버스 별지점’으로 삼아 두 주문을 함께 겁니다. ① 그날 보유량 ÷ (분할 수 ÷ 2)(소수점 버림)를 리버스 별지점에 LOC 매도, ② 남은 현금(앞서 판 돈 포함)의 ¼을 리버스 별지점 −1센트에 LOC 쿼터매수. 종가에 따라 둘 중 하나가 체결됩니다.</li>
+          <li><b>T값</b>: 리버스 매도는 T × 0.9(20분할) · × 0.95(40분할) , 쿼터매수는 T + (분할 수 − T) × 0.25. 라오어 원문은 20·40분할만 정하며, 30분할은 이 도구가 × (1 − 2 ÷ 분할 수)로 계산합니다.</li>
+          <li><b>복귀</b> 종가가 평단가 × (1 − 목표%)보다 높아지면(TQQQ 평단 −15%, SOXL −20% 위) 다음 날부터 일반모드로 돌아갑니다. T값은 그대로 이어지고 1회 매수금은 남은 현금 ÷ (분할 수 − T)로 다시 계산하며, 그래도 1회분이 남지 않으면 다시 리버스모드입니다. 도구가 복귀 가격을 알려 줍니다.</li>
         </ol>
         <div class="mhg-key"><b>리버스모드의 뜻</b> 들고 있는 주식 일부를 반등 때마다 팔아 현금을 만들고, 그 현금으로 더 싼 가격에 다시 사서 평단을 끌어내리는 단계입니다. 회복이 길어질수록 손실이 확정될 수 있으니, 이 단계까지 오지 않도록 분할 수와 원금을 처음부터 넉넉히 잡는 것이 가장 좋은 대비입니다.</div>
         <p class="mhg-one">한 줄 요약 — 돈이 떨어지면 팔면서 사는 방식으로 바꿔 평단을 낮추며 버팁니다.</p>
@@ -10981,7 +10987,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <tr><td>하락 후 횡보 (20일간 −30% 후 ±2%)</td><td>20일째 소진</td><td>60일 후 T 15 · 원금의 53% 사용</td><td>60일 후 T 19.7 · 원금의 51% 사용</td></tr>
           <tr><td>횡보 (+3% / −3% 반복)</td><td>T 10 · 원금 47% 사용 · +2.0%</td><td>T 13.1 · 42% 사용 · +0.8%</td><td>T 19.4 · 45% 사용 · 0.0%</td></tr>
           <tr><td>완만한 상승 (매일 +0.5%)</td><td>원금 17% 투입 · <b>+7.1%</b></td><td>9% 투입 · +5.4%</td><td>5% 투입 · +4.9%</td></tr></tbody></table></div>
-        <p class="g-cap">손익(%)은 원금 전체 대비 평가 손익. 소진 이후의 리버스모드는 계산에 넣지 않았습니다. 가상 가격 흐름이며 미래 수익을 뜻하지 않습니다.</p>
+        <p class="g-cap">손익(%)은 원금 전체 대비 평가 손익. 소진 이후의 리버스모드는 계산에 넣지 않았습니다. 30분할은 원문 밖 중간값입니다. 가상 가격 흐름이며 미래 수익을 뜻하지 않습니다.</p>
         <ul class="g-list">
           <li><b>20분할</b>은 1회 매수금이 커서 상승장에서 더 많이 벌지만, 한 달(약 20거래일) 넘게 이어지는 하락에서는 바닥 전에 돈이 떨어질 수 있습니다.</li>
           <li><b>40분할</b>은 매수 속도가 절반이라 같은 하락을 두 배 오래 버티지만, 오를 때 들어간 돈이 적어 수익도 작습니다.</li>
@@ -11040,23 +11046,24 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
       <!-- ═════ 용어 사전 ═════ -->
       <h3 class="mhg-part" id="mhg-dict"><span>부록</span>용어 사전</h3>
-      <details class="mhg-ch" id="mhg-4-1"><summary><span class="mhg-no">A</span><span class="mhg-t">무한매수법·레버리지 ETF 용어 30개<small>가나다 순 · 모르는 말이 나오면 여기서</small></span><span class="mhg-min">사전</span></summary><div class="mhg-body">
+      <details class="mhg-ch" id="mhg-4-1"><summary><span class="mhg-no">A</span><span class="mhg-t">무한매수법·레버리지 ETF 용어 31개<small>가나다 순 · 모르는 말이 나오면 여기서</small></span><span class="mhg-min">사전</span></summary><div class="mhg-body">
         <dl class="mhg-dl">
           <dt>1회 매수금</dt><dd>하루에 살 최대 금액. 남은 현금 ÷ (분할 수 − T값).</dd>
           <dt>LOC (Limit On Close)</dt><dd>종가가 정한 가격 이하(매수)·이상(매도)이면 종가로 체결되는 주문.</dd>
           <dt>MOC (Market On Close)</dt><dd>가격 조건 없이 종가로 체결되는 주문. 리버스모드 첫날 매도에 씁니다.</dd>
           <dt>T값</dt><dd>지금까지 산 회분 수. 매수로 늘고 매도로 줄며, 별%·1회 매수금을 정합니다.</dd>
-          <dt>V4.0</dt><dd>무한매수법 4번째 개정판. 별%·쿼터매도·리버스모드가 들어간 현재 버전.</dd>
+          <dt>V4.0</dt><dd>무한매수법의 현재 버전. V3.0의 별% 공식은 그대로 두고, T값을 매수 회차로 단순화하고, 1회 매수금을 남은 현금 ÷ (분할 수 − T)로 매일 다시 계산하며, 원금 소진 뒤에는 리버스모드로 넘어가도록 바뀌었습니다.</dd>
           <dt>공정가 · 순자산가치(NAV)</dt><dd>ETF가 보유한 자산의 1주당 가치. 시장 가격은 보통 이 값 근처에서 움직입니다.</dd>
           <dt>기초 지수</dt><dd>ETF가 따라가는 지수. TQQQ는 나스닥100, SOXL은 미국 반도체 지수.</dd>
+          <dt>라오어</dt><dd>무한매수법 창시자의 필명. <a href="https://cafe.naver.com/infinitebuying" target="_blank" rel="noopener">네이버 카페</a>와 책으로 규칙을 공개하고 개정합니다.</dd>
           <dt>리밸런싱</dt><dd>레버리지 ETF가 매일 장 마감 무렵 노출을 다시 3배로 맞추는 일.</dd>
-          <dt>리버스 별지점</dt><dd>리버스모드의 기준 가격. 최근 5거래일 종가 평균.</dd>
+          <dt>리버스 별지점</dt><dd>리버스모드의 기준 가격. 직전 5거래일 종가 평균.</dd>
           <dt>리버스모드</dt><dd>원금이 바닥난 뒤 보유 주식을 조금씩 팔고 싸게 다시 사며 평단을 낮추는 단계.</dd>
           <dt>목표%</dt><dd>평단 대비 익절 목표. 기본 TQQQ 15%, SOXL 20%.</dd>
           <dt>변동성 끌림</dt><dd>오르내림이 반복될 때 레버리지 ETF에 손실이 쌓이는 현상.</dd>
           <dt>별%</dt><dd>목표% × (1 − 2T ÷ 분할 수). T값이 커질수록 낮아지는 매수·매도 기준 %.</dd>
           <dt>별지점</dt><dd>평단가 × (1 + 별%). 매수는 1센트 아래, 쿼터매도는 이 가격에 LOC.</dd>
-          <dt>분할 수</dt><dd>원금을 나누는 횟수. 20·30·40분할이 문서 범위.</dd>
+          <dt>분할 수</dt><dd>원금을 나누는 횟수. 라오어 원문은 20·40분할(이 도구는 30분할도 같은 공식으로 지원).</dd>
           <dt>서머타임</dt><dd>미국 일광 절약 시간. 3월 둘째 일요일 ~ 11월 첫째 일요일, 정규장이 한국 시간 22:30에 열립니다.</dd>
           <dt>세션</dt><dd>이 도구에서 종목·원금 하나를 묶은 기록 단위. 종목마다 따로 만듭니다.</dd>
           <dt>소진모드</dt><dd>T값이 분할 수 − 1을 넘어 1회분도 남지 않은 상태.</dd>
@@ -11064,17 +11071,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
           <dt>절반 매수</dt><dd>1회분 중 별지점 몫만 체결된 날. T값 +0.5.</dd>
           <dt>정규장</dt><dd>미국 주식의 본 거래 시간. 한국 시간 22:30~05:00(서머타임) 또는 23:30~06:00.</dd>
           <dt>종가</dt><dd>정규장이 끝날 때의 가격. 무한매수법의 모든 기준.</dd>
-          <dt>지정가 매도</dt><dd>평단 × (1 + 목표%)에 걸어 두는 익절 주문. 체결되면 보통 회차 종료.</dd>
-          <dt>처음매수</dt><dd>회차 첫날, 전날 종가 × 1.12에 넣는 1회분 LOC 매수.</dd>
+          <dt>지정가 매도</dt><dd>보유량의 ¾을 평단 × (1 + 목표%)에 프리마켓부터 애프터마켓까지 걸어 두는 익절 주문.</dd>
+          <dt>처음매수</dt><dd>회차 첫날, 전날 종가보다 10~15%(도구 기본 12%) 높은 큰수 가격에 넣는 1회분 LOC 매수와 그 아래 LOC 줄.</dd>
           <dt>쿼터매도</dt><dd>종가가 별지점 이상일 때 보유량의 ¼을 파는 LOC 매도. T값 × 0.75.</dd>
-          <dt>쿼터매수</dt><dd>리버스모드에서 남은 현금의 ¼로 사는 LOC 매수.</dd>
-          <dt>큰수</dt><dd>전날 종가 × 1.12. 별지점보다 낮으면 이 가격으로 매수해 급등일 고가 매수를 막습니다.</dd>
+          <dt>쿼터매수</dt><dd>리버스모드에서 남은 현금(판 돈 포함)의 ¼로 리버스 별지점 −1센트에 넣는 LOC 매수. T + (분할 수 − T) × 0.25.</dd>
+          <dt>큰수</dt><dd>전날 종가 × 1.12(기본). 별지점이 너무 높아 증권사가 주문을 받지 않을 때 대신 넣는 LOC 매수 가격(원 규칙이 아닌 실무 장치).</dd>
           <dt>평단가</dt><dd>지금 보유한 주식의 평균 매수 가격.</dd>
           <dt>하방 사다리</dt><dd>급락에 대비해 낮은 가격에 1주씩 깔아 두는 LOC 매수(기본 8줄).</dd>
           <dt>회차 (사이클)</dt><dd>처음매수부터 보유량이 0이 될 때까지의 한 바퀴.</dd>
         </dl>
       </div></details>
-      <p class="mhg-foot">이 가이드북은 이 사이트의 무한매수법 기록 도구가 쓰는 계산 규칙(V4.0)을 기준으로 쓴 비공식 해설입니다. 숫자 예시는 이 사이트의 시세 데이터와 계산 엔진으로 직접 계산했습니다. 투자 판단과 그 결과의 책임은 이용자에게 있습니다.</p>
+      <p class="mhg-foot">이 가이드북은 이 사이트의 무한매수법 기록 도구가 쓰는 계산 규칙(V4.0)을 기준으로 쓴 비공식 해설입니다. 무한매수법의 창시자는 라오어님이며, 공식 규칙과 개정 내용은 <a href="https://cafe.naver.com/infinitebuying" target="_blank" rel="noopener">라오어 네이버 카페</a>에서 확인하세요. 숫자 예시는 이 사이트의 시세 데이터와 계산 엔진으로 직접 계산했습니다. 투자 판단과 그 결과의 책임은 이용자에게 있습니다.</p>
     </section>
     <!-- [/GUIDEBOOK:muhan] -->
     <!-- [GUIDE:muhan] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
@@ -11082,10 +11089,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <h2 id="g-muhan-h">무한매수법 4.0 주문표는 이렇게 계산합니다</h2>
       <p class="g-lead">무한매수법은 TQQQ·SOXL 같은 레버리지 ETF를 정해진 횟수(분할)로 나눠 매일 조금씩 사고, 평균 단가보다 일정 % 오르면 나눠 파는 분할 매매 방법입니다. 이 페이지는 기록한 거래로 T값·평단가·별지점을 계산해 오늘 넣을 주문표를 만들어 줍니다.</p>
       <div class="g-grid">
-        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>1회 매수금</b> = 남은 현금 ÷ (분할 수 − T값)</li><li><b>T값</b>: 1회분 매수 +1, 절반 매수 +0.5, 쿼터 매도 ×0.75, 목표가 매도 ×0.25 — 지금까지 몇 회분을 샀는지 나타냅니다.</li><li><b>별%</b> = 목표 수익률 − 목표 수익률 × 2 ÷ 분할 수 × T값 (목표 기본값 TQQQ 15%, SOXL 20%)</li><li><b>별지점</b> = 평단가 × (1 + 별%) — 매수는 별지점보다 1틱 낮게, 쿼터 매도는 별지점에 LOC로 넣습니다.</li><li><b>전반전</b>(T값 &lt; 분할 수의 절반): 1회 매수금의 절반은 별지점, 절반은 평단가에 LOC 매수 · <b>후반전</b>: 전부 별지점에 매수</li><li><b>매도</b>: 보유 수량의 1/4은 별지점 LOC, 나머지 3/4은 평단가 × (1 + 목표%) 지정가</li><li><b>소진·리버스 모드</b>: T값이 분할 수 − 1을 넘으면 현금을 다 쓴 것으로 보고 리버스 모드 주문표로 바뀝니다.</li></ul></article>
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>1회 매수금</b> = 남은 현금 ÷ (분할 수 − T값)</li><li><b>T값</b>: 1회분 매수 +1, 절반 매수 +0.5, 쿼터 매도 ×0.75, 목표가 매도 ×0.25 — 지금까지 몇 회분을 샀는지 나타냅니다.</li><li><b>별%</b> = 목표 수익률 − 목표 수익률 × 2 ÷ 분할 수 × T값 (목표 기본값 TQQQ 15%, SOXL 20%)</li><li><b>별지점</b> = 평단가 × (1 + 별%) — 매수는 별지점보다 1틱 낮게, 쿼터 매도는 별지점에 LOC로 넣습니다.</li><li><b>전반전</b>(T값 &lt; 분할 수의 절반): 1회 매수금의 절반은 별지점, 절반은 평단가에 LOC 매수 · <b>후반전</b>: 전부 별지점에 매수</li><li><b>매도</b>: 보유 수량의 1/4은 별지점 LOC, 나머지 3/4은 평단가 × (1 + 목표%) 지정가</li><li><b>소진·리버스 모드</b>: T값이 분할 수 − 1을 넘으면 현금을 다 쓴 것으로 보고 리버스 모드 주문표로 바뀝니다. 종가가 평단가 × (1 − 목표%)보다 높아지면 일반모드로 돌아갑니다.</li></ul></article>
         <article class="g-card"><h3>계산 예시</h3><div class="table-scroll"><table class="g-tbl"><thead><tr><th>항목</th><th>값</th></tr></thead><tbody><tr><td>설정</td><td>TQQQ · 원금 $10,000 · 20분할 · 목표 15%</td></tr><tr><td>기록</td><td>$50에 10주씩 5번 매수 (T값 5)</td></tr><tr><td>평단가 · 남은 현금</td><td>$50.00 · $7,500</td></tr><tr><td>1회 매수금</td><td>$7,500 ÷ (20 − 5) = $500</td></tr><tr><td>별% · 별지점</td><td>15 − 15 × 2 ÷ 20 × 5 = 7.5% · $53.75</td></tr><tr><td>오늘 매수 (전반전)</td><td>별지점 LOC $53.74 × 4주 + 평단 LOC $50.00 × 6주</td></tr><tr><td>오늘 매도</td><td>쿼터 LOC $53.75 × 12주 + 15% 지정가 $57.50 × 38주</td></tr></tbody></table></div><p class="g-cap">매수 아래쪽에는 $45.45, $41.66 … 처럼 1회 매수금 ÷ (수량 + 1, + 2 …) 가격의 하방 LOC 주문이 이어집니다. 처음 매수할 때는 직전 종가 × 1.12(큰수) 가격에 LOC로 1회 매수금만큼 삽니다.</p></article>
       </div>
-      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>LOC 주문이 무엇인가요?</summary><div class="g-ans"><p>LOC(Limit On Close)는 장 마감 때 <b>종가가 내가 정한 가격 이하(매수)·이상(매도)이면</b> 종가로 체결되는 주문입니다. 무한매수법은 하루 한 번 종가 기준으로 거래하므로 미국 증권사의 LOC 주문을 주로 씁니다.</p></div></details><details class="g-faq"><summary>T값은 왜 소수로 나오나요?</summary><div class="g-ans"><p>1회 매수금의 절반만 체결되면 T값이 0.5만 늘고, 쿼터 매도를 하면 T값에 0.75를 곱하기 때문입니다. T값이 작을수록 별%가 높아져 매수·매도 기준 가격이 올라가고, T값이 클수록(많이 샀을수록) 별%가 낮아져 더 싸게 사고 더 빨리 팔도록 바뀝니다.</p></div></details><details class="g-faq"><summary>기록은 어디에 저장되나요?</summary><div class="g-ans"><p><b>로그인하면</b> 거래 기록 전체가 내 계정에 자동 저장되어, 휴대폰·PC 어디서든 로그인만 하면 같은 기록으로 이어서 쓸 수 있습니다. 기록을 바꿀 때마다 저장되고, 이 기기에도 사본이 남아 인터넷이 잠시 끊겨도 쓸 수 있습니다. 두 기기에서 동시에 고쳐 기록이 달라지면 어느 쪽을 쓸지 고르도록 물어봅니다. 로그인하지 않으면 기록은 <b>지금 쓰는 브라우저 안</b>(localStorage)에만 저장되고 서버로 보내지 않으며, 나중에 로그인하면 그 기록이 계정에 그대로 올라갑니다.</p></div></details><details class="g-faq"><summary>시세는 언제 갱신되나요?</summary><div class="g-ans"><p>TQQQ·SOXL 종가와 RSI·VIX 참고 지표는 GitHub Actions가 주기적으로 모아 둔 데이터를 먼저 쓰고, 없으면 실시간 시세를 불러옵니다. 주문표는 직전 종가를 기준으로 큰수 가격을 계산합니다.</p></div></details><details class="g-faq"><summary>무한매수법은 손실이 나지 않나요?</summary><div class="g-ans"><p>아닙니다. TQQQ·SOXL은 하루 수익률의 3배를 따라가는 레버리지 ETF라 하락장이 길어지면 원금이 크게 줄 수 있고, 분할을 다 써도 회복하지 못하면 손실이 확정될 수 있습니다. 이 페이지는 방법에 따른 주문 계산과 기록을 돕는 도구이며, 투자 판단과 책임은 이용자에게 있습니다.</p></div></details></div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>무한매수법은 누가 만들었나요?</summary><div class="g-ans"><p>무한매수법은 <b>라오어</b>(필명)님이 만든 레버리지 ETF 분할 매매 방법입니다. 공식 규칙과 개정 내용은 라오어님이 운영하는 <a href="https://cafe.naver.com/infinitebuying" target="_blank" rel="noopener">네이버 카페</a>와 책 『라오어의 미국주식 무한매수법』(알키, 2021)에서 공개됩니다. 이 페이지는 V4.0 규칙으로 주문을 계산·기록하는 독립 도구이며, 규칙이 개정되면 카페 공지가 우선합니다.</p></div></details><details class="g-faq"><summary>LOC 주문이 무엇인가요?</summary><div class="g-ans"><p>LOC(Limit On Close)는 장 마감 때 <b>종가가 내가 정한 가격 이하(매수)·이상(매도)이면</b> 종가로 체결되는 주문입니다. 무한매수법은 하루 한 번 종가 기준으로 거래하므로 미국 증권사의 LOC 주문을 주로 씁니다.</p></div></details><details class="g-faq"><summary>T값은 왜 소수로 나오나요?</summary><div class="g-ans"><p>1회 매수금의 절반만 체결되면 T값이 0.5만 늘고, 쿼터 매도를 하면 T값에 0.75를 곱하기 때문입니다. T값이 작을수록 별%가 높아져 매수·매도 기준 가격이 올라가고, T값이 클수록(많이 샀을수록) 별%가 낮아져 더 싸게 사고 더 빨리 팔도록 바뀝니다.</p></div></details><details class="g-faq"><summary>기록은 어디에 저장되나요?</summary><div class="g-ans"><p><b>로그인하면</b> 거래 기록 전체가 내 계정에 자동 저장되어, 휴대폰·PC 어디서든 로그인만 하면 같은 기록으로 이어서 쓸 수 있습니다. 기록을 바꿀 때마다 저장되고, 이 기기에도 사본이 남아 인터넷이 잠시 끊겨도 쓸 수 있습니다. 두 기기에서 동시에 고쳐 기록이 달라지면 어느 쪽을 쓸지 고르도록 물어봅니다. 로그인하지 않으면 기록은 <b>지금 쓰는 브라우저 안</b>(localStorage)에만 저장되고 서버로 보내지 않으며, 나중에 로그인하면 그 기록이 계정에 그대로 올라갑니다.</p></div></details><details class="g-faq"><summary>시세는 언제 갱신되나요?</summary><div class="g-ans"><p>TQQQ·SOXL 종가와 RSI·VIX 참고 지표는 GitHub Actions가 주기적으로 모아 둔 데이터를 먼저 쓰고, 없으면 실시간 시세를 불러옵니다. 주문표는 직전 종가를 기준으로 큰수 가격을 계산합니다.</p></div></details><details class="g-faq"><summary>무한매수법은 손실이 나지 않나요?</summary><div class="g-ans"><p>아닙니다. TQQQ·SOXL은 하루 수익률의 3배를 따라가는 레버리지 ETF라 하락장이 길어지면 원금이 크게 줄 수 있고, 분할을 다 써도 회복하지 못하면 손실이 확정될 수 있습니다. 이 페이지는 방법에 따른 주문 계산과 기록을 돕는 도구이며, 투자 판단과 책임은 이용자에게 있습니다.</p></div></details></div>
     </section>
     <!-- [/GUIDE:muhan] -->
 </div><!-- /page-muhan -->
@@ -21165,7 +21172,7 @@ async function fetchMSAll() {
 ════════════════════════════════════════════════════════════ */
 var MHE = (function () {
   var STD_SPLITS = [20, 30, 40], EXT_SPLITS = [50, 60, 70, 80, 90, 100];
-  var EXT_WARN = '50분할 이상은 라오어 문서 범위(20~40분할) 밖이에요.\n\n' +
+  var EXT_WARN = '50분할 이상은 라오어 원문 규칙(20·40분할) 밖이에요.\n\n' +
     '· 리버스모드 매도 배수가 문서에 없어 앱이 자체 공식(1 − 2/분할수)으로 계산해요\n' +
     '· 1회 매수금이 작아져서, 원금이 부족하면 1주 값이 1회 매수금을 넘을 수 있어요\n\n계속할까요?';
   var DEF_BIGNUM = 12, DEF_LOC_SHARES = 1, DEF_LOC_LINES = 8;
@@ -21817,7 +21824,8 @@ if (typeof module !== 'undefined') module.exports = MHE;
       '<div class="mh-grid2">' + [['avg', '평단가 (' + sym + ')', '0.0001', '현재 평균매수가'], ['qty', '보유수량 (주)', '1', '현재 보유 주수'], ['cash', '잔금 (' + sym + ')', '0.01', '남은 투자금'], ['t', 'T값', '0.5', '현재 T값']]
         .map(function (f) { return '<div><label class="mh-lbl">' + f[1] + '</label><input class="mh-in" type="number" step="' + f[2] + '" placeholder="' + f[3] + '" value="' + esc(u[f[0]]) + '" data-in="su:' + f[0] + '"></div>'; }).join('') + '</div>' :
       '<div><label class="mh-lbl">원금 (' + sym + ')</label><input class="mh-in" type="number" placeholder="' + (u.currency === 'KRW' ? '30000000' : '20000') + '" value="' + esc(u.cap) + '" data-in="su:cap"></div>';
-    return '<div style="text-align:center;padding:18px 0 14px"><h1 style="margin:0;font-size:22px;font-weight:800">무한매수법</h1><p class="mh-ac" style="margin:2px 0 10px;font-weight:700">V4.0</p>' +
+    return '<div style="text-align:center;padding:18px 0 14px"><h1 style="margin:0;font-size:22px;font-weight:800">무한매수법</h1><p class="mh-ac" style="margin:2px 0 4px;font-weight:700">V4.0</p>' +
+      '<p class="mh-tiny mh-faint" style="margin:0 0 10px">창시자 <b style="color:var(--m-tx)">라오어</b> · <a href="https://cafe.naver.com/infinitebuying" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">공식 카페 ↗</a></p>' +
       '<button class="mh-btn" style="font-size:12px;margin-right:6px" data-act="guide">📘 처음이라면 가이드북부터</button>' +
       (window.dcAuth && !SY.uid && SY.can ? '<button class="mh-btn mh-btn-p" style="font-size:12px;margin-right:6px" data-act="sync-login">로그인하고 내 기록 불러오기</button>' : '') +
       (window.dcAuth && SY.uid ? '<div style="margin-top:8px;display:flex;justify-content:center;align-items:center;gap:6px"><span class="mh-tiny mh-faint">로그인 상태 — 계정에 자동 저장</span>' + syncChip() + '</div>' :
@@ -21825,7 +21833,8 @@ if (typeof module !== 'undefined') module.exports = MHE;
       '<div class="mh-card" style="padding:18px;display:flex;flex-direction:column;gap:18px">' +
       '<div><label class="mh-lbl">종목</label><div style="display:flex;gap:6px">' + tickerBtns + '</div>' + custom + '</div>' +
       '<div><label class="mh-lbl">분할 수</label><div class="mh-grid3">' + E.STD_SPLITS.map(splitBtn).join('') + '</div>' +
-      '<p class="mh-tiny" style="margin:8px 0 6px"><span class="mh-warn" style="font-weight:700">⚠ 비권장</span> <span class="mh-faint">라오어 문서 범위(20~40) 밖</span></p>' +
+      '<p class="mh-tiny mh-faint" style="margin:6px 0 0">20·40분할은 라오어 원문 규칙 · 30분할은 같은 공식으로 계산한 중간값</p>' +
+      '<p class="mh-tiny" style="margin:8px 0 6px"><span class="mh-warn" style="font-weight:700">⚠ 비권장</span> <span class="mh-faint">라오어 원문 규칙(20·40분할) 밖</span></p>' +
       '<div class="mh-grid3">' + E.EXT_SPLITS.map(splitBtn).join('') + '</div><p class="mh-help">적을수록 공격적, 클수록 안정적</p></div>' +
       field('목표 수익률 (%)', '기본 ' + E.defaultTarget(u.custom ? u.name : u.ticker) + '% (라오어 원칙)', 'target', '0.5', '1', '50', '별%, 지정가매도 가격, 리버스 복귀 조건에 적용됩니다') +
       field('큰수 % (종가 × 배수)', '기본 12% · 범위 0~40%', 'big', '0.5', '0', '40', '증권사 LOC 상한 회피용 매수 가격. 낮을수록 보수적(체결 조건 까다로움), 높을수록 공격적. 급등락장에서 조정 필요') +
@@ -21875,7 +21884,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
       applyRow('하방 LOC 주식 수', '기본 1주 · 1~20', 'mh-m-shares', E.locShares(s.lowerLocShares), '주', '1', '1', '20', 'ap-shares', '하방 LOC 1줄당 주식 수. 클수록 가격 간격 넓어짐') +
       (D.isCustom ? applyRow('호가 단위', '', 'mh-m-tick', s.tickSize || '', cur === 'KRW' ? '원' : '', '1', '0', '', 'ap-tick', '모든 주문·기준 가격을 이 단위로 맞춤. 비우면 스냅 안 함') : '') +
       '<div class="mh-msec"><div class="mh-row"><span style="font-size:13px">분할 수</span><span class="mh-tiny mh-faint">현재 ' + s.splits + '분할</span></div>' +
-      '<div class="mh-grid3" style="margin-top:6px">' + E.STD_SPLITS.map(sb).join('') + '</div><div class="mh-tiny" style="margin:6px 0"><span class="mh-warn">⚠ 비권장</span> <span class="mh-faint">라오어 문서 범위(20~40) 밖</span></div>' +
+      '<div class="mh-grid3" style="margin-top:6px">' + E.STD_SPLITS.map(sb).join('') + '</div><div class="mh-tiny" style="margin:6px 0"><span class="mh-warn">⚠ 비권장</span> <span class="mh-faint">라오어 원문 규칙(20·40분할) 밖</span></div>' +
       '<div class="mh-grid3">' + E.EXT_SPLITS.map(sb).join('') + '</div>' + (D.txs.length > 0 ? '<div class="mh-tiny mh-warn" style="margin-top:6px">⚠ 진행 중인 거래가 있어요. 변경 시 계산 재산출</div>' : '') + '</div>' +
       applyRow('원금 (' + (cur === 'KRW' ? '₩' : '$') + ')', '현재 ' + fmtL(s.totalCapital, cur), 'mh-m-cap', s.totalCapital, '', '1', '1', '', 'ap-cap', '잔금/매수금 계산 기준. 추가 입금 시 늘리기') +
       '<div class="mh-msec"><button class="mh-mbtn mh-ac" data-act="ses-add">세션 추가</button><button class="mh-mbtn" data-act="archive-box">📦 보관함' + (nArch > 0 ? ' (' + nArch + ')' : '') + '</button>' +
@@ -21935,8 +21944,8 @@ if (typeof module !== 'undefined') module.exports = MHE;
         '<div class="mh-mrow" style="margin-top:8px"><span class="mh-faint">' + (cur === 'KRW' ? '₩' : '$') + '</span><input class="mh-in" type="number" step="0.01" placeholder="' + (D.a5 != null ? '5일 평균 ' + fmt(D.a5, cur, 2) : '5일 평균 종가 입력') + '" value="' + (D.rStar != null ? D.rStar : '') + '" data-ch="rev-star">' +
         (D.a5 != null ? '<button class="mh-btn" style="padding:8px 10px;font-size:12px" data-act="rev-auto" title="5일 평균 종가로 자동 채우기">↻ 자동</button>' : '') + '</div>' +
         (D.a5 != null ? '<p class="mh-help">' + (D.rStar === D.a5 ? '✓ 직전 5거래일 종가 평균 <span class="mh-mono mh-ac">' + fmt(D.a5, cur, 2) + '</span> 자동 적용됨' : '직전 5거래일 종가 평균: <span class="mh-mono">' + fmt(D.a5, cur, 2) + '</span> (수동 수정됨)') + '</p>' : '') +
-        (D.backPrice > 0 ? '<p class="mh-help">종가가 <span class="mh-mono mh-ok">' + fmt(D.backPrice, cur, 2) + '</span> 이상이면 일반모드로 복귀 <span class="mh-faint">(평단가 -' + D.tgt + '%)</span></p>' : '') +
-        (D.backPrice > 0 && D.close != null && D.close >= D.backPrice ? '<div class="mh-note ok" style="margin-top:8px"><b class="mh-ok">✅ 복귀 조건 충족</b> — 최근 종가 <b>' + fmt(D.close, cur, 2) + '</b> ≥ 복귀가격 <b>' + fmt(D.backPrice, cur, 2) + '</b>. 확인했다면 위 \'일반모드 복귀\' 버튼으로 복귀하세요 (T값 유지)</div>' : '') + '</div>';
+        (D.backPrice > 0 ? '<p class="mh-help">종가가 <span class="mh-mono mh-ok">' + fmt(D.backPrice, cur, 2) + '</span>보다 높으면 다음 날 일반모드로 복귀 <span class="mh-faint">(평단가 -' + D.tgt + '%)</span></p>' : '') +
+        (D.backPrice > 0 && D.close != null && D.close > D.backPrice ? '<div class="mh-note ok" style="margin-top:8px"><b class="mh-ok">✅ 복귀 조건 충족</b> — 최근 종가 <b>' + fmt(D.close, cur, 2) + '</b> &gt; 복귀가격 <b>' + fmt(D.backPrice, cur, 2) + '</b>. 확인했다면 위 \'일반모드 복귀\' 버튼으로 복귀하세요 (T값 유지)</div>' : '') + '</div>';
     } else {
       h += '<div class="mh-grid3" style="margin-bottom:6px">' + stat('별%', sign(st.starPercent) + st.starPercent.toFixed(2) + '%', st.starPercent >= 0 ? 'mh-ok' : 'mh-bad') +
         stat('별지점', st.starPrice > 0 ? fmt(st.starPrice, cur, 2) : '-', 'mh-warn') + stat('1회 매수금', fmt(st.buyAmount, cur, 2), 'mh-ac', cur === 'USD' && D.fx ? '(₩' + Math.round(st.buyAmount * D.fx.rate).toLocaleString() + ')' : '') + '</div>';
@@ -22115,7 +22124,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
       h += '<div style="text-align:left;margin-top:10px"><div class="mh-row"><span class="mh-small">원금 (' + (cur === 'KRW' ? '₩' : '$') + ')</span><div style="display:flex;gap:4px"><button class="mh-btn" style="padding:3px 8px;font-size:11px" data-act="rs-cap" data-v="' + cmp + '" title="복리 = ' + fmtL(cmp, cur) + '">복리</button><button class="mh-btn" style="padding:3px 8px;font-size:11px" data-act="rs-cap" data-v="' + s.totalCapital + '" title="단리 = ' + fmtL(s.totalCapital, cur) + '">단리</button></div></div>' +
         '<input class="mh-in" style="margin-top:6px" type="number" step="1" min="1" value="' + esc(MH.restartCap) + '" data-in="rs-cap">' +
         '<div class="mh-row" style="margin-top:10px"><span class="mh-small">분할 수</span><span class="mh-tiny mh-faint">기존 ' + s.splits + '분할</span></div><div class="mh-grid3" style="margin-top:6px">' + E.STD_SPLITS.map(sb).join('') + '</div>' +
-        '<div class="mh-tiny" style="margin:6px 0"><span class="mh-warn">⚠ 비권장</span> <span class="mh-faint">라오어 문서 범위(20~40) 밖</span></div><div class="mh-grid3">' + E.EXT_SPLITS.map(sb).join('') + '</div>' +
+        '<div class="mh-tiny" style="margin:6px 0"><span class="mh-warn">⚠ 비권장</span> <span class="mh-faint">라오어 원문 규칙(20·40분할) 밖</span></div><div class="mh-grid3">' + E.EXT_SPLITS.map(sb).join('') + '</div>' +
         '<button class="mh-btn mh-btn-p" style="width:100%;margin-top:10px" data-act="rs-apply">적용 후 재시작</button></div>';
     }
     return h + '</div>';

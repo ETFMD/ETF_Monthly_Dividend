@@ -9660,7 +9660,7 @@ async function fetchMSAll() {
 ════════════════════════════════════════════════════════════ */
 var MHE = (function () {
   var STD_SPLITS = [20, 30, 40], EXT_SPLITS = [50, 60, 70, 80, 90, 100];
-  var EXT_WARN = '50분할 이상은 라오어 문서 범위(20~40분할) 밖이에요.\n\n' +
+  var EXT_WARN = '50분할 이상은 라오어 원문 규칙(20·40분할) 밖이에요.\n\n' +
     '· 리버스모드 매도 배수가 문서에 없어 앱이 자체 공식(1 − 2/분할수)으로 계산해요\n' +
     '· 1회 매수금이 작아져서, 원금이 부족하면 1주 값이 1회 매수금을 넘을 수 있어요\n\n계속할까요?';
   var DEF_BIGNUM = 12, DEF_LOC_SHARES = 1, DEF_LOC_LINES = 8;
@@ -10312,7 +10312,8 @@ if (typeof module !== 'undefined') module.exports = MHE;
       '<div class="mh-grid2">' + [['avg', '평단가 (' + sym + ')', '0.0001', '현재 평균매수가'], ['qty', '보유수량 (주)', '1', '현재 보유 주수'], ['cash', '잔금 (' + sym + ')', '0.01', '남은 투자금'], ['t', 'T값', '0.5', '현재 T값']]
         .map(function (f) { return '<div><label class="mh-lbl">' + f[1] + '</label><input class="mh-in" type="number" step="' + f[2] + '" placeholder="' + f[3] + '" value="' + esc(u[f[0]]) + '" data-in="su:' + f[0] + '"></div>'; }).join('') + '</div>' :
       '<div><label class="mh-lbl">원금 (' + sym + ')</label><input class="mh-in" type="number" placeholder="' + (u.currency === 'KRW' ? '30000000' : '20000') + '" value="' + esc(u.cap) + '" data-in="su:cap"></div>';
-    return '<div style="text-align:center;padding:18px 0 14px"><h1 style="margin:0;font-size:22px;font-weight:800">무한매수법</h1><p class="mh-ac" style="margin:2px 0 10px;font-weight:700">V4.0</p>' +
+    return '<div style="text-align:center;padding:18px 0 14px"><h1 style="margin:0;font-size:22px;font-weight:800">무한매수법</h1><p class="mh-ac" style="margin:2px 0 4px;font-weight:700">V4.0</p>' +
+      '<p class="mh-tiny mh-faint" style="margin:0 0 10px">창시자 <b style="color:var(--m-tx)">라오어</b> · <a href="https://cafe.naver.com/infinitebuying" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">공식 카페 ↗</a></p>' +
       '<button class="mh-btn" style="font-size:12px;margin-right:6px" data-act="guide">📘 처음이라면 가이드북부터</button>' +
       (window.dcAuth && !SY.uid && SY.can ? '<button class="mh-btn mh-btn-p" style="font-size:12px;margin-right:6px" data-act="sync-login">로그인하고 내 기록 불러오기</button>' : '') +
       (window.dcAuth && SY.uid ? '<div style="margin-top:8px;display:flex;justify-content:center;align-items:center;gap:6px"><span class="mh-tiny mh-faint">로그인 상태 — 계정에 자동 저장</span>' + syncChip() + '</div>' :
@@ -10320,7 +10321,8 @@ if (typeof module !== 'undefined') module.exports = MHE;
       '<div class="mh-card" style="padding:18px;display:flex;flex-direction:column;gap:18px">' +
       '<div><label class="mh-lbl">종목</label><div style="display:flex;gap:6px">' + tickerBtns + '</div>' + custom + '</div>' +
       '<div><label class="mh-lbl">분할 수</label><div class="mh-grid3">' + E.STD_SPLITS.map(splitBtn).join('') + '</div>' +
-      '<p class="mh-tiny" style="margin:8px 0 6px"><span class="mh-warn" style="font-weight:700">⚠ 비권장</span> <span class="mh-faint">라오어 문서 범위(20~40) 밖</span></p>' +
+      '<p class="mh-tiny mh-faint" style="margin:6px 0 0">20·40분할은 라오어 원문 규칙 · 30분할은 같은 공식으로 계산한 중간값</p>' +
+      '<p class="mh-tiny" style="margin:8px 0 6px"><span class="mh-warn" style="font-weight:700">⚠ 비권장</span> <span class="mh-faint">라오어 원문 규칙(20·40분할) 밖</span></p>' +
       '<div class="mh-grid3">' + E.EXT_SPLITS.map(splitBtn).join('') + '</div><p class="mh-help">적을수록 공격적, 클수록 안정적</p></div>' +
       field('목표 수익률 (%)', '기본 ' + E.defaultTarget(u.custom ? u.name : u.ticker) + '% (라오어 원칙)', 'target', '0.5', '1', '50', '별%, 지정가매도 가격, 리버스 복귀 조건에 적용됩니다') +
       field('큰수 % (종가 × 배수)', '기본 12% · 범위 0~40%', 'big', '0.5', '0', '40', '증권사 LOC 상한 회피용 매수 가격. 낮을수록 보수적(체결 조건 까다로움), 높을수록 공격적. 급등락장에서 조정 필요') +
@@ -10370,7 +10372,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
       applyRow('하방 LOC 주식 수', '기본 1주 · 1~20', 'mh-m-shares', E.locShares(s.lowerLocShares), '주', '1', '1', '20', 'ap-shares', '하방 LOC 1줄당 주식 수. 클수록 가격 간격 넓어짐') +
       (D.isCustom ? applyRow('호가 단위', '', 'mh-m-tick', s.tickSize || '', cur === 'KRW' ? '원' : '', '1', '0', '', 'ap-tick', '모든 주문·기준 가격을 이 단위로 맞춤. 비우면 스냅 안 함') : '') +
       '<div class="mh-msec"><div class="mh-row"><span style="font-size:13px">분할 수</span><span class="mh-tiny mh-faint">현재 ' + s.splits + '분할</span></div>' +
-      '<div class="mh-grid3" style="margin-top:6px">' + E.STD_SPLITS.map(sb).join('') + '</div><div class="mh-tiny" style="margin:6px 0"><span class="mh-warn">⚠ 비권장</span> <span class="mh-faint">라오어 문서 범위(20~40) 밖</span></div>' +
+      '<div class="mh-grid3" style="margin-top:6px">' + E.STD_SPLITS.map(sb).join('') + '</div><div class="mh-tiny" style="margin:6px 0"><span class="mh-warn">⚠ 비권장</span> <span class="mh-faint">라오어 원문 규칙(20·40분할) 밖</span></div>' +
       '<div class="mh-grid3">' + E.EXT_SPLITS.map(sb).join('') + '</div>' + (D.txs.length > 0 ? '<div class="mh-tiny mh-warn" style="margin-top:6px">⚠ 진행 중인 거래가 있어요. 변경 시 계산 재산출</div>' : '') + '</div>' +
       applyRow('원금 (' + (cur === 'KRW' ? '₩' : '$') + ')', '현재 ' + fmtL(s.totalCapital, cur), 'mh-m-cap', s.totalCapital, '', '1', '1', '', 'ap-cap', '잔금/매수금 계산 기준. 추가 입금 시 늘리기') +
       '<div class="mh-msec"><button class="mh-mbtn mh-ac" data-act="ses-add">세션 추가</button><button class="mh-mbtn" data-act="archive-box">📦 보관함' + (nArch > 0 ? ' (' + nArch + ')' : '') + '</button>' +
@@ -10430,8 +10432,8 @@ if (typeof module !== 'undefined') module.exports = MHE;
         '<div class="mh-mrow" style="margin-top:8px"><span class="mh-faint">' + (cur === 'KRW' ? '₩' : '$') + '</span><input class="mh-in" type="number" step="0.01" placeholder="' + (D.a5 != null ? '5일 평균 ' + fmt(D.a5, cur, 2) : '5일 평균 종가 입력') + '" value="' + (D.rStar != null ? D.rStar : '') + '" data-ch="rev-star">' +
         (D.a5 != null ? '<button class="mh-btn" style="padding:8px 10px;font-size:12px" data-act="rev-auto" title="5일 평균 종가로 자동 채우기">↻ 자동</button>' : '') + '</div>' +
         (D.a5 != null ? '<p class="mh-help">' + (D.rStar === D.a5 ? '✓ 직전 5거래일 종가 평균 <span class="mh-mono mh-ac">' + fmt(D.a5, cur, 2) + '</span> 자동 적용됨' : '직전 5거래일 종가 평균: <span class="mh-mono">' + fmt(D.a5, cur, 2) + '</span> (수동 수정됨)') + '</p>' : '') +
-        (D.backPrice > 0 ? '<p class="mh-help">종가가 <span class="mh-mono mh-ok">' + fmt(D.backPrice, cur, 2) + '</span> 이상이면 일반모드로 복귀 <span class="mh-faint">(평단가 -' + D.tgt + '%)</span></p>' : '') +
-        (D.backPrice > 0 && D.close != null && D.close >= D.backPrice ? '<div class="mh-note ok" style="margin-top:8px"><b class="mh-ok">✅ 복귀 조건 충족</b> — 최근 종가 <b>' + fmt(D.close, cur, 2) + '</b> ≥ 복귀가격 <b>' + fmt(D.backPrice, cur, 2) + '</b>. 확인했다면 위 \'일반모드 복귀\' 버튼으로 복귀하세요 (T값 유지)</div>' : '') + '</div>';
+        (D.backPrice > 0 ? '<p class="mh-help">종가가 <span class="mh-mono mh-ok">' + fmt(D.backPrice, cur, 2) + '</span>보다 높으면 다음 날 일반모드로 복귀 <span class="mh-faint">(평단가 -' + D.tgt + '%)</span></p>' : '') +
+        (D.backPrice > 0 && D.close != null && D.close > D.backPrice ? '<div class="mh-note ok" style="margin-top:8px"><b class="mh-ok">✅ 복귀 조건 충족</b> — 최근 종가 <b>' + fmt(D.close, cur, 2) + '</b> &gt; 복귀가격 <b>' + fmt(D.backPrice, cur, 2) + '</b>. 확인했다면 위 \'일반모드 복귀\' 버튼으로 복귀하세요 (T값 유지)</div>' : '') + '</div>';
     } else {
       h += '<div class="mh-grid3" style="margin-bottom:6px">' + stat('별%', sign(st.starPercent) + st.starPercent.toFixed(2) + '%', st.starPercent >= 0 ? 'mh-ok' : 'mh-bad') +
         stat('별지점', st.starPrice > 0 ? fmt(st.starPrice, cur, 2) : '-', 'mh-warn') + stat('1회 매수금', fmt(st.buyAmount, cur, 2), 'mh-ac', cur === 'USD' && D.fx ? '(₩' + Math.round(st.buyAmount * D.fx.rate).toLocaleString() + ')' : '') + '</div>';
@@ -10610,7 +10612,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
       h += '<div style="text-align:left;margin-top:10px"><div class="mh-row"><span class="mh-small">원금 (' + (cur === 'KRW' ? '₩' : '$') + ')</span><div style="display:flex;gap:4px"><button class="mh-btn" style="padding:3px 8px;font-size:11px" data-act="rs-cap" data-v="' + cmp + '" title="복리 = ' + fmtL(cmp, cur) + '">복리</button><button class="mh-btn" style="padding:3px 8px;font-size:11px" data-act="rs-cap" data-v="' + s.totalCapital + '" title="단리 = ' + fmtL(s.totalCapital, cur) + '">단리</button></div></div>' +
         '<input class="mh-in" style="margin-top:6px" type="number" step="1" min="1" value="' + esc(MH.restartCap) + '" data-in="rs-cap">' +
         '<div class="mh-row" style="margin-top:10px"><span class="mh-small">분할 수</span><span class="mh-tiny mh-faint">기존 ' + s.splits + '분할</span></div><div class="mh-grid3" style="margin-top:6px">' + E.STD_SPLITS.map(sb).join('') + '</div>' +
-        '<div class="mh-tiny" style="margin:6px 0"><span class="mh-warn">⚠ 비권장</span> <span class="mh-faint">라오어 문서 범위(20~40) 밖</span></div><div class="mh-grid3">' + E.EXT_SPLITS.map(sb).join('') + '</div>' +
+        '<div class="mh-tiny" style="margin:6px 0"><span class="mh-warn">⚠ 비권장</span> <span class="mh-faint">라오어 원문 규칙(20·40분할) 밖</span></div><div class="mh-grid3">' + E.EXT_SPLITS.map(sb).join('') + '</div>' +
         '<button class="mh-btn mh-btn-p" style="width:100%;margin-top:10px" data-act="rs-apply">적용 후 재시작</button></div>';
     }
     return h + '</div>';

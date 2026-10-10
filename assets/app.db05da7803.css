@@ -2001,6 +2001,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .mhg-lead { font-size:14px; line-height:1.8; color:var(--text2); margin:0 0 14px; max-width:880px; }
   .mhg-prog { display:flex; align-items:center; gap:10px; font-size:12px; color:var(--text3); }
   .mhg-prog-bar { flex:1; max-width:320px; height:6px; border-radius:6px; background:rgba(var(--fg-rgb),.08); overflow:hidden; }
+  .mhg-origin { display:flex; gap:10px; align-items:flex-start; margin:14px 0 0; max-width:880px; font-size:13px; line-height:1.7; color:var(--text2); }
+  .mhg-origin-k { flex-shrink:0; font-size:11px; font-weight:800; letter-spacing:.02em; color:var(--accent); background:rgba(49,130,246,.1); border-radius:6px; padding:2px 8px; margin-top:2px; }
+  .mhg-origin b { color:var(--text); }
+  .mhg-origin a { color:var(--accent); font-weight:600; }
   .mhg-prog-bar i { display:block; height:100%; width:0; background:var(--accent); border-radius:6px; transition:width .3s; }
   .mhg-summary { background:var(--card); border:1px solid var(--card-border); border-radius:14px; padding:18px 20px; margin-bottom:14px; }
   .mhg-summary h3 { margin:0 0 12px; }
