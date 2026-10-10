@@ -1419,7 +1419,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   }
   /* [HOME] 메인 화면 — 자본주의를 숫자로 */
   #page-home .hm-hero { padding:8px 0 28px; }
-  .hm-title { font-size:38px; line-height:1.28; letter-spacing:-0.03em; margin:16px 0 14px; }
+  .hm-title { font-size:44px; line-height:1.28; letter-spacing:-0.03em; margin:16px 0 14px; }
   .hm-title span { color:var(--accent); }
   .hm-lead { font-size:15px; line-height:1.85; color:var(--text2); max-width:760px; }
   .hm-lead b { color:var(--text); font-weight:500; }
@@ -1494,6 +1494,51 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .hm-rule p { font-size:13px; line-height:1.75; color:var(--text2); }
   .hm-rule strong { display:block; color:var(--text); font-weight:600; margin-bottom:4px; }
   .hm-tools-sec { margin-top:32px; }
+  /* [HM-FORCES] 홈 첫 화면: AI 시대, 노동자에서 자본가로 */
+  .hm-grad { background:linear-gradient(90deg, #3182f6, #8b5cf6 50%, #f04452); -webkit-background-clip:text; background-clip:text; color:transparent !important; }
+  .hm-ctas { display:flex; flex-wrap:wrap; gap:10px; margin-top:22px; }
+  .hm-cta { display:inline-flex; align-items:center; text-decoration:none; font-size:14.5px; font-weight:700; padding:12px 18px; border-radius:12px; border:1px solid var(--card-border); background:var(--card); color:var(--text); transition:border-color .15s, transform .15s; }
+  .hm-cta:hover { border-color:var(--accent); transform:translateY(-1px); }
+  .hm-cta.pri { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .hm-sh { font-size:20px; font-weight:800; letter-spacing:-0.02em; color:var(--text); margin:0 0 14px; word-break:keep-all; }
+  .hm-forces { margin:6px 0 36px; }
+  .hm-fs { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; }
+  .hm-f { --c:#3182f6; display:flex; flex-direction:column; min-width:0; padding:18px; border-radius:16px; border:1px solid color-mix(in srgb, var(--c) 35%, transparent); background:color-mix(in srgb, var(--c) 6%, transparent); }
+  .hm-f.red { --c:#f04452; } .hm-f.amber { --c:#fe9800; } .hm-f.blue { --c:#3182f6; }
+  .hm-f-k { margin:0 0 6px; font-size:12px; font-weight:700; color:var(--c); }
+  .hm-f h3 { margin:0 0 14px; font-size:18px; font-weight:800; color:var(--text); word-break:keep-all; }
+  .hm-f-n { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+  .hm-f-n > div { background:var(--bg2); border-radius:12px; padding:11px 12px; min-width:0; }
+  .hm-f-n p { margin:0 0 4px; font-size:11px; color:var(--text3); line-height:1.4; }
+  .hm-f-n b { display:block; font-family:var(--mono); font-size:19px; font-weight:700; color:var(--c); letter-spacing:-0.02em; }
+  .hm-f-n small { display:block; margin-top:4px; font-size:10.5px; line-height:1.45; color:var(--text3); overflow-wrap:anywhere; }
+  .hm-f-go { margin-top:auto; font-size:13px; font-weight:700; color:var(--c); text-decoration:none; }
+  .hm-f-go:hover { text-decoration:underline; }
+  .hm-job { display:flex; gap:6px; margin-top:auto; }
+  .hm-job input { flex:1; min-width:0; height:40px; padding:0 12px; border-radius:10px; border:1px solid var(--card-border); background:var(--bg2); color:var(--text); font:inherit; font-size:14px; outline:none; }
+  .hm-job input:focus { border-color:var(--c); }
+  .hm-job button { flex-shrink:0; height:40px; padding:0 14px; border:0; border-radius:10px; background:var(--c); color:#fff; font:inherit; font-size:13.5px; font-weight:700; cursor:pointer; }
+  .hm-job-sug { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; min-height:0; }
+  .hm-job-sug a { font-size:12px; text-decoration:none; color:var(--text2); border:1px solid var(--card-border); border-radius:999px; padding:4px 10px; }
+  .hm-job-sug a:hover { border-color:var(--c, #fe9800); color:var(--text); }
+  .hm-job-sug .none { font-size:12px; color:var(--text3); }
+  .hm-tool i { font-style:normal; font-size:20px; line-height:1; margin-bottom:4px; }
+  .hm-tool.hot { border-color:rgba(254,152,0,.45); background:rgba(254,152,0,.06); }
+  .hm-data { margin-top:36px; }
+  .hm-dtabs { display:flex; flex-wrap:wrap; gap:6px; }
+  .hm-dtabs button { border:1px solid var(--card-border); background:var(--card); color:var(--text2); font:inherit; font-size:13px; font-weight:700; padding:8px 14px; border-radius:999px; cursor:pointer; white-space:nowrap; }
+  .hm-dtabs button:hover { border-color:var(--accent); color:var(--text); }
+  .hm-dtabs button.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .hm-data .hm-sec { margin-top:12px; }
+  @media (max-width: 900px) { .hm-fs { grid-template-columns:1fr; } }
+  @media (max-width: 600px) {
+    .hm-title { font-size:30px; }
+    .hm-cta { flex:1 1 100%; justify-content:center; }
+    .hm-f { padding:16px 14px; }
+    .hm-dtabs { flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
+    .hm-dtabs::-webkit-scrollbar { display:none; }
+  }
+
   .hm-tools { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; }
   .hm-tool { display:flex; flex-direction:column; gap:5px; background:var(--card); border:1px solid var(--card-border); border-radius:12px; padding:14px 16px; text-decoration:none; transition:border-color .15s, background .15s; }
   .hm-tool:hover { border-color:rgba(49,130,246,0.45); background:var(--accent-dim); }

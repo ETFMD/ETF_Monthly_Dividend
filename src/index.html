@@ -1671,7 +1671,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   }
   /* [HOME] 메인 화면 — 자본주의를 숫자로 */
   #page-home .hm-hero { padding:8px 0 28px; }
-  .hm-title { font-size:38px; line-height:1.28; letter-spacing:-0.03em; margin:16px 0 14px; }
+  .hm-title { font-size:44px; line-height:1.28; letter-spacing:-0.03em; margin:16px 0 14px; }
   .hm-title span { color:var(--accent); }
   .hm-lead { font-size:15px; line-height:1.85; color:var(--text2); max-width:760px; }
   .hm-lead b { color:var(--text); font-weight:500; }
@@ -1746,6 +1746,51 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .hm-rule p { font-size:13px; line-height:1.75; color:var(--text2); }
   .hm-rule strong { display:block; color:var(--text); font-weight:600; margin-bottom:4px; }
   .hm-tools-sec { margin-top:32px; }
+  /* [HM-FORCES] 홈 첫 화면: AI 시대, 노동자에서 자본가로 */
+  .hm-grad { background:linear-gradient(90deg, #3182f6, #8b5cf6 50%, #f04452); -webkit-background-clip:text; background-clip:text; color:transparent !important; }
+  .hm-ctas { display:flex; flex-wrap:wrap; gap:10px; margin-top:22px; }
+  .hm-cta { display:inline-flex; align-items:center; text-decoration:none; font-size:14.5px; font-weight:700; padding:12px 18px; border-radius:12px; border:1px solid var(--card-border); background:var(--card); color:var(--text); transition:border-color .15s, transform .15s; }
+  .hm-cta:hover { border-color:var(--accent); transform:translateY(-1px); }
+  .hm-cta.pri { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .hm-sh { font-size:20px; font-weight:800; letter-spacing:-0.02em; color:var(--text); margin:0 0 14px; word-break:keep-all; }
+  .hm-forces { margin:6px 0 36px; }
+  .hm-fs { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; }
+  .hm-f { --c:#3182f6; display:flex; flex-direction:column; min-width:0; padding:18px; border-radius:16px; border:1px solid color-mix(in srgb, var(--c) 35%, transparent); background:color-mix(in srgb, var(--c) 6%, transparent); }
+  .hm-f.red { --c:#f04452; } .hm-f.amber { --c:#fe9800; } .hm-f.blue { --c:#3182f6; }
+  .hm-f-k { margin:0 0 6px; font-size:12px; font-weight:700; color:var(--c); }
+  .hm-f h3 { margin:0 0 14px; font-size:18px; font-weight:800; color:var(--text); word-break:keep-all; }
+  .hm-f-n { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+  .hm-f-n > div { background:var(--bg2); border-radius:12px; padding:11px 12px; min-width:0; }
+  .hm-f-n p { margin:0 0 4px; font-size:11px; color:var(--text3); line-height:1.4; }
+  .hm-f-n b { display:block; font-family:var(--mono); font-size:19px; font-weight:700; color:var(--c); letter-spacing:-0.02em; }
+  .hm-f-n small { display:block; margin-top:4px; font-size:10.5px; line-height:1.45; color:var(--text3); overflow-wrap:anywhere; }
+  .hm-f-go { margin-top:auto; font-size:13px; font-weight:700; color:var(--c); text-decoration:none; }
+  .hm-f-go:hover { text-decoration:underline; }
+  .hm-job { display:flex; gap:6px; margin-top:auto; }
+  .hm-job input { flex:1; min-width:0; height:40px; padding:0 12px; border-radius:10px; border:1px solid var(--card-border); background:var(--bg2); color:var(--text); font:inherit; font-size:14px; outline:none; }
+  .hm-job input:focus { border-color:var(--c); }
+  .hm-job button { flex-shrink:0; height:40px; padding:0 14px; border:0; border-radius:10px; background:var(--c); color:#fff; font:inherit; font-size:13.5px; font-weight:700; cursor:pointer; }
+  .hm-job-sug { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; min-height:0; }
+  .hm-job-sug a { font-size:12px; text-decoration:none; color:var(--text2); border:1px solid var(--card-border); border-radius:999px; padding:4px 10px; }
+  .hm-job-sug a:hover { border-color:var(--c, #fe9800); color:var(--text); }
+  .hm-job-sug .none { font-size:12px; color:var(--text3); }
+  .hm-tool i { font-style:normal; font-size:20px; line-height:1; margin-bottom:4px; }
+  .hm-tool.hot { border-color:rgba(254,152,0,.45); background:rgba(254,152,0,.06); }
+  .hm-data { margin-top:36px; }
+  .hm-dtabs { display:flex; flex-wrap:wrap; gap:6px; }
+  .hm-dtabs button { border:1px solid var(--card-border); background:var(--card); color:var(--text2); font:inherit; font-size:13px; font-weight:700; padding:8px 14px; border-radius:999px; cursor:pointer; white-space:nowrap; }
+  .hm-dtabs button:hover { border-color:var(--accent); color:var(--text); }
+  .hm-dtabs button.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .hm-data .hm-sec { margin-top:12px; }
+  @media (max-width: 900px) { .hm-fs { grid-template-columns:1fr; } }
+  @media (max-width: 600px) {
+    .hm-title { font-size:30px; }
+    .hm-cta { flex:1 1 100%; justify-content:center; }
+    .hm-f { padding:16px 14px; }
+    .hm-dtabs { flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
+    .hm-dtabs::-webkit-scrollbar { display:none; }
+  }
+
   .hm-tools { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; }
   .hm-tool { display:flex; flex-direction:column; gap:5px; background:var(--card); border:1px solid var(--card-border); border-radius:12px; padding:14px 16px; text-decoration:none; transition:border-color .15s, background .15s; }
   .hm-tool:hover { border-color:rgba(49,130,246,0.45); background:var(--accent-dim); }
@@ -2616,37 +2661,45 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
     <section class="hm-hero">
       <span class="badge">DECODING CAPITALISM</span>
-      <h1 class="hm-title">돈은 계속 늘어나고,<br><span>현금의 가치는 계속 줄어듭니다</span></h1>
-      <p class="hm-lead">자본주의는 통화량이 꾸준히 늘어나는 구조 위에서 움직입니다. 같은 1억 원이라도 <b>현금·예금·부동산·주식 중 어디에 두었느냐</b>에 따라 20년 뒤의 크기가 몇 배씩 달라집니다. 한국은행·통계청·국토교통부 공식 통계와 실제 시장 데이터로 그 차이를 확인해 보세요.</p>
-      <div class="hm-kpis">
-        <div class="hm-kpi">
-          <p class="hm-kpi-label">시중 통화량(M2)</p>
-          <p class="hm-kpi-val" style="color:var(--accent3);">연 +8.8%</p>
-          <p class="hm-kpi-sub">1995→2025 · 317조 → 3,994조 (12.6배)</p>
-        </div>
-        <div class="hm-kpi">
-          <p class="hm-kpi-label">소비자물가</p>
-          <p class="hm-kpi-val" id="hm-k-cpi" style="color:var(--accent2);">—</p>
-          <p class="hm-kpi-sub" id="hm-k-cpi-sub">—</p>
-        </div>
-        <div class="hm-kpi">
-          <p class="hm-kpi-label">서울 아파트 평균 실거래가</p>
-          <p class="hm-kpi-val" id="hm-k-seoul" style="color:var(--accent3);">—</p>
-          <p class="hm-kpi-sub" id="hm-k-seoul-sub">—</p>
-        </div>
-        <div class="hm-kpi">
-          <p class="hm-kpi-label">S&amp;P 500 · 배당 재투자 · 원화</p>
-          <p class="hm-kpi-val" id="hm-k-spy" style="color:var(--accent);">—</p>
-          <p class="hm-kpi-sub" id="hm-k-spy-sub">—</p>
-        </div>
+      <h1 class="hm-title">AI 시대,<br><span class="hm-grad">노동자에서 자본가로</span></h1>
+      <p class="hm-lead">돈은 계속 찍혀 나와 <b>현금의 가치는 줄고</b>, AI는 빠르게 <b>노동자의 밥그릇</b>을 가져가고 있습니다. 월급만으로 버티는 시간은 짧아집니다. 디코딩 자본주의는 공식 통계와 계산기로 <b>내 돈이 나 대신 일하게 만드는 길</b>을 안내합니다.</p>
+      <div class="hm-ctas">
+        <a class="hm-cta pri" href="job-life/" data-tab="joblife" data-group="me">내 직업, AI에게 몇 년 남았나 →</a>
+        <a class="hm-cta" href="salary-rank/" data-tab="srank" data-group="me">내 연봉 순위 보기</a>
+      </div>
+    </section>
+
+    <!-- [HM-FORCES] 노동자를 밀어내는 두 힘(화폐 팽창 · AI)과 하나의 답(자본) -->
+    <section class="hm-forces" aria-labelledby="hm-forces-t">
+      <h2 class="hm-sh" id="hm-forces-t">노동자를 밀어내는 두 개의 힘, 그리고 하나의 답</h2>
+      <div class="hm-fs">
+        <article class="hm-f red">
+          <p class="hm-f-k"><span aria-hidden="true">💸</span> 힘 1 · 화폐 팽창</p>
+          <h3>돈은 늘고, 현금은 녹습니다</h3>
+          <div class="hm-f-n"><div><p>시중 통화량(M2)</p><b>연 +8.8%</b><small>1995→2025 · 317조 → 3,994조 (12.6배)</small></div><div><p>소비자물가</p><b id="hm-k-cpi">—</b><small id="hm-k-cpi-sub">—</small></div></div>
+          <a class="hm-f-go" href="moneyspeed/" data-tab="moneyspeed" data-group="me">돈·자산·노동의 가치 속도 →</a>
+        </article>
+        <article class="hm-f amber">
+          <p class="hm-f-k"><span aria-hidden="true">🤖</span> 힘 2 · AI 대체</p>
+          <h3>노동의 밥그릇은 줄어듭니다</h3>
+          <div class="hm-f-n"><div><p>AI 대체 가능성이 큰 일자리</p><b>341만 개</b><small>국내 일자리의 12% · 한국은행(2023)</small></div><div><p>지금 업무의 절반 자동화</p><b>2045년</b><small>중간 시나리오 · McKinsey(2023)</small></div></div>
+          <form class="hm-job" id="hm-job" role="search" autocomplete="off"><input type="search" id="hm-job-q" placeholder="내 직업 입력 — 예: 회계사" aria-label="직업 이름" enterkeyhint="go"><button type="submit">확인</button></form>
+          <div class="hm-job-sug" id="hm-job-sug" aria-live="polite"></div>
+        </article>
+        <article class="hm-f blue">
+          <p class="hm-f-k"><span aria-hidden="true">🏦</span> 하나의 답 · 자본</p>
+          <h3>자산은 함께 오릅니다</h3>
+          <div class="hm-f-n"><div><p>서울 아파트 평균 실거래가</p><b id="hm-k-seoul">—</b><small id="hm-k-seoul-sub">—</small></div><div><p>S&amp;P 500 · 배당 재투자 · 원화</p><b id="hm-k-spy">—</b><small id="hm-k-spy-sub">—</small></div></div>
+          <a class="hm-f-go" href="compound/" data-tab="compound" data-group="invest">복리 계산기로 내 자산 키워 보기 →</a>
+        </article>
       </div>
     </section>
 
     <!-- [HM-PATH] 노동자 → 자본가 6단계: 지금 단계를 고르면 맞는 도구로 바로 이동 -->
     <section class="hm-path" aria-labelledby="hm-path-t">
-      <div class="hm-path-head"><h2 id="hm-path-t">노동자에서 자본가로, 어디서부터 시작할까요?</h2><p>지금 내 단계를 고르면 필요한 계산기와 자료로 바로 갑니다.</p></div>
+      <div class="hm-path-head"><h2 id="hm-path-t">노동자에서 자본가로, 6단계</h2><p>지금 내 단계를 고르면 필요한 계산기와 자료로 바로 갑니다.</p></div>
       <div class="hm-pss">
-      <div class="hm-ps"><p class="hm-ps-k"><b>1</b>내 위치</p><h3>진단</h3><p class="hm-ps-d">내 연봉과 자산은 대한민국에서 어디쯤인지</p><div class="hm-ps-go"><a class="hm-go" href="salary-rank/">내 연봉 순위 →</a><a class="hm-go" href="asset-rank/">내 자산 순위 →</a></div></div>
+      <div class="hm-ps"><p class="hm-ps-k"><b>1</b>내 위치</p><h3>진단</h3><p class="hm-ps-d">내 연봉·자산의 위치, 그리고 내 직업의 남은 수명</p><div class="hm-ps-go"><a class="hm-go" href="salary-rank/">연봉 순위 →</a><a class="hm-go" href="asset-rank/">자산 순위 →</a><a class="hm-go" href="job-life/">직업 수명 →</a></div></div>
       <div class="hm-ps"><p class="hm-ps-k"><b>2</b>노동자</p><h3>월급 지키기</h3><p class="hm-ps-d">실제로 손에 쥐는 돈과 돌려받을 세금</p><div class="hm-ps-go"><a class="hm-go" href="salary/">연봉 실수령액 →</a><a class="hm-go" href="year-end-tax/">연말정산 환급 →</a></div></div>
       <div class="hm-ps"><p class="hm-ps-k"><b>3</b>투자</p><h3>자본 불리기</h3><p class="hm-ps-d">모은 돈이 복리와 시장 성장으로 얼마나 커지는지</p><div class="hm-ps-go"><a class="hm-go" href="compound/">복리 계산기 →</a><a class="hm-go" href="sp500/">S&amp;P 500 성장률 →</a></div></div>
       <div class="hm-ps"><p class="hm-ps-k"><b>4</b>부동산</p><h3>실물 자산</h3><p class="hm-ps-d">대출 한도와 실제 아파트 시세</p><div class="hm-ps-go"><a class="hm-go" href="mortgage/">주담대 한도 →</a><a class="hm-go" href="apt-rank/">아파트 시세 순위 →</a></div></div>
@@ -2655,8 +2708,32 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       </div>
     </section>
 
+    <!-- [HM-POP] 많이 찾는 도구 -->
+    <section class="hm-tools-sec" aria-labelledby="hm-pop-t">
+      <h2 class="hm-sh" id="hm-pop-t">많이 찾는 도구</h2>
+      <div class="hm-tools">
+        <a class="hm-tool" href="salary/" data-tab="salary" data-group="pay"><i aria-hidden="true">💵</i><b>연봉 실수령액 계산기</b><span>4대보험·세금 떼고 매달 받는 돈</span></a>
+        <a class="hm-tool hot" href="job-life/" data-tab="joblife" data-group="me"><i aria-hidden="true">⏳</i><b>나의 직업 수명</b><span>AI가 내 일을 대체하기까지 남은 기간</span></a>
+        <a class="hm-tool" href="salary-rank/" data-tab="srank" data-group="me"><i aria-hidden="true">🏅</i><b>국내 나의 연봉 순위</b><span>내 연봉은 대한민국 상위 몇 %</span></a>
+        <a class="hm-tool" href="year-end-tax/" data-tab="yearend" data-group="pay"><i aria-hidden="true">🧾</i><b>연말정산 환급 계산기</b><span>13월의 월급, 얼마 돌려받을까</span></a>
+        <a class="hm-tool" href="severance/" data-tab="severance" data-group="pay"><i aria-hidden="true">📦</i><b>퇴직금 계산기</b><span>DB·DC형 퇴직금과 세금</span></a>
+        <a class="hm-tool" href="mortgage/" data-tab="mortgage" data-group="realty"><i aria-hidden="true">🏠</i><b>주담대 LTV·DSR 한도</b><span>내 소득으로 빌릴 수 있는 금액</span></a>
+        <a class="hm-tool" href="apt-rank/" data-tab="aptrank" data-group="realty"><i aria-hidden="true">🏙️</i><b>아파트 시세 순위</b><span>실거래가로 본 우리 아파트 위치</span></a>
+        <a class="hm-tool" href="compound/" data-tab="compound" data-group="invest"><i aria-hidden="true">📈</i><b>복리 계산기</b><span>적립식 복리·세후 수익</span></a>
+        <a class="hm-tool" href="dividend-calendar/" data-tab="etfdiv" data-group="passive"><i aria-hidden="true">📅</i><b>ETF 월분배 및 배당 달력</b><span>월분배 ETF 공시·분배락·지급일</span></a>
+        <a class="hm-tool" href="dividend-calculator/" data-tab="divcalc" data-group="passive"><i aria-hidden="true">💰</i><b>배당금 계산기</b><span>월 배당으로 생활비 만들기</span></a>
+        <a class="hm-tool" href="fire/" data-tab="fire" data-group="passive"><i aria-hidden="true">🔥</i><b>파이어족 계산기</b><span>일을 그만둬도 되는 자산</span></a>
+        <a class="hm-tool" href="muhan/" data-tab="muhan" data-group="invest"><i aria-hidden="true">♾️</i><b>무한매수법 4.0</b><span>TQQQ·SOXL 분할 매수 기록·가이드</span></a>
+      </div>
+    </section>
+
+    <!-- [HM-DATA] 데이터로 보는 자본주의 — 4개 주제를 탭으로 하나씩 (내용은 그대로, 첫 화면은 단순하게) -->
+    <section class="hm-data" aria-labelledby="hm-data-t">
+      <h2 class="hm-sh" id="hm-data-t">데이터로 보는 자본주의</h2>
+      <div class="hm-dtabs" role="tablist" aria-label="데이터 주제"><button type="button" role="tab" class="on" aria-selected="true" data-hp="0">💸 인플레이션</button><button type="button" role="tab" aria-selected="false" data-hp="1">📊 자산 상승률</button><button type="button" role="tab" aria-selected="false" data-hp="2">🏠 부동산 vs 주식</button><button type="button" role="tab" aria-selected="false" data-hp="3">⏱️ 복리와 시간</button></div>
+
     <!-- 1. 현금의 구매력 -->
-    <section class="card hm-sec">
+    <section class="card hm-sec" role="tabpanel" data-hp-panel="0">
       <p class="hm-step">01 · 인플레이션</p>
       <h2 class="hm-h2">현금은 가만히 있어도 <span class="hm-red">가치를 잃습니다</span></h2>
       <div class="hm-split">
@@ -2673,7 +2750,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     </section>
 
     <!-- 2. 자산별 비교 -->
-    <section class="card hm-sec">
+    <section class="card hm-sec" role="tabpanel" data-hp-panel="1" hidden>
       <p class="hm-step">02 · 자산 상승률</p>
       <h2 class="hm-h2" id="hm-race-h2">같은 1억, 어디에 두었느냐가 결과를 바꿉니다</h2>
       <p class="hm-p" id="hm-race-p">—</p>
@@ -2689,7 +2766,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     </section>
 
     <!-- 3. 부동산 vs 지수 투자 -->
-    <section class="card hm-sec">
+    <section class="card hm-sec" role="tabpanel" data-hp-panel="2" hidden>
       <p class="hm-step">03 · 부동산 vs 금융 투자</p>
       <h2 class="hm-h2">집 한 채와 <span class="hm-blue">시장 전체</span>를 사는 것의 차이</h2>
       <p class="hm-p" id="hm-vs-p">—</p>
@@ -2730,7 +2807,7 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
     </section>
 
     <!-- 4. 복리와 시간 -->
-    <section class="card hm-sec">
+    <section class="card hm-sec" role="tabpanel" data-hp-panel="3" hidden>
       <p class="hm-step">04 · 복리와 시간</p>
       <h2 class="hm-h2">수익률의 작은 차이가 <span class="hm-blue">시간을 만나면</span> 몇 배가 됩니다</h2>
       <div class="hm-calc">
@@ -2751,29 +2828,14 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <div class="hm-72" id="hm-72"></div>
     </section>
 
+    </section><!-- /hm-data -->
+
     <!-- 5. 핵심 정리 -->
     <section class="hm-rules">
-      <div class="hm-rule"><b>1</b><p><strong>돈의 양은 늘어납니다.</strong> 지난 30년 통화량은 물가보다 훨씬 빠르게 늘었고, 같은 기간 자산 가격도 물가보다 크게 올랐습니다.</p></div>
+      <div class="hm-rule"><b>1</b><p><strong>돈의 양은 계속 늘어납니다.</strong> 지난 30년 통화량은 물가보다 훨씬 빠르게 늘었고, 같은 기간 자산 가격도 물가보다 크게 올랐습니다.</p></div>
       <div class="hm-rule"><b>2</b><p><strong>현금은 확실하게 가치를 잃습니다.</strong> <span id="hm-rule2">예금 이자도 세금을 떼면 물가를 겨우 따라가는 수준입니다.</span></p></div>
-      <div class="hm-rule"><b>3</b><p><strong>자산을 가진 사람이 앞서갑니다.</strong> 부동산이든 주식이든, 자산을 가진 사람과 현금만 가진 사람의 격차는 시간이 갈수록 벌어집니다.</p></div>
-      <div class="hm-rule"><b>4</b><p><strong>시간이 가장 큰 무기입니다.</strong> 같은 금액도 일찍 시작할수록 복리가 일할 시간이 길어집니다.</p></div>
-    </section>
-
-    <!-- 6. 도구 바로가기 -->
-    <section class="hm-tools-sec">
-      <h2 class="hm-h2" style="margin-bottom:14px;">직접 계산해 보기</h2>
-      <div class="hm-tools">
-        <a class="hm-tool" href="moneyspeed/" data-tab="moneyspeed" data-group="etc"><b>돈, 자산, 노동의 가치 속도</b><span>통화량·물가·임금·집값·금·주가의 연평균 상승률</span></a>
-        <a class="hm-tool" href="compound/" data-tab="compound" data-group="finance"><b>복리 계산기</b><span>적립식 복리·세후 수익·실효 수익률</span></a>
-        <a class="hm-tool" href="cagr/" data-tab="cagr" data-group="finance"><b>CAGR 계산기</b><span>연평균 성장률·목표 수익률 역산</span></a>
-        <a class="hm-tool" href="etfcagr/" data-tab="etfcagr" data-group="etc"><b>ETF CAGR 비교</b><span>QQQ·SPY·레버리지 ETF 장기 성과</span></a>
-        <a class="hm-tool" href="dividend-calendar/" data-tab="etfdiv" data-group="etfdiv"><b>ETF 월분배 및 배당 달력</b><span>월분배 ETF 공시·분배락·지급일 한눈에</span></a>
-        <a class="hm-tool" href="marketcap/" data-tab="mcap" data-group="etc"><b>전세계 시가총액 TOP 100</b><span>매일 종가 기준 글로벌 기업 순위</span></a>
-        <a class="hm-tool" href="sp500/" data-tab="sp500" data-group="index"><b>S&amp;P 500 성장률</b><span>1928년 이후 미국 대표 지수</span></a>
-        <a class="hm-tool" href="kospi/" data-tab="kospi" data-group="index"><b>코스피 성장률</b><span>1980년 이후 한국 대표 지수</span></a>
-        <a class="hm-tool" href="kodex/" data-tab="simulator" data-group="simulator"><b>커버드콜 ETF 분배 시뮬레이터</b><span>KODEX·SOL·TIGER 월 분배금 계산</span></a>
-        <a class="hm-tool" href="loan/" data-tab="loan" data-group="finance"><b>대출 이자 계산기</b><span>원리금균등·원금균등·체증식 상환표</span></a>
-      </div>
+      <div class="hm-rule"><b>3</b><p><strong>AI는 노동의 값을 낮춥니다.</strong> AI 노출이 큰 직업일수록 고용 비중과 임금 상승률이 낮아진다는 분석이 나왔습니다(한국은행, 2023). 신입 자리와 임금 인상부터 줄어듭니다.</p></div>
+      <div class="hm-rule"><b>4</b><p><strong>그래서 답은 자본입니다.</strong> 자산을 가진 사람과 현금·노동만 가진 사람의 격차는 시간이 갈수록 벌어집니다. 일찍 시작할수록 복리가 일할 시간이 길어집니다.</p></div>
     </section>
 
     <p class="hm-disclaimer" id="hm-src">—</p>
@@ -15798,7 +15860,7 @@ window.chartZoom = (function () {
   });
   /* 도구 바로가기: 실제 주소 링크(검색엔진용) + 클릭 시 페이지 이동 없이 탭 전환 */
   document.addEventListener('click', function (e) {
-    var a = e.target.closest && e.target.closest('a.hm-tool');
+    var a = e.target.closest && e.target.closest('a.hm-tool, a.hm-cta, a.hm-f-go');
     if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
     var tab = a.getAttribute('data-tab'), btn = document.getElementById('drop-' + tab);
     if (!btn || typeof switchSubTab !== 'function') return;
@@ -15806,6 +15868,34 @@ window.chartZoom = (function () {
     switchSubTab(tab, a.getAttribute('data-group'), btn);
     window.scrollTo(0, 0);
   });
+  /* [HM-DATA] 데이터 주제 탭 — 한 번에 하나만 (숨겨져 있던 차트는 보일 때 칸 크기에 맞춰 다시 그림) */
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.hm-dtabs button[data-hp]');
+    if (!b) return;
+    var i = b.getAttribute('data-hp');
+    document.querySelectorAll('.hm-dtabs button[data-hp]').forEach(function (x) { var on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-selected', on ? 'true' : 'false'); });
+    document.querySelectorAll('#page-home [data-hp-panel]').forEach(function (p) {
+      p.hidden = p.getAttribute('data-hp-panel') !== i;
+      if (!p.hidden && window.Chart && Chart.getChart) p.querySelectorAll('canvas').forEach(function (c) { var ch = Chart.getChart(c); if (ch) ch.resize(); });
+    });
+  });
+  /* [HM-FORCES] 홈 직업 검색 → /job-life/#job=직업 (계산·목록은 [JOBLIFE-ENGINE] 그대로) */
+  (function () {
+    var f = document.getElementById('hm-job'), q = document.getElementById('hm-job-q'), box = document.getElementById('hm-job-sug');
+    if (!f || !q || !box) return;
+    function href(n) { return 'job-life/#job=' + encodeURIComponent(n); }
+    function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    q.addEventListener('input', function () {
+      if (!window.JL || !q.value.trim()) { box.innerHTML = ''; return; }
+      var l = JL.suggest(q.value, 5);
+      box.innerHTML = l.length ? l.map(function (x) { return '<a href="' + href(x.n) + '">' + JL.CAT[x.c].icon + ' ' + esc(x.n) + '</a>'; }).join('') : '<span class="none">목록에 없는 직업이에요 — 확인을 누르면 전체 순위에서 찾을 수 있어요</span>';
+    });
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var x = window.JL && q.value.trim() ? JL.find(q.value) : null;
+      location.href = x ? href(x.n) : 'job-life/';
+    });
+  })();
   var resizeT = null;
   window.addEventListener('resize', function () { clearTimeout(resizeT); resizeT = setTimeout(function () { if (D) render(); }, 250); });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(window.homeRender, 0); });

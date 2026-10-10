@@ -14,9 +14,9 @@ const MARK = (n) => `<svg width="${n}" height="${n}" viewBox="0 0 30 30"><rect w
 const STAIRS = `<svg class="stairs" width="560" height="630" viewBox="0 0 560 630"><path d="M40 600H160V480H280V360H400V240H520V120" fill="none" stroke="url(#g)" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#3182f6" stop-opacity=".05"/><stop offset="1" stop-color="#3182f6" stop-opacity=".55"/></linearGradient></defs></svg>`;
 const STEPS = ['내 위치', '노동자', '투자', '부동산', '자본가', '불로소득'];   /* 홈 '노동자 → 자본가' 6단계와 같게 */
 function page(r, home) {
-  const title = home ? '노동자에서 <em>자본가로</em>' : esc(r.short);
+  const title = home ? 'AI 시대,<br>노동자에서 <em>자본가로</em>' : esc(r.short);
   const sub = home ? `연봉·자산 순위부터 월급·투자·부동산·사업 세금·불로소득까지, 공식 통계로 계산하는 무료 금융 도구 ${TOOLS}종` : esc(r.desc);
-  const big = home ? 84 : (r.short.length > 24 ? 56 : r.short.length > 16 ? 64 : 74);
+  const big = home ? 76 : (r.short.length > 24 ? 56 : r.short.length > 16 ? 64 : 74);
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
   *{margin:0;padding:0;box-sizing:border-box}
   body{width:1200px;height:630px;overflow:hidden;font-family:'Noto Sans CJK KR','Noto Sans KR',sans-serif;color:#f2f3f5;

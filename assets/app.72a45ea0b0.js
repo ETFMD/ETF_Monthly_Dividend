@@ -4020,7 +4020,7 @@ window.chartZoom = (function () {
   });
   /* 도구 바로가기: 실제 주소 링크(검색엔진용) + 클릭 시 페이지 이동 없이 탭 전환 */
   document.addEventListener('click', function (e) {
-    var a = e.target.closest && e.target.closest('a.hm-tool');
+    var a = e.target.closest && e.target.closest('a.hm-tool, a.hm-cta, a.hm-f-go');
     if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
     var tab = a.getAttribute('data-tab'), btn = document.getElementById('drop-' + tab);
     if (!btn || typeof switchSubTab !== 'function') return;
@@ -4028,6 +4028,34 @@ window.chartZoom = (function () {
     switchSubTab(tab, a.getAttribute('data-group'), btn);
     window.scrollTo(0, 0);
   });
+  /* [HM-DATA] 데이터 주제 탭 — 한 번에 하나만 (숨겨져 있던 차트는 보일 때 칸 크기에 맞춰 다시 그림) */
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.hm-dtabs button[data-hp]');
+    if (!b) return;
+    var i = b.getAttribute('data-hp');
+    document.querySelectorAll('.hm-dtabs button[data-hp]').forEach(function (x) { var on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-selected', on ? 'true' : 'false'); });
+    document.querySelectorAll('#page-home [data-hp-panel]').forEach(function (p) {
+      p.hidden = p.getAttribute('data-hp-panel') !== i;
+      if (!p.hidden && window.Chart && Chart.getChart) p.querySelectorAll('canvas').forEach(function (c) { var ch = Chart.getChart(c); if (ch) ch.resize(); });
+    });
+  });
+  /* [HM-FORCES] 홈 직업 검색 → /job-life/#job=직업 (계산·목록은 [JOBLIFE-ENGINE] 그대로) */
+  (function () {
+    var f = document.getElementById('hm-job'), q = document.getElementById('hm-job-q'), box = document.getElementById('hm-job-sug');
+    if (!f || !q || !box) return;
+    function href(n) { return 'job-life/#job=' + encodeURIComponent(n); }
+    function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    q.addEventListener('input', function () {
+      if (!window.JL || !q.value.trim()) { box.innerHTML = ''; return; }
+      var l = JL.suggest(q.value, 5);
+      box.innerHTML = l.length ? l.map(function (x) { return '<a href="' + href(x.n) + '">' + JL.CAT[x.c].icon + ' ' + esc(x.n) + '</a>'; }).join('') : '<span class="none">목록에 없는 직업이에요 — 확인을 누르면 전체 순위에서 찾을 수 있어요</span>';
+    });
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var x = window.JL && q.value.trim() ? JL.find(q.value) : null;
+      location.href = x ? href(x.n) : 'job-life/';
+    });
+  })();
   var resizeT = null;
   window.addEventListener('resize', function () { clearTimeout(resizeT); resizeT = setTimeout(function () { if (D) render(); }, 250); });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(window.homeRender, 0); });

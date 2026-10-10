@@ -274,6 +274,31 @@ def main():
         bad = [t for t, u in errs if not ignorable(t, u)]
         for t in bad[:3]:
             fail('muhan', '콘솔 오류: ' + t[:200])
+        # 홈 첫 화면 — AI 시대, 노동자에서 자본가로: 두 힘·하나의 답 숫자 · 데이터 탭 · 직업 검색
+        print('[홈] 첫 화면', flush=True)
+        errs.clear()
+        page.set_viewport_size({'width': 1440, 'height': 900})
+        page.goto(base, wait_until='load'); page.wait_for_timeout(2500)
+        h = page.evaluate("""async () => {
+          const R = [], ok = (name, v, info) => R.push({ name, ok: !!v, info }), t = id => (document.getElementById(id) || {}).textContent || '', W = ms => new Promise(r => setTimeout(r, ms));
+          ok('제목에 "노동자에서 자본가로"', /노동자에서 자본가로/.test(document.querySelector('#page-home h1').textContent) && /AI/.test(document.querySelector('#page-home h1').textContent), '');
+          ok('두 힘·하나의 답 카드 3개 · 숫자 채워짐', document.querySelectorAll('.hm-f').length === 3 && ['hm-k-cpi', 'hm-k-seoul', 'hm-k-spy'].every(id => /^연 [+−-]?\\d/.test(t(id))), ['hm-k-cpi', 'hm-k-seoul', 'hm-k-spy'].map(t));
+          ok('많이 찾는 도구 12개 · 6단계', document.querySelectorAll('.hm-tools .hm-tool').length === 12 && document.querySelectorAll('.hm-ps').length === 6, '');
+          const panels = () => [...document.querySelectorAll('[data-hp-panel]')].map(p => p.hidden);
+          ok('데이터 탭: 처음엔 첫 주제만', JSON.stringify(panels()) === '[false,true,true,true]', panels());
+          document.querySelector('.hm-dtabs [data-hp="3"]').click(); await W(400);
+          const c = document.getElementById('hm-c-chart').getBoundingClientRect();
+          ok('데이터 탭 전환 → 숨어 있던 차트가 칸에 맞게 그려짐', JSON.stringify(panels()) === '[true,true,true,false]' && c.width > 200 && c.height > 100, [panels(), c.width, c.height]);
+          document.querySelector('.hm-dtabs [data-hp="0"]').click();
+          const q = document.getElementById('hm-job-q'); q.value = '자산운용가'; q.dispatchEvent(new Event('input', { bubbles: true })); await W(80);
+          ok('직업 검색 제안 → 직업 수명 주소', /job-life\\/#job=%ED%8E%80%EB%93%9C/.test((document.querySelector('#hm-job-sug a') || {}).href || ''), (document.querySelector('#hm-job-sug a') || {}).href);
+          return R;
+        }""")
+        for t in h:
+            if not t['ok']:
+                fail('home', '%s: %s' % (t['name'], json.dumps(t.get('info'), ensure_ascii=False)))
+        for t in [t for t, u in errs if not ignorable(t, u)][:3]:
+            fail('home', '콘솔 오류: ' + t[:200])
         # 나의 직업 수명 — 데이터(776개·21분야)·모델 방향·연구 순서·검색·순위·주소·공유
         if os.path.isdir(os.path.join(ROOT, 'job-life')):
             print('[4] 나의 직업 수명', flush=True)
@@ -319,7 +344,7 @@ def main():
               const nRows = () => document.querySelectorAll('#jl-all .jl-row').length, no1 = () => +(document.querySelector('#jl-all .jl-no') || {}).textContent;
               ok('더 보기 (30 → 60줄, 페이지 1·2 함께 표시)', nRows() === 60 && document.querySelectorAll('#jl-pager .dv-pg.active').length === 2, nRows());
               document.querySelector('#jl-pager .dv-pg[data-pg="3"]').click(); await W(100);
-              ok('페이지 3 → 61~90위만', nRows() === 30 && no1() === 61 && /61–90 \/ 776/.test(t('jl-pager')), [nRows(), no1(), t('jl-pager')]);
+              ok('페이지 3 → 61~90위만', nRows() === 30 && no1() === 61 && /61–90 \\/ 776/.test(t('jl-pager')), [nRows(), no1(), t('jl-pager')]);
               const gi = document.querySelector('#jl-pager .dv-pg-go input'); gi.value = 26; document.querySelector('#jl-pager .dv-pg-gobtn').click(); await W(150);
               ok('번호 입력 이동(26쪽 = 마지막 26줄) · 다음 버튼 꺼짐', nRows() === 26 && no1() === 751 && document.getElementById('jl-morebtn').hidden && document.querySelector('#jl-pager [aria-label="다음 페이지"]').disabled, [nRows(), no1()]);
               document.querySelector('#jl-pager .dv-pg[data-pg="1"]').click(); await W(100);
