@@ -34,6 +34,8 @@
   th { color:var(--text); font-weight:500; white-space:nowrap; }
   tr:last-child td { border-bottom:none; }
   footer { margin-top:48px; padding-top:18px; border-top:1px solid var(--border); font-size:12px; color:var(--text3); text-align:center; }
+  footer a, footer .fc { white-space:nowrap; }
+  @media (max-width:640px) { footer .fc { display:block; margin-top:6px; } footer .fd { display:none; } }
   .links { margin-top:10px; font-size:13px; }
 </style>
 <link rel="icon" href="/favicon.ico" sizes="48x48">
@@ -91,7 +93,7 @@
     <li>카카오 오픈채팅(커뮤니티): <a href="https://open.kakao.com/o/gi9XfRpi" target="_blank" rel="noopener">ETF 커버드콜 + 배당투자 + 성장주 장기투자 오픈톡방</a></li>
   </ul>
 
-  <footer>© 디코딩 자본주의 · <a href="/">홈</a> · <a href="/about/">소개</a> · <a href="/terms/">이용약관</a> · <a href="/disclaimer/">투자 면책</a> · <a href="/privacy/">개인정보처리방침</a></footer>
+  <footer><a href="/">홈</a> · <a href="/about/">소개</a> · <a href="/terms/">이용약관</a> · <a href="/disclaimer/">투자 면책</a> · <a href="/privacy/">개인정보처리방침</a><span class="fd"> · </span><span class="fc">© 디코딩 자본주의</span></footer>
 </main>
 </body>
 </html>
