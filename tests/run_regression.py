@@ -144,10 +144,16 @@ def main():
         fails.append('%s — %s' % (where or '/', what))
         print('  ✗ %s — %s' % (where or '/', what), flush=True)
 
+    # 외부 광고·방문 분석 서버(일시 오류가 잦고 사이트 기능과 무관) — 실패해도 사이트 오류로 보지 않음
+    THIRD = ('clarity.ms', 'bing.com', 'naver.com', 'naver.net', 'pstatic.net', 'googlesyndication', 'doubleclick',
+             'google-analytics', 'googletagmanager', 'adtrafficquality', 'googleadservices', 'gstatic.com', 'kakao')
+
     def ignorable(msg_text, url):
+        t = msg_text or ''
+        if t.startswith('Failed to load resource'):   # 주소가 없는 브라우저 메시지 → 아래 응답 기록(주소 포함)으로 대신 판단
+            return True
         if not local:
             return False
-        t = msg_text or ''
         return ('workers.dev' in t or 'CORS' in t or 'ERR_FAILED' in t or 'ERR_NAME_NOT_RESOLVED' in t
                 or (url and not url.startswith(base)) or t.startswith('Failed to load resource'))
 
@@ -157,7 +163,20 @@ def main():
         page = ctx.new_page()
         errs = []
         page.on('console', lambda m: errs.append((m.text, (m.location or {}).get('url', ''))) if m.type == 'error' else None)
-        page.on('pageerror', lambda e: errs.append(('pageerror: ' + str(e), base)))
+        def page_err(e):
+            st = getattr(e, 'stack', '') or ''
+            urls = [u for u in __import__('re').findall(r'https?://[^\s)]+', st)]
+            if urls and all(any(d in u for d in THIRD) for u in urls):
+                return                                      # 외부 광고·분석 스크립트 안에서만 난 오류 → 사이트 오류 아님
+            errs.append(('pageerror: ' + str(e) + (' @ ' + urls[0][:120] if urls else ' (스택 없음)'), base))
+        page.on('pageerror', page_err)
+        def bad_resp(r):
+            u = r.url
+            if r.status >= 400 and not any(d in u for d in THIRD) and not (local and 'workers.dev' in u):
+                errs.append(('HTTP %d %s' % (r.status, u[:160]), base))
+        page.on('response', bad_resp)
+        page.on('requestfailed', lambda q: errs.append(('요청 실패 %s %s' % (q.failure, q.url[:160]), base))
+                if 'ERR_ABORTED' not in str(q.failure) and not any(d in q.url for d in THIRD) and not (local and ('workers.dev' in q.url or 'raw.githubusercontent' in q.url)) else None)
 
         if a.selftest:
             page.goto(base + 'muhan/', wait_until='load'); page.wait_for_timeout(800); errs.clear()
