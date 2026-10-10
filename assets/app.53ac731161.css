@@ -1447,9 +1447,10 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .hm-legend { display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--text2); margin:4px 0 14px; }
   .hm-legend span { display:inline-flex; align-items:center; gap:6px; }
   .hm-legend i { width:10px; height:10px; border-radius:3px; display:inline-block; }
-  .hm-legend i.hm-legend-ref { width:0; height:12px; border-radius:0; border-left:1.5px dashed rgba(var(--fg-rgb),0.5); }
+  /* 기준선: 테두리 점선(1.5px dashed)은 휴대폰(특히 iOS)에서 짧은 높이에 점 하나로만 그려져 → 2px 폭 배경 무늬로 직접 그림 */
+  .hm-legend i.hm-legend-ref { width:2px; height:12px; border-radius:0; background:repeating-linear-gradient(to bottom, rgba(var(--fg-rgb),0.7) 0 3px, transparent 3px 5px); }
   /* 물가 기준선: 막대 위 무채색 세로 점선 (밝은 막대 위에서도 보이도록 얇은 그림자) */
-  .hm-bar-ref { position:absolute; top:0; bottom:0; width:0; border-left:1.5px dashed rgba(var(--fg-rgb),0.55); filter:drop-shadow(0 0 1px rgba(0,0,0,0.35)); pointer-events:none; }
+  .hm-bar-ref { position:absolute; top:0; bottom:0; width:2px; margin-left:-1px; background:repeating-linear-gradient(to bottom, rgba(var(--fg-rgb),0.8) 0 3px, transparent 3px 5px); pointer-events:none; }
   .hm-bars { display:flex; flex-direction:column; gap:7px; margin-bottom:18px; }
   .hm-bar { display:grid; grid-template-columns:minmax(150px,220px) minmax(0,1fr) 92px 112px; gap:12px; align-items:center; font-size:12px; }
   .hm-bar-name { color:var(--text); line-height:1.35; }
