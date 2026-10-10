@@ -251,7 +251,12 @@
       "group": "invest",
       "title": "무한매수법 4.0 계산기 — TQQQ·SOXL 분할매수 주문표",
       "short": "무한매수법 4.0",
-      "desc": "무한매수법 4.0 방식으로 TQQQ·SOXL 분할 매수·매도 주문표와 평단가, 진행 회차, 수익 현황을 계산하고 기록합니다."
+      "desc": "무한매수법 4.0 방식으로 TQQQ·SOXL 분할 매수·매도 주문표와 평단가, 진행 회차, 수익 현황을 계산하고 기록합니다.",
+      "en": {
+        "short": "Infinite Buying (TQQQ·SOXL)",
+        "title": "Infinite Buying Tracker & Guide — TQQQ·SOXL Order Sheet and Backtest",
+        "desc": "Laoer’s Infinite Buying V4.0 for TQQQ and SOXL: daily LOC order sheet, cycle tracker, beginner guidebook and a daily-updated real-data backtest."
+      }
     },
     {
       "path": "nasdaq",

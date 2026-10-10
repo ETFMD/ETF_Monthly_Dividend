@@ -394,6 +394,11 @@ def english_page(html):
         g = EN['guides'].get(x['path'])
         if g:
             sec, n = re.subn(r'<!-- \[GUIDE:%s\].*?<!-- \[/GUIDE:%s\] -->\n' % (x['tab'], x['tab']), lambda m: g, sec, count=1, flags=re.S)
+        gb = EN.get('guidebooks', {}).get(x['path'])          # 가이드북(있으면) 도 영어판으로 통째로
+        if gb:
+            sec, n = re.subn(r'    <!-- \[GUIDEBOOK:%s\].*?<!-- \[/GUIDEBOOK:%s\] -->\n' % (x['tab'], x['tab']), lambda m: gb, sec, count=1, flags=re.S)
+            if n != 1:
+                sys.exit(f'{x["path"]}: 영어 가이드북으로 바꿀 [GUIDEBOOK] 구간을 찾지 못했습니다')
         out = out[:a] + translate_html(sec) + out[b:]
     # 상단(방문자 수·메뉴)과 하단(후원·푸터·드롭다운 메뉴)
     a, b = out.index(TOP_A), out.index(TOP_B)

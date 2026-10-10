@@ -11361,12 +11361,13 @@ if (typeof module !== 'undefined') module.exports = MHE;
    render 는 순수 함수: 화면과 정적 HTML(검색엔진용) 스냅숏이 같은 함수로 만들어짐 */
 var MHBT = (function () {
   /* [MHBT-RENDER] */
-  function render(d, tk, bg) {
+  function render(d, tk, bg, lang) {
     var T = d && d.t && d.t[tk]; if (!T || !T.rows || !T.rows.length) return '';
-    var M = '−';
+    var EN = lang === 'en', M = '−';
+    function L(ko, en) { return EN ? en : ko; }
     function p(v) { return v == null ? '-' : (v > 0 ? '+' : v < 0 ? M : '') + Math.abs(v).toFixed(1) + '%'; }
     function e(x) { return String(x).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-    function nm(r) { return r.sp + '분할 · 목표 ' + r.tg + '% · 큰수 ' + r.bg + '%'; }
+    function nm(r) { return EN ? r.sp + ' splits · target ' + r.tg + '% · big-number ' + r.bg + '%' : r.sp + '분할 · 목표 ' + r.tg + '% · 큰수 ' + r.bg + '%'; }
     function pick(f) { return T.rows.reduce(function (a, b) { return f(b, a) ? b : a; }); }
     var rows = T.rows, def = rows.filter(function (r) { return r.id === d.def[tk]; })[0] || rows[0];
     var best = pick(function (b, a) { return b.cagr > a.cagr; });
@@ -11375,50 +11376,66 @@ var MHBT = (function () {
     var bh = T.bh, ym = function (s) { return s ? +s.slice(0, 4) + '.' + +s.slice(5, 7) : ''; }, N = T.starts.length;
     function card(cls, k, n, r) {
       return '<div class="mhbt-card ' + cls + '"><div class="mhbt-k">' + k + '</div><div class="mhbt-n">' + e(n) + '</div><div class="mhbt-v">' + p(r.cagr) + '</div>' +
-        '<div class="mhbt-s">연평균 · 최대 낙폭 ' + p(r.mdd) + '<br>시작 연도별 중앙값 ' + p(r.rollMed) + ' · 최악 ' + p(r.rollMin) + '</div></div>';
+        '<div class="mhbt-s">' + L('연평균 · 최대 낙폭 ', 'CAGR · max drawdown ') + p(r.mdd) + '<br>' + L('시작 연도별 중앙값 ', 'By start year: median ') + p(r.rollMed) + L(' · 최악 ', ' · worst ') + p(r.rollMin) + '</div></div>';
     }
-    var h = '<div class="mhbt-cards">' + card('bh', '그냥 보유했다면', tk + ' 매수 후 그대로', bh) + card('def', '라오어 기본 설정', nm(def), def) +
-      card('', '전체 기간 수익 1위', nm(best), best) +
-      (steady !== best ? card('', '가장 꾸준한 설정', nm(steady) + ' (어느 해에 시작해도 최악이 가장 좋았음)', steady)
-                       : card('', '낙폭이 가장 작은 설정', nm(calm), calm)) + '</div>';
+    var h = '<div class="mhbt-cards">' + card('bh', L('그냥 보유했다면', 'Buy and hold'), L(tk + ' 매수 후 그대로', 'Bought ' + tk + ' and held'), bh) +
+      card('def', L('라오어 기본 설정', 'Laoer default'), nm(def), def) + card('', L('전체 기간 수익 1위', 'Best full-period return'), nm(best), best) +
+      (steady !== best ? card('', L('가장 꾸준한 설정', 'Most consistent'), nm(steady) + L(' (어느 해에 시작해도 최악이 가장 좋았음)', ' (best worst-case across start years)'), steady)
+                       : card('', L('낙폭이 가장 작은 설정', 'Smallest drawdown'), nm(calm), calm)) + '</div>';
     var list = rows.filter(function (r) { return r.bg === +bg; }), top = list.reduce(function (a, b) { return b.cagr > a.cagr ? b : a; }, list[0]);
-    h += '<div class="table-scroll"><table class="g-tbl mhbt-tbl"><thead><tr><th>설정 (큰수 ' + e(bg) + '%)</th><th>연평균</th><th>최대 낙폭</th><th>시작 연도별<small>중앙값 · 최악</small></th></tr></thead><tbody>';
+    h += '<div class="table-scroll"><table class="g-tbl mhbt-tbl"><thead><tr><th>' + L('설정', 'Setting') + '</th><th>' + L('연평균', 'CAGR') + '</th><th>' + L('최대 낙폭', 'Max DD') +
+      '</th><th>' + L('시작 연도별<small>중앙값 · 최악</small>', 'Start year<small>median · worst</small>') + '</th></tr></thead><tbody>';
     list.forEach(function (r) {
-      h += '<tr' + (r === top ? ' class="best"' : '') + '><td><b>' + r.sp + '분할 · ' + r.tg + '%</b>' + (r.id === def.id ? '<span class="mhbt-tag">기본</span>' : '') + (r === top ? '<span class="mhbt-tag">★ 1위</span>' : '') +
-        '<small>회차 ' + r.cycles + ' · 손실 ' + r.loss + ' · 리버스 ' + r.rev + '</small></td><td>' + p(r.cagr) + '</td><td>' + p(r.mdd) + '</td><td>' + p(r.rollMed) + '<small>최악 ' + p(r.rollMin) + '</small></td></tr>';
+      h += '<tr' + (r === top ? ' class="best"' : '') + '><td><b>' + r.sp + L('분할 · ', ' splits · ') + r.tg + '%</b>' + (r.id === def.id ? '<span class="mhbt-tag">' + L('기본', 'default') + '</span>' : '') +
+        (r === top ? '<span class="mhbt-tag">★ ' + L('1위', 'best') + '</span>' : '') +
+        '<small>' + (EN ? r.cycles + ' cycles · ' + r.loss + ' lost · ' + r.rev + ' rev.' : '회차 ' + r.cycles + ' · 손실 ' + r.loss + ' · 리버스 ' + r.rev) + '</small></td><td>' + p(r.cagr) + '</td><td>' + p(r.mdd) + '</td><td>' + p(r.rollMed) +
+        '<small>' + L('최악 ', 'worst ') + p(r.rollMin) + '</small></td></tr>';
     });
-    h += '<tr><td><b>그냥 보유</b><small>비교 기준</small></td><td>' + p(bh.cagr) + '</td><td>' + p(bh.mdd) + '</td><td>' + p(bh.rollMed) + '<small>최악 ' + p(bh.rollMin) + '</small></td></tr></tbody></table></div>';
-    h += '<p class="g-cap">' + e(T.from.slice(0, 7).replace('-', '.') + ' → ' + T.to.replace(/-/g, '.')) + ' · 시작 연도 ' + N + '개(' + T.starts[0] + '~' + T.starts[N - 1] + '년) · ' +
-      '최대 낙폭은 평가금(현금 + 보유 주식) 기준 · 계산 ' + e((d.updated || '').slice(0, 10)) + '</p>';
+    h += '<tr><td><b>' + L('그냥 보유', 'Buy &amp; hold') + '</b><small>' + L('비교 기준', 'benchmark') + '</small></td><td>' + p(bh.cagr) + '</td><td>' + p(bh.mdd) + '</td><td>' + p(bh.rollMed) +
+      '<small>' + L('최악 ', 'worst ') + p(bh.rollMin) + '</small></td></tr></tbody></table></div>';
+    h += '<p class="g-cap">' + e(T.from.slice(0, 7).replace('-', '.') + ' → ' + T.to.replace(/-/g, '.')) +
+      L(' · 시작 연도 ' + N + '개(' + T.starts[0] + '~' + T.starts[N - 1] + '년) · 최대 낙폭은 평가금(현금 + 보유 주식) 기준 · 계산 ',
+        ' · ' + N + ' start years (' + T.starts[0] + '–' + T.starts[N - 1] + ') · drawdown measured on total equity (cash + shares) · computed ') + e((d.updated || '').slice(0, 10)) + '</p>';
     /* 자동 해설 */
     function avg(f, v) { var a = rows.filter(function (r) { return r[f] === v; }); return a.reduce(function (s, r) { return s + r.cagr; }, 0) / a.length; }
-    function spread(f, vals) { var a = vals.map(function (v) { return [v, avg(f, v)]; }).sort(function (x, y) { return y[1] - x[1]; }); return a; }
+    function spread(f, vals) { return vals.map(function (v) { return [v, avg(f, v)]; }).sort(function (x, y) { return y[1] - x[1]; }); }
+    function r1(x) { return Math.round(x * 10) / 10; }
     var sp = spread('sp', d.splits), tg = spread('tg', d.targets[tk]), bgs = spread('bg', d.bigs);
-    var gap = Math.round((bh.cagr - def.cagr) * 10) / 10, mddGap = Math.round((def.mdd - bh.mdd) * 10) / 10;
-    var line1 = '기본 설정(' + nm(def) + ')은 연 ' + p(def.cagr) + '로, 그냥 보유(연 ' + p(bh.cagr) + ')보다 ' +
-      (gap > 0 ? '수익은 연 ' + gap.toFixed(1) + '%p 낮았지만' : '수익도 연 ' + Math.abs(gap).toFixed(1) + '%p 높았고') +
-      ' 최대 낙폭은 ' + p(def.mdd) + ' 대 ' + p(bh.mdd) + (mddGap > 0 ? '로 ' + mddGap.toFixed(1) + '%p 얕았습니다.' : '였습니다.');
-    var line2 = '매년 1월에 시작한 ' + N + '번 중 그냥 보유보다 수익이 컸던 해는 ' + def.beat + '번입니다.';
-    var line3 = '분할 수는 ' + sp.map(function (x) { return x[0] + '분할 ' + p(Math.round(x[1] * 10) / 10); }).join(' > ') + ', 목표%는 ' +
-      tg.map(function (x) { return x[0] + '% ' + p(Math.round(x[1] * 10) / 10); }).join(' > ') + ' 순(같은 값끼리 평균 연 수익률)이었고, 큰수%는 ' +
-      bgs.map(function (x) { return x[0] + '% ' + p(Math.round(x[1] * 10) / 10); }).join(' · ') + '로 차이가 ' + (Math.abs(bgs[0][1] - bgs[bgs.length - 1][1]) < 1.5 ? '작았습니다.' : '있었습니다.');
-    h += '<div class="mhg-key"><b>' + tk + ' 결과 요약</b><br>' + e(line1) + '<br>' + e(line2) + '<br>' + e(line3) + '</div>';
+    var gap = r1(bh.cagr - def.cagr), mddGap = r1(def.mdd - bh.mdd), small = Math.abs(bgs[0][1] - bgs[bgs.length - 1][1]) < 1.5;
+    var line1 = EN
+      ? 'The default setting (' + nm(def) + ') returned ' + p(def.cagr) + ' a year versus ' + p(bh.cagr) + ' for buy and hold — ' +
+        (gap > 0 ? gap.toFixed(1) + ' points a year less' : Math.abs(gap).toFixed(1) + ' points a year more') + ', with a maximum drawdown of ' + p(def.mdd) + ' versus ' + p(bh.mdd) +
+        (mddGap > 0 ? ' (' + mddGap.toFixed(1) + ' points shallower).' : '.')
+      : '기본 설정(' + nm(def) + ')은 연 ' + p(def.cagr) + '로, 그냥 보유(연 ' + p(bh.cagr) + ')보다 ' +
+        (gap > 0 ? '수익은 연 ' + gap.toFixed(1) + '%p 낮았지만' : '수익도 연 ' + Math.abs(gap).toFixed(1) + '%p 높았고') +
+        ' 최대 낙폭은 ' + p(def.mdd) + ' 대 ' + p(bh.mdd) + (mddGap > 0 ? '로 ' + mddGap.toFixed(1) + '%p 얕았습니다.' : '였습니다.');
+    var line2 = L('매년 1월에 시작한 ' + N + '번 중 그냥 보유보다 수익이 컸던 해는 ' + def.beat + '번입니다.',
+                  'Of the ' + N + ' runs started each January, the default beat buy and hold ' + def.beat + ' time' + (def.beat === 1 ? '' : 's') + '.');
+    var fmt = function (a, unit) { return a.map(function (x) { return x[0] + unit + ' ' + p(r1(x[1])); }); };
+    var line3 = EN
+      ? 'Average CAGR by setting: splits ' + fmt(sp, '').join(' > ') + '; target ' + fmt(tg, '%').join(' > ') + '; big-number ' + fmt(bgs, '%').join(' · ') +
+        (small ? ' — the big-number % made little difference.' : '.')
+      : '분할 수는 ' + fmt(sp, '분할').join(' > ') + ', 목표%는 ' + fmt(tg, '%').join(' > ') + ' 순(같은 값끼리 평균 연 수익률)이었고, 큰수%는 ' +
+        fmt(bgs, '%').join(' · ') + '로 차이가 ' + (small ? '작았습니다.' : '있었습니다.');
+    h += '<div class="mhg-key"><b>' + tk + L(' 결과 요약', ' summary') + '</b><br>' + e(line1) + '<br>' + e(line2) + '<br>' + e(line3) + '</div>';
     /* 연도별 (기본 설정 vs 보유) */
     var yr = '';
     T.years.forEach(function (y, i) {
       var a = def.ye[i] / (i ? def.ye[i - 1] : 1) - 1, b = bh.ye[i] / (i ? bh.ye[i - 1] : 1) - 1;
       var c = function (v) { return '<b class="' + (v < 0 ? 'neg' : 'pos') + '">' + p(Math.round(v * 1000) / 10) + '</b>'; };
-      yr += '<div>' + y + (i === 0 ? '(상장 후)' : i === T.years.length - 1 ? '(연중)' : '') + '<br>무한 ' + c(a) + ' · 보유 ' + c(b) + '</div>';
+      yr += '<div>' + y + (i === 0 ? L('(상장 후)', ' (from launch)') : i === T.years.length - 1 ? L('(연중)', ' (YTD)') : '') + '<br>' + L('무한 ', 'IB ') + c(a) + L(' · 보유 ', ' · B&amp;H ') + c(b) + '</div>';
     });
-    h += '<details class="mhbt-yrs"><summary class="mhg-link" style="cursor:pointer;margin-top:12px">연도별 수익률 보기 — 기본 설정 vs 그냥 보유</summary><div class="mhbt-yr">' + yr + '</div></details>';
-    if (def.open) h += '<p class="g-cap">기본 설정의 마지막 회차는 ' + ym(def.open.from) + '에 시작해 아직 진행 중(평가 ' + p(def.open.pnl) + (def.open.rev ? ' · 리버스모드' : '') + ')입니다.</p>';
+    h += '<details class="mhbt-yrs"><summary class="mhg-link" style="cursor:pointer;margin-top:12px">' + L('연도별 수익률 보기 — 기본 설정 vs 그냥 보유', 'Year-by-year returns — default (IB) vs buy and hold (B&amp;H)') +
+      '</summary><div class="mhbt-yr">' + yr + '</div></details>';
+    if (def.open) h += '<p class="g-cap">' + L('기본 설정의 마지막 회차는 ' + ym(def.open.from) + '에 시작해 아직 진행 중(평가 ' + p(def.open.pnl) + (def.open.rev ? ' · 리버스모드' : '') + ')입니다.',
+      'The default setting’s latest cycle began in ' + ym(def.open.from) + ' and is still open (' + p(def.open.pnl) + (def.open.rev ? ', reverse mode' : '') + ').') + '</p>';
     return h;
   }
   /* [/MHBT-RENDER] */
   var data = null;
   function paint() {
     var w = document.getElementById('mhbt'), b = document.getElementById('mhbt-body'); if (!w || !b || !data) return;
-    var tk = w.getAttribute('data-bt-tk'), bg = w.getAttribute('data-bt-bg'), h = render(data, tk, bg);
+    var tk = w.getAttribute('data-bt-tk'), bg = w.getAttribute('data-bt-bg'), h = render(data, tk, bg, (document.documentElement.lang || '').indexOf('en') === 0 ? 'en' : 'ko');
     if (h) b.innerHTML = h;
     w.querySelectorAll('.mhbt-seg button').forEach(function (x) {
       var on = x.hasAttribute('data-bt-tk') ? x.getAttribute('data-bt-tk') === tk : x.getAttribute('data-bt-bg') === bg;
@@ -11441,7 +11458,8 @@ var MHBT = (function () {
 
 /* [GUIDEBOOK:muhan] 가이드북 — 읽은 장 표시(이 기기) · 목차/주소(#mhg-…) 이동 · 무한매수법 화면의 📘 버튼에서 열기 */
 (function () {
-  var KEY = 'muhan-guide-read';
+  var KEY = 'muhan-guide-read', EN = (document.documentElement.lang || '').indexOf('en') === 0;
+  function L(ko, en) { return EN ? en : ko; }
   function root() { return document.getElementById('mhg'); }
   function readSet() { try { return JSON.parse(localStorage.getItem(KEY) || '[]') || []; } catch (e) { return []; } }
   function paint() {
@@ -11450,7 +11468,7 @@ var MHBT = (function () {
     chs.forEach(function (d) { var on = set.indexOf(d.id) >= 0; d.classList.toggle('read', on); if (on) n++; });
     var f = document.getElementById('mhg-prog-fill'), t = document.getElementById('mhg-prog-txt');
     if (f) f.style.width = (chs.length ? n / chs.length * 100 : 0).toFixed(1) + '%';
-    if (t) t.textContent = chs.length + '개 장 중 ' + n + '개 읽음';
+    if (t) t.textContent = L(chs.length + '개 장 중 ' + n + '개 읽음', n + ' of ' + chs.length + ' chapters read');
   }
   function go(id, open) {
     var el = document.getElementById(id); if (!el) return;
@@ -11484,7 +11502,10 @@ var MHBT = (function () {
     return { c: raw.c, d: d, ymd: ymd, at: function (s) { var k = -1; for (var i = 0; i < d.length && ymd(i) <= s; i++) k = i; return k; } };
   }
   function ym(S, k) { var s = S.ymd(k); return +s.slice(0, 4) + '.' + +s.slice(5, 7); }
-  function dur(days) { var m = Math.round(days / 30.4375), y = Math.floor(m / 12), r = m % 12; return '약 ' + (y ? y + '년' : '') + (y && r ? ' ' : '') + (r ? r + '개월' : '') ; }
+  function dur(days) {
+    var m = Math.round(days / 30.4375), y = Math.floor(m / 12), r = m % 12;
+    return EN ? 'about ' + (y ? y + ' yr' : '') + (y && r ? ' ' : '') + (r ? r + ' mo' : '') : '약 ' + (y ? y + '년' : '') + (y && r ? ' ' : '') + (r ? r + '개월' : '');
+  }
   function fillMarket(j) {
     var raw = j && j.series; if (!raw) return;
     var S = {}; ['QQQ', 'QLD', 'TQQQ', 'SOXX', 'SOXL'].forEach(function (t) { S[t] = series(raw[t]); });
@@ -11499,8 +11520,9 @@ var MHBT = (function () {
       setAll('[data-mk="mdd:' + t + '"]', pct(s.c[tr] / s.c[pk] - 1));
       var rc = -1; for (i = tr; i < s.c.length; i++) if (s.c[i] >= s.c[pk]) { rc = i; break; }
       var last = s.c.length - 1;
-      setAll('[data-mk="rec:' + t + '"]', rc > 0 ? dur(s.d[rc] - s.d[pk]) + ' (' + ym(s, pk) + ' → ' + ym(s, rc) + ')' : '아직 회복 전 (' + ym(s, pk) + ' 고점 대비 ' + pct(s.c[last] / s.c[pk] - 1) + ')');
-      setAll('[data-mk="recs:' + t + '"]', rc > 0 ? dur(s.d[rc] - s.d[pk]) : '아직 회복 전');
+      setAll('[data-mk="rec:' + t + '"]', rc > 0 ? dur(s.d[rc] - s.d[pk]) + ' (' + ym(s, pk) + ' → ' + ym(s, rc) + ')'
+        : L('아직 회복 전 (' + ym(s, pk) + ' 고점 대비 ' + pct(s.c[last] / s.c[pk] - 1) + ')', 'not yet (' + pct(s.c[last] / s.c[pk] - 1) + ' vs. the ' + ym(s, pk) + ' peak)'));
+      setAll('[data-mk="recs:' + t + '"]', rc > 0 ? dur(s.d[rc] - s.d[pk]) : L('아직 회복 전', 'not yet'));
       var w0 = s.at('2021-11-19'), w1 = s.at('2023-12-15');
       if (w0 >= 0 && w1 > w0) setAll('[data-mk="win:' + t + '"]', pct(s.c[w1] / s.c[w0] - 1));
     });
@@ -11511,13 +11533,13 @@ var MHBT = (function () {
     var T = S.TQQQ, X = S.SOXL;
     if (T) {
       var t0 = T.ymd(0); ['QQQ', 'QLD', 'TQQQ'].forEach(function (t) { if (S[t]) cagr(S[t], t0, 'cagr:' + t); });
-      setAll('[data-mk="cagrlbl"]', ym(T, 0) + ' → ' + ym(T, T.c.length - 1) + ' 연평균 (CAGR)');
+      setAll('[data-mk="cagrlbl"]', ym(T, 0) + ' → ' + ym(T, T.c.length - 1) + L(' 연평균 (CAGR)', ' CAGR'));
     }
     if (T && X) {
       var x0 = X.ymd(0); cagr(T, x0, 'cagr2:TQQQ'); cagr(X, x0, 'cagr2:SOXL');
-      setAll('[data-mk="cagr2lbl"]', x0.slice(0, 4) + ' ~ ' + X.ymd(X.c.length - 1).slice(0, 4) + ' 연평균');
+      setAll('[data-mk="cagr2lbl"]', x0.slice(0, 4) + L(' ~ ', '–') + X.ymd(X.c.length - 1).slice(0, 4) + L(' 연평균', ' CAGR'));
     }
-    if (j.updated) setAll('[data-mk="asof"]', ' (' + j.updated.slice(0, 10) + ' 기준)');
+    if (j.updated) setAll('[data-mk="asof"]', L(' (' + j.updated.slice(0, 10) + ' 기준)', ' (as of ' + j.updated.slice(0, 10) + ')'));
   }
   /* 3-1 가상 가격 흐름 (60거래일 · 시작 $100 · 종가 소수 둘째 자리) */
   function simPaths() {
@@ -11533,11 +11555,11 @@ var MHBT = (function () {
   }
   /* 칸 내용: [진행 상태, 결과] — 결과는 굵게 */
   function simText(r) {
-    var T = String(Math.round(r.tValue * 10) / 10), used = 'T ' + T + ' · 원금 ' + Math.round(r.usedPct) + '% 사용';
-    var back = r.exhaustDay + '일째 소진 → 리버스 ' + r.revDays + '일 → 복귀', p = pct(r.pnlPct / 100);
-    if (r.endDay) return [r.exhaustDay ? back : '소진 없음', r.endDay + '일째 회차 종료 ' + p];
-    if (r.reverse) return [r.exhaustDay + '일째 소진 → 리버스 진행 중', r.days + '일 뒤 평가 ' + p];
-    return [(r.exhaustDay ? back + ' · ' : '') + used, '평가 ' + p];
+    var T = String(Math.round(r.tValue * 10) / 10), used = L('T ' + T + ' · 원금 ' + Math.round(r.usedPct) + '% 사용', 'T ' + T + ' · ' + Math.round(r.usedPct) + '% of capital used');
+    var back = L(r.exhaustDay + '일째 소진 → 리버스 ' + r.revDays + '일 → 복귀', 'Ran out on day ' + r.exhaustDay + ' → reverse ' + r.revDays + (r.revDays === 1 ? ' day' : ' days') + ' → back'), p = pct(r.pnlPct / 100);
+    if (r.endDay) return [r.exhaustDay ? back : L('소진 없음', 'Never ran out'), L(r.endDay + '일째 회차 종료 ', 'Cycle closed on day ' + r.endDay + ' ') + p];
+    if (r.reverse) return [L(r.exhaustDay + '일째 소진 → 리버스 진행 중', 'Ran out on day ' + r.exhaustDay + ' → still in reverse'), L(r.days + '일 뒤 평가 ', 'Value after ' + r.days + ' days ') + p];
+    return [(r.exhaustDay ? back + ' · ' : '') + used, L('평가 ', 'Value ') + p];
   }
   function fillSim() {
     var g = root(); if (!g || !window.MHE || !MHE.simulate) return;

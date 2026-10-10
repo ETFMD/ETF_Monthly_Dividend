@@ -313,5 +313,28 @@ GUIDES['etfcagr'] = guide('etfcagr', 'How the ETF CAGR comparison is calculated'
      ('Are expense ratios included?', '<p>Yes. Fees are deducted from the ETF price every day, so CAGR based on closing prices already reflects them.</p>'),
      ('How often is the data updated?', '<p>Yahoo Finance daily prices are collected every 6 hours. Closes are adjusted for stock splits.</p>')])
 
-json.dump({'text': TEXT, 'guides': GUIDES}, open(OUT, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+GUIDES['muhan'] = guide('muhan', 'How the Infinite Buying order sheet is calculated',
+    'Infinite Buying (<span lang="ko" translate="no">무한매수법</span>) is a rule-based way to trade 3× leveraged ETFs such as TQQQ and SOXL, created by the Korean investor <b>Laoer</b>: split your capital into 20–40 portions, buy a little every day with limit-on-close orders, and sell in parts once the price is a set % above your average cost. Record your fills and this tracker calculates the T value, average cost and star price, and builds the order sheet to place today.',
+    '<ul class="g-list"><li><b>Daily buy amount</b> = remaining cash ÷ (splits − T)</li>'
+    '<li><b>T value</b>: full buy +1, half buy +0.5, quarter sell ×0.75, target-price sell ×0.25 — how many portions you have bought.</li>'
+    '<li><b>Star %</b> = target − target × 2 ÷ splits × T (default target: TQQQ 15%, SOXL 20%)</li>'
+    '<li><b>Star price</b> = average cost × (1 + star %) — buy one tick below it, quarter-sell LOC at it.</li>'
+    '<li><b>First half</b> (T &lt; half the splits): half the daily amount at the star price, half at the average cost (LOC) · <b>second half</b>: all at the star price</li>'
+    '<li><b>Sells</b>: ¼ of the shares LOC at the star price, the other ¾ as a limit order at average × (1 + target %)</li>'
+    '<li><b>Exhausted → reverse mode</b>: once T exceeds splits − 1, the order sheet switches to Laoer’s reverse-mode rules.</li></ul>',
+    tbl(['Item', 'Value'], [['Setup', 'TQQQ · $10,000 · 20 splits · 15% target'], ['Fills', '10 shares at $50, five times (T = 5)'], ['Average cost · cash', '$50.00 · $7,500'],
+        ['Daily buy amount', '$7,500 ÷ (20 − 5) = $500'], ['Star % · star price', '15 − 15 × 2 ÷ 20 × 5 = 7.5% · $53.75'],
+        ['Today’s buys (first half)', 'LOC $53.74 × 4 + LOC $50.00 × 6'], ['Today’s sells', 'Quarter LOC $53.75 × 12 + 15% limit $57.50 × 38']],
+        'Below the buys come lower 1-share LOC lines at $45.45, $41.66 … (daily amount ÷ (shares + 1, + 2 …)). The first buy is placed LOC at the previous close × 1.12 (the “big-number” price).'),
+    [('Who created Infinite Buying?', '<p>Infinite Buying (<span lang="ko" translate="no">무한매수법</span>) was created by <b>Laoer</b> (<span lang="ko" translate="no">라오어</span>, a pen name). The official rules and revisions are published in Korean on Laoer’s <a href="https://cafe.naver.com/infinitebuying" target="_blank" rel="noopener">Naver Cafe</a> and in the book <i>Laoer’s U.S. Stock Infinite Buying</i> (Alki, 2021). This page is an independent tool that calculates and records orders with the V4.0 rules; if the rules change, the cafe announcements take precedence.</p>'),
+     ('What is an LOC order?', '<p>A limit-on-close (LOC) order fills at the closing price if the close is <b>at or below (buy) / at or above (sell)</b> your price. Infinite Buying trades once a day on the close, so it relies on LOC orders offered by U.S. brokers.</p>'),
+     ('Why is the T value a decimal?', '<p>A half fill adds only 0.5, and a quarter sell multiplies T by 0.75. A low T means a high star %, so buy and sell thresholds are higher; a high T (more bought) lowers them so you buy cheaper and exit sooner.</p>'),
+     ('Did Infinite Buying beat buy and hold in the past?', '<p>Not on return. In the real-data backtest in chapter 3-6 (TQQQ and SOXL since 2010, 27 settings, recalculated daily) the default settings earned less per year than simply holding, but with much shallower maximum drawdowns. See the live table above for current numbers.</p>'),
+     ('Where are my records stored?', '<p>If you <b>sign in</b>, all records are saved to your account automatically and follow you to any phone or PC. Without signing in they stay only in this browser (localStorage) and are uploaded to your account when you sign in later.</p>'),
+     ('Can Infinite Buying lose money?', '<p>Yes. TQQQ and SOXL track 3× the daily return, so a long decline can shrink your capital sharply, and if the market does not recover after the cash is used up, losses are realised. This page helps you calculate and record orders under the method; investment decisions are your own responsibility.</p>')])
+
+TEXT.update({w: w for w in ['＋ 오늘 기록하기', '오늘 주문 다 넣었어요', '중간 진입', '무한매수법', '라오어', '큰수']})   # 영어판에 일부러 남기는 한국어 원어 (translate="no")
+GUIDEBOOKS = {'muhan': open(os.path.join(os.path.dirname(OUT), 'muhan_guidebook_en.html'), encoding='utf-8').read()}
+
+json.dump({'text': TEXT, 'guides': GUIDES, 'guidebooks': GUIDEBOOKS}, open(OUT, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 print('저장', OUT, len(TEXT), '개 문구 ·', len(GUIDES), '개 설명글')

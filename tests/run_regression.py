@@ -245,7 +245,7 @@ def main():
             b0, b1, b2 = g.get('bt0') or {}, g.get('bt1') or {}, g.get('bt2') or {}
             if b0.get('rows') != 10 or b0.get('cards') != 4: fail('muhan', '3-6 백테스트 표 이상 (행 %s · 카드 %s, 기대 10 · 4)' % (b0.get('rows'), b0.get('cards')))
             if 'SOXL' not in (b1.get('txt') or '') or b1.get('txt') == b0.get('txt'): fail('muhan', '3-6 종목 전환(SOXL) 안 됨')
-            if '큰수 5%' not in (b2.get('txt') or '') or b2.get('rows') != 10: fail('muhan', '3-6 큰수 전환(5%) 안 됨')
+            if b2.get('txt') == b1.get('txt') or b2.get('rows') != 10: fail('muhan', '3-6 큰수 전환(5%) 안 됨')
             if g.get('btOn') != ['SOXL', '5%']: fail('muhan', '3-6 선택 버튼 표시 이상: %s' % g.get('btOn'))
             if not g['opened'] or g['hash'] != '#mhg-3-1': fail('muhan', 'mhGuide 장 열기 실패 (%s, %s)' % (g['opened'], g['hash']))
             if not g['prog'].endswith('1개 읽음'): fail('muhan', '읽음 진행률 표시 이상 (새 브라우저에서 1개 장을 열었는데): ' + g['prog'])
@@ -254,6 +254,30 @@ def main():
         bad = [t for t, u in errs if not ignorable(t, u)]
         for t in bad[:3]:
             fail('muhan', '콘솔 오류: ' + t[:200])
+        # 영어판 무한매수법 — 가이드북·3-6·자동 숫자가 영어로, 일부러 남긴 원어(translate=no) 밖에는 한글 없음
+        if os.path.isdir(os.path.join(ROOT, 'en', 'muhan')):
+            errs.clear()
+            page.goto(base + 'en/muhan/', wait_until='load'); page.wait_for_timeout(2500)
+            e = page.evaluate("""async () => {
+              const g = document.getElementById('mhg'); if (!g) return { none: true };
+              for (let i = 0; i < 40 && !/computed \\d{4}-/.test((document.getElementById('mhbt-body') || {}).textContent || ''); i++) await new Promise(r => setTimeout(r, 250));
+              const c = g.cloneNode(true); c.querySelectorAll('[translate="no"]').forEach(x => x.remove());
+              const ko = (c.textContent.match(/[가-힣]+/g) || []).slice(0, 5);
+              const asof = [...g.querySelectorAll('[data-mk="asof"]')].map(x => x.textContent);
+              return { lang: document.documentElement.lang, chapters: g.querySelectorAll('details.mhg-ch').length, terms: g.querySelectorAll('dl.mhg-dl dt').length,
+                       ko, asof, rows: document.querySelectorAll('#mhbt-body .mhbt-tbl tbody tr').length, bt: (document.getElementById('mhbt-body') || {}).textContent || '',
+                       prog: document.getElementById('mhg-prog-txt').textContent, sim: (g.querySelector('[data-sim="down:20"]') || {}).textContent || '' };
+            }""")
+            if e.get('none'): fail('en/muhan', '영어 가이드북(#mhg) 없음')
+            else:
+                if e['lang'] != 'en': fail('en/muhan', 'html lang=%s' % e['lang'])
+                if e['chapters'] != 23 or e['terms'] != 31: fail('en/muhan', '영어 가이드북 장 %d · 용어 %d (기대 23 · 31)' % (e['chapters'], e['terms']))
+                if e['ko']: fail('en/muhan', '영어 가이드북에 한글 남음: %s' % e['ko'])
+                if not all('as of' in x for x in e['asof']): fail('en/muhan', '자동 숫자 기준일이 영어가 아님: %s' % e['asof'])
+                if e['rows'] != 10 or 'Buy and hold' not in e['bt'] or 'Buy &' not in e['bt'] or 'computed' not in e['bt']: fail('en/muhan', '3-6 영어 표 이상 (행 %s)' % e['rows'])
+                if 'chapters read' not in e['prog'] or 'Ran out' not in e['sim']: fail('en/muhan', '진행률·3-1 문구가 영어가 아님: %s / %s' % (e['prog'], e['sim']))
+            for t in [t for t, u in errs if not ignorable(t, u)][:3]:
+                fail('en/muhan', '콘솔 오류: ' + t[:200])
         br.close()
     if httpd:
         httpd.shutdown()
