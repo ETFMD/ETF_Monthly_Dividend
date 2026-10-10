@@ -2234,6 +2234,11 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .guide .g-tbl td { padding:7px 8px; border-bottom:1px solid var(--card-border); color:var(--text2); vertical-align:top; white-space:normal; min-width:0; word-break:keep-all; overflow-wrap:break-word; }
   .guide .g-tbl thead th { position:static; box-shadow:none; background:transparent; }
   .guide .g-tbl td:last-child { font-family:var(--mono); font-size:12px; color:var(--text); }
+  /* 가이드북 3-1 분할 수 비교 — 칸마다 '진행 상태'(작게) + '결과'(굵게) 두 줄 */
+  .guide .mhg-sim td, .guide .mhg-sim td:last-child { text-align:left; font-family:var(--font); font-size:12px; color:var(--text2); min-width:7.6em; }
+  .guide .mhg-sim td:first-child { min-width:8.4em; }
+  .mhg-sim .sim-s { display:block; color:var(--text3); font-size:11.5px; line-height:1.45; }
+  .mhg-sim .sim-r { display:block; margin-top:2px; font-weight:700; color:var(--text); font-family:var(--mono); word-break:keep-all; }
   .guide .g-tbl tr:last-child td { border-bottom:none; }
   .guide .g-cap { font-size:11.5px; line-height:1.7; color:var(--text3); margin:4px 0 14px; }
   .guide .g-cap:last-child { margin-bottom:0; }
@@ -10786,12 +10791,12 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <details class="mhg-ch" id="mhg-1-3"><summary><span class="mhg-no">1-3</span><span class="mhg-t">실제로는 얼마나 떨어졌나 — 2022년 기록<small>숫자로 보는 최악의 구간</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
         <p>2022년 미국 기술주 하락장에서 1·2·3배 ETF의 실제 결과입니다 (종가 기준, 분배금 제외).</p>
         <div class="table-scroll"><table class="g-tbl"><thead><tr><th>ETF</th><th>2022년 한 해</th><th>고점 대비 최대 하락</th><th>고점 회복까지</th></tr></thead><tbody>
-          <tr><td>QQQ (나스닥100 1배)</td><td>−34.2%</td><td>−35.6%</td><td>약 2년 (2021.11 → 2023.12)</td></tr>
-          <tr><td>QLD (나스닥100 2배)</td><td>−62.0%</td><td>−63.8%</td><td>약 2년 6개월 (→ 2024.5)</td></tr>
-          <tr><td><b>TQQQ</b> (나스닥100 3배)</td><td>−80.2%</td><td>−81.8%</td><td>약 3년 (→ 2024.12)</td></tr>
-          <tr><td>SOXX (반도체 1배)</td><td>−37.7%</td><td>−46.2%</td><td>약 2년 (2021.12 → 2023.12)</td></tr>
-          <tr><td><b>SOXL</b> (반도체 3배)</td><td>−87.0%</td><td>−90.5%</td><td>약 4년 3개월 (→ 2026.4)</td></tr></tbody></table></div>
-        <p class="g-cap">자료: 이 사이트의 ETF CAGR 비교 데이터(일별 종가) 계산 · 고점 회복은 직전 최고 종가를 다시 넘은 날 기준.</p>
+          <tr><td>QQQ (나스닥100 1배)</td><td data-mk="y2022:QQQ">−33.1%</td><td data-mk="mdd:QQQ">−35.6%</td><td data-mk="rec:QQQ">약 2년 1개월 (2021.11 → 2023.12)</td></tr>
+          <tr><td>QLD (나스닥100 2배)</td><td data-mk="y2022:QLD">−60.6%</td><td data-mk="mdd:QLD">−63.8%</td><td data-mk="rec:QLD">약 2년 6개월 (2021.11 → 2024.5)</td></tr>
+          <tr><td><b>TQQQ</b> (나스닥100 3배)</td><td data-mk="y2022:TQQQ">−79.2%</td><td data-mk="mdd:TQQQ">−81.8%</td><td data-mk="rec:TQQQ">약 3년 1개월 (2021.11 → 2024.12)</td></tr>
+          <tr><td>SOXX (반도체 1배)</td><td data-mk="y2022:SOXX">−35.8%</td><td data-mk="mdd:SOXX">−46.2%</td><td data-mk="rec:SOXX">약 2년 (2021.12 → 2023.12)</td></tr>
+          <tr><td><b>SOXL</b> (반도체 3배)</td><td data-mk="y2022:SOXL">−85.8%</td><td data-mk="mdd:SOXL">−90.5%</td><td data-mk="rec:SOXL">약 4년 3개월 (2021.12 → 2026.4)</td></tr></tbody></table></div>
+        <p class="g-cap">자료: 이 사이트의 ETF CAGR 비교 데이터(일별 종가, 분배금 제외)로 자동 계산<span data-mk="asof"></span> · 최대 하락은 2021~2022년 최고 종가에서 그 뒤 최저 종가까지, 고점 회복은 그 최고 종가를 다시 넘은 첫날 기준.</p>
         <p>같은 기간 1배 ETF는 1년 남짓 떨어진 뒤 2년 만에 회복했지만, 3배 ETF는 −80~−90%까지 내려가 회복에 3~4년이 걸렸습니다. 무한매수법을 시작한다는 것은 <b>이런 구간이 다시 올 수 있다는 것을 받아들이고</b> 시작한다는 뜻입니다.</p>
         <p class="mhg-one">한 줄 요약 — 3배 ETF의 −80%는 이론이 아니라 실제로 있었던 일입니다.</p>
       </div></details>
@@ -10813,9 +10818,9 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <details class="mhg-ch" id="mhg-1-5"><summary><span class="mhg-no">1-5</span><span class="mhg-t">1배·2배·3배, 무엇이 다른가<small>같은 지수, 다른 결과</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
         <p>장기 상승장에서는 배수가 높을수록 결과가 컸지만, 하락장에서는 배수가 높을수록 상처가 깊었습니다.</p>
         <div class="table-scroll"><table class="g-tbl"><thead><tr><th>구간</th><th>QQQ (1배)</th><th>QLD (2배)</th><th>TQQQ (3배)</th></tr></thead><tbody>
-          <tr><td>2010.3 → 2026.10 연평균 (CAGR)</td><td>+18.1%</td><td>+32.0%</td><td>+41.0%</td></tr>
-          <tr><td>2021.11.19 고점 → 2023.12.15 (QQQ가 고점을 되찾은 날)</td><td>+0.3%</td><td>−19.6%</td><td>−44.4%</td></tr></tbody></table></div>
-        <p class="g-cap">종가 기준(분배금 제외) · 이 사이트 ETF CAGR 비교 데이터 계산. 반도체도 같은 모습: 같은 2년 동안 SOXX +2.1%, SOXL −58.6%.</p>
+          <tr><td data-mk="cagrlbl">2010.2 → 2026.10 연평균 (CAGR)</td><td data-mk="cagr:QQQ">+18.6%</td><td data-mk="cagr:QLD">+33.1%</td><td data-mk="cagr:TQQQ">+42.8%</td></tr>
+          <tr><td>2021.11.19 고점 → 2023.12.15 (QQQ가 고점을 되찾은 날)</td><td data-mk="win:QQQ">+0.3%</td><td data-mk="win:QLD">−19.6%</td><td data-mk="win:TQQQ">−44.4%</td></tr></tbody></table></div>
+        <p class="g-cap">종가 기준(분배금 제외) · 이 사이트 ETF CAGR 비교 데이터로 자동 계산<span data-mk="asof"></span>. 반도체도 같은 모습: 같은 2년 동안 SOXX <span data-mk="win:SOXX">+5.9%</span>, SOXL <span data-mk="win:SOXL">−55.4%</span>.</p>
         <p>두 번째 줄이 핵심입니다. <b>지수는 2년 만에 제자리로 돌아왔는데 3배 ETF는 −44%</b>였습니다. 변동성 끌림이 실제로 이만큼 작동합니다. 3배 ETF는 “오래 들고 있으면 결국 오른다”는 전략과 잘 맞지 않고, 무한매수법 같은 <b>규칙적인 분할 매수·익절</b>과 함께 써야 하는 이유가 여기에 있습니다.</p>
         <p class="mhg-one">한 줄 요약 — 배수가 높을수록 기대 수익도, 하락 폭과 회복 기간도 커집니다.</p>
       </div></details>
@@ -10984,16 +10989,17 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
 
       <details class="mhg-ch" id="mhg-3-1"><summary><span class="mhg-no">3-1</span><span class="mhg-t">20분할과 40분할은 무엇을 바꾸나<small>분할 수는 ‘평단’이 아니라 ‘버티는 시간’을 바꿉니다</small></span><span class="mhg-min">5분</span></summary><div class="mhg-body">
         <div class="table-scroll"><table class="g-tbl mhg-sim"><thead><tr><th>시나리오 (60거래일)</th><th>20분할</th><th>30분할</th><th>40분할</th></tr></thead><tbody>
-          <tr><td>꾸준한 하락 (매일 −1.5%)</td><td>20일째 소진 · 평단 $84.7</td><td>30일째 소진 · 평단 $77.9</td><td>40일째 소진 · 평단 $71.4</td></tr>
-          <tr><td>V자 (25일간 −35% 후 25일간 회복)</td><td><b>20일째 소진</b> (바닥 전에 돈이 떨어짐)</td><td>43일째 익절로 회차 종료</td><td>43일째 익절로 회차 종료</td></tr>
-          <tr><td>하락 후 횡보 (20일간 −30% 후 ±2%)</td><td>20일째 소진</td><td>60일 후 T 15 · 원금의 53% 사용</td><td>60일 후 T 19.7 · 원금의 51% 사용</td></tr>
-          <tr><td>횡보 (+3% / −3% 반복)</td><td>T 10 · 원금 47% 사용 · +2.0%</td><td>T 13.1 · 42% 사용 · +0.8%</td><td>T 19.4 · 45% 사용 · 0.0%</td></tr>
-          <tr><td>완만한 상승 (매일 +0.5%)</td><td>원금 17% 투입 · <b>+7.1%</b></td><td>9% 투입 · +5.4%</td><td>5% 투입 · +4.9%</td></tr></tbody></table></div>
-        <p class="g-cap">손익(%)은 원금 전체 대비 평가 손익. 소진 이후의 리버스모드는 계산에 넣지 않았습니다. 30분할은 원문이 권장하는 분할 수지만 별%·1회 매수금 공식은 원문에 20·40분할만 있어 같은 꼴로 계산했습니다. 가상 가격 흐름이며 미래 수익을 뜻하지 않습니다.</p>
+          <tr><td>꾸준한 하락 (매일 −1.5%)</td><td data-sim="down:20"><span class="sim-s">20일째 소진 → 리버스 진행 중</span><span class="sim-r">60일 뒤 평가 −50.9%</span></td><td data-sim="down:30"><span class="sim-s">30일째 소진 → 리버스 진행 중</span><span class="sim-r">60일 뒤 평가 −47.2%</span></td><td data-sim="down:40"><span class="sim-s">40일째 소진 → 리버스 진행 중</span><span class="sim-r">60일 뒤 평가 −42.9%</span></td></tr>
+          <tr><td>V자 (25일간 −35% → 25일간 제자리 회복 → 10일 보합)</td><td data-sim="v:20"><span class="sim-s">20일째 소진 → 리버스 9일 → 복귀</span><span class="sim-r">46일째 회차 종료 −4.4%</span></td><td data-sim="v:30"><span class="sim-s">소진 없음</span><span class="sim-r">43일째 회차 종료 +0.3%</span></td><td data-sim="v:40"><span class="sim-s">소진 없음</span><span class="sim-r">43일째 회차 종료 +2.5%</span></td></tr>
+          <tr><td>하락 후 횡보 (20일간 −30% 후 +2% / −2% 반복)</td><td data-sim="dside:20"><span class="sim-s">20일째 소진 → 리버스 1일 → 복귀 · T 10.4 · 원금 57% 사용</span><span class="sim-r">평가 −12.7%</span></td><td data-sim="dside:30"><span class="sim-s">T 15 · 원금 53% 사용</span><span class="sim-r">평가 −8.6%</span></td><td data-sim="dside:40"><span class="sim-s">T 19.7 · 원금 51% 사용</span><span class="sim-r">평가 −6.6%</span></td></tr>
+          <tr><td>횡보 (+3% / −3% 반복)</td><td data-sim="side:20"><span class="sim-s">T 10 · 원금 47% 사용</span><span class="sim-r">평가 +2.0%</span></td><td data-sim="side:30"><span class="sim-s">T 13.1 · 원금 42% 사용</span><span class="sim-r">평가 +0.8%</span></td><td data-sim="side:40"><span class="sim-s">T 19.4 · 원금 45% 사용</span><span class="sim-r">평가 0.0%</span></td></tr>
+          <tr><td>완만한 상승 (매일 +0.5%)</td><td data-sim="up:20"><span class="sim-s">T 4.5 · 원금 17% 사용</span><span class="sim-r">평가 +7.1%</span></td><td data-sim="up:30"><span class="sim-s">T 4.9 · 원금 9% 사용</span><span class="sim-r">평가 +5.4%</span></td><td data-sim="up:40"><span class="sim-s">T 4.3 · 원금 5% 사용</span><span class="sim-r">평가 +4.9%</span></td></tr></tbody></table></div>
+        <p class="g-cap">손익(%)은 60일째 종가 기준 원금 전체 대비 평가 손익(회차가 끝났으면 실현 손익). ‘원금 사용’은 원금 중 현금으로 남아 있지 않은 몫입니다. 소진 이후는 라오어 원문 리버스모드 규칙(첫날 MOC 매도 → 직전 5일 종가 평균을 별지점으로 매도·쿼터매수 → 종가가 평단 −15% 위면 다음 날 복귀)대로 이 도구의 계산 엔진이 직접 계산해, 엔진이 바뀌면 이 표도 함께 바뀝니다. 30분할은 원문이 권장하는 분할 수지만 별%·1회 매수금 공식은 원문에 20·40분할만 있어 같은 꼴로 계산했습니다. 가상 가격 흐름이며 미래 수익을 뜻하지 않습니다.</p>
         <ul class="g-list">
-          <li><b>20분할</b>은 1회 매수금이 커서 상승장에서 더 많이 벌지만, 한 달(약 20거래일) 넘게 이어지는 하락에서는 바닥 전에 돈이 떨어질 수 있습니다.</li>
+          <li><b>20분할</b>은 1회 매수금이 커서 상승장에서 더 많이 벌지만(완만한 상승 <span data-sim="up:20:pnl">+7.1%</span>), 한 달(약 20거래일) 넘게 이어지는 하락에서는 바닥 전에 돈이 떨어져 리버스모드로 손실을 확정하며 팔게 됩니다(꾸준한 하락 <span data-sim="down:20:pnl">−50.9%</span>, 40분할은 <span data-sim="down:40:pnl">−42.9%</span>).</li>
           <li><b>40분할</b>은 매수 속도가 절반이라 같은 하락을 두 배 오래 버티지만, 오를 때 들어간 돈이 적어 수익도 작습니다.</li>
-          <li>V자 반등처럼 <b>바닥까지의 기간</b>이 승부를 가르는 장에서는 분할 수가 결과를 정반대로 바꿉니다.</li>
+          <li>V자 반등처럼 <b>바닥까지의 기간</b>이 승부를 가르는 장에서는 분할 수가 결과를 정반대로 바꿉니다. 20분할은 바닥 전에 소진돼 리버스모드에서 싸게 판 탓에, 가격이 제자리로 돌아온 뒤에도 회차를 손실(<span data-sim="v:20:pnl">−4.4%</span>)로 끝냈고, 30·40분할은 소진 없이 이익으로 끝냈습니다.</li>
+          <li>리버스모드는 손실을 없애 주는 장치가 아니라, 현금이 바닥난 뒤에도 매매를 이어 가며 평단을 관리하는 규칙입니다. 가장 좋은 대비는 소진까지 가지 않도록 분할 수와 원금을 넉넉히 잡는 것입니다.</li>
         </ul>
         <p class="mhg-one">한 줄 요약 — 분할 수는 “얼마나 오래 버틸지”와 “오를 때 얼마나 벌지” 사이의 선택입니다.</p>
       </div></details>
@@ -11025,12 +11031,12 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
       <details class="mhg-ch" id="mhg-3-4"><summary><span class="mhg-no">3-4</span><span class="mhg-t">TQQQ와 SOXL은 왜 목표가 다른가<small>변동성이 다른 두 종목</small></span><span class="mhg-min">3분</span></summary><div class="mhg-body">
         <div class="table-scroll"><table class="g-tbl"><thead><tr><th>항목</th><th>TQQQ</th><th>SOXL</th></tr></thead><tbody>
           <tr><td>기초 지수</td><td>나스닥100 (대형 기술주 100개)</td><td>미국 반도체 지수 (반도체 30개)</td></tr>
-          <tr><td>2022년 한 해</td><td>−80.2%</td><td>−87.0%</td></tr>
-          <tr><td>고점 대비 최대 하락</td><td>−81.8%</td><td>−90.5%</td></tr>
-          <tr><td>고점 회복까지</td><td>약 3년</td><td>약 4년 3개월</td></tr>
-          <tr><td>2010 ~ 2026 연평균</td><td>+41.0%</td><td>+38.1%</td></tr>
+          <tr><td>2022년 한 해</td><td data-mk="y2022:TQQQ">−79.2%</td><td data-mk="y2022:SOXL">−85.8%</td></tr>
+          <tr><td>고점 대비 최대 하락</td><td data-mk="mdd:TQQQ">−81.8%</td><td data-mk="mdd:SOXL">−90.5%</td></tr>
+          <tr><td>고점 회복까지</td><td data-mk="recs:TQQQ">약 3년 1개월</td><td data-mk="recs:SOXL">약 4년 3개월</td></tr>
+          <tr><td data-mk="cagr2lbl">2010 ~ 2026 연평균</td><td data-mk="cagr2:TQQQ">+41.0%</td><td data-mk="cagr2:SOXL">+38.1%</td></tr>
           <tr><td>목표% (기본값)</td><td>15%</td><td>20%</td></tr></tbody></table></div>
-        <p class="g-cap">이 사이트 ETF CAGR 비교 데이터(종가, 분배금 제외) 계산 · SOXL 연평균은 2010년 3월 상장 이후.</p>
+        <p class="g-cap">이 사이트 ETF CAGR 비교 데이터(종가, 분배금 제외)로 자동 계산<span data-mk="asof"></span> · 연평균은 두 종목 모두 SOXL 상장(2010년 3월) 이후 같은 기간.</p>
         <p>SOXL은 종목 수가 적은 업종 지수라 하루 변동이 TQQQ보다 큽니다. 크게 흔들리는 만큼 반등도 크기 때문에 목표를 20%로 높게 잡고, 그만큼 더 깊은 하락을 견딜 각오가 필요합니다. 처음이라면 <b>TQQQ부터</b> 시작하는 사람이 많습니다.</p>
         <p class="mhg-one">한 줄 요약 — SOXL은 더 크게 오르내리는 대신 목표도 더 높습니다.</p>
       </div></details>
@@ -21444,7 +21450,58 @@ var MHE = (function () {
     return out;
   }
 
+  /* 종가만으로 체결을 판단하는 모의 계산 (가이드북 3-1 표) — 장중 고가·일부 체결·수수료·세금 제외
+     closes[0] = 시작 전날 종가, closes[1..] = 매일 종가. 주문표는 orders()를 그대로 쓰고,
+     소진(T > 분할−1)되면 다음 날부터 리버스모드(첫날 MOC → 직전 5일 종가 평균 별지점), 종가 > 평단×(1−목표%)이면 다음 날 일반모드 복귀.
+     회차가 끝나면(보유 0) 멈춤 */
+  function simulate(s, closes) {
+    var txs = [], rev = false, revFirst = false, exhaustDay = 0, revDays = 0, backs = 0, endDay = 0, maxT = 0;
+    var dt = function (i) { var d = new Date(Date.UTC(2026, 9, 1) + i * 864e5); return d.toISOString().slice(0, 10); };
+    for (var i = 1; i < closes.length; i++) {
+      var st = compute(s, txs), pc = closes[i - 1], c = closes[i], date = dt(i), tx = null;
+      if (st.phase === '종료') break;
+      if (rev) {
+        revDays++;
+        var win = closes.slice(Math.max(0, i - 5), i), rs = Math.round(win.reduce(function (a, b) { return a + b; }, 0) / win.length * 100) / 100;
+        var od = orders(st, s, { starPrice: rs, isFirstDay: revFirst }, pc), sq = 0, bq = 0;
+        od.forEach(function (o) {
+          if (o.type === 'sell' && (o.method === 'MOC' || c >= o.price)) sq += o.quantity;
+          if (o.type === 'buy' && c <= o.price) bq += o.quantity;
+        });
+        revFirst = false;
+        if (sq > 0) tx = { date: date, type: 'reverse_sell', price: c, quantity: Math.min(sq, st.totalQuantity) };
+        else if (bq > 0) tx = { date: date, type: 'reverse_quarter_buy', price: c, quantity: bq };
+        if (tx) txs.push(tx);
+        var a = compute(s, txs);
+        if (a.totalQuantity > 0 && c > a.avgPrice * (1 - targetOf(s.ticker, s.targetProfit) / 100)) { rev = false; backs++; }
+      } else {
+        var q = 0;
+        orders(st, s, undefined, pc).forEach(function (o) { if (o.type === 'buy' && c <= o.price) q += o.quantity; });
+        if (q > 0) {
+          /* 전반전에 평단 위·별지점 아래로 마감하면 별지점 몫만 → 절반 매수(+0.5), 그 밖은 1회 매수(+1) */
+          var half = st.phase === '전반전' && c > st.avgPrice;
+          txs.push({ date: date, type: half ? 'half_buy' : 'full_buy', price: c, quantity: q });
+        } else if (st.totalQuantity > 0) {
+          var qs = st.sellPoint > 0 && c >= st.sellPoint, ls = st.limitSellPrice > 0 && c >= st.limitSellPrice;
+          var qq = Math.max(1, Math.floor(st.totalQuantity / 4));
+          if (qs) txs.push({ date: date, type: 'quarter_sell', price: c, quantity: qq });
+          if (ls) txs.push({ date: date, type: 'limit_sell', price: st.limitSellPrice, quantity: st.totalQuantity - (qs ? qq : 0) });
+        }
+      }
+      var e = compute(s, txs); maxT = Math.max(maxT, e.tValue);
+      if (e.phase === '종료') { endDay = i; break; }
+      if (!rev && e.phase === '소진모드') { rev = true; revFirst = true; if (!exhaustDay) exhaustDay = i; }
+    }
+    var f = compute(s, txs), last = closes[Math.min(closes.length - 1, endDay || closes.length - 1)];
+    var value = f.remainingCapital + f.totalQuantity * last;
+    return { days: closes.length - 1, endDay: endDay, exhaustDay: exhaustDay, revDays: revDays, backs: backs, reverse: rev,
+             tValue: f.tValue, maxT: maxT, avgPrice: f.avgPrice, qty: f.totalQuantity, cash: f.remainingCapital,
+             usedPct: Math.max(0, (s.totalCapital - f.remainingCapital) / s.totalCapital * 100),
+             pnlPct: (value - s.totalCapital) / s.totalCapital * 100, txs: txs };
+  }
+
   return {
+    simulate: simulate,
     STD_SPLITS: STD_SPLITS, EXT_SPLITS: EXT_SPLITS, EXT_WARN: EXT_WARN, DEF_BIGNUM: DEF_BIGNUM,
     DEF_LOC_SHARES: DEF_LOC_SHARES, DEF_LOC_LINES: DEF_LOC_LINES, COMBO: COMBO, REVERSE: REVERSE,
     isExtSplits: isExtSplits, reverseMult: reverseMult, nextT: nextT, defaultTarget: defaultTarget, targetOf: targetOf,
@@ -22815,10 +22872,98 @@ if (typeof module !== 'undefined') module.exports = MHE;
       var a = e.target.closest && e.target.closest('a[href^="#mhg"]'); if (!a) return;
       e.preventDefault(); e.stopPropagation(); go(a.getAttribute('href').slice(1), true);
     });
-    paint();
+    paint(); fillNumbers();
     var h = location.hash.slice(1); if (/^mhg/.test(h)) setTimeout(function () { go(h, true); }, 300);
   }
+  /* 숫자 자동 갱신 — ① PART 1·3 표: data/etfcagr.json 일별 종가로 다시 계산 (data-mk)
+                      ② 3-1 분할 수 비교: 계산 엔진 MHE.simulate 로 다시 계산 (data-sim)
+     HTML에 적힌 값은 데이터를 못 불러올 때·검색엔진용 기본값 */
+  var M = '−';
+  function pct(x) { var v = Math.round(x * 1000) / 10; return (v > 0 ? '+' : v < 0 ? M : '') + Math.abs(v).toFixed(1) + '%'; }
+  function setAll(sel, txt) { var g = root(); if (g && txt != null) g.querySelectorAll(sel).forEach(function (el) { el.textContent = txt; }); }
+  function series(raw) {
+    if (!raw || !raw.c || !raw.dd) return null;
+    var d = [raw.d0]; for (var i = 0; i < raw.dd.length; i++) d.push(d[i] + raw.dd[i]);
+    var ymd = function (k) { return new Date(d[k] * 864e5).toISOString().slice(0, 10); };
+    return { c: raw.c, d: d, ymd: ymd, at: function (s) { var k = -1; for (var i = 0; i < d.length && ymd(i) <= s; i++) k = i; return k; } };
+  }
+  function ym(S, k) { var s = S.ymd(k); return +s.slice(0, 4) + '.' + +s.slice(5, 7); }
+  function dur(days) { var m = Math.round(days / 30.4375), y = Math.floor(m / 12), r = m % 12; return '약 ' + (y ? y + '년' : '') + (y && r ? ' ' : '') + (r ? r + '개월' : '') ; }
+  function fillMarket(j) {
+    var raw = j && j.series; if (!raw) return;
+    var S = {}; ['QQQ', 'QLD', 'TQQQ', 'SOXX', 'SOXL'].forEach(function (t) { S[t] = series(raw[t]); });
+    Object.keys(S).forEach(function (t) {
+      var s = S[t]; if (!s) return;
+      var a = s.at('2021-12-31'), b = s.at('2022-12-31');
+      if (a >= 0 && b > a) setAll('[data-mk="y2022:' + t + '"]', pct(s.c[b] / s.c[a] - 1));
+      var p0 = s.at('2020-12-31') + 1, p1 = b, pk = p0;
+      for (var i = p0; i <= p1; i++) if (s.c[i] > s.c[pk]) pk = i;
+      var t1 = s.at('2023-12-31'), tr = pk;
+      for (i = pk; i <= t1; i++) if (s.c[i] < s.c[tr]) tr = i;
+      setAll('[data-mk="mdd:' + t + '"]', pct(s.c[tr] / s.c[pk] - 1));
+      var rc = -1; for (i = tr; i < s.c.length; i++) if (s.c[i] >= s.c[pk]) { rc = i; break; }
+      var last = s.c.length - 1;
+      setAll('[data-mk="rec:' + t + '"]', rc > 0 ? dur(s.d[rc] - s.d[pk]) + ' (' + ym(s, pk) + ' → ' + ym(s, rc) + ')' : '아직 회복 전 (' + ym(s, pk) + ' 고점 대비 ' + pct(s.c[last] / s.c[pk] - 1) + ')');
+      setAll('[data-mk="recs:' + t + '"]', rc > 0 ? dur(s.d[rc] - s.d[pk]) : '아직 회복 전');
+      var w0 = s.at('2021-11-19'), w1 = s.at('2023-12-15');
+      if (w0 >= 0 && w1 > w0) setAll('[data-mk="win:' + t + '"]', pct(s.c[w1] / s.c[w0] - 1));
+    });
+    function cagr(s, from, key) {
+      var k = s.at(from), last = s.c.length - 1; if (k < 0 || last <= k) return;
+      setAll('[data-mk="' + key + '"]', pct(Math.pow(s.c[last] / s.c[k], 365.25 / (s.d[last] - s.d[k])) - 1));
+    }
+    var T = S.TQQQ, X = S.SOXL;
+    if (T) {
+      var t0 = T.ymd(0); ['QQQ', 'QLD', 'TQQQ'].forEach(function (t) { if (S[t]) cagr(S[t], t0, 'cagr:' + t); });
+      setAll('[data-mk="cagrlbl"]', ym(T, 0) + ' → ' + ym(T, T.c.length - 1) + ' 연평균 (CAGR)');
+    }
+    if (T && X) {
+      var x0 = X.ymd(0); cagr(T, x0, 'cagr2:TQQQ'); cagr(X, x0, 'cagr2:SOXL');
+      setAll('[data-mk="cagr2lbl"]', x0.slice(0, 4) + ' ~ ' + X.ymd(X.c.length - 1).slice(0, 4) + ' 연평균');
+    }
+    if (j.updated) setAll('[data-mk="asof"]', ' (' + j.updated.slice(0, 10) + ' 기준)');
+  }
+  /* 3-1 가상 가격 흐름 (60거래일 · 시작 $100 · 종가 소수 둘째 자리) */
+  function simPaths() {
+    function path(fn) { var a = [100]; for (var i = 1; i <= 60; i++) a.push(Math.round(fn(i, a[i - 1]) * 100) / 100); return a; }
+    function geo(f, t, n) { return Math.pow(t / f, 1 / n); }
+    return {
+      down: path(function (i, p) { return p * 0.985; }),
+      v: path(function (i) { return i <= 25 ? 100 * Math.pow(geo(100, 65, 25), i) : i <= 50 ? 65 * Math.pow(geo(65, 100, 25), i - 25) : 100; }),
+      dside: path(function (i, p) { return i <= 20 ? 100 * Math.pow(geo(100, 70, 20), i) : p * (i % 2 ? 1.02 : 0.98); }),
+      side: path(function (i, p) { return p * (i % 2 ? 1.03 : 0.97); }),
+      up: path(function (i, p) { return p * 1.005; })
+    };
+  }
+  /* 칸 내용: [진행 상태, 결과] — 결과는 굵게 */
+  function simText(r) {
+    var T = String(Math.round(r.tValue * 10) / 10), used = 'T ' + T + ' · 원금 ' + Math.round(r.usedPct) + '% 사용';
+    var back = r.exhaustDay + '일째 소진 → 리버스 ' + r.revDays + '일 → 복귀', p = pct(r.pnlPct / 100);
+    if (r.endDay) return [r.exhaustDay ? back : '소진 없음', r.endDay + '일째 회차 종료 ' + p];
+    if (r.reverse) return [r.exhaustDay + '일째 소진 → 리버스 진행 중', r.days + '일 뒤 평가 ' + p];
+    return [(r.exhaustDay ? back + ' · ' : '') + used, '평가 ' + p];
+  }
+  function fillSim() {
+    var g = root(); if (!g || !window.MHE || !MHE.simulate) return;
+    var P = simPaths(), R = {};
+    g.querySelectorAll('[data-sim]').forEach(function (el) {
+      var k = el.getAttribute('data-sim').split(':'), id = k[0] + k[1];
+      if (!P[k[0]]) return;
+      var r = R[id] || (R[id] = MHE.simulate({ ticker: 'TQQQ', splits: +k[1], totalCapital: 20000, lowerLocLines: 8, lowerLocShares: 1 }, P[k[0]]));
+      if (k[2] === 'pnl') { el.textContent = pct(r.pnlPct / 100); return; }
+      var t = simText(r), s = document.createElement('span'), b = document.createElement('span');
+      s.className = 'sim-s'; s.textContent = t[0]; b.className = 'sim-r'; b.textContent = t[1];
+      el.textContent = ''; el.appendChild(s); el.appendChild(b);
+    });
+  }
+  var filled = false;
+  function fillNumbers() {
+    if (filled || !root()) return; filled = true;
+    try { fillSim(); } catch (e) { if (window.console) console.error('[GUIDEBOOK] sim', e); }
+    if (window.mdLoad) window.mdLoad('etfcagr.json').then(fillMarket).catch(function () {});
+  }
   window.mhGuide = function (id) { bind(); go(id || 'mhg', !!id); };
+  window.mhGuideFill = { pct: pct, simPaths: simPaths, simText: simText, fillMarket: fillMarket };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind); else bind();
 })();
 

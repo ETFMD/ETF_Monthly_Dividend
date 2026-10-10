@@ -1,0 +1,32 @@
+name: 회귀 테스트
+
+# 원본·페이지·테스트가 바뀌면 tests/run_regression.py 로 전 경로 × 16개 화면 폭(넘침·잘림·콘솔 오류),
+# 메뉴·검색·허브 카드, 무한매수법 엔진(라오어 카페 원문 예시)·가이드북을 검사함. 배포를 막지는 않고 결과만 알려 줌
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['src/index.html', 'index.html', '*/index.html', 'en/**', 'assets/**', 'scripts/routes.json', 'tests/**', '.github/workflows/regression.yml']
+
+concurrency:
+  group: regression
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Playwright · 한글 글꼴 설치
+        run: |
+          pip install playwright==1.63.0
+          python -m playwright install --with-deps chromium
+          sudo apt-get install -y -q fonts-noto-cjk
+      - name: 검사기 자체 확인 (일부러 넣은 넘침·오류를 잡는지)
+        run: python tests/run_regression.py --selftest
+      - name: 회귀 테스트
+        run: python tests/run_regression.py

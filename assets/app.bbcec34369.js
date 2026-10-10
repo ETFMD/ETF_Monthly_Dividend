@@ -9930,7 +9930,58 @@ var MHE = (function () {
     return out;
   }
 
+  /* 종가만으로 체결을 판단하는 모의 계산 (가이드북 3-1 표) — 장중 고가·일부 체결·수수료·세금 제외
+     closes[0] = 시작 전날 종가, closes[1..] = 매일 종가. 주문표는 orders()를 그대로 쓰고,
+     소진(T > 분할−1)되면 다음 날부터 리버스모드(첫날 MOC → 직전 5일 종가 평균 별지점), 종가 > 평단×(1−목표%)이면 다음 날 일반모드 복귀.
+     회차가 끝나면(보유 0) 멈춤 */
+  function simulate(s, closes) {
+    var txs = [], rev = false, revFirst = false, exhaustDay = 0, revDays = 0, backs = 0, endDay = 0, maxT = 0;
+    var dt = function (i) { var d = new Date(Date.UTC(2026, 9, 1) + i * 864e5); return d.toISOString().slice(0, 10); };
+    for (var i = 1; i < closes.length; i++) {
+      var st = compute(s, txs), pc = closes[i - 1], c = closes[i], date = dt(i), tx = null;
+      if (st.phase === '종료') break;
+      if (rev) {
+        revDays++;
+        var win = closes.slice(Math.max(0, i - 5), i), rs = Math.round(win.reduce(function (a, b) { return a + b; }, 0) / win.length * 100) / 100;
+        var od = orders(st, s, { starPrice: rs, isFirstDay: revFirst }, pc), sq = 0, bq = 0;
+        od.forEach(function (o) {
+          if (o.type === 'sell' && (o.method === 'MOC' || c >= o.price)) sq += o.quantity;
+          if (o.type === 'buy' && c <= o.price) bq += o.quantity;
+        });
+        revFirst = false;
+        if (sq > 0) tx = { date: date, type: 'reverse_sell', price: c, quantity: Math.min(sq, st.totalQuantity) };
+        else if (bq > 0) tx = { date: date, type: 'reverse_quarter_buy', price: c, quantity: bq };
+        if (tx) txs.push(tx);
+        var a = compute(s, txs);
+        if (a.totalQuantity > 0 && c > a.avgPrice * (1 - targetOf(s.ticker, s.targetProfit) / 100)) { rev = false; backs++; }
+      } else {
+        var q = 0;
+        orders(st, s, undefined, pc).forEach(function (o) { if (o.type === 'buy' && c <= o.price) q += o.quantity; });
+        if (q > 0) {
+          /* 전반전에 평단 위·별지점 아래로 마감하면 별지점 몫만 → 절반 매수(+0.5), 그 밖은 1회 매수(+1) */
+          var half = st.phase === '전반전' && c > st.avgPrice;
+          txs.push({ date: date, type: half ? 'half_buy' : 'full_buy', price: c, quantity: q });
+        } else if (st.totalQuantity > 0) {
+          var qs = st.sellPoint > 0 && c >= st.sellPoint, ls = st.limitSellPrice > 0 && c >= st.limitSellPrice;
+          var qq = Math.max(1, Math.floor(st.totalQuantity / 4));
+          if (qs) txs.push({ date: date, type: 'quarter_sell', price: c, quantity: qq });
+          if (ls) txs.push({ date: date, type: 'limit_sell', price: st.limitSellPrice, quantity: st.totalQuantity - (qs ? qq : 0) });
+        }
+      }
+      var e = compute(s, txs); maxT = Math.max(maxT, e.tValue);
+      if (e.phase === '종료') { endDay = i; break; }
+      if (!rev && e.phase === '소진모드') { rev = true; revFirst = true; if (!exhaustDay) exhaustDay = i; }
+    }
+    var f = compute(s, txs), last = closes[Math.min(closes.length - 1, endDay || closes.length - 1)];
+    var value = f.remainingCapital + f.totalQuantity * last;
+    return { days: closes.length - 1, endDay: endDay, exhaustDay: exhaustDay, revDays: revDays, backs: backs, reverse: rev,
+             tValue: f.tValue, maxT: maxT, avgPrice: f.avgPrice, qty: f.totalQuantity, cash: f.remainingCapital,
+             usedPct: Math.max(0, (s.totalCapital - f.remainingCapital) / s.totalCapital * 100),
+             pnlPct: (value - s.totalCapital) / s.totalCapital * 100, txs: txs };
+  }
+
   return {
+    simulate: simulate,
     STD_SPLITS: STD_SPLITS, EXT_SPLITS: EXT_SPLITS, EXT_WARN: EXT_WARN, DEF_BIGNUM: DEF_BIGNUM,
     DEF_LOC_SHARES: DEF_LOC_SHARES, DEF_LOC_LINES: DEF_LOC_LINES, COMBO: COMBO, REVERSE: REVERSE,
     isExtSplits: isExtSplits, reverseMult: reverseMult, nextT: nextT, defaultTarget: defaultTarget, targetOf: targetOf,
@@ -11301,10 +11352,98 @@ if (typeof module !== 'undefined') module.exports = MHE;
       var a = e.target.closest && e.target.closest('a[href^="#mhg"]'); if (!a) return;
       e.preventDefault(); e.stopPropagation(); go(a.getAttribute('href').slice(1), true);
     });
-    paint();
+    paint(); fillNumbers();
     var h = location.hash.slice(1); if (/^mhg/.test(h)) setTimeout(function () { go(h, true); }, 300);
   }
+  /* 숫자 자동 갱신 — ① PART 1·3 표: data/etfcagr.json 일별 종가로 다시 계산 (data-mk)
+                      ② 3-1 분할 수 비교: 계산 엔진 MHE.simulate 로 다시 계산 (data-sim)
+     HTML에 적힌 값은 데이터를 못 불러올 때·검색엔진용 기본값 */
+  var M = '−';
+  function pct(x) { var v = Math.round(x * 1000) / 10; return (v > 0 ? '+' : v < 0 ? M : '') + Math.abs(v).toFixed(1) + '%'; }
+  function setAll(sel, txt) { var g = root(); if (g && txt != null) g.querySelectorAll(sel).forEach(function (el) { el.textContent = txt; }); }
+  function series(raw) {
+    if (!raw || !raw.c || !raw.dd) return null;
+    var d = [raw.d0]; for (var i = 0; i < raw.dd.length; i++) d.push(d[i] + raw.dd[i]);
+    var ymd = function (k) { return new Date(d[k] * 864e5).toISOString().slice(0, 10); };
+    return { c: raw.c, d: d, ymd: ymd, at: function (s) { var k = -1; for (var i = 0; i < d.length && ymd(i) <= s; i++) k = i; return k; } };
+  }
+  function ym(S, k) { var s = S.ymd(k); return +s.slice(0, 4) + '.' + +s.slice(5, 7); }
+  function dur(days) { var m = Math.round(days / 30.4375), y = Math.floor(m / 12), r = m % 12; return '약 ' + (y ? y + '년' : '') + (y && r ? ' ' : '') + (r ? r + '개월' : '') ; }
+  function fillMarket(j) {
+    var raw = j && j.series; if (!raw) return;
+    var S = {}; ['QQQ', 'QLD', 'TQQQ', 'SOXX', 'SOXL'].forEach(function (t) { S[t] = series(raw[t]); });
+    Object.keys(S).forEach(function (t) {
+      var s = S[t]; if (!s) return;
+      var a = s.at('2021-12-31'), b = s.at('2022-12-31');
+      if (a >= 0 && b > a) setAll('[data-mk="y2022:' + t + '"]', pct(s.c[b] / s.c[a] - 1));
+      var p0 = s.at('2020-12-31') + 1, p1 = b, pk = p0;
+      for (var i = p0; i <= p1; i++) if (s.c[i] > s.c[pk]) pk = i;
+      var t1 = s.at('2023-12-31'), tr = pk;
+      for (i = pk; i <= t1; i++) if (s.c[i] < s.c[tr]) tr = i;
+      setAll('[data-mk="mdd:' + t + '"]', pct(s.c[tr] / s.c[pk] - 1));
+      var rc = -1; for (i = tr; i < s.c.length; i++) if (s.c[i] >= s.c[pk]) { rc = i; break; }
+      var last = s.c.length - 1;
+      setAll('[data-mk="rec:' + t + '"]', rc > 0 ? dur(s.d[rc] - s.d[pk]) + ' (' + ym(s, pk) + ' → ' + ym(s, rc) + ')' : '아직 회복 전 (' + ym(s, pk) + ' 고점 대비 ' + pct(s.c[last] / s.c[pk] - 1) + ')');
+      setAll('[data-mk="recs:' + t + '"]', rc > 0 ? dur(s.d[rc] - s.d[pk]) : '아직 회복 전');
+      var w0 = s.at('2021-11-19'), w1 = s.at('2023-12-15');
+      if (w0 >= 0 && w1 > w0) setAll('[data-mk="win:' + t + '"]', pct(s.c[w1] / s.c[w0] - 1));
+    });
+    function cagr(s, from, key) {
+      var k = s.at(from), last = s.c.length - 1; if (k < 0 || last <= k) return;
+      setAll('[data-mk="' + key + '"]', pct(Math.pow(s.c[last] / s.c[k], 365.25 / (s.d[last] - s.d[k])) - 1));
+    }
+    var T = S.TQQQ, X = S.SOXL;
+    if (T) {
+      var t0 = T.ymd(0); ['QQQ', 'QLD', 'TQQQ'].forEach(function (t) { if (S[t]) cagr(S[t], t0, 'cagr:' + t); });
+      setAll('[data-mk="cagrlbl"]', ym(T, 0) + ' → ' + ym(T, T.c.length - 1) + ' 연평균 (CAGR)');
+    }
+    if (T && X) {
+      var x0 = X.ymd(0); cagr(T, x0, 'cagr2:TQQQ'); cagr(X, x0, 'cagr2:SOXL');
+      setAll('[data-mk="cagr2lbl"]', x0.slice(0, 4) + ' ~ ' + X.ymd(X.c.length - 1).slice(0, 4) + ' 연평균');
+    }
+    if (j.updated) setAll('[data-mk="asof"]', ' (' + j.updated.slice(0, 10) + ' 기준)');
+  }
+  /* 3-1 가상 가격 흐름 (60거래일 · 시작 $100 · 종가 소수 둘째 자리) */
+  function simPaths() {
+    function path(fn) { var a = [100]; for (var i = 1; i <= 60; i++) a.push(Math.round(fn(i, a[i - 1]) * 100) / 100); return a; }
+    function geo(f, t, n) { return Math.pow(t / f, 1 / n); }
+    return {
+      down: path(function (i, p) { return p * 0.985; }),
+      v: path(function (i) { return i <= 25 ? 100 * Math.pow(geo(100, 65, 25), i) : i <= 50 ? 65 * Math.pow(geo(65, 100, 25), i - 25) : 100; }),
+      dside: path(function (i, p) { return i <= 20 ? 100 * Math.pow(geo(100, 70, 20), i) : p * (i % 2 ? 1.02 : 0.98); }),
+      side: path(function (i, p) { return p * (i % 2 ? 1.03 : 0.97); }),
+      up: path(function (i, p) { return p * 1.005; })
+    };
+  }
+  /* 칸 내용: [진행 상태, 결과] — 결과는 굵게 */
+  function simText(r) {
+    var T = String(Math.round(r.tValue * 10) / 10), used = 'T ' + T + ' · 원금 ' + Math.round(r.usedPct) + '% 사용';
+    var back = r.exhaustDay + '일째 소진 → 리버스 ' + r.revDays + '일 → 복귀', p = pct(r.pnlPct / 100);
+    if (r.endDay) return [r.exhaustDay ? back : '소진 없음', r.endDay + '일째 회차 종료 ' + p];
+    if (r.reverse) return [r.exhaustDay + '일째 소진 → 리버스 진행 중', r.days + '일 뒤 평가 ' + p];
+    return [(r.exhaustDay ? back + ' · ' : '') + used, '평가 ' + p];
+  }
+  function fillSim() {
+    var g = root(); if (!g || !window.MHE || !MHE.simulate) return;
+    var P = simPaths(), R = {};
+    g.querySelectorAll('[data-sim]').forEach(function (el) {
+      var k = el.getAttribute('data-sim').split(':'), id = k[0] + k[1];
+      if (!P[k[0]]) return;
+      var r = R[id] || (R[id] = MHE.simulate({ ticker: 'TQQQ', splits: +k[1], totalCapital: 20000, lowerLocLines: 8, lowerLocShares: 1 }, P[k[0]]));
+      if (k[2] === 'pnl') { el.textContent = pct(r.pnlPct / 100); return; }
+      var t = simText(r), s = document.createElement('span'), b = document.createElement('span');
+      s.className = 'sim-s'; s.textContent = t[0]; b.className = 'sim-r'; b.textContent = t[1];
+      el.textContent = ''; el.appendChild(s); el.appendChild(b);
+    });
+  }
+  var filled = false;
+  function fillNumbers() {
+    if (filled || !root()) return; filled = true;
+    try { fillSim(); } catch (e) { if (window.console) console.error('[GUIDEBOOK] sim', e); }
+    if (window.mdLoad) window.mdLoad('etfcagr.json').then(fillMarket).catch(function () {});
+  }
   window.mhGuide = function (id) { bind(); go(id || 'mhg', !!id); };
+  window.mhGuideFill = { pct: pct, simPaths: simPaths, simText: simText, fillMarket: fillMarket };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind); else bind();
 })();
 

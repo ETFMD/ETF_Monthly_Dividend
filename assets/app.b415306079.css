@@ -1982,6 +1982,11 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .guide .g-tbl td { padding:7px 8px; border-bottom:1px solid var(--card-border); color:var(--text2); vertical-align:top; white-space:normal; min-width:0; word-break:keep-all; overflow-wrap:break-word; }
   .guide .g-tbl thead th { position:static; box-shadow:none; background:transparent; }
   .guide .g-tbl td:last-child { font-family:var(--mono); font-size:12px; color:var(--text); }
+  /* 가이드북 3-1 분할 수 비교 — 칸마다 '진행 상태'(작게) + '결과'(굵게) 두 줄 */
+  .guide .mhg-sim td, .guide .mhg-sim td:last-child { text-align:left; font-family:var(--font); font-size:12px; color:var(--text2); min-width:7.6em; }
+  .guide .mhg-sim td:first-child { min-width:8.4em; }
+  .mhg-sim .sim-s { display:block; color:var(--text3); font-size:11.5px; line-height:1.45; }
+  .mhg-sim .sim-r { display:block; margin-top:2px; font-weight:700; color:var(--text); font-family:var(--mono); word-break:keep-all; }
   .guide .g-tbl tr:last-child td { border-bottom:none; }
   .guide .g-cap { font-size:11.5px; line-height:1.7; color:var(--text3); margin:4px 0 14px; }
   .guide .g-cap:last-child { margin-bottom:0; }
