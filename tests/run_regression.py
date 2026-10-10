@@ -316,7 +316,13 @@ def main():
               ok('분야 거르기 · 늦은 순 정렬', medOk && rows.length > 5 && rows[0] >= rows[rows.length - 1], rows.slice(0, 3));
               document.querySelector('#jl-cats [data-cat="all"]').click(); document.querySelector('#jl-sort [data-v="asc"]').click(); await W(80);
               document.getElementById('jl-morebtn').click(); await W(100);
-              ok('더 보기', document.querySelectorAll('#jl-all .jl-row').length === 90, document.querySelectorAll('#jl-all .jl-row').length);
+              const nRows = () => document.querySelectorAll('#jl-all .jl-row').length, no1 = () => +(document.querySelector('#jl-all .jl-no') || {}).textContent;
+              ok('더 보기 (30 → 60줄, 페이지 1·2 함께 표시)', nRows() === 60 && document.querySelectorAll('#jl-pager .dv-pg.active').length === 2, nRows());
+              document.querySelector('#jl-pager .dv-pg[data-pg="3"]').click(); await W(100);
+              ok('페이지 3 → 61~90위만', nRows() === 30 && no1() === 61 && /61–90 \/ 776/.test(t('jl-pager')), [nRows(), no1(), t('jl-pager')]);
+              const gi = document.querySelector('#jl-pager .dv-pg-go input'); gi.value = 26; document.querySelector('#jl-pager .dv-pg-gobtn').click(); await W(150);
+              ok('번호 입력 이동(26쪽 = 마지막 26줄) · 다음 버튼 꺼짐', nRows() === 26 && no1() === 751 && document.getElementById('jl-morebtn').hidden && document.querySelector('#jl-pager [aria-label="다음 페이지"]').disabled, [nRows(), no1()]);
+              document.querySelector('#jl-pager .dv-pg[data-pg="1"]').click(); await W(100);
               const row = document.querySelectorAll('#jl-all .jl-row')[3]; row.click(); await W(150);
               ok('순위 줄을 누르면 그 직업 결과', t('jl-r-name') === row.dataset.job && location.hash === '#job=' + encodeURIComponent(row.dataset.job), [t('jl-r-name'), location.hash]);
               ok('은퇴 비교(4% 규칙)·공유 카드', /4% 규칙/.test(t('jl-cap')) && window.dcShareSpec && window.dcShareSpec['job-life'] && window.dcShareSpec['job-life'].title.indexOf(row.dataset.job) === 0, '');

@@ -14368,7 +14368,7 @@ if (typeof module !== 'undefined') module.exports = JL;
   }
   var NOW = (function () { var d = new Date(); return d.getFullYear() + d.getMonth() / 12; })();
   var SPN = { fast: '빠름', mid: '보통', slow: '느림' };
-  var cur = null, moved = null, ready = false, list = { cat: 'all', ord: 'asc', lim: 30 }, sugIdx = -1, sugs = [];
+  var cur = null, moved = null, ready = false, list = { cat: 'all', ord: 'asc', s: 1, e: 1 }, PER = 30, sugIdx = -1, sugs = [];
   function spd() { return seg('jl-spd') || 'mid'; }
   function setInputs(j) { $('jl-d').value = j.D; $('jl-p').value = j.P; $('jl-r').value = j.R; $('jl-j').value = j.J; setSeg('jl-l', j.L); }
   function custom(j) { return +$('jl-d').value !== j.D || +$('jl-p').value !== j.P || +$('jl-r').value !== j.R || +$('jl-j').value !== j.J || +(seg('jl-l') || 0) !== j.L; }
@@ -14423,10 +14423,12 @@ if (typeof module !== 'undefined') module.exports = JL;
       var r = e.target.closest('[data-job]');
       if (r && (r.classList.contains('jl-row') || r.classList.contains('jl-card'))) { pick(r.getAttribute('data-job'), true); return; }
       var c = e.target.closest('#jl-cats button[data-cat]');
-      if (c) { list.cat = c.getAttribute('data-cat'); list.lim = 30; drawLists(); return; }
+      if (c) { list.cat = c.getAttribute('data-cat'); list.s = list.e = 1; drawLists(); return; }
       var s = e.target.closest('#jl-sort button');
-      if (s) { list.ord = s.getAttribute('data-v'); list.lim = 30; drawLists(); return; }
-      if (e.target.closest('#jl-morebtn')) { list.lim += 60; drawLists(); }
+      if (s) { list.ord = s.getAttribute('data-v'); list.s = list.e = 1; drawLists(); return; }
+      if (e.target.closest('#jl-morebtn')) { list.e++; drawLists(); return; }
+      var pg = e.target.closest('#jl-pager .dv-pg[data-pg]');   /* 페이지 번호·‹ ›·번호 입력 이동(pgJump) — 그 페이지 30줄만 */
+      if (pg && !pg.disabled) { list.s = list.e = +pg.getAttribute('data-pg'); drawLists(); $('jl-all-h').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     });
     $('page-joblife').addEventListener('keydown', function (e) {   /* 순위 줄·카드: 키보드로도 열기 */
       var r = e.target.closest && e.target.closest('.jl-row[data-job]');
@@ -14447,12 +14449,33 @@ if (typeof module !== 'undefined') module.exports = JL;
     setH('jl-top', all.slice(0, 5).map(function (o, i) { return mark(JL.rowHTML(i + 1, o.x, o.r, NOW), o.x); }).join(''));
     var rows = list.cat === 'all' ? all : all.filter(function (o) { return o.x.c === list.cat; });
     if (list.ord === 'desc') rows = rows.slice().reverse();
-    var n = Math.min(list.lim, rows.length);
-    setH('jl-all', rows.slice(0, n).map(function (o, i) { return mark(JL.rowHTML(list.ord === 'desc' ? rows.length - i : i + 1, o.x, o.r, NOW), o.x); }).join(''));
-    setT('jl-shown', (list.cat === 'all' ? '전체' : JL.CAT[list.cat].name) + ' ' + rows.length + '개 중 ' + n + '개 · 속도 ' + SPN[sp]);
-    $('jl-morebtn').hidden = n >= rows.length;
+    var pages = Math.max(1, Math.ceil(rows.length / PER));
+    list.e = Math.min(Math.max(1, list.e), pages); list.s = Math.min(Math.max(1, list.s), list.e);
+    var a = (list.s - 1) * PER, b = Math.min(rows.length, list.e * PER);
+    setH('jl-all', rows.slice(a, b).map(function (o, i) { return mark(JL.rowHTML(list.ord === 'desc' ? rows.length - a - i : a + i + 1, o.x, o.r, NOW), o.x); }).join(''));
+    setT('jl-shown', (list.cat === 'all' ? '전체' : JL.CAT[list.cat].name) + ' ' + rows.length + '개 · 속도 ' + SPN[sp]);
+    $('jl-morebtn').hidden = b >= rows.length;
+    pager(rows.length, pages, a, b);
     document.querySelectorAll('#jl-cats button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-cat') === list.cat); });
     document.querySelectorAll('#jl-sort button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-v') === list.ord); });
+  }
+  /* 페이지 번호 (분배 일정 표와 같은 모양): ‹ 1 … 4 5 [6] 7 8 … 26 › [번호] 이동 — 더 보기로 이어 본 구간은 함께 표시 */
+  function pager(total, pages, a, b) {
+    var el = $('jl-pager');
+    if (pages <= 1) { el.hidden = true; el.innerHTML = ''; return; }
+    var cur = list.e, h = '', prev = 0;
+    h += '<button type="button" class="dv-pg" data-pg="' + (list.s - 1) + '"' + (list.s === 1 ? ' disabled' : '') + ' aria-label="이전 페이지">‹</button>';
+    for (var i = 1; i <= pages; i++) {
+      if (!(i === 1 || i === pages || Math.abs(i - cur) <= 2 || (i >= list.s && i <= list.e && list.e - list.s < 5))) continue;
+      if (i - prev > 1) h += '<span class="dv-pg-gap">…</span>';
+      var on = i >= list.s && i <= list.e;
+      h += '<button type="button" class="dv-pg' + (on ? ' active' : '') + '" data-pg="' + i + '"' + (i === cur ? ' aria-current="page"' : '') + '>' + i + '</button>';
+      prev = i;
+    }
+    h += '<button type="button" class="dv-pg" data-pg="' + (cur + 1) + '"' + (cur === pages ? ' disabled' : '') + ' aria-label="다음 페이지">›</button>';
+    if (window.pgJump) h += window.pgJump(pages, cur);
+    h += '<span class="dv-pg-info">' + (a + 1) + '–' + b + ' / ' + total + '개 직업</span>';
+    el.hidden = false; el.innerHTML = h;
   }
   function mark(html, x) { return html.replace('<li class="jl-row"', '<li class="jl-row' + (cur && cur.n === x.n ? ' cur' : '') + '" tabindex="0"'); }
 
