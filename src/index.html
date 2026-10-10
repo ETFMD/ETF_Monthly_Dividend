@@ -2237,43 +2237,130 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   /* 가이드북 3-1 분할 수 비교 — 칸마다 '진행 상태'(작게) + '결과'(굵게) 두 줄 */
   .guide .mhg-sim td, .guide .mhg-sim td:last-child { text-align:left; font-family:var(--font); font-size:12px; color:var(--text2); min-width:7.6em; }
   .guide .mhg-sim td:first-child { min-width:8.4em; }
-  /* [JOBLIFE] 나의 직업 수명 계산기 */
-  .jl-chips { display:flex; flex-wrap:wrap; gap:6px; margin:-4px 0 10px; }
-  .jl-chips button, .jl-rand, .jl-reset { border:1px solid var(--card-border); background:rgba(var(--fg-rgb),.03); color:var(--text2); font:inherit; font-size:12px; padding:5px 10px; border-radius:999px; cursor:pointer; }
-  .jl-chips button:hover, .jl-rand:hover, .jl-reset:hover { border-color:var(--accent); color:var(--accent); }
-  .jl-rand { margin:0 0 6px; } .jl-reset { margin-top:4px; }
-  .jl-adv { margin-top:12px; border-top:1px solid var(--card-border); padding-top:10px; }
-  .jl-adv > summary { cursor:pointer; font-size:13px; font-weight:700; color:var(--text); list-style:none; margin-bottom:10px; }
-  .jl-adv > summary::-webkit-details-marker { display:none; }
-  .jl-adv > summary::before { content:'▸ '; color:var(--accent); } .jl-adv[open] > summary::before { content:'▾ '; }
-  .jl-adv > summary small { display:block; font-weight:400; font-size:11.5px; color:var(--text3); margin-top:2px; }
+  /* [JOBLIFE] 나의 직업 수명 — 검색 한 번으로 끝나는 단순한 화면 */
+  .jl { max-width:880px; margin:0 auto; padding:8px 0 4px; }
+  .jl-hero { text-align:center; padding:28px 0 8px; }
+  .jl-kick { display:inline-block; margin:0 0 14px; font-size:12px; font-weight:700; color:var(--accent); background:rgba(49,130,246,.1); border-radius:999px; padding:5px 12px; }
+  .jl-h1 { margin:0 0 12px; font-size:clamp(24px, 5.2vw, 40px); line-height:1.3; font-weight:800; letter-spacing:-.02em; color:var(--text); word-break:keep-all; }
+  .jl-grad { background:linear-gradient(90deg, #fe9800, #f04452); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .jl-lead { margin:0 0 22px; font-size:15px; color:var(--text2); }
+  .jl-search { position:relative; max-width:620px; margin:0 auto; text-align:left; }
+  .jl-s-ico { position:absolute; left:18px; top:50%; transform:translateY(-50%); color:var(--text3); pointer-events:none; }
+  #jl-q { width:100%; box-sizing:border-box; height:60px; padding:0 96px 0 50px; border-radius:16px; border:1.5px solid var(--card-border); background:var(--bg2); color:var(--text); font:inherit; font-size:17px; font-weight:600; outline:none; box-shadow:0 6px 24px rgba(0,0,0,.06); -webkit-appearance:none; appearance:none; }
+  #jl-q::-webkit-search-cancel-button { display:none; }
+  #jl-q:focus { border-color:var(--accent); box-shadow:0 0 0 4px rgba(49,130,246,.14); }
+  #jl-q::placeholder { color:var(--text3); font-weight:500; }
+  .jl-enter { position:absolute; right:14px; top:50%; transform:translateY(-50%); font:600 11.5px var(--font); color:var(--text3); border:1px solid var(--card-border); border-radius:8px; padding:4px 8px; background:rgba(var(--fg-rgb),.03); pointer-events:none; }
+  .jl-sug { position:absolute; z-index:30; left:0; right:0; top:calc(100% + 6px); margin:0; padding:6px; list-style:none; background:var(--card); border:1px solid var(--card-border); border-radius:14px; box-shadow:0 12px 32px rgba(0,0,0,.14); max-height:360px; overflow-y:auto; background:var(--bg2); }
+  .jl-sug li { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; cursor:pointer; font-size:14.5px; color:var(--text); }
+  .jl-sug li small { margin-left:auto; font-size:11.5px; color:var(--text3); white-space:nowrap; }
+  .jl-sug li.on, .jl-sug li:hover { background:rgba(49,130,246,.1); }
+  .jl-sug li.none { cursor:default; color:var(--text3); font-size:13px; }
+  .jl-sug li.none:hover { background:none; }
+  .jl-or { margin:16px 0 0; font-size:13px; color:var(--text3); }
+  .jl-link { border:0; background:none; padding:0; font:inherit; font-weight:700; color:var(--accent); cursor:pointer; }
+  .jl-sec { margin-top:34px; }
+  .jl-h2 { margin:0 0 12px; font-size:19px; font-weight:800; color:var(--text); }
+  .jl-sub2 { margin:-6px 0 12px; font-size:12.5px; color:var(--text3); }
+  .jl-pop { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; }
+  .jl-card { display:flex; flex-direction:column; align-items:flex-start; gap:6px; min-width:0; text-align:left; border:1px solid var(--card-border); background:var(--card); border-radius:14px; padding:14px; cursor:pointer; font:inherit; color:var(--text); transition:border-color .15s, transform .15s; }
+  .jl-card:hover { border-color:var(--accent); transform:translateY(-1px); }
+  .jl-card .e { font-size:22px; line-height:1; }
+  .jl-card b { font-size:14px; font-weight:700; line-height:1.35; word-break:keep-all; }
+  .jl-card small { font-size:12px; color:var(--text3); }
+  .jl-card small em { font-style:normal; font-weight:800; font-family:var(--mono); color:var(--text); }
+  /* 결과 카드 */
+  .jl-res { margin-top:26px; background:var(--card); border:1.5px solid var(--card-border); border-radius:20px; padding:22px 22px 18px; scroll-margin-top:12px; }
+  .jl-res-top { display:flex; align-items:center; gap:12px; }
+  .jl-res-ico { width:46px; height:46px; flex-shrink:0; display:grid; place-items:center; font-size:24px; border-radius:14px; background:rgba(var(--fg-rgb),.05); }
+  .jl-res-nm { min-width:0; flex:1; }
+  .jl-res-nm p { margin:0; font-size:12px; color:var(--text3); }
+  .jl-res-nm h2 { margin:2px 0 0; font-size:20px; font-weight:800; color:var(--text); word-break:keep-all; }
+  .jl-x { border:0; background:rgba(var(--fg-rgb),.05); color:var(--text3); width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:13px; flex-shrink:0; }
+  .jl-res-k { margin:18px 0 2px; font-size:13px; color:var(--text2); }
+  .jl-big { margin:0; font-size:clamp(38px, 9vw, 56px); font-weight:900; letter-spacing:-.03em; line-height:1.15; font-family:var(--mono); color:var(--g, var(--text)); }
+  .jl-res-when { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:6px 0 0; font-size:14px; font-weight:600; color:var(--text2); }
+  .jl-g { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:800; color:var(--g); background:color-mix(in srgb, var(--g) 12%, transparent); border-radius:999px; padding:3px 9px; white-space:nowrap; }
+  .jl-g i { width:6px; height:6px; border-radius:50%; background:var(--g); }
+  .jl-why { margin:14px 0 0; display:flex; flex-direction:column; gap:6px; font-size:13px; color:var(--text2); line-height:1.6; }
+  .jl-why b { font-weight:700; } .jl-why .u b { color:#f04452; } .jl-why .d b { color:#1fa27a; }
+  .jl-tl { list-style:none; margin:16px 0 0; padding:0 0 0 18px; border-left:2px solid var(--card-border); display:flex; flex-direction:column; gap:10px; }
+  .jl-tl li { position:relative; font-size:13.5px; color:var(--text2); line-height:1.5; }
+  .jl-tl li::before { content:''; position:absolute; left:-24px; top:5px; width:10px; height:10px; border-radius:50%; background:var(--c, var(--text3)); box-shadow:0 0 0 3px var(--card); }
+  .jl-tl li b { color:var(--text); font-family:var(--mono); margin-right:6px; }
+  .jl-spd { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin:16px 0 0; font-size:12.5px; color:var(--text3); }
+  .jl-spd .mode-toggle { margin:0; }
+  .jl-spd .mode-btn { padding:6px 14px; font-size:12.5px; }
+  .jl-two { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px; margin-top:16px; }
+  .jl-two > div { background:rgba(var(--fg-rgb),.035); border-radius:12px; padding:12px 14px; min-width:0; }
+  .jl-t { margin:0 0 6px; font-size:12.5px; font-weight:800; color:var(--text); }
+  .jl-ul { margin:0; padding-left:16px; font-size:13px; line-height:1.75; color:var(--text2); }
+  .jl-rank { margin:12px 0 0; font-size:12.5px; color:var(--text3); }
+  .jl-more { margin-top:14px; border-top:1px solid var(--card-border); padding-top:12px; }
+  .jl-more > summary { cursor:pointer; list-style:none; font-size:14px; font-weight:700; color:var(--text); }
+  .jl-more > summary::-webkit-details-marker { display:none; }
+  .jl-more > summary::before { content:'▸ '; color:var(--accent); } .jl-more[open] > summary::before { content:'▾ '; }
+  .jl-more > summary small { display:block; margin:2px 0 0 14px; font-weight:400; font-size:11.5px; color:var(--text3); }
+  .jl-more[open] > summary { margin-bottom:12px; }
+  .jl-cap-in { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
+  .jl-cap-in .fc-field { margin-bottom:10px; min-width:0; }
+  .jl-cap-g { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; margin:4px 0 10px; }
+  .jl-cap-g > div { background:rgba(var(--fg-rgb),.035); border-radius:10px; padding:10px 12px; min-width:0; }
+  .jl-cap-g p { margin:0; font-size:11.5px; color:var(--text3); } .jl-cap-g b { display:block; font-family:var(--mono); font-size:15px; color:var(--text); margin:3px 0; overflow-wrap:anywhere; } .jl-cap-g small { font-size:11px; color:var(--text3); }
+  .jl-cap-v { margin:0 0 8px; font-size:13.5px; line-height:1.7; color:var(--text2); }
+  .jl-ok { color:#1fa27a; } .jl-bad { color:#f04452; }
+  .jl-cap-links { display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12.5px; margin:0; }
   .jl-lic { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); }
   .jl-lic .mode-btn { font-size:12px; padding-left:4px; padding-right:4px; min-width:0; white-space:nowrap; }
-  #jl-q { text-align:left; }
-  .jl-list { margin:0; padding-left:18px; font-size:13px; line-height:1.8; color:var(--text2); }
-  .jl-cmp-t td small { display:block; font-size:11px; color:var(--text3); }
-  .fc-table.jl-cmp-t { min-width:0; }
-  .fc-table.jl-cmp-t td, .fc-table.jl-cmp-t th { white-space:normal; word-break:keep-all; }
-  @media (max-width:420px) { .jl-lic { grid-template-columns:repeat(2, minmax(0,1fr)); } }
-  .jl-risk { display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; margin-top:10px; }
-  .jl-risk span { font-size:12px; font-weight:800; padding:4px 10px; border-radius:999px; border:1px solid; }
-  .jl-risk small { font-size:11.5px; color:var(--text3); }
-  .jl-verdict { margin-top:14px; font-size:13px; line-height:1.7; color:var(--text2); }
-  .jl-verdict:empty { display:none; }
-  .jl-ok { color:#1fa27a; } .jl-bad { color:#f04452; }
-  .jl-factors { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px 18px; }
-  .jl-f-h { display:flex; justify-content:space-between; gap:8px; font-size:12.5px; color:var(--text); }
-  .jl-f-h b { font-size:11.5px; white-space:nowrap; }
-  .jl-f-bar { height:6px; border-radius:6px; background:rgba(var(--fg-rgb),.08); overflow:hidden; margin:5px 0 3px; }
-  .jl-f-bar i { display:block; height:100%; border-radius:6px; }
-  .jl-f small { font-size:11px; color:var(--text3); }
-  .jl-two { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:16px; }
-  .jl-cap-g { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; margin:8px 0 12px; }
-  .jl-cap-g > div { background:rgba(var(--fg-rgb),.035); border-radius:10px; padding:10px 12px; min-width:0; }
-  .jl-cap-g p { margin:0; font-size:11.5px; color:var(--text3); } .jl-cap-g b { display:block; font-family:var(--mono); font-size:16px; color:var(--text); margin:3px 0; overflow-wrap:anywhere; } .jl-cap-g small { font-size:11px; color:var(--text3); }
-  .jl-cap-fire { font-size:13px; line-height:1.7; color:var(--text2); margin:0 0 8px; }
-  .jl-cap-links { display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12.5px; margin:0; }
-  @media (max-width:640px) { .jl-factors, .jl-two, .jl-cap-g { grid-template-columns:1fr; } }
+  .jl-chip, .jl-chips button { border:1px solid var(--card-border); background:rgba(var(--fg-rgb),.03); color:var(--text2); font:inherit; font-size:12.5px; font-weight:600; padding:6px 12px; border-radius:999px; cursor:pointer; white-space:nowrap; }
+  .jl-chip:hover, .jl-chips button:hover { border-color:var(--accent); color:var(--accent); }
+  .jl-chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+  .jl-chips button.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .jl-bar { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
+  .jl-bar-n { font-size:12px; color:var(--text3); }
+  .jl-sort { display:inline-flex; border:1px solid var(--card-border); border-radius:10px; overflow:hidden; }
+  .jl-sort { flex-shrink:0; } .jl-sort button { white-space:nowrap; border:0; background:transparent; color:var(--text2); font:inherit; font-size:12.5px; font-weight:700; padding:6px 14px; cursor:pointer; }
+  .jl-sort button + button { border-left:1px solid var(--card-border); }
+  .jl-sort button.on { background:var(--text); color:var(--bg, #fff); }
+  /* 순위 줄: # · 아이콘 · 직업 · 남은 기간 · 시점 · 위험도 */
+  .jl-head, .jl-row { display:grid; grid-template-columns:30px 30px minmax(0,1fr) 86px 96px 84px; align-items:center; gap:8px; }
+  .jl-head { padding:0 12px 6px; font-size:11.5px; font-weight:700; color:var(--text3); border-bottom:1px solid var(--card-border); }
+  .jl-rows { list-style:none; margin:0; padding:0; }
+  .jl-row { padding:11px 12px; border-bottom:1px solid var(--card-border); cursor:pointer; font-size:14px; color:var(--text); }
+  .jl-row:hover { background:rgba(49,130,246,.06); }
+  .jl-row.cur { background:rgba(49,130,246,.1); }
+  .jl-no { font-family:var(--mono); font-size:12.5px; color:var(--text3); text-align:right; }
+  .jl-ico { font-size:18px; text-align:center; }
+  .jl-nm { min-width:0; } .jl-nm b { display:block; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .jl-nm small { display:block; font-size:11.5px; color:var(--text3); }
+  .jl-yr { font-family:var(--mono); font-weight:800; font-size:14px; }
+  .jl-dt { font-size:12.5px; color:var(--text2); }
+  .jl-row .jl-g { justify-self:start; }
+  .jl-morebtn { display:block; width:100%; margin-top:12px; border:1px solid var(--card-border); background:var(--card); color:var(--text); font:inherit; font-size:14px; font-weight:700; border-radius:12px; padding:12px; cursor:pointer; }
+  .jl-morebtn:hover { border-color:var(--accent); color:var(--accent); }
+  .jl-read { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
+  .jl-rcard { background:rgba(var(--fg-rgb),.035); border-radius:14px; padding:16px; }
+  .jl-rcard h3 { margin:0 0 6px; font-size:14px; color:var(--text); }
+  .jl-rcard p { margin:0; font-size:13px; line-height:1.75; color:var(--text2); }
+  .jl .fc-notice { margin-top:22px; }
+  @media (max-width:760px) {
+    .jl-pop { grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .jl-read { grid-template-columns:1fr; }
+    .jl-head { display:none; }
+    .jl-chips { flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px; }
+    .jl-chips::-webkit-scrollbar { display:none; }
+    .jl-chips button { flex-shrink:0; }
+    .jl-row { grid-template-columns:24px 26px minmax(0,1fr) auto; grid-template-areas:"no ico nm yr" "no ico nm g"; row-gap:3px; padding:10px 6px; }
+    .jl-no { grid-area:no; } .jl-ico { grid-area:ico; } .jl-nm { grid-area:nm; } .jl-yr { grid-area:yr; justify-self:end; } .jl-row .jl-g { grid-area:g; justify-self:end; } .jl-dt { display:none; }
+  }
+  @media (max-width:560px) {
+    .jl-hero { padding-top:14px; }
+    #jl-q { height:54px; font-size:16px; padding-right:16px; }
+    .jl-enter { display:none; }
+    .jl-res { padding:18px 16px 14px; border-radius:16px; }
+    .jl-two, .jl-cap-g { grid-template-columns:1fr; }
+    .jl-cap-in { grid-template-columns:repeat(3, minmax(0,1fr)); gap:6px; }
+  }
+  @media (max-width:420px) { .jl-lic { grid-template-columns:repeat(2, minmax(0,1fr)); } .jl-cap-in { grid-template-columns:1fr 1fr; } .jl-cap-in .fc-field:last-child { grid-column:1 / -1; } }
   /* 3-6 실제 일봉 백테스트 (data/muhan_bt.json) */
   .mhbt-ctrl { display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; margin:12px 0 10px; font-size:12px; color:var(--text3); }
   .mhbt-seg { display:inline-flex; border:1px solid var(--card-border); border-radius:10px; overflow:hidden; }
@@ -7109,52 +7196,85 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   </div><!-- /page-houseyears -->
   <!-- ───────────────────────────────────────────── page-joblife ── -->
   <div class="app-page" id="page-joblife">
-    <div class="header"><div class="header-left">
-      <span class="badge">JOB LIFESPAN vs AI</span>
-      <h1>나의 <span>직업 수명</span> 계산기</h1>
-      <p class="subtitle"><b>잃어버린 내 밥그릇, AI(SI)가 당신을 대체하기까지 몇 년 남았을까요?</b><br>직업을 고르면 AI·로봇이 그 일을 대신해 기업이 사람을 덜 뽑기 시작하는 시점을 연구 자료 기반 모델로 계산하고, 내 은퇴 나이와 비교해 그 공백을 메울 자본소득까지 보여 줍니다.</p>
-    </div></div>
-    <div class="layout">
-      <div class="card fc-in">
-<label class="fc-field"><span>내 직업 찾기 <small>이름·별칭으로 검색 (예: 개발자, 공무원, 간호사)</small></span><span class="fc-input"><input type="text" id="jl-q" list="jl-list" data-fc="jl" data-raw autocomplete="off" placeholder="직업 이름을 입력하세요"></span></label>
-<datalist id="jl-list"></datalist>
-<label class="fc-field"><span>또는 분야에서 고르기 <small>163개 직업 · 16개 분야</small></span><select id="jl-job" data-fc="jl"></select></label>
-<div class="jl-chips" id="jl-chips" aria-label="많이 찾는 직업"></div>
-<button type="button" class="jl-rand" id="jl-rand">🎲 아무 직업이나 둘러보기</button>
-<p class="fc-sec-title">나와 비교하기</p>
-<div class="fc-row2"><label class="fc-field"><span>지금 나이</span><span class="fc-input"><input type="text" inputmode="numeric" id="jl-age" value="35" data-fc="jl"><em>세</em></span></label>
-<label class="fc-field"><span>은퇴하고 싶은 나이</span><span class="fc-input"><input type="text" inputmode="numeric" id="jl-ret" value="65" data-fc="jl"><em>세</em></span></label></div>
-<label class="fc-field"><span>은퇴 후 월 생활비 <small>지금 돈 가치 기준</small></span><span class="fc-amt"><span class="fc-input"><input type="text" inputmode="decimal" id="jl-cost" value="2,500,000" data-fc="jl" data-unit="won"></span><span class="unit-tabs"><button type="button" class="unit-btn" data-fc-unit="jl-cost" data-unit="man">만원</button><button type="button" class="unit-btn active" data-fc-unit="jl-cost" data-unit="won">원</button></span></span></label>
-<div class="fc-field"><span>AI 발전·도입 속도 <small>McKinsey(2023): 지금 업무의 절반 자동화 2030~2060년, 중간 2045년</small></span><div class="mode-toggle fc-seg" data-name="jl-spd"><button type="button" class="mode-btn" data-v="fast">빠름 (2035)</button><button type="button" class="mode-btn active" data-v="mid">보통 (2045)</button><button type="button" class="mode-btn" data-v="slow">느림 (2060)</button></div></div>
-<details class="jl-adv" id="jl-adv"><summary>내 실제 업무에 맞게 조정하기 <small>같은 직업이라도 하는 일이 다르면 결과가 달라집니다</small></summary>
-<label class="fc-field"><span>컴퓨터·문서·데이터로 하는 일 <b id="jl-d-v">—</b></span><input type="range" id="jl-d" min="0" max="10" step="1" value="5" data-fc="jl"></label>
-<label class="fc-field"><span>몸을 쓰는 현장 일 <b id="jl-p-v">—</b></span><input type="range" id="jl-p" min="0" max="10" step="1" value="3" data-fc="jl"></label>
-<p class="fc-note" id="jl-h-v" style="margin:-6px 0 12px;">—</p>
-<label class="fc-field"><span>일이 매번 비슷한 정도 <b id="jl-r-v">—</b></span><input type="range" id="jl-r" min="1" max="5" step="1" value="3" data-fc="jl"></label>
-<label class="fc-field"><span>판단·창의·책임이 필요한 정도 <b id="jl-j-v">—</b></span><input type="range" id="jl-j" min="1" max="5" step="1" value="3" data-fc="jl"></label>
-<div class="fc-field"><span>면허·규제</span><div class="mode-toggle fc-seg jl-lic" data-name="jl-l"><button type="button" class="mode-btn" data-v="0">없음</button><button type="button" class="mode-btn" data-v="1">자격 우대</button><button type="button" class="mode-btn" data-v="2">면허 필수</button><button type="button" class="mode-btn" data-v="3">독점 면허</button></div></div>
-<button type="button" class="jl-reset" id="jl-reset">직업 기본값으로 되돌리기</button>
-</details>
-      </div>
-      <div>
-<div class="card fc-hero jl-hero" id="jl-hero"><p class="fc-hero-label" id="jl-label">직업을 고르세요</p><p class="fc-hero-val" id="jl-val">—</p><p class="fc-hero-sub" id="jl-sub">AI가 이 일을 대신해 기업이 사람을 덜 뽑기 시작하기까지 남은 시간</p><div class="jl-risk" id="jl-risk"></div><div class="fc-kpis"><div><p>채용 감소 시작</p><b id="jl-k1">—</b></div><div><p>일의 절반이 대체</p><b id="jl-k2">—</b></div><div><p>내 은퇴</p><b id="jl-k3">—</b></div></div><div id="jl-verdict" class="jl-verdict"></div></div>
-<div class="card" style="margin-top:16px;"><p class="card-title" style="margin-bottom:6px;">AI·로봇이 대신하는 업무 비중 (예상)</p><p class="fc-note" style="margin:0 0 10px;">기업이 실제로 사람 대신 AI·로봇을 쓰는 업무 비중 · 25%를 넘으면 채용 감소, 50%를 넘으면 일의 절반이 대체된 것으로 봅니다</p><div class="chart-wrap"><canvas id="jl-chart" role="img" aria-label="연도별 AI 대체 업무 비중 그래프"></canvas></div></div>
-<div class="card" style="margin-top:16px;"><p class="card-title" style="margin-bottom:12px;">무엇이 빠르게, 무엇이 늦게 만드나</p><div id="jl-factors" class="jl-factors"></div></div>
-<div class="card" style="margin-top:16px;"><div class="jl-two"><div><p class="card-title" style="margin-bottom:8px;">AI가 먼저 가져갈 일</p><ul class="jl-list" id="jl-lose"></ul></div><div><p class="card-title" style="margin-bottom:8px;">사람에게 남는 일</p><ul class="jl-list" id="jl-keep"></ul></div></div></div>
-<div class="card jl-cap" style="margin-top:16px;"><p class="card-title" style="margin-bottom:6px;">밥그릇이 사라지기 전에 — 자본소득 준비</p><div id="jl-cap"></div></div>
-<div class="card" style="margin-top:16px;"><p class="card-title" style="margin-bottom:4px;">같은 분야 직업과 비교</p><p class="fc-note" id="jl-cmp-sub" style="margin:0 0 10px;">—</p><div class="table-scroll"><table class="cagr-table fc-table jl-cmp-t"><thead><tr><th>직업</th><th>채용 감소 시작</th><th>절반 대체</th></tr></thead><tbody id="jl-cmp"></tbody></table></div></div>
-<div class="notice fc-notice">※ 이 계산은 특정 사람의 해고 시점을 예측하는 것이 아니라, 직업의 업무 구성(화면 일·현장 일·대면 일, 반복성, 판단, 면허)을 바탕으로 한 <b>시나리오 모델</b>입니다. ‘채용 감소 시작’은 직업이 사라지는 날이 아니라, 기업이 그 일에 사람을 덜 뽑기 시작하는 때를 뜻합니다. 진로·재무 상담이 아니며, 입력값은 저장하거나 전송하지 않습니다.<br>※ 기준: 한국은행 「AI와 노동시장 변화」(2023) AI 노출 직업, ILO 「Generative AI and Jobs」(2025) 노출 등급, Microsoft Research 「Working with AI」(2025) 직업별 AI 적용성, McKinsey 「The economic potential of generative AI」(2023) 자동화 시점 — 이 자료들의 방향을 직업 163개의 업무 구성 값으로 옮겨 계산했습니다(아래 ‘계산 원리’).</div>
-      </div>
+    <div class="jl">
+      <section class="jl-hero">
+        <p class="jl-kick">나의 직업 수명 · 한국 <span id="jl-n">776</span>개 직업</p>
+        <h1 class="jl-h1">잃어버린 내 밥그릇,<br>AI(SI)가 당신을 대체하기까지 <span class="jl-grad">몇 년</span> 남았을까요?</h1>
+        <p class="jl-lead">직업을 입력하면 바로 내 숫자가 나와요.</p>
+        <div class="jl-search" id="jl-search">
+          <svg class="jl-s-ico" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6.2" stroke="currentColor" stroke-width="1.8"/><path d="M13.6 13.6L18 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <input type="search" id="jl-q" autocomplete="off" spellcheck="false" enterkeyhint="search" placeholder="직업 검색 — 소프트웨어 개발자" aria-label="직업 검색" role="combobox" aria-expanded="false" aria-controls="jl-sug" aria-autocomplete="list">
+          <kbd class="jl-enter" aria-hidden="true">Enter ↵</kbd>
+          <ul class="jl-sug" id="jl-sug" role="listbox" hidden></ul>
+        </div>
+        <p class="jl-or">검색 대신 둘러보기 · <button type="button" class="jl-link" id="jl-rand">🎲 랜덤 직업 살펴보기</button></p>
+      </section>
+
+      <section class="jl-sec" aria-labelledby="jl-pop-h">
+        <h2 class="jl-h2" id="jl-pop-h">많이 찾는 직업</h2>
+        <div class="jl-pop" id="jl-pop"><!-- [JL-SNAP:pop] --><button type="button" class="jl-card" data-job="소프트웨어 개발자"><span class="e" aria-hidden="true">💻</span><b>소프트웨어 개발자</b><small><em>5년 8개월</em> 남음</small></button><button type="button" class="jl-card" data-job="일반행정 공무원"><span class="e" aria-hidden="true">⚖️</span><b>일반행정 공무원</b><small><em>5년 3개월</em> 남음</small></button><button type="button" class="jl-card" data-job="중·고등학교 교사"><span class="e" aria-hidden="true">🏫</span><b>중·고등학교 교사</b><small><em>17년</em> 남음</small></button><button type="button" class="jl-card" data-job="간호사"><span class="e" aria-hidden="true">🩺</span><b>간호사</b><small><em>27년</em> 남음</small></button><button type="button" class="jl-card" data-job="공인회계사"><span class="e" aria-hidden="true">💰</span><b>공인회계사</b><small><em>8년 5개월</em> 남음</small></button><button type="button" class="jl-card" data-job="그래픽 디자이너"><span class="e" aria-hidden="true">🎨</span><b>그래픽 디자이너</b><small><em>4년 11개월</em> 남음</small></button><button type="button" class="jl-card" data-job="마케터"><span class="e" aria-hidden="true">📣</span><b>마케터</b><small><em>5년 2개월</em> 남음</small></button><button type="button" class="jl-card" data-job="의사(일반의·전공의)"><span class="e" aria-hidden="true">🩺</span><b>의사(일반의·전공의)</b><small><em>17년</em> 남음</small></button><!-- [/JL-SNAP:pop] --></div>
+      </section>
+
+      <section class="jl-res" id="jl-res" hidden aria-live="polite">
+        <div class="jl-res-top"><span class="jl-res-ico" id="jl-r-ico"></span><div class="jl-res-nm"><p id="jl-r-cat"></p><h2 id="jl-r-name"></h2></div><button type="button" class="jl-x" id="jl-close" aria-label="결과 닫기">✕</button></div>
+        <p class="jl-res-k">AI가 이 일을 대신해 사람을 덜 뽑기 시작하기까지</p>
+        <p class="jl-big" id="jl-r-big">—</p>
+        <p class="jl-res-when"><span id="jl-r-when"></span> <span id="jl-r-badge"></span></p>
+        <div class="jl-why" id="jl-r-why"></div>
+        <ol class="jl-tl" id="jl-r-tl"></ol>
+        <div class="jl-spd"><span>AI 발전 속도</span><div class="mode-toggle fc-seg" data-name="jl-spd"><button type="button" class="mode-btn" data-v="fast">빠름</button><button type="button" class="mode-btn active" data-v="mid">보통</button><button type="button" class="mode-btn" data-v="slow">느림</button></div></div>
+        <div class="jl-two"><div><p class="jl-t">AI가 먼저 가져갈 일</p><ul class="jl-ul" id="jl-r-lose"></ul></div><div><p class="jl-t">사람에게 남는 일</p><ul class="jl-ul" id="jl-r-keep"></ul></div></div>
+        <p class="jl-rank" id="jl-r-rank"></p>
+        <details class="jl-more" id="jl-cap-d" open><summary>내 은퇴와 비교하기 <small>밥그릇이 먼저 끝나면, 메워야 할 자본소득</small></summary>
+          <div class="jl-cap-in">
+            <label class="fc-field"><span>지금 나이</span><span class="fc-input"><input type="text" inputmode="numeric" id="jl-age" value="35" data-fc="jl"><em>세</em></span></label>
+            <label class="fc-field"><span>은퇴 나이</span><span class="fc-input"><input type="text" inputmode="numeric" id="jl-ret" value="65" data-fc="jl"><em>세</em></span></label>
+            <label class="fc-field"><span>월 생활비</span><span class="fc-input"><input type="text" inputmode="numeric" id="jl-cost" value="250" data-fc="jl"><em>만원</em></span></label>
+          </div>
+          <div id="jl-cap"></div>
+        </details>
+        <details class="jl-more" id="jl-adv"><summary>내 일에 맞게 조정하기 <small>같은 직업이라도 하는 일이 다르면 결과가 달라집니다</small></summary>
+          <label class="fc-field"><span>컴퓨터·문서·데이터로 하는 일 <b id="jl-d-v">—</b></span><input type="range" id="jl-d" min="0" max="10" step="1" value="5" data-fc="jl"></label>
+          <label class="fc-field"><span>몸을 쓰는 현장 일 <b id="jl-p-v">—</b></span><input type="range" id="jl-p" min="0" max="10" step="1" value="3" data-fc="jl"></label>
+          <p class="fc-note" id="jl-h-v" style="margin:-6px 0 12px;">—</p>
+          <label class="fc-field"><span>일이 매번 비슷한 정도 <b id="jl-r-v">—</b></span><input type="range" id="jl-r" min="1" max="5" step="1" value="3" data-fc="jl"></label>
+          <label class="fc-field"><span>판단·창의·책임이 필요한 정도 <b id="jl-j-v">—</b></span><input type="range" id="jl-j" min="1" max="5" step="1" value="3" data-fc="jl"></label>
+          <div class="fc-field"><span>면허·규제</span><div class="mode-toggle fc-seg jl-lic" data-name="jl-l"><button type="button" class="mode-btn" data-v="0">없음</button><button type="button" class="mode-btn" data-v="1">자격 우대</button><button type="button" class="mode-btn" data-v="2">면허 필수</button><button type="button" class="mode-btn" data-v="3">독점 면허</button></div></div>
+          <button type="button" class="jl-chip" id="jl-reset">직업 기본값으로 되돌리기</button>
+        </details>
+      </section>
+
+      <section class="jl-sec" aria-labelledby="jl-top-h">
+        <h2 class="jl-h2" id="jl-top-h">가장 먼저 대체되는 직업 TOP 5</h2>
+        <ol class="jl-rows" id="jl-top"><!-- [JL-SNAP:top] --><li class="jl-row" data-job="고객 데이터 관리자"><span class="jl-no">1</span><span class="jl-ico" aria-hidden="true">📄</span><span class="jl-nm"><b>고객 데이터 관리자</b><small>사무·인사</small></span><span class="jl-yr">10개월</span><span class="jl-dt">2027년 7월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="광고 운영 담당자"><span class="jl-no">2</span><span class="jl-ico" aria-hidden="true">📣</span><span class="jl-nm"><b>광고 운영 담당자</b><small>영업·마케팅</small></span><span class="jl-yr">10개월</span><span class="jl-dt">2027년 7월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="교정·교열원"><span class="jl-no">3</span><span class="jl-ico" aria-hidden="true">📰</span><span class="jl-nm"><b>교정·교열원</b><small>미디어·콘텐츠</small></span><span class="jl-yr">10개월</span><span class="jl-dt">2027년 7월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="급여 담당자"><span class="jl-no">4</span><span class="jl-ico" aria-hidden="true">💰</span><span class="jl-nm"><b>급여 담당자</b><small>금융·회계</small></span><span class="jl-yr">10개월</span><span class="jl-dt">2027년 7월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="데이터 라벨러"><span class="jl-no">5</span><span class="jl-ico" aria-hidden="true">💻</span><span class="jl-nm"><b>데이터 라벨러</b><small>IT·개발/데이터</small></span><span class="jl-yr">10개월</span><span class="jl-dt">2027년 7월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><!-- [/JL-SNAP:top] --></ol>
+      </section>
+
+      <section class="jl-sec" aria-labelledby="jl-all-h">
+        <h2 class="jl-h2" id="jl-all-h">누가 먼저 대체될까요?</h2>
+        <p class="jl-sub2"><span id="jl-cnt">776</span>개 직업 · 분야를 고르고, 누르면 그 직업 결과가 나와요</p>
+        <div class="jl-chips" id="jl-cats"><!-- [JL-SNAP:cats] --><button type="button" class="on" data-cat="all">전체</button><button type="button" data-cat="it">💻 IT·개발/데이터</button><button type="button" data-cat="design">🎨 디자인</button><button type="button" data-cat="media">📰 미디어·콘텐츠</button><button type="button" data-cat="art">🎤 예술·엔터</button><button type="button" data-cat="mgmt">📊 경영·기획</button><button type="button" data-cat="fin">💰 금융·회계</button><button type="button" data-cat="sales">📣 영업·마케팅</button><button type="button" data-cat="office">📄 사무·인사</button><button type="button" data-cat="law">⚖️ 법률·공공</button><button type="button" data-cat="edu">🏫 교육</button><button type="button" data-cat="med">🩺 의료·보건</button><button type="button" data-cat="care">🤝 돌봄·복지</button><button type="button" data-cat="eng">🔬 공학</button><button type="button" data-cat="build">🔧 건설·기술직</button><button type="button" data-cat="mfg">🏭 제조·생산</button><button type="button" data-cat="trans">🚚 운송·물류</button><button type="button" data-cat="svc">🍳 서비스·외식</button><button type="button" data-cat="beauty">💇 뷰티·헬스</button><button type="button" data-cat="agri">🌾 농림어업</button><button type="button" data-cat="safety">🚓 안전·군·경</button><button type="button" data-cat="sports">⚽ 스포츠</button><!-- [/JL-SNAP:cats] --></div>
+        <div class="jl-bar"><div class="jl-sort" id="jl-sort"><button type="button" class="on" data-v="asc">빠른 순</button><button type="button" data-v="desc">늦은 순</button></div><span class="jl-bar-n" id="jl-shown"></span></div>
+        <div class="jl-head" aria-hidden="true"><span>#</span><span></span><span>직업</span><span>남은 기간</span><span>시점</span><span>AI 위험도</span></div>
+        <ol class="jl-rows" id="jl-all"><!-- [JL-SNAP:all] --><li class="jl-row" data-job="고객 데이터 관리자"><span class="jl-no">1</span><span class="jl-ico" aria-hidden="true">📄</span><span class="jl-nm"><b>고객 데이터 관리자</b><small>사무·인사</small></span><span class="jl-yr">10개월</span><span class="jl-dt">2027년 7월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="광고 운영 담당자"><span class="jl-no">2</span><span class="jl-ico" aria-hidden="true">📣</span><span class="jl-nm"><b>광고 운영 담당자</b><small>영업·마케팅</small></span><span class="jl-yr">10개월</span><span class="jl-dt">2027년 7월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="교정·교열원"><span class="jl-no">3</span><span class="jl-ico" aria-hidden="true">📰</span><span class="jl-nm"><b>교정·교열원</b><small>미디어·콘텐츠</small></span><span class="jl-yr">10개월</span><span class="jl-dt">2027년 7월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="급여 담당자"><span class="jl-no">4</span><span class="jl-ico" aria-hidden="true">💰</span><span class="jl-nm"><b>급여 담당자</b><small>금융·회계</small></span><span class="jl-yr">10개월</span><span class="jl-dt">2027년 7월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="데이터 라벨러"><span class="jl-no">5</span><span class="jl-ico" aria-hidden="true">💻</span><span class="jl-nm"><b>데이터 라벨러</b><small>IT·개발/데이터</small></span><span class="jl-yr">10개월</span><span class="jl-dt">2027년 7월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="데이터 입력원"><span class="jl-no">6</span><span class="jl-ico" aria-hidden="true">📄</span><span class="jl-nm"><b>데이터 입력원</b><small>사무·인사</small></span><span class="jl-yr">10개월</span><span class="jl-dt">2027년 7월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="문서 작성원"><span class="jl-no">7</span><span class="jl-ico" aria-hidden="true">📄</span><span class="jl-nm"><b>문서 작성원</b><small>사무·인사</small></span><span class="jl-yr">10개월</span><span class="jl-dt">2027년 7월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="배너·상세페이지 디자이너"><span class="jl-no">8</span><span class="jl-ico" aria-hidden="true">🎨</span><span class="jl-nm"><b>배너·상세페이지 디자이너</b><small>디자인</small></span><span class="jl-yr">10개월</span><span class="jl-dt">2027년 7월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="속기사"><span class="jl-no">9</span><span class="jl-ico" aria-hidden="true">📰</span><span class="jl-nm"><b>속기사</b><small>미디어·콘텐츠</small></span><span class="jl-yr">10개월</span><span class="jl-dt">2027년 7월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="웹 퍼블리셔"><span class="jl-no">10</span><span class="jl-ico" aria-hidden="true">💻</span><span class="jl-nm"><b>웹 퍼블리셔</b><small>IT·개발/데이터</small></span><span class="jl-yr">10개월</span><span class="jl-dt">2027년 7월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="자막 제작자"><span class="jl-no">11</span><span class="jl-ico" aria-hidden="true">📰</span><span class="jl-nm"><b>자막 제작자</b><small>미디어·콘텐츠</small></span><span class="jl-yr">10개월</span><span class="jl-dt">2027년 7월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="증권 사무원"><span class="jl-no">12</span><span class="jl-ico" aria-hidden="true">💰</span><span class="jl-nm"><b>증권 사무원</b><small>금융·회계</small></span><span class="jl-yr">10개월</span><span class="jl-dt">2027년 7월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="회의록 작성원"><span class="jl-no">13</span><span class="jl-ico" aria-hidden="true">📄</span><span class="jl-nm"><b>회의록 작성원</b><small>사무·인사</small></span><span class="jl-yr">10개월</span><span class="jl-dt">2027년 7월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="CAD 도면 작성원"><span class="jl-no">14</span><span class="jl-ico" aria-hidden="true">🎨</span><span class="jl-nm"><b>CAD 도면 작성원</b><small>디자인</small></span><span class="jl-yr">11개월</span><span class="jl-dt">2027년 9월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="게임 QA 테스터"><span class="jl-no">15</span><span class="jl-ico" aria-hidden="true">💻</span><span class="jl-nm"><b>게임 QA 테스터</b><small>IT·개발/데이터</small></span><span class="jl-yr">11개월</span><span class="jl-dt">2027년 9월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="경리"><span class="jl-no">16</span><span class="jl-ico" aria-hidden="true">💰</span><span class="jl-nm"><b>경리</b><small>금융·회계</small></span><span class="jl-yr">11개월</span><span class="jl-dt">2027년 9월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="급여·복리후생 담당자"><span class="jl-no">17</span><span class="jl-ico" aria-hidden="true">📄</span><span class="jl-nm"><b>급여·복리후생 담당자</b><small>사무·인사</small></span><span class="jl-yr">11개월</span><span class="jl-dt">2027년 9월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="무역 사무원"><span class="jl-no">18</span><span class="jl-ico" aria-hidden="true">📄</span><span class="jl-nm"><b>무역 사무원</b><small>사무·인사</small></span><span class="jl-yr">11개월</span><span class="jl-dt">2027년 9월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="물류 사무원"><span class="jl-no">19</span><span class="jl-ico" aria-hidden="true">📄</span><span class="jl-nm"><b>물류 사무원</b><small>사무·인사</small></span><span class="jl-yr">11개월</span><span class="jl-dt">2027년 9월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="법률 사무원"><span class="jl-no">20</span><span class="jl-ico" aria-hidden="true">📄</span><span class="jl-nm"><b>법률 사무원</b><small>사무·인사</small></span><span class="jl-yr">11개월</span><span class="jl-dt">2027년 9월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="보안 관제 요원"><span class="jl-no">21</span><span class="jl-ico" aria-hidden="true">💻</span><span class="jl-nm"><b>보안 관제 요원</b><small>IT·개발/데이터</small></span><span class="jl-yr">11개월</span><span class="jl-dt">2027년 9월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="보험 사무원"><span class="jl-no">22</span><span class="jl-ico" aria-hidden="true">💰</span><span class="jl-nm"><b>보험 사무원</b><small>금융·회계</small></span><span class="jl-yr">11개월</span><span class="jl-dt">2027년 9월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="사무 보조원"><span class="jl-no">23</span><span class="jl-ico" aria-hidden="true">📄</span><span class="jl-nm"><b>사무 보조원</b><small>사무·인사</small></span><span class="jl-yr">11개월</span><span class="jl-dt">2027년 9월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="사무 행정 아르바이트"><span class="jl-no">24</span><span class="jl-ico" aria-hidden="true">📄</span><span class="jl-nm"><b>사무 행정 아르바이트</b><small>사무·인사</small></span><span class="jl-yr">11개월</span><span class="jl-dt">2027년 9월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="세무 사무원"><span class="jl-no">25</span><span class="jl-ico" aria-hidden="true">💰</span><span class="jl-nm"><b>세무 사무원</b><small>금융·회계</small></span><span class="jl-yr">11개월</span><span class="jl-dt">2027년 9월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="소프트웨어 테스터(QA)"><span class="jl-no">26</span><span class="jl-ico" aria-hidden="true">💻</span><span class="jl-nm"><b>소프트웨어 테스터(QA)</b><small>IT·개발/데이터</small></span><span class="jl-yr">11개월</span><span class="jl-dt">2027년 9월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="웹마스터"><span class="jl-no">27</span><span class="jl-ico" aria-hidden="true">💻</span><span class="jl-nm"><b>웹마스터</b><small>IT·개발/데이터</small></span><span class="jl-yr">11개월</span><span class="jl-dt">2027년 9월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="유튜브 편집자"><span class="jl-no">28</span><span class="jl-ico" aria-hidden="true">📰</span><span class="jl-nm"><b>유튜브 편집자</b><small>미디어·콘텐츠</small></span><span class="jl-yr">11개월</span><span class="jl-dt">2027년 9월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="의료 사무원"><span class="jl-no">29</span><span class="jl-ico" aria-hidden="true">📄</span><span class="jl-nm"><b>의료 사무원</b><small>사무·인사</small></span><span class="jl-yr">11개월</span><span class="jl-dt">2027년 9월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><li class="jl-row" data-job="항공권 발권원"><span class="jl-no">30</span><span class="jl-ico" aria-hidden="true">🍳</span><span class="jl-nm"><b>항공권 발권원</b><small>서비스·외식</small></span><span class="jl-yr">11개월</span><span class="jl-dt">2027년 9월</span><span class="jl-g" style="--g:#f04452"><i></i>매우 높음</span></li><!-- [/JL-SNAP:all] --></ol>
+        <button type="button" class="jl-morebtn" id="jl-morebtn">더 보기</button>
+      </section>
+
+      <section class="jl-sec jl-read">
+        <div class="jl-rcard"><h3>이 숫자, 이렇게 읽어 주세요</h3><p><b>남은 기간</b>은 직업이 사라지는 날이 아니라, AI·로봇이 그 일의 4분의 1을 실제로 맡아 <b>기업이 사람을 덜 뽑기 시작하는 때</b>까지입니다. 이미 일하는 사람보다 신입 자리와 임금 상승이 먼저 줄어듭니다.</p></div>
+        <div class="jl-rcard"><h3>날짜는 이렇게 정했습니다</h3><p>직업마다 화면 일·현장 일·사람을 상대하는 일의 비중, 반복성, 판단, 면허를 정하고, 일마다 AI·로봇이 해낼 수 있게 되는 시점과 기업 도입·규제 지연을 더했습니다. 전체 평균이 McKinsey(2023)의 ‘업무 절반 자동화’ 시나리오(빠름 2035 · 보통 2045 · 느림 2060)에 맞도록 맞췄습니다.</p></div>
+        <div class="jl-rcard"><h3>이 숫자가 말하지 않는 것</h3><p>내가 회사에서 실제로 하는 일, 경력, 지역, 회사 규모는 반영하지 못합니다. 결과가 다르다고 느끼면 <b>내 일에 맞게 조정하기</b>로 바꿔 보세요. 날짜 하나보다 ‘무엇이 내 일을 빠르게 대체하고 무엇이 지켜 주는지’를 보는 데 쓰세요.</p></div>
+      </section>
+      <div class="notice fc-notice">※ 특정 사람의 해고 시점을 예측하는 것이 아니라 직업의 업무 구성을 바탕으로 한 <b>시나리오 모델</b>입니다. 직업 목록과 값은 한국직업사전 직무 개요 수준에서 디코딩 자본주의가 직접 정했으며, 진로·재무 상담이 아닙니다. 입력값은 저장하거나 전송하지 않습니다.<br>※ 근거: 한국은행 「AI와 노동시장 변화」(2023) · ILO 「Generative AI and Jobs」(2025) · Microsoft Research 「Working with AI」(2025) · McKinsey 「The economic potential of generative AI」(2023)</div>
     </div>
     <!-- [GUIDE:joblife] 계산 원리 · 예시 · 자주 묻는 질문 (검색엔진·이용자용 설명글) -->
     <section class="guide" aria-labelledby="g-joblife-h">
       <h2 id="g-joblife-h">잃어버린 내 밥그릇, AI(SI)가 당신을 대체하기까지 몇 년 남았을까요?</h2>
-      <p class="g-lead">AI는 이미 번역·상담·코딩·문서 작업을 사람보다 빠르게 해내고 있고, 로봇은 공장과 창고를 지나 거리와 집 안으로 들어오고 있습니다. 문제는 “언젠가”가 아니라 “내 직업은 언제”입니다. 이 계산기는 직업을 화면 일·현장 일·사람을 상대하는 일로 나누고, 각 일을 AI·로봇이 해낼 수 있게 되는 시점과 기업이 실제로 도입하는 데 걸리는 시간, 면허·규제가 늦추는 기간을 더해 <b>내 밥그릇의 남은 수명</b>을 계산합니다. 그리고 그 수명이 내 은퇴보다 먼저 끝난다면, 노동소득이 끊긴 공백을 메울 <b>자본소득</b>을 얼마나 준비해야 하는지까지 보여 줍니다. 노동만으로 버티는 시대가 짧아질수록, 내 돈이 나 대신 일하게 만드는 준비가 빨라야 합니다.</p>
+      <p class="g-lead">AI는 이미 번역·상담·코딩·문서 작업을 사람보다 빠르게 해내고 있고, 로봇은 공장과 창고를 지나 거리와 집 안으로 들어오고 있습니다. 문제는 “언젠가”가 아니라 “내 직업은 언제”입니다. 나의 직업 수명은 한국 776개 직업을 21개 분야로 나누고, 직업마다 화면 일·현장 일·사람을 상대하는 일의 비중과 반복성·판단·면허를 정해, AI·로봇이 그 일을 해낼 수 있게 되는 시점과 기업이 실제로 도입하는 데 걸리는 시간을 더해 <b>내 밥그릇의 남은 수명</b>을 보여 줍니다. 그 수명이 내 은퇴보다 먼저 끝난다면, 노동소득이 끊긴 공백을 메울 <b>자본소득</b>을 얼마나 준비해야 하는지도 함께 알려 줍니다. 노동만으로 버티는 시대가 짧아질수록, 내 돈이 나 대신 일하게 만드는 준비가 빨라야 합니다.</p>
       <div class="g-grid">
-        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>업무 구성</b>: 직업마다 컴퓨터·문서·데이터로 하는 일(화면 일), 몸을 쓰는 현장 일, 사람을 상대하는 일의 비중을 정했습니다 (합계 100%).</li><li><b>AI·로봇이 해낼 수 있게 되는 시점</b>: 화면 일은 가장 빠르고(반복적일수록, 판단이 적을수록 빠름), 현장 일은 로봇 발전에 따라 더 늦고, 대면·돌봄은 가장 늦으며 끝까지 남는 몫이 있다고 봅니다. 각 일은 S자 곡선으로 서서히 대체됩니다.</li><li><b>도입 지연</b>: 기업 도입에 0.5년, 면허·규제가 있으면 자격 우대 1년 · 면허 필수 2.5년 · 독점 면허 5년을 더합니다.</li><li><b>채용 감소 시작</b> = 실제로 대체되는 업무가 25%를 넘는 해 · <b>일의 절반이 대체</b> = 50%를 넘는 해</li><li><b>속도 보정</b>: 163개 직업을 국내 직업 대분류별 취업자 비중으로 가중했을 때, 일의 절반이 대체되는 중간값이 McKinsey 시나리오(빠름 2035 · 보통 2045 · 느림 2060)에 맞도록 맞췄습니다.</li></ul></article>
-        <article class="g-card"><h3>이렇게 써 보세요</h3><ul class="g-list"><li><b>내 실제 업무에 맞게 조정하기</b>를 열어 하는 일을 바꿔 보세요. 같은 ‘개발자’라도 정해진 화면을 찍어 내는 일과 설계·책임을 지는 일은 결과가 크게 다릅니다.</li><li><b>판단·창의·책임</b>을 올리면 수명이 얼마나 늘어나는지 보면, 지금 무엇을 배워야 하는지 보입니다.</li><li><b>속도</b>를 빠름·느림으로 바꿔 최선·최악을 함께 보세요.</li><li><b>자본소득 준비</b> 카드에서 공백을 메울 돈을 확인하고 <a href="/fire/" class="mhg-link">파이어족 계산기</a>·<a href="/compound/" class="mhg-link">복리 계산기</a>로 계획을 세워 보세요.</li></ul></article>
+        <article class="g-card"><h3>계산 원리</h3><ul class="g-list"><li><b>업무 구성</b>: 직업마다 컴퓨터·문서·데이터로 하는 일(화면 일), 몸을 쓰는 현장 일, 사람을 상대하는 일의 비중을 정했습니다 (합계 100%).</li><li><b>AI·로봇이 해낼 수 있게 되는 시점</b>: 화면 일은 가장 빠르고(반복적일수록, 판단이 적을수록 빠름), 현장 일은 로봇 발전에 따라 더 늦고, 대면·돌봄은 가장 늦으며 끝까지 남는 몫이 있다고 봅니다. 각 일은 S자 곡선으로 서서히 대체됩니다.</li><li><b>도입 지연</b>: 기업 도입에 0.5년, 면허·규제가 있으면 자격 우대 1년 · 면허 필수 2.5년 · 독점 면허 5년을 더합니다.</li><li><b>남은 기간(채용 감소 시작)</b> = 실제로 대체되는 업무가 25%를 넘는 때 · <b>일의 절반이 대체</b> = 50%를 넘는 때</li><li><b>속도 보정</b>: 776개 직업을 국내 직업 대분류별 취업자 비중으로 가중했을 때, 일의 절반이 대체되는 중간값이 McKinsey 시나리오(빠름 2035 · 보통 2045 · 느림 2060)에 맞도록 맞췄습니다.</li><li><b>AI 위험도</b>: 남은 기간 2년 이하 매우 높음 · 6년 이하 높음 · 12년 이하 보통 · 20년 이하 낮음 · 그 이상 매우 낮음</li></ul></article>
+        <article class="g-card"><h3>이렇게 써 보세요</h3><ul class="g-list"><li>검색창에 직업 이름이나 흔히 부르는 말(예: 개발자, 공무원, 펀드매니저)을 넣고 <b>Enter</b>를 누르세요.</li><li><b>내 일에 맞게 조정하기</b>를 열어 하는 일을 바꿔 보세요. 같은 ‘개발자’라도 정해진 화면을 찍어 내는 일과 설계·책임을 지는 일은 결과가 크게 다릅니다.</li><li><b>판단·창의·책임</b>을 올리면 수명이 얼마나 늘어나는지 보면, 지금 무엇을 배워야 하는지 보입니다.</li><li><b>AI 발전 속도</b>를 빠름·느림으로 바꿔 최선·최악을 함께 보세요.</li><li><b>내 은퇴와 비교하기</b>에서 공백을 메울 돈을 확인하고 <a href="/fire/" class="mhg-link">파이어족 계산기</a>·<a href="/compound/" class="mhg-link">복리 계산기</a>로 계획을 세워 보세요.</li></ul></article>
       </div>
-      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>숫자는 어떤 근거로 나오나요?</summary><div class="g-ans"><p>공개된 연구의 방향을 직업별 업무 구성 값으로 옮긴 모델입니다. 한국은행(2023)은 국내 일자리의 약 12%(341만 개)가 AI 대체 가능성이 큰 직업에 있고, 의사·회계사·자산운용가·변호사처럼 고학력·고소득 직업의 AI 노출이 높다고 분석했습니다. ILO(2025)는 전 세계 일자리의 약 4분의 1이 생성형 AI에 노출되고 사무직의 노출이 가장 높다고 했습니다. Microsoft Research(2025)는 통번역가·작가·고객상담원 등이 AI 적용성이 가장 높고, 돌봄·현장·설비 직업이 가장 낮다고 측정했습니다. McKinsey(2023)는 지금 업무의 절반이 2030~2060년(중간 2045년)에 자동화될 수 있다고 추정했습니다.</p></div></details><details class="g-faq"><summary>의사·변호사는 AI 노출이 높다는데 왜 늦게 나오나요?</summary><div class="g-ans"><p>AI가 할 수 있는 일(노출)과 기업이 실제로 사람을 덜 뽑는 시점은 다릅니다. 의사·변호사처럼 면허가 있어야 하고 결과에 법적 책임을 지는 직업은, 기술이 준비돼도 제도와 책임 문제가 풀릴 때까지 대체가 늦어집니다. 그래서 같은 의료 분야라도 영상 판독처럼 화면 일 비중이 큰 쪽이, 손으로 수술하는 외과보다 먼저 나옵니다.</p></div></details><details class="g-faq"><summary>‘채용 감소 시작’이 되면 바로 일자리를 잃나요?</summary><div class="g-ans"><p>아닙니다. 그 일에 새로 뽑는 사람이 줄기 시작하는 때를 뜻합니다. 이미 일하는 사람은 AI를 다루는 역할로 바뀌거나 남는 일을 맡는 경우가 많지만, 신입 자리와 임금 상승은 먼저 줄어듭니다. 한국은행은 AI 노출 지수가 높아질수록 그 직업의 고용 비중과 임금 상승률이 낮아진다고 분석했습니다.</p></div></details><details class="g-faq"><summary>내 직업이 목록에 없어요.</summary><div class="g-ans"><p>하는 일이 가장 비슷한 직업을 고른 뒤 ‘내 실제 업무에 맞게 조정하기’에서 화면 일·현장 일 비중, 반복성, 판단, 면허를 내 일에 맞게 바꾸면 됩니다. 결과는 직업 이름이 아니라 이 값들로 계산됩니다.</p></div></details><details class="g-faq"><summary>자본소득 준비 금액은 어떻게 계산하나요?</summary><div class="g-ans"><p>직업 수명이 은퇴보다 먼저 끝나면, 그 사이 기간 × 월 생활비를 ‘공백 기간 생활비’로 봅니다. 이 돈을 직업 수명 안에 모으려면 매달 얼마를 투자해야 하는지(연 6% 수익 가정)와, 4% 규칙으로 월 생활비를 평생 자본소득으로 받으려면 필요한 자산(월 생활비 × 300)을 함께 보여 줍니다.</p></div></details><details class="g-faq"><summary>이 예측은 얼마나 믿을 수 있나요?</summary><div class="g-ans"><p>미래 기술 발전과 기업 도입 속도는 누구도 정확히 알 수 없습니다. 이 계산은 공개 연구의 방향과 직업의 업무 구성을 바탕으로 한 시나리오이며, 속도 버튼으로 낙관·비관을 함께 보도록 만들었습니다. 날짜 하나보다 ‘무엇이 내 일을 빠르게 대체하고 무엇이 지켜 주는지’를 보는 데 쓰세요.</p></div></details></div>
+      <div class="g-card g-faqs"><h3>자주 묻는 질문</h3><details class="g-faq"><summary>숫자는 어떤 근거로 나오나요?</summary><div class="g-ans"><p>공개된 연구의 방향을 직업별 업무 구성 값으로 옮긴 모델입니다. 한국은행(2023)은 국내 일자리의 약 12%(341만 개)가 AI 대체 가능성이 큰 직업에 있고, 의사·회계사·자산운용가·변호사처럼 고학력·고소득 직업의 AI 노출이 높다고 분석했습니다. ILO(2025)는 전 세계 일자리의 약 4분의 1이 생성형 AI에 노출되고 사무직의 노출이 가장 높다고 했습니다. Microsoft Research(2025)는 통번역가·작가·고객상담원 등이 AI 적용성이 가장 높고, 돌봄·현장·설비 직업이 가장 낮다고 측정했습니다. McKinsey(2023)는 지금 업무의 절반이 2030~2060년(중간 2045년)에 자동화될 수 있다고 추정했습니다.</p></div></details><details class="g-faq"><summary>776개 직업은 어떻게 정했나요?</summary><div class="g-ans"><p>한국직업사전·한국표준직업분류에 나오는 직업 가운데 실제로 많이 찾고 일하는 사람이 많은 직업을 골라 21개 분야(IT·개발/데이터, 디자인, 미디어·콘텐츠, 예술·엔터, 경영·기획, 금융·회계, 영업·마케팅, 사무·인사, 법률·공공, 교육, 의료·보건, 돌봄·복지, 공학, 건설·기술직, 제조·생산, 운송·물류, 서비스·외식, 뷰티·헬스, 농림어업, 안전·군·경, 스포츠)로 나눴습니다. 각 직업의 값은 직무 개요를 기준으로 디코딩 자본주의가 직접 정했습니다.</p></div></details><details class="g-faq"><summary>의사·변호사는 AI 노출이 높다는데 왜 늦게 나오나요?</summary><div class="g-ans"><p>AI가 할 수 있는 일(노출)과 기업이 실제로 사람을 덜 뽑는 시점은 다릅니다. 의사·변호사처럼 면허가 있어야 하고 결과에 법적 책임을 지는 직업은, 기술이 준비돼도 제도와 책임 문제가 풀릴 때까지 대체가 늦어집니다. 그래서 같은 의료 분야라도 영상 판독처럼 화면 일 비중이 큰 쪽이, 손으로 수술하는 외과보다 먼저 나옵니다.</p></div></details><details class="g-faq"><summary>‘남은 기간’이 끝나면 바로 일자리를 잃나요?</summary><div class="g-ans"><p>아닙니다. 그 일에 새로 뽑는 사람이 줄기 시작하는 때를 뜻합니다. 이미 일하는 사람은 AI를 다루는 역할로 바뀌거나 남는 일을 맡는 경우가 많지만, 신입 자리와 임금 상승은 먼저 줄어듭니다. 한국은행은 AI 노출 지수가 높아질수록 그 직업의 고용 비중과 임금 상승률이 낮아진다고 분석했습니다.</p></div></details><details class="g-faq"><summary>내 직업이 목록에 없어요.</summary><div class="g-ans"><p>하는 일이 가장 비슷한 직업을 고른 뒤 ‘내 일에 맞게 조정하기’에서 화면 일·현장 일 비중, 반복성, 판단, 면허를 내 일에 맞게 바꾸면 됩니다. 결과는 직업 이름이 아니라 이 값들로 계산됩니다.</p></div></details><details class="g-faq"><summary>자본소득 준비 금액은 어떻게 계산하나요?</summary><div class="g-ans"><p>직업 수명이 은퇴보다 먼저 끝나면, 그 사이 기간 × 월 생활비를 ‘공백 기간 생활비’로 봅니다. 이 돈을 직업 수명 안에 모으려면 매달 얼마를 투자해야 하는지(연 6% 수익 가정)와, 4% 규칙으로 월 생활비를 평생 자본소득으로 받으려면 필요한 자산(월 생활비 × 300)을 함께 보여 줍니다.</p></div></details><details class="g-faq"><summary>이 예측은 얼마나 믿을 수 있나요?</summary><div class="g-ans"><p>미래 기술 발전과 기업 도입 속도는 누구도 정확히 알 수 없습니다. 이 결과는 공개 연구의 방향과 직업의 업무 구성을 바탕으로 한 시나리오이며, 속도 버튼으로 낙관·비관을 함께 보도록 만들었습니다. 날짜 하나보다 ‘무엇이 내 일을 빠르게 대체하고 무엇이 지켜 주는지’를 보는 데 쓰세요.</p></div></details></div>
     </section>
     <!-- [/GUIDE:joblife] -->
   </div><!-- /page-joblife -->
@@ -25872,80 +25992,144 @@ var HYC = (function () {
 })();
 
 /* ════════════════════════════════════════
-   [JOBLIFE-ENGINE] 나의 직업 수명 계산기 — 순수 계산 (DOM 없음)
+   [JOBLIFE-ENGINE] 나의 직업 수명 — 순수 계산·데이터 (DOM 없음 · node 에서도 실행: scripts/joblife_snapshot.js)
    · 직업 = 화면 일(D) + 현장 일(P) + 사람을 상대하는 일(H) (합 1) · 반복성 r · 판단·창의·책임 j (0~1) · 면허·규제 L (0~3)
-   · 일마다 AI·로봇이 해낼 수 있게 되는 시점 c(년, 지금부터)와 S자 대체 곡선(10→90% 기간 w), 끝까지 남는 몫(cap)
+   · 일마다 AI·로봇이 해낼 수 있게 되는 시점 c(년)와 S자 대체 곡선(10→90% 기간 w), 끝까지 남는 몫(cap)
        화면 일  c = (0.6 + 8 × (1−r)^1.3 × (0.5 + 0.5j)) × 속도   cap 95%
        현장 일  c = (6 + 14 × (1−r) + 4j) × 속도                    cap 85%   (로봇: 정형 작업부터)
        대면 일  c = (11 + 10j + 4 × (1−r)) × 속도                   cap 60%   (돌봄·신뢰: 가장 늦고 일부는 끝까지 사람)
        w = 3 + 0.6c (화면) · 5 + 0.5c (현장) · 6 + 0.5c (대면)
    · 실제 대체 비중 A(t) = 기술 대체 가능 비중 S(t − 지연) · 지연 = 기업 도입 0.5년 + 면허·규제 [0, 1, 2.5, 5]년
-   · 채용 감소 시작 = A(t) ≥ 25% 인 첫해 · 일의 절반이 대체 = A(t − 1.5) ≥ 50% (절반 대체는 채용 감소보다 1.5년 더 늦게 반영)
-   · 속도: 163개 직업을 국내 직업 대분류 취업자 비중(경제활동인구조사 근사)으로 가중했을 때 '절반 대체' 중간값이
-       McKinsey(2023) 시나리오 2035 · 2045(중간) · 2060 에 맞도록 맞춘 배율 0.713 · 1.784 · 3.550
+   · 채용 감소 시작 = A(t) ≥ 25% 인 첫때 · 일의 절반이 대체 = A(t − 1.5) ≥ 50%
+   · 속도: 776개 직업을 직업 대분류별 취업자 비중(경제활동인구조사 근사)으로 가중한 '절반 대체' 중간값이
+       McKinsey(2023) 시나리오 2035 · 2045(중간) · 2060 에 맞도록 맞춘 배율 0.753 · 1.892 · 3.730
+   · 데이터: 직업명|화면·현장·대면(합 10)·반복성 1~5·판단 1~5·면허 0~3 (6자리, A=10)|별칭 — 분야는 #코드|이름|아이콘
 ════════════════════════════════════════ */
 var JL = (function () {
-  var SPD = { fast: 0.713, mid: 1.784, slow: 3.55 }, LAG = [0, 1, 2.5, 5], MAXY = 40;
+  var SPD = { fast: 0.753, mid: 1.892, slow: 3.73 }, LAG = [0, 1, 2.5, 5], MAXY = 40;
+  var RAW = '#it|IT·개발/데이터|💻;소프트웨어 개발자|901340|개발자,프로그래머,SW 개발자,SW 엔지니어;백엔드 개발자|901340|백엔드,서버 개발자;프론트엔드 개발자|901440|프론트엔드,프론트,FE 개발자;풀스택 개발자|901340|풀스택;웹 개발자|901430|웹개발;웹 퍼블리셔|A00520|퍼블리셔;모바일 앱 개발자|901340|앱 개발자,iOS 개발자,안드로이드 개발자;게임 프로그래머|901340|게임 개발자;게임 기획자|802340|게임기획;게임 QA 테스터|901520|게임 테스터;임베디드 소프트웨어 개발자|820340|임베디드,펌웨어;AI 엔지니어|901250|AI 개발자,머신러닝 엔지니어,ML 엔지니어;프롬프트 엔지니어|A00430|프롬프트;데이터 사이언티스트|901250|데이터과학자;데이터 분석가|901340|데이터분석,데이터 애널리스트;데이터 엔지니어|901340|데이터 파이프라인;데이터베이스 관리자(DBA)|901440|DBA,DB 관리자;데이터 라벨러|A00510|라벨링,데이터 가공;빅데이터 전문가|901340|빅데이터;클라우드 엔지니어|820340|클라우드,AWS 엔지니어;데브옵스 엔지니어|820340|DevOps,SRE;시스템 엔지니어|730341|시스템 관리자,서버 관리자;네트워크 엔지니어|730341|네트워크 관리자,인프라 엔지니어;정보보안 전문가|811341|보안 엔지니어,정보보호;화이트해커|901250|모의해킹,보안 컨설턴트;보안 관제 요원|901530|보안관제;IT 컨설턴트|703240|IT컨설팅;IT 헬프데스크|712520|헬프데스크,전산 지원;전산 운영원|820520|전산실,전산 담당;소프트웨어 테스터(QA)|901520|QA,테스터,QA 엔지니어;기술 지원 엔지니어|622430|기술지원,테크니컬 서포트;ERP 컨설턴트|802340|SAP 컨설턴트,ERP;솔루션 아키텍트|802250|아키텍트;블록체인 개발자|901340|블록체인;로봇 소프트웨어 개발자|730340|로봇 SW;자율주행 소프트웨어 개발자|820250|자율주행 개발자;컴퓨터 비전 엔지니어|901250|비전 엔지니어;IT 프로젝트 매니저|604340|IT PM;기술 문서 작성자|A00420|테크니컬 라이터;웹마스터|901520|홈페이지 관리자;SEO 전문가|A00430|검색엔진 최적화;그로스 해커|901340|그로스 마케터;CRM 개발자|901430|CRM 엔지니어;메타버스 개발자|901340|메타버스;가상현실(VR) 개발자|901340|VR 개발자,XR 개발자;IoT 개발자|820340|사물인터넷;게임 서버 개발자|901340|게임서버;LLM 운영 엔지니어|901340|AI 운영,MLOps;정보시스템 감리원|802342|IT 감리;게임 레벨 디자이너|802340|레벨 디자이너;게임 운영자(GM)|901430|게임 운영,GM;UI 개발자|901430|UI 퍼블리싱;검색 엔지니어|901340|검색 엔진 개발;추천 시스템 엔지니어|901250|추천 알고리즘;데이터 거버넌스 담당자|901430|데이터 관리 정책;개인정보보호 담당자|802342|개인정보,CPO;전자상거래 개발자|901340|커머스 개발;#design|디자인|🎨;그래픽 디자이너|901330|디자이너;시각 디자이너|901330|비주얼 디자이너;편집 디자이너|901430|출판 디자이너,편집디자인;UX·UI 디자이너|802340|UI 디자이너,UX 디자이너,UXUI;프로덕트 디자이너|802340|제품 기획 디자이너;웹 디자이너|901430|웹디자인;모바일 앱 디자이너|901430|앱 디자이너;브랜드 디자이너|802340|BI 디자이너,브랜딩;로고 디자이너|901330|로고;패키지 디자이너|811340|패키지;광고 디자이너|901430|광고 디자인;배너·상세페이지 디자이너|A00520|상세페이지,배너 디자이너;일러스트레이터|901340|일러스트;캐릭터 디자이너|901340|캐릭터;3D 모델러|901430|3D 디자이너,3D 그래픽;모션 그래픽 디자이너|901430|모션그래퍼,모션 디자이너;게임 그래픽 디자이너|901430|게임 아티스트,원화가;산업 디자이너|721340|제품 디자이너;가구 디자이너|631340|가구디자인;자동차 디자이너|721340|카 디자이너;패션 디자이너|622340|의상 디자이너;텍스타일 디자이너|820430|패턴 디자이너;주얼리 디자이너|541340|귀금속 디자이너;인테리어 디자이너|532340|인테리어 설계;공간 디자이너|532340|공간디자인;조명 디자이너|541340|조명디자인;전시 디자이너|532340|전시기획 디자이너;무대 디자이너|541340|무대미술;조경 디자이너|541340|조경설계;컬러리스트|802430|색채 전문가;폰트 디자이너|901430|서체 디자이너;디자인 리서처|703240|UX 리서처;CAD 도면 작성원|901520|CAD,제도사,캐드;의류 패턴사|721430|패턴사;신발 디자이너|631340|신발디자인;VMD(비주얼 머천다이저)|442340|VMD,디스플레이어;UX 라이터|A00430|UX writing;게임 원화가|901340|원화;이모티콘 작가|901340|이모티콘;간판 디자이너|721430|간판;웨딩드레스 디자이너|541340|드레스 디자이너;#media|미디어·콘텐츠|📰;기자|712340|취재기자,언론인;방송 기자|541340;편집 기자|901430;출판 편집자|901430|편집자,에디터;잡지 에디터|901430|매거진 에디터;번역가|A00430|번역;통역사|604430|통역;카피라이터|901330|광고 카피;콘텐츠 마케터|901430|콘텐츠 기획;블로거|901420|블로그;유튜버|613340|크리에이터,유튜브;인플루언서|523340|SNS 인플루언서;방송 PD|523350|PD,프로듀서;방송 작가|802340|구성작가;라디오 DJ|703330|DJ;아나운서|604330|앵커;쇼호스트|415330|홈쇼핑 호스트;성우|604430|더빙;영상 편집자|901430|영상편집;촬영 감독|361340|카메라 감독;사진 기자|361330;포토그래퍼|451330|사진작가,사진가;드론 촬영 기사|271330|드론 촬영;음향 엔지니어|541430|음향 감독;방송 조명 기사|271430|조명기사;웹소설 작가|901350|웹소설;웹툰 작가|901350|웹툰,만화가;시나리오 작가|901250|드라마 작가,극작가;소설가|901250|작가;에세이 작가|901350|수필가;교정·교열원|A00520|교열,교정;속기사|A00520|속기;자막 제작자|A00520|자막;뉴스 큐레이터|901430|뉴스 편집;SNS 운영자|901420|SNS 마케터,소셜 미디어 매니저;팟캐스트 진행자|703340|팟캐스터;광고 기획자(AE)|703340|AE,광고기획;홍보 콘텐츠 제작자|901430|홍보 영상;출판 기획자|802340|출판 기획;도서 마케터|901430|출판 마케터;방송 FD|442420|FD;뉴스 앵커|604340|앵커(뉴스);기상캐스터|604330;리포터|523330|방송 리포터;웹 콘텐츠 에디터|A00430|콘텐츠 에디터;북 디자이너|901340|표지 디자이너;오디오북 낭독가|613430|오디오북;게임 시나리오 작가|901350|게임 작가;유튜브 편집자|901520|유튜브 영상편집;#art|예술·엔터|🎤;가수|244250|보컬;작곡가|811340|작곡;작사가|901350|작사;편곡가|901340|편곡;음악 프로듀서|712340|프로듀서(음악);연주자|154250|피아니스트,바이올리니스트,기타리스트;지휘자|145250|지휘;배우|145250|연기자,탤런트;뮤지컬 배우|154250|뮤지컬;성악가|244250|오페라 가수;무용가|082250|발레리나,댄서;안무가|163250|안무;개그맨|145350|코미디언,개그우먼;모델|073330|패션모델;화가|271350|미술가,서양화가,동양화가;조각가|181350|조각;도예가|172340|도자기 공예;서예가|172340|서예;공예가|172340|공예;큐레이터|523340|학예사;미술품 복원가|181340|문화재 복원;연극 연출가|325250|연출가;영화감독|424250|감독;연예인 매니저|316340|로드 매니저;마술사|154250|마술;애니메이터|901430|애니메이션;VFX 아티스트|901430|CG 아티스트,특수효과;타투이스트|172340|타투,문신;캘리그라퍼|271340|캘리그라피;보컬 트레이너|145330|보컬 강사;스턴트맨|082340|스턴트;대중음악 평론가|802350|평론가;미술 작가(설치미술)|271350|설치미술;갤러리 딜러|514340|아트 딜러;공연 기획자|604340|공연기획;무대 감독|361340;악기 수리원|172430|악기 수리;인형극 배우|145340|인형극;#mgmt|경영·기획|📊;최고경영자(CEO)|406150|대표,사장,CEO;임원|505250|이사,상무,전무;경영 기획자|802240|경영기획;전략 기획자|802240|전략기획;사업 개발 매니저|604340|사업개발,BD;신사업 기획자|802250|신사업;경영 컨설턴트|703250|컨설턴트;프로젝트 매니저|604340|PM(프로젝트);프로덕트 매니저|604250|PM,PO,프로덕트 오너;서비스 기획자|802340|서비스기획,웹기획;기업 분석가|901340|산업 분석가;ESG 담당자|802340|ESG;리스크 관리자|802340|리스크;내부 감사원|802341|감사팀;품질 경영 담당자|721430|품질경영;공급망 관리자(SCM)|802340|SCM;구매 담당자|802430|구매,자재;물류 기획자|802340|물류기획;프랜차이즈 슈퍼바이저|325330|SV,슈퍼바이저;매장 점장|325330|점장,매장 관리자;스타트업 창업자|505250|창업자,스타트업 대표;벤처캐피털 심사역|703250|VC,심사역;M&A 전문가|703250|인수합병;IR 담당자|703340|IR;비즈니스 애널리스트|901340|BA;경영 지원 매니저|802430|경영지원;중간관리자(팀장)|505240|팀장,관리자,부장,과장;중소기업 사장|334340|사업주,기업 대표;해외 사업 담당자|604340|해외사업;가맹 사업 개발자|604340|가맹개발;마케팅 전략가|802340|마케팅 전략;가격 정책 담당자|901340|프라이싱;고객경험(CX) 매니저|703340|CX;조직문화 담당자|505340|조직문화;윤리경영 담당자|802342|컴플라이언스(기업);#fin|금융·회계|💰;은행원(창구)|613520|은행원,텔러,창구;기업 금융 담당자|703341|기업금융,RM;PB(프라이빗 뱅커)|505341|PB;대출 심사원|901431|여신심사,대출심사;외환 딜러|901431|외환;증권 중개인|703431|브로커,증권사 직원;증권 애널리스트|901341|애널리스트,리서치 애널리스트;펀드매니저|802342|자산운용가;퀀트 애널리스트|901250|퀀트;트레이더|901341|딜러(금융);보험 설계사|415321|FC,보험영업;보험 언더라이터|901432|언더라이터,보험심사;손해사정사|712432|손해사정;보험 계리사|901343|계리사;보험 사무원|901520|보험사무;공인회계사|802342|회계사,CPA;세무사|802432|세무;관세사|802432|관세;재무 분석가|901340|재무분석;재무 담당자|802430|재무팀,자금 담당;회계 사무원|901520|회계직,회계팀;경리|901520|경리 사무원;급여 담당자|A00520|급여,페이롤;세무 사무원|901520|세무사무;감정평가사|622343|감정평가;신용 분석가|901431|신용분석,신용평가;자산관리사(FP)|604431|FP,재무설계사;핀테크 기획자|802340|핀테크;채권 추심원|604420|추심;카드사 상담원|703520|카드 상담;증권 사무원|A00520|증권사무;준법감시인|802342|컴플라이언스,준법감시;투자 상담사|604431|투자상담;가상자산 분석가|901340|코인 분석;은행 지점장|505341|지점장;여신 관리자|802431|여신관리;보험 보상 담당자|703431|보상 담당;연금 상담사|604431|연금;회계 감사원|802343|회계감사;세무 조사관|802432|세무조사;부동산 펀드 운용역|802342|부동산 운용;#sales|영업·마케팅|📣;마케터|802330|마케팅,마케팅 담당자;퍼포먼스 마케터|A00430|디지털 마케터,광고 마케터;브랜드 매니저|703340|브랜드 마케터;상품기획자(MD)|802340|MD,머천다이저;온라인 MD|901430|이커머스 MD;시장조사 분석가|901430|리서처,시장조사;광고 운영 담당자|A00520|광고 운영;CRM 마케터|901430|CRM;홍보 담당자|703330|PR,홍보;기업 영업 담당자|406330|B2B 영업,영업사원,영업;기술 영업 엔지니어|523340|기술영업;제약 영업사원|325330|MR,제약영업;의료기기 영업사원|325331|의료기기 영업;자동차 영업사원|316330|카딜러,자동차 딜러;공인중개사|532332|부동산 중개사,부동산;분양 상담사|415420|분양;텔레마케터|703510|TM,텔레마케팅;콜센터 상담원|703510|상담원,CS,고객상담,고객센터;고객 성공 매니저|604330|CSM;매장 판매원|244410|판매원,점원,매장 직원;백화점 판매원|244420|백화점;면세점 판매원|334420|면세점;휴대폰 판매원|424420|휴대폰 매장;계산원(캐셔)|352510|캐셔,마트 계산원;편의점 직원|262510|편의점,편의점 알바;온라인 쇼핑몰 운영자|901430|쇼핑몰,스마트스토어,이커머스 셀러;라이브커머스 진행자|514330|라이브 방송;방문 판매원|235420|방문판매;렌털 방문 관리원|235420|렌탈,코디(렌털);해외 영업 담당자|703430|해외영업,무역 영업;제휴 마케터|802430|제휴;이벤트 프로모터|325330|판촉,프로모터;쇼핑몰 CS 담당자|802520|쇼핑몰 CS;홈쇼핑 MD|802430|홈쇼핑;유통 영업 담당자|415330|유통 영업;보험 텔레마케터|703520|보험 TM;자동차 판매 상담원(전화)|703420|자동차 상담;가구 판매원|244420|가구 매장;마트 진열원|172510|진열,MD 진열;주유원|172510|주유소;#office|사무·인사|📄;일반 사무원|802420|사무원,사무직,회사원;사무 보조원|901510|사무보조;데이터 입력원|A00510|전산입력,타이피스트,데이터입력;문서 작성원|A00510|문서작성;비서|712420|비서직;임원 비서|703430|수행비서;총무 담당자|622420|총무;인사 담당자|703430|HR,인사;채용 담당자|604430|리크루터,채용;노무 담당자|703431|노무;교육 담당자(HRD)|604430|HRD;급여·복리후생 담당자|901520|복리후생;공인노무사|703343|노무사;헤드헌터|505330|서치펌;접수 안내원|523510|안내,리셉션;민원 상담원|703520|민원;무역 사무원|901520|무역사무,수출입;물류 사무원|901520|물류사무;의료 사무원|901520|원무과,병원 사무;법률 사무원|901520|법률사무,법무 사무원;학교 행정실 직원|802521|교직원,행정실;공공기관 직원|802431|공기업 직원,공기업;비영리 단체 실무자|604330|NGO;통계 조사원|433520|조사원;설문 면접원|433520|리서치 면접원;기록물 관리원|820520|기록물,아키비스트;고객 데이터 관리자|A00520|데이터 관리;오피스 매니저|604420|사무실 관리;계약 관리 담당자|901430|계약관리;사무 행정 아르바이트|901510|사무 알바;회의록 작성원|A00510|회의록;번역 코디네이터|901430|번역 매니저;사내 커뮤니케이션 담당자|802340|사내홍보;비자·이민 행정 대행인|802432|비자 대행;#law|법률·공공|⚖️;변호사|703253|로펌,변호인;판사|703253|법관;검사|604353|검찰;법무사|802433|법무;변리사|802343|특허;행정사|802432|행정 대행;법률 연구원|901350|법학 연구원;사내 변호사|703253|법무팀;국회 보좌관|604340|보좌관;일반행정 공무원|802432|공무원,행정공무원,9급 공무원,7급 공무원,주무관;세무 공무원|802432|세무서;관세 공무원|523432|세관;출입국 심사관|433432|출입국;외교관|505253|외무 공무원;정치인|406252|국회의원,지방의원;주민센터 공무원|703522|동사무소,행정복지센터;우체국 창구 직원|433522|우체국;집배원|280421|우체부,우편배달;통계 공무원|802432|통계청;감사관|802343|감사원;정책 연구원|901350|연구위원;공공기관 연구원|901350|국책연구원;법원 공무원|802432|법원 직원;등기 사무원|A00522|등기;선거 관리 공무원|703432|선관위;경찰 행정관|703432|경찰행정;교정 행정 공무원|604432|교정행정;지방 행정 공무원(기술직)|622432|기술직 공무원;국선 변호인|604253|국선;법률 상담원|802432|법률상담;#edu|교육|🏫;유치원 교사|136233|유치원;초등학교 교사|325243|초등교사;중·고등학교 교사|415243|교사,선생님,중학교 교사,고등학교 교사;특수교사|136243|특수교육;보건교사|235243|보건 선생님;영양교사|433343|학교 영양사;대학교수|604250|교수;대학 시간강사|604340|시간강사;학원 강사|505330|강사,입시강사;수학 학원 강사|604330|수학 강사;영어 강사|505330|영어 선생님,어학강사;인터넷 강의 강사|802330|인강,온라인 강사;과외 교사|406330|과외;방과후 강사|235330|방과후;교육 콘텐츠 개발자|901340|교육콘텐츠,이러닝;교재 편집자|A00430|교재;에듀테크 기획자|802340|에듀테크;진로 상담 교사|307243|진로교사;학습지 교사|406420|학습지;평생교육사|604332|평생교육;직업훈련 교사|352341|직업훈련;운전 강사|172431|운전학원;피아노 강사|145330|피아노 선생님;미술 강사|235330|미술 학원;코딩 강사|604330|코딩 교육;한국어 강사|604330|한국어 교원;입학사정관|703341|입학사정;교육 연구원|901350|교육연구;교장·교감|406253|교장,교감;학교 사서|721430|사서교사;도서관 사서|622430|사서;초등 돌봄 전담사|136321|돌봄 전담사;교육 행정 공무원|802432|교육청;대학 행정 직원|802431|대학 직원;유아 체육 강사|154330|유아체육;논술 강사|604340|논술;#med|의료·보건|🩺;의사(일반의·전공의)|523253|의사,일반의,전공의,가정의학과;내과 의사|523253|내과;외과 의사|262253|외과;정형외과 의사|352253|정형외과;영상의학과 의사|811353|영상의학,방사선과 의사;병리과 의사|721353|병리;마취통증의학과 의사|361353|마취과;정신건강의학과 의사|307253|정신과;소아청소년과 의사|424253|소아과;산부인과 의사|343253|산부인과;피부과 의사|352353|피부과;안과 의사|352353|안과;응급의학과 의사|262253|응급실 의사;치과의사|262343|치과;한의사|343343|한의원,한방;약사|532433|약국;한약사|532433|한약국;간호사|244343|간호;전문간호사|334253|전문 간호;간호조무사|154422|간호조무;조산사|136343|조산;물리치료사|163333|물리치료,재활치료;작업치료사|163333|작업치료;언어치료사|307333|언어재활사;임상병리사|541433|임상병리;방사선사|442433|방사선;치과위생사|262423|치위생사;치과기공사|271433|기공사;안경사|343423|안경원;보건의료정보관리사|901522|의무기록사,의무기록;의료 코디네이터|604420|병원 코디네이터;응급구조사|172342|구급대원;수의사|352343|동물병원;수의테크니션|262422|동물간호사;영양사|622432|영양;임상심리사|406343|임상심리;심리상담사|307243|상담사,심리치료사,상담심리사;음악치료사|235333|음악치료;미술치료사|235333|미술치료;보건 연구원|802350|보건연구;제약 연구원|721350|신약 연구원;의료기기 엔지니어|631340|의료기기;원무과 직원|802520|병원 원무;의학 번역가|A00440|의료 번역;의료 통역사|604431|의료통역;보건소 공무원|604342|보건직 공무원;요양병원 간호사|244343|요양병원;의료 영상 판독 보조원|901430|판독 보조;병원 약제 보조원|442520|약국 보조;요양병원 의사|424253;보건 관리자|604332|보건관리;임상시험 코디네이터(CRC)|703432|CRC;임상연구원(CRA)|802432|CRA;의약품 인허가 담당자|901432|RA;#care|돌봄·복지|🤝;요양보호사|064321|요양,요양원;간병인|064320|간병;사회복지사|415332|복지사,사회복지;의료사회복지사|415342|의료사회복지;정신건강사회복지사|316342|정신보건 사회복지사;보육교사|145322|어린이집 교사,어린이집;아이돌보미|055320|베이비시터,육아도우미;산후관리사|064321|산후도우미;장애인 활동지원사|064321|활동지원사;가사관리사|082410|가사도우미,가사;노인복지관 직원|415332|복지관;청소년 지도사|325331|청소년지도;아동 상담사|307341|아동상담;직업상담사|604431|취업상담;다문화 통번역 지원사|604430|다문화;자원봉사 코디네이터|604330|봉사 코디;복지 행정 공무원|703432|사회복지직 공무원;쉼터 생활지도원|235331|생활지도원;방과후 돌봄교사|145321|돌봄교사;호스피스 코디네이터|235241|호스피스;장례지도사|253331|장례,상례사;위기 상담원|604330|위기상담;시니어 케어 매니저|415341|케어 매니저;재활 지도사|163331|재활;지역아동센터 교사|235331|지역아동센터;노인 주간보호센터 직원|145321|주간보호;장애인 복지관 직원|325332|장애인 복지;가정폭력 상담원|307342|상담원(가정폭력);#eng|공학|🔬;기계공학 기술자|631341|기계 엔지니어,기계설계;자동차 공학 기술자|631341|자동차 엔지니어;로봇 공학 기술자|631340|로봇 엔지니어;항공우주공학 기술자|721351|항공 엔지니어;조선공학 기술자|631341|조선 엔지니어;전기공학 기술자|631341|전기 엔지니어;전자공학 기술자|631341|전자 엔지니어,회로 엔지니어;반도체 공정 엔지니어|631340|반도체 엔지니어,공정 엔지니어(반도체);반도체 설계 엔지니어|901350|회로설계,칩 설계;디스플레이 엔지니어|631340|디스플레이;배터리 연구원|631350|2차전지 연구원;화학공학 기술자|631341|화학 엔지니어,화공;화학 연구원|631350|화학자;재료공학 기술자|631340|금속 엔지니어,소재 엔지니어;섬유공학 기술자|631340|섬유;환경공학 기술자|622341|환경 엔지니어;에너지공학 기술자|631341|에너지;원자력공학 기술자|631353|원자력;생명공학 연구원|631350|바이오 연구원;식품공학 기술자|631341|식품 연구원;제약 공정 엔지니어|631341|제약 엔지니어;의공학 기술자|631341|의공학;통신공학 기술자|721341|통신 엔지니어;광학 기술자|631340|광학;토목공학 기술자|541341|토목,토목기사;건축 설계사|532353|건축사,건축가;구조 설계 엔지니어|802342|구조기술사;도시계획가|703351|도시계획;교통공학 기술자|802341|교통 엔지니어;측량사|361432|측량;품질관리 기술자|532431|QC,품질관리;생산관리 기술자|532431|생산관리;공정 엔지니어|541341|생산기술;설비 엔지니어|451341|설비설계;산업 안전관리자|352342|안전관리자,산업안전;소방설비 기술자|451332|소방설비;자연과학 연구원|721350|연구원,과학자;통계학자|901350|통계 전문가,수학자;기상 연구원|901350|기상학자,예보관;해양 연구원|541350|해양학자;지질학자|451350|지질;천문학자|802350|천문;연구 보조원|541520|연구보조;특허 분석가|901340|특허분석;반도체 장비 엔지니어|361341|장비 엔지니어;품질 보증 엔지니어|622431|QA 엔지니어(제조);자동화 설비 엔지니어|541341|자동화 엔지니어;PLC 프로그래머|721440|PLC;신재생에너지 연구원|631350|신재생;수자원 기술자|631341|수자원;#build|건설·기술직|🔧;건설 현장 노동자|0A0310|건설노동자,노가다,일용직;건설 현장 소장|433342|현장소장;건설 공무 담당자|622432|공무,건설 사무;철근공|091410|철근;형틀목수|091410|형틀;목수|181330|목공;타일공|091420|타일;미장공|091420|미장;조적공|091420|벽돌공;도배사|091420|도배;도장공|091420|페인트공;방수공|091420|방수;배관공|091331|배관;전기공|181332|전기기사,전기기능사;용접공|091421|용접;보일러 기사|181331|보일러;냉난방 설비 기사|181331|에어컨 설치,에어컨 기사;엘리베이터 설치·수리원|181331|승강기;굴착기 운전원|091422|굴착기,포크레인;크레인 운전원|091422|크레인;인테리어 시공 기술자|172340|인테리어 시공;창호 시공원|091420|샷시,창호;조경 기능원|091320|조경;자동차 정비사|271331|정비사,카센터;항공 정비사|271432|항공정비;선박 정비사|181331|선박정비;가전제품 수리 기사|172331|AS 기사,가전 수리;휴대폰 수리 기사|262430|휴대폰 수리;통신 설비 기사|181331|통신 케이블,인터넷 설치;태양광 설치 기사|181431|태양광;건물 시설 관리원|262420|시설관리,건물관리;열쇠 수리공|172330|열쇠;리모델링 기술자|181340|리모델링;건설 안전 관리자|262342|건설안전;비계공|091420|비계;석공|091420|석재;전기 배선공|091421|배선;가스 배관공|091332|가스;도시가스 점검원|181421|가스 점검;하수도 정비원|091420|하수도;도로 포장원|091420|아스팔트;소방시설 관리사|361342|소방시설;#mfg|제조·생산|🏭;생산직 조립원|091510|생산직,공장,조립;기계 조작원|280520|기계가공;CNC 프로그래머|721440|CNC;금형 기술자|271431|금형;선반 기능원|172430|선반;프레스 조작원|091510|프레스;도금원|091510|도금;사출 성형원|091510|사출;반도체 생산 오퍼레이터|370520|오퍼레이터,반도체 생산직;디스플레이 생산원|370520|디스플레이 생산;배터리 생산원|280520|배터리 공장;자동차 조립원|091510|자동차 공장;전자 부품 조립원|091510|전자 조립;품질 검사원|370520|검사원,검수원;포장원|091510|포장;식품 가공원|091510|식품공장;제과·제빵 생산원|091510|빵 공장;음료 제조원|091510|음료 공장;섬유 제조원|091510|섬유 공장;봉제원|091510|재봉,봉제;가구 제조원|181430|가구 공장;인쇄기 조작원|280520|인쇄;화학 공정 운전원|460521|화학공장 운전원;제약 생산원|370521|제약 공장;발전 설비 운전원|541432|발전소,발전원;수처리 설비 운전원|541431|정수장,하수처리;공장 설비 보전원|271431|설비보전;공장장|532431|생산 관리자;물류 자동화 운영원|640530|자동화 설비;제철 조작원|271521|제철,용광로;조선소 용접원|091421|조선소;목재 가공원|091510|목재;귀금속 세공원|181430|세공;3D 프린팅 기술자|541430|3D 프린터;산업용 로봇 조작원|451430|로봇 오퍼레이터;기계 정비원|181431|기계정비;의류 재단사|181430|재단;신발 제조원|091510|신발 공장;유리 가공원|091510|유리;타이어 제조원|091510|타이어;식품 검사원|451431|식품검사;#trans|운송·물류|🚚;택시 기사|181421|택시;버스 기사|181521|버스,시내버스;화물차 운전사|091421|트럭,화물,화물기사;트레일러 운전원|091421|트레일러;배달 라이더|091410|배달,라이더,배달기사;택배 기사|181410|택배;퀵서비스 기사|091410|퀵;대리운전 기사|181410|대리운전;물류센터 작업원|091510|물류,상하차,창고;지게차 운전원|091521|지게차;물류 관리자|622431|물류팀;배차 담당자|802520|배차;포워더|802430|국제물류;항공기 조종사|361443|파일럿,기장;부기장|361443|부조종사;항공 교통 관제사|721453|관제사;항공 승무원|154421|승무원,스튜어디스;선장|271443|선장(선박);항해사|361443|항해;선박 기관사|271433|기관사(선박);철도 기관사|271532|기관사,기차 기관사;지하철 기관사|271532|지하철;열차 승무원|154421|열차 승무;드론 조종사|541431|드론;자율주행 안전요원|181520|안전요원(자율주행);주차 관리원|352520|주차;항만 하역원|091520|항만,하역;렌터카 직원|433420|렌터카;고속버스 기사|181521|고속버스;마을버스 기사|181521|마을버스;특수차 운전원|091421|탱크로리;컨테이너 운전원|091421|컨테이너;공항 지상직원|253420|지상직,그라운드;선박 승무원|172421|선원(여객선);#svc|서비스·외식|🍳;요리사|181331|셰프,조리사;한식 조리사|181431|한식;양식 조리사|181331|양식 요리사,레스토랑 요리사;중식 조리사|181431|중식;일식 조리사|181331|일식;제과·제빵사|181331|파티시에,제빵사;바리스타|163420|카페;바텐더|154330|바;주방 보조|0A0510|주방,설거지;서빙 직원|163410|서빙,홀서빙,웨이터;패스트푸드 점원|172510|패스트푸드;급식 조리원|091421|급식;소믈리에|235330|와인;호텔 프런트 직원|514420|호텔리어,프런트;호텔 객실 관리원|091510|룸메이드,하우스키핑;여행 가이드|334331|가이드;여행사 상담원|802430|여행사;관광 통역 안내사|325331|관광통역;항공권 발권원|901520|발권;웨딩플래너|505330|웨딩;파티플래너|325340|파티;이벤트 기획자|523340|행사 기획;청소원|091510|미화원,환경미화원;건물 청소원|091510|빌딩 청소;세탁원|091510|세탁;경비원|253510|경비,아파트 경비;반려동물 훈련사|163340|애견 훈련사;펫시터|064320|반려동물 돌보미;이삿짐 운반원|0A0410|이삿짐,이사 도우미;결혼식 사회자|145340|MC;장례 상담사|334341|상조;외식 매장 매니저|334330|레스토랑 매니저;음식점 사장|343330|식당 사장,자영업(음식점);푸드트럭 운영자|253330|푸드트럭;피자 배달원|091410|피자 배달;아이스크림 매장 직원|172510|아이스크림;영화관 직원|253510|극장;놀이공원 직원|154410|테마파크;노래방·PC방 운영자|343430|PC방,노래방;숙박업소 운영자|334330|모텔,펜션;#beauty|뷰티·헬스|💇;헤어디자이너|073332|미용사,미용실,헤어;바버|073332|이발사;네일아티스트|073322|네일;피부관리사|064322|에스테티션,피부;메이크업 아티스트|163332|메이크업;속눈썹 연장 전문가|073322|속눈썹;반영구 화장사|073332|반영구;마사지사|064321|마사지,안마사;스파 테라피스트|064321|스파;헬스 트레이너|154330|트레이너,PT;필라테스 강사|154330|필라테스;요가 강사|154330|요가;퍼스널 컬러 컨설턴트|235330|퍼스널컬러;이미지 컨설턴트|325330|이미지 메이킹;다이어트 코치|325330|다이어트;뷰티 크리에이터|613340|뷰티 유튜버;화장품 연구원|541350|화장품;조향사|271350|향수;뷰티 매장 판매원|244420|화장품 판매원;반려동물 미용사|172320|애견미용;두피 관리사|064321|두피;탈모 상담사|325330|탈모;체형 교정 전문가|163331|체형교정;#agri|농림어업|🌾;농업인|172330|농부,농업;스마트팜 운영자|541340|스마트팜;축산업자|172330|축산;낙농업자|172330|낙농;양봉업자|091330|양봉;원예 재배원|172320|원예;과수 재배원|172320|과수원;어업인|091331|어부,선원;양식업자|172330|양식장;임업 종사원|091320|임업;산림 기술자|271341|산림;조경 관리원|091320|조경관리;농산물 품질관리원|433432|농산물 검사;농촌지도사|433342|농업기술센터;수산물 경매사|433431|경매사;농기계 운전원|181421|농기계;곡물 가공원|091510|도정;수목 치료사|271342|나무의사;농업 드론 방제사|451421|방제;버섯 재배원|172420|버섯;화훼 재배원|172320|꽃;수산 가공원|091510|수산물 가공;#safety|안전·군·경|🚓;경찰관|253342|경찰,순경;형사|334252|수사관;경호원|154331|경호;소방관|172342|소방,소방공무원;구조대원|172342|119 구조대;직업군인(부사관)|262332|군인,부사관;장교|433342|장교(군);해양경찰|262342|해경;교도관|154332|교정직;보안요원|172510|보안;청원경찰|172421|청원;산업 안전 감독관|433342|근로감독관;재난 안전 관리자|433342|재난안전;사이버 수사관|811352|사이버수사;과학수사 요원|541352|CSI,감식;정보 분석관|901350|정보기관;인명 구조원|163331|라이프가드;도로 교통 관리원|262520|교통 관리;화재 감식관|451352|화재조사;군 정비병|181432|군 정비;#sports|스포츠|⚽;프로 운동선수|163150|운동선수,선수;축구 선수|163150|축구;야구 선수|163150|야구;프로게이머|721250|e스포츠 선수;스포츠 코치|145240|코치,감독(스포츠);체육 교사|235343|체육 선생님;생활체육 지도자|154331|생활체육;수영 강사|154330|수영;태권도 사범|145330|태권도,무술 사범;골프 프로|154340|골프 강사;스포츠 심판|253341|심판;스포츠 해설가|604340|해설위원;스포츠 기자|712340;스포츠 데이터 분석가|901340|스포츠 분석;스포츠 마케터|802330|스포츠마케팅;골프장 캐디|163420|캐디;레저 가이드|145340|등산 가이드,레저;스포츠 트레이너(의무)|163332|선수 트레이너;피트니스 센터 매니저|325330|헬스장 매니저;볼링·당구장 운영자|253430|당구장,볼링장;스키 강사|154330|스키';
+  var CAT = {}, CATS = [], JOBS = [];
+  RAW.split(';').forEach(function (l) {
+    var p = l.split('|');
+    if (l.charAt(0) === '#') { var k = p[0].slice(1); CAT[k] = { k: k, name: p[1], icon: p[2] }; CATS.push(k); return; }
+    var v = p[1].split('').map(function (ch) { return ch === 'A' ? 10 : +ch; });
+    JOBS.push({ n: p[0], c: CATS[CATS.length - 1], D: v[0], P: v[1], H: v[2], R: v[3], J: v[4], L: v[5], al: p[2] ? p[2].split(',') : [] });
+  });
+  var LOSE_KEEP = {
+    it: [['정형 코드 작성·테스트', '문서화·단순 버그 수정', '데이터 처리 반복 작업'], ['무엇을 만들지 정하는 일', '시스템 설계와 장애 책임', 'AI 결과물 검증·보안']],
+    design: [['시안·배리에이션 제작', '이미지 생성·보정', '규격 맞춤 반복 작업'], ['브랜드의 방향과 취향 결정', '고객과 조율하는 일', '실물·공간을 다루는 일']],
+    media: [['초안 작성·번역·요약', '영상·이미지 편집', '교정·자막'], ['현장 취재·인터뷰', '독창적 기획과 관점', '팬과의 관계·신뢰']],
+    art: [['반복적인 제작·편곡', '홍보물·디지털 작업'], ['무대 위의 존재감', '고유한 작품 세계', '관객과의 교감']],
+    mgmt: [['보고서·분석 자료 작성', '시장·경쟁 조사', '일정·성과 관리'], ['방향을 정하는 결정과 책임', '사람을 이끄는 일', '이해관계 조율과 협상']],
+    fin: [['서류 심사·대조', '정형 분석·보고서', '상품 비교·설명'], ['고객과의 신뢰 관계', '복잡한 판단과 서명 책임', '규제·감독 대응']],
+    sales: [['문의 응대·주문 처리', '광고 운영·리포트', '상품 설명·추천'], ['큰 거래 협상', '단골과의 신뢰 관계', '복잡한 불만 해결']],
+    office: [['문서 작성·정리', '데이터 입력·집계', '메일·일정 처리'], ['사람 사이 조율', '예외 상황 판단', '조직 안의 신뢰']],
+    law: [['판례·자료 조사', '서면·서류 초안', '정형 민원 처리'], ['변론·협상·설득', '최종 판단과 법적 책임', '위험한 현장 대응']],
+    edu: [['자료·문제 제작', '채점·피드백 초안', '정해진 지식 전달'], ['동기부여·생활지도', '관계와 돌봄', '평가의 최종 판단']],
+    med: [['영상·검사 판독 보조', '기록·서류·청구', '정형 상담·안내'], ['진찰·시술·수술', '환자와의 신뢰·설명', '최종 진단과 책임']],
+    care: [['기록·일정 관리', '상태 모니터링'], ['몸을 돌보는 일', '정서적 교감', '예측하기 어려운 현장 대응']],
+    eng: [['계산·도면·시뮬레이션', '자료 조사·보고서', '정형 설계 변경'], ['현장 문제 해결', '안전과 품질 책임', '새로운 문제 정의·실험']],
+    build: [['견적·도면 작업', '반복적인 자재 가공'], ['현장마다 다른 설치·수리', '좁고 복잡한 공간 작업', '안전 판단']],
+    mfg: [['반복 조립·가공', '육안 검사', '설비 모니터링'], ['설비 고장 대응', '공정 개선', '다품종 소량 작업']],
+    trans: [['배차·경로 계획', '정형 구간 운전(자율주행)', '창고 분류·운반'], ['예외 상황 대응', '마지막 구간 배송·응대', '안전 책임']],
+    svc: [['주문·예약·결제', '정형 조리·서빙', '기본 안내'], ['손님 응대와 분위기', '섬세한 손기술', '예외 상황 대응']],
+    beauty: [['예약·상담 기록', '스타일 추천 시안'], ['손으로 하는 시술', '고객과의 신뢰·대화', '취향을 읽는 감각']],
+    agri: [['생육 데이터·기록', '정형 수확·선별'], ['날씨·현장 판단', '살아 있는 것을 돌보는 일', '경영 결정']],
+    safety: [['감시·순찰 영상 분석', '서류·보고'], ['위험한 현장 대응', '사람을 보호하는 판단', '법 집행의 책임']],
+    sports: [['경기 분석·데이터', '훈련 기록 관리'], ['몸으로 하는 경기', '선수와의 신뢰·지도', '현장 판정']]
+  };
+  var GRADE = [['매우 높음', '#f04452'], ['높음', '#fe6d4b'], ['보통', '#fe9800'], ['낮음', '#3182f6'], ['매우 낮음', '#1fa27a']];
   function sig(t, c, w) { return 1 / (1 + Math.exp(-4.394 * (t - c) / w)); }
   function parts(f, spd) {
     var r = f.r, j = f.j;
     var ci = (0.6 + 8 * Math.pow(1 - r, 1.3) * (0.5 + 0.5 * j)) * spd, cp = (6 + 14 * (1 - r) + 4 * j) * spd, ch = (11 + 10 * j + 4 * (1 - r)) * spd;
-    return [{ k: 'D', s: f.D, cap: 0.95, c: ci, w: 3 + 0.6 * ci }, { k: 'P', s: f.P, cap: 0.85, c: cp, w: 5 + 0.5 * cp }, { k: 'H', s: f.H, cap: 0.6, c: ch, w: 6 + 0.5 * ch }];
+    return [{ s: f.D, cap: 0.95, c: ci, w: 3 + 0.6 * ci }, { s: f.P, cap: 0.85, c: cp, w: 5 + 0.5 * cp }, { s: f.H, cap: 0.6, c: ch, w: 6 + 0.5 * ch }];
   }
   function tech(t, ps) { return ps.reduce(function (a, p) { return a + p.s * p.cap * sig(t, p.c, p.w); }, 0); }
-  function lagOf(f) { return 0.5 + LAG[f.L]; }
-  /* f: {D,P,H,r,j,L} · speed: 'fast'|'mid'|'slow' 또는 배율 */
-  function calc(f, speed) {
-    var spd = typeof speed === 'number' ? speed : SPD[speed] || SPD.mid, ps = parts(f, spd), lag = lagOf(f);
-    var A = function (t) { return tech(t - lag, ps); };
-    function first(fn, th) { for (var t = 0; t <= MAXY; t += 0.05) if (fn(t) >= th) return Math.round(t * 100) / 100; return null; }
-    var onset = first(A, 0.25), half = first(function (t) { return A(t - 1.5); }, 0.5);
-    var curve = []; for (var y = 0; y <= MAXY; y += 0.5) curve.push(Math.round(A(y) * 1000) / 10);
-    return { onset: onset, half: half, curve: curve, now: Math.round(A(0) * 1000) / 10, lag: lag, parts: ps, ceiling: Math.round(tech(200, ps) * 1000) / 10 };
-  }
-  /* 1~5 단계 → 0~1 */
   function fromRow(x) { return { D: x.D / 10, P: x.P / 10, H: x.H / 10, r: (x.R - 1) / 4, j: (x.J - 1) / 4, L: x.L }; }
-  function grade(y) { return y == null ? 4 : y <= 3 ? 0 : y <= 7 ? 1 : y <= 12 ? 2 : y <= 20 ? 3 : 4; }
-  return { SPD: SPD, LAG: LAG, MAXY: MAXY, calc: calc, fromRow: fromRow, grade: grade, sig: sig };
+  /* x: 직업(또는 같은 모양의 조정값) · speed: 'fast'|'mid'|'slow'|배율 */
+  function calc(x, speed) {
+    var f = fromRow(x), spd = typeof speed === 'number' ? speed : SPD[speed] || SPD.mid, ps = parts(f, spd), lag = 0.5 + LAG[f.L];
+    var A = function (t) { return tech(t - lag, ps); };
+    function first(fn, th) { for (var t = 0; t <= MAXY; t += 1 / 24) if (fn(t) >= th) return Math.round(t * 1000) / 1000; return null; }
+    return { onset: first(A, 0.25), half: first(function (t) { return A(t - 1.5); }, 0.5), now: Math.round(A(0) * 1000) / 10, ceiling: Math.round(tech(200, ps) * 1000) / 10 };
+  }
+  function grade(y) { return y == null ? 4 : y <= 2 ? 0 : y <= 6 ? 1 : y <= 12 ? 2 : y <= 20 ? 3 : 4; }
+  /* 표시 */
+  function span(y) {
+    if (y == null) return MAXY + '년+';
+    var m = Math.max(1, Math.round(y * 12)), a = Math.floor(m / 12), b = m % 12;
+    return a ? a + '년' + (b && a < 10 ? ' ' + b + '개월' : '') : b + '개월';
+  }
+  function when(y, now) {          /* now: 지금(연 + 월/12) */
+    if (y == null) return Math.floor(now + MAXY) + '년 이후';
+    var t = now + y, yy = Math.floor(t + 1e-9), mm = Math.min(12, Math.floor((t - yy) * 12 + 1e-9) + 1);
+    return yy + '년 ' + mm + '월';
+  }
+  function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function badge(g) { return '<span class="jl-g" style="--g:' + GRADE[g][1] + '"><i></i>' + GRADE[g][0] + '</span>'; }
+  /* 찾기: 이름·별칭 (공백·가운뎃점 무시) — 정확히 > 앞부분 > 포함, 이름 > 별칭 */
+  function norm(t) { return String(t || '').toLowerCase().replace(/[\s·・.()\/\-]/g, ''); }
+  JOBS.forEach(function (x) { x.k = norm(x.n); x.ka = x.al.map(norm); });
+  var BY = {}; JOBS.forEach(function (x) { BY[x.n] = x; });
+  function byName(n) { return BY[n] || null; }
+  function suggest(q, n) {
+    q = norm(q); if (!q) return [];
+    var out = [];
+    JOBS.forEach(function (x) {
+      var s = x.k === q ? 0 : x.ka.indexOf(q) >= 0 ? 1 : x.k.indexOf(q) === 0 ? 2 : x.ka.some(function (a) { return a.indexOf(q) === 0; }) ? 3 : x.k.indexOf(q) >= 0 ? 4 : x.ka.some(function (a) { return a.indexOf(q) >= 0; }) ? 5 : -1;
+      if (s >= 0) out.push({ x: x, s: s });
+    });
+    out.sort(function (a, b) { return a.s - b.s || a.x.n.length - b.x.n.length || (a.x.n < b.x.n ? -1 : 1); });
+    return out.slice(0, n || 8).map(function (o) { return o.x; });
+  }
+  function find(q) { var s = suggest(q, 1); return s[0] || null; }
+  /* 한 줄 이유: 빠르게 만드는 것 · 늦추는 것 */
+  function reason(x) {
+    var up = [], dn = [];
+    if (x.D >= 7) up.push('컴퓨터·문서로 하는 일 ' + x.D * 10 + '%');
+    if (x.R >= 4) up.push('매번 비슷한 반복 업무');
+    if (x.P >= 6) dn.push('몸을 쓰는 현장 일 ' + x.P * 10 + '%');
+    if (x.H >= 5) dn.push('사람을 상대하는 일 ' + x.H * 10 + '%');
+    if (x.J >= 4) dn.push('판단·창의·책임');
+    if (x.L >= 2) dn.push(x.L === 3 ? '독점 면허' : '면허 필수');
+    if (!up.length && x.D >= 5) up.push('컴퓨터·문서로 하는 일 ' + x.D * 10 + '%');
+    if (!dn.length && x.H >= 3) dn.push('사람을 상대하는 일 ' + x.H * 10 + '%');
+    return { up: up, dn: dn };
+  }
+  var POP = ['소프트웨어 개발자', '일반행정 공무원', '중·고등학교 교사', '간호사', '공인회계사', '그래픽 디자이너', '마케터', '의사(일반의·전공의)'];
+  /* 순위 한 줄 (화면·정적 HTML 공통) */
+  function rowHTML(i, x, r, now) {
+    var g = grade(r.onset);
+    return '<li class="jl-row" data-job="' + esc(x.n) + '"><span class="jl-no">' + i + '</span><span class="jl-ico" aria-hidden="true">' + CAT[x.c].icon + '</span>' +
+      '<span class="jl-nm"><b>' + esc(x.n) + '</b><small>' + esc(CAT[x.c].name) + '</small></span><span class="jl-yr">' + span(r.onset) + '</span>' +
+      '<span class="jl-dt">' + when(r.onset, now) + '</span>' + badge(g) + '</li>';
+  }
+  /* 전체 순위 (speed 별 계산은 한 번만) */
+  var cache = {};
+  function ranked(speed) {
+    if (cache[speed]) return cache[speed];
+    var list = JOBS.map(function (x) { return { x: x, r: calc(x, speed) }; });
+    list.sort(function (a, b) { var p = a.r.onset == null ? 99 : a.r.onset, q = b.r.onset == null ? 99 : b.r.onset; return p - q || (a.r.half || 99) - (b.r.half || 99) || (a.x.n < b.x.n ? -1 : 1); });
+    return (cache[speed] = list);
+  }
+  return { SPD: SPD, LAG: LAG, MAXY: MAXY, CAT: CAT, CATS: CATS, JOBS: JOBS, LOSE_KEEP: LOSE_KEEP, GRADE: GRADE,
+           calc: calc, grade: grade, span: span, when: when, esc: esc, badge: badge, rowHTML: rowHTML, ranked: ranked, fromRow: fromRow,
+           norm: norm, byName: byName, suggest: suggest, find: find, reason: reason, POP: POP };
 })();
 if (typeof module !== 'undefined') module.exports = JL;
+/* [/JOBLIFE-ENGINE] */
 
-/* [JOBLIFE] 화면 — 직업 163개 데이터 · 입력(data-fc="jl")은 [FC-UI] 공통 처리
-   데이터 형식: 이름|분야|화면 일|현장 일|대면 일(합 10)|반복성 1~5|판단·창의·책임 1~5|면허 0~3|별칭
-   값은 직업의 대표 업무(한국직업사전 직무 개요 수준)를 기준으로 정함 — 연구 근거와 맞는지: 한국은행(2023) 고노출 직업(회계사·자산운용가·변호사·의사)은
-   화면 일 비중이 높고, Microsoft(2025) 상위(통번역·작가·고객상담)·하위(돌봄·현장·설비)와 순서가 맞도록 점검함 */
+/* [JOBLIFE] 화면 — 검색 → 결과 카드 → 전체 순위 (계산·데이터는 위 [JOBLIFE-ENGINE])
+   · 은퇴 비교·내 일 조정 입력(data-fc="jl")과 속도 버튼(.fc-seg)은 [FC-UI] 공통 처리가 render() 를 부름
+   · 주소 #job=직업명 으로 바로 열림 · 공유 카드 dcShareSpec['job-life'] */
 (function () {
   if (!document.getElementById('page-joblife')) return;
-  var RAW = '사무보조원|office|9|0|1|5|1|0|사무원,사무직,사무 보조;일반 사무원(총무·인사)|office|8|0|2|4|2|0|총무,인사담당,인사팀;경리·회계사무원|office|9|0|1|5|2|0|경리,회계직,회계팀;데이터 입력원|office|10|0|0|5|1|0|타이피스트,데이터입력,전산입력;비서|office|7|1|2|4|2|0|비서;인사·노무 담당자|office|7|0|3|3|3|0|HR,인사,노무;기획·전략 담당자|office|8|0|2|2|4|0|기획자,전략기획,사업기획;마케터|office|8|0|2|3|3|0|마케팅,퍼포먼스 마케터,디지털 마케터;홍보 담당자|office|8|0|2|3|3|0|홍보,PR;구매·자재 담당자|office|8|0|2|4|2|0|구매,자재,구매팀;무역사무원|office|9|0|1|4|2|0|무역,수출입;경영 컨설턴트|office|7|0|3|2|4|0|컨설턴트;중간관리자(팀장)|office|5|0|5|2|4|0|팀장,관리자,부장,과장;최고경영자·임원|office|4|0|6|1|5|0|대표,사장,CEO,임원;행정 공무원|office|8|0|2|4|3|2|공무원,9급 공무원,7급 공무원,주무관;법률사무원|office|9|0|1|4|2|0|법무사무원,법률사무;시장조사 분석가|office|9|0|1|3|3|0|시장조사,리서처,리서치;은행원(창구)|fin|6|1|3|5|2|1|은행원,텔러,창구;보험 설계사|fin|4|1|5|3|2|1|보험설계사,FC,보험영업;손해사정사·보험 심사원|fin|8|0|2|4|3|2|손해사정사,언더라이터,보험심사;증권 애널리스트|fin|9|0|1|3|4|1|애널리스트,리서치 애널리스트;자산운용가(펀드매니저)|fin|8|0|2|3|4|2|펀드매니저,자산운용;공인회계사|fin|8|0|2|3|4|2|회계사,CPA;세무사|fin|8|0|2|4|3|2|세무사,세무;재무 설계사(PB)|fin|6|0|4|3|3|1|PB,재무상담,FP;대출 심사원|fin|9|0|1|4|3|1|여신심사,대출심사;감정평가사|fin|6|2|2|3|3|3|감정평가;변호사|law|7|0|3|2|5|3|변호사,로펌;판사·검사|law|7|0|3|2|5|3|판사,검사,법관;법무사|law|8|0|2|4|3|3|법무사;변리사|law|8|0|2|3|4|3|변리사,특허;경찰관|law|2|5|3|2|4|2|경찰,순경;소방관|law|1|7|2|2|4|2|소방관,소방공무원;직업군인|law|2|6|2|3|3|2|군인,부사관,장교;교도관|law|1|5|4|3|3|2|교도관;세관·출입국 심사관|law|5|2|3|4|3|2|세관,출입국;소프트웨어 개발자|it|9|0|1|3|4|0|개발자,프로그래머,백엔드,프론트엔드,SW 개발자;웹 개발자|it|9|0|1|4|3|0|웹퍼블리셔,퍼블리셔;앱 개발자|it|9|0|1|3|4|0|모바일 개발자,iOS,안드로이드;데이터 분석가|it|9|0|1|3|4|0|데이터 사이언티스트,데이터분석;AI·머신러닝 엔지니어|it|9|0|1|2|5|0|AI 엔지니어,머신러닝,ML;정보보안 전문가|it|8|1|1|3|4|1|보안,정보보호,해커;시스템·네트워크 관리자|it|7|2|1|4|3|1|네트워크,인프라,서버 관리자;QA·소프트웨어 테스터|it|9|0|1|5|2|0|테스터,QA;IT 헬프데스크|it|7|1|2|5|2|0|헬프데스크,전산실;UX·UI 디자이너|it|8|0|2|3|4|0|UI 디자이너,UX 디자이너,프로덕트 디자이너;프로덕트 매니저(PM)|it|6|0|4|2|4|0|PM,PO,서비스 기획자;게임 개발자|it|9|0|1|3|4|0|게임 프로그래머,게임 기획;연구원(자연과학)|eng|7|2|1|2|5|0|연구원,과학자,연구직;화학공학 기술자|eng|6|3|1|3|4|1|화학 엔지니어,화공;기계공학 기술자|eng|6|3|1|3|4|1|기계 엔지니어,기계설계;전기·전자공학 기술자|eng|6|3|1|3|4|1|전자 엔지니어,전기 엔지니어;반도체 공정 엔지니어|eng|6|3|1|3|4|0|반도체 엔지니어,공정 엔지니어;건축가|eng|6|2|2|2|5|3|건축사,건축설계;토목 기술자|eng|5|4|1|3|4|1|토목,토목기사;CAD 설계·제도사|eng|9|0|1|5|2|0|제도사,CAD,캐드;품질관리 기술자|eng|6|3|1|4|3|1|QC,품질관리,QA 엔지니어;환경공학 기술자|eng|6|3|1|3|3|1|환경 엔지니어;초등학교 교사|edu|3|2|5|2|4|3|초등교사,초등 선생님;중·고교 교사|edu|4|1|5|2|4|3|교사,선생님,중학교 교사,고등학교 교사;대학 교수|edu|6|0|4|2|5|1|교수,강사(대학);유치원 교사|edu|1|3|6|2|3|3|유치원;학원 강사|edu|5|0|5|3|3|0|강사,학원,입시강사;온라인 강의 강사|edu|8|0|2|3|3|0|인강,인터넷 강의;외국어 강사|edu|5|0|5|3|3|0|영어강사,어학강사;특수교사|edu|1|3|6|2|4|3|특수교육;교육 행정 직원|edu|8|0|2|4|2|1|교직원,교육행정;의사(일반의·내과)|med|5|2|3|3|5|3|의사,내과,가정의학과,일반의;외과 의사|med|2|6|2|2|5|3|외과,외과의;영상의학과 의사|med|8|1|1|3|5|3|영상의학,방사선과 의사;치과의사|med|2|6|2|3|4|3|치과;한의사|med|3|4|3|3|4|3|한의원,한의;약사|med|5|3|2|4|3|3|약국;간호사|med|2|4|4|3|4|3|간호;간호조무사|med|1|5|4|4|2|2|간호조무;물리치료사|med|1|6|3|3|3|3|물리치료,재활치료;임상병리사|med|5|4|1|4|3|3|임상병리;방사선사|med|4|4|2|4|3|3|방사선;보건의료정보관리사|med|9|0|1|5|2|2|의무기록사,의무기록;수의사|med|3|5|2|3|4|3|동물병원;응급구조사|med|1|7|2|3|4|2|구급대원;심리상담사|med|3|0|7|2|4|1|상담사,심리치료사,상담심리;영양사|med|6|2|2|4|3|2|영양;요양보호사|care|0|6|4|3|2|1|요양,요양원;간병인|care|0|6|4|3|2|0|간병;사회복지사|care|4|1|5|3|3|2|복지사,사회복지;보육교사(어린이집)|care|1|4|5|3|2|2|보육교사,어린이집;장애인 활동지원사|care|0|6|4|3|2|1|활동지원사;가사도우미|care|0|8|2|4|1|0|가사관리사,가사;베이비시터|care|0|5|5|3|2|0|아이돌보미,육아도우미;번역가|media|10|0|0|4|3|0|번역;통역사|media|6|0|4|4|3|0|통역;기자|media|7|1|2|3|4|0|취재기자,언론인;편집자|media|9|0|1|4|3|0|에디터,출판 편집;작가(소설·시나리오)|media|9|0|1|2|5|0|작가,소설가,시나리오 작가,드라마 작가;카피라이터|media|9|0|1|3|3|0|광고 카피;콘텐츠 마케터·블로거|media|9|0|1|4|2|0|블로거,콘텐츠 마케터;웹툰·일러스트 작가|media|9|0|1|3|4|0|웹툰,일러스트레이터,만화가;그래픽 디자이너|media|9|0|1|3|3|0|디자이너,시각 디자이너,편집 디자이너;영상 편집자|media|9|0|1|4|3|0|영상편집,PD(편집);사진작가|media|3|5|2|3|3|0|사진가,포토그래퍼;아나운서·성우|media|5|1|4|3|3|0|아나운서,성우;유튜버·크리에이터|media|6|1|3|3|4|0|유튜버,크리에이터,인플루언서;배우|media|1|4|5|2|5|0|연기자;가수·연주자|media|2|4|4|2|5|0|가수,연주자,음악가;작곡가|media|8|1|1|3|4|0|작곡,프로듀서;패션 디자이너|media|6|2|2|3|4|0|의상 디자이너;인테리어 디자이너|media|5|3|2|3|4|0|인테리어;큐레이터·학예사|media|5|2|3|3|4|1|큐레이터,학예사;성직자|media|1|1|8|2|5|0|목사,신부,스님,종교인;콜센터 상담원|sales|7|0|3|5|1|0|상담원,콜센터,CS,고객상담;텔레마케터|sales|7|0|3|5|1|0|텔레마케팅,TM;영업 사원|sales|4|1|5|3|3|0|영업,영업직,B2B 영업;매장 판매원|sales|2|4|4|4|1|0|판매원,점원,매장 직원;계산원(캐셔)|sales|3|5|2|5|1|0|캐셔,마트 계산원;공인중개사|sales|5|2|3|3|3|2|부동산 중개사,부동산;자동차 영업사원|sales|3|2|5|3|3|0|카딜러,자동차 딜러;상품기획자(MD)|sales|8|0|2|3|3|0|MD,머천다이저;온라인 쇼핑몰 운영자|sales|9|0|1|4|3|0|쇼핑몰,스마트스토어,이커머스;택시 기사|trans|1|8|1|4|2|1|택시;버스 기사|trans|1|8|1|5|2|1|버스;화물차 운전사|trans|1|9|0|4|2|1|트럭,화물,화물차;배달 라이더|trans|1|9|0|4|1|0|배달,배달기사,라이더;택배 기사|trans|1|8|1|4|1|0|택배;물류창고 작업원|trans|1|9|0|5|1|0|물류,상하차,창고;항공기 조종사|trans|3|6|1|4|4|3|파일럿,기장;항공 승무원|trans|1|5|4|4|2|1|승무원,스튜어디스;선박 항해사|trans|3|6|1|4|3|3|항해사,선장;철도 기관사|trans|2|7|1|5|3|2|기관사,지하철 기관사;전기공|build|1|8|1|3|3|2|전기기사,전기기능사;배관공|build|0|9|1|3|3|1|배관;건설 현장 노동자|build|0|10|0|3|1|0|건설노동자,노가다,일용직;목수|build|1|8|1|3|3|0|목공;도배·도장공|build|0|9|1|4|2|0|도배사,페인트공,도장공;용접공|build|1|9|0|4|2|1|용접;자동차 정비사|build|2|7|1|3|3|1|정비사,카센터;냉난방 설비 기사|build|1|8|1|3|3|1|에어컨 설치,보일러;중장비 운전원|build|1|9|0|4|2|2|크레인,굴착기,포크레인;엘리베이터 설치·수리원|build|1|8|1|3|3|1|승강기;생산직(조립)|mfg|1|9|0|5|1|0|생산직,공장,조립;기계 조작원|mfg|2|8|0|5|2|0|CNC,선반,기계가공;발전장치 조작원|mfg|5|4|1|4|3|2|발전소,발전원;품질 검사원|mfg|3|7|0|5|2|0|검사원,검수;반도체 생산 오퍼레이터|mfg|3|7|0|5|2|0|오퍼레이터,반도체 생산직;식품 가공원|mfg|1|9|0|5|1|0|식품공장;봉제원|mfg|1|9|0|5|1|0|봉제,재봉;요리사|svc|1|8|1|3|3|1|셰프,조리사;주방 보조|svc|0|10|0|5|1|0|주방,설거지;바리스타|svc|1|6|3|4|2|0|카페;서빙·홀 직원|svc|1|6|3|4|1|0|서빙,홀서빙,웨이터;호텔 프런트 직원|svc|5|1|4|4|2|0|호텔리어,프런트;미용사|svc|0|7|3|3|3|2|헤어디자이너,미용실;네일·피부 관리사|svc|0|7|3|3|2|2|피부관리사,네일아티스트;청소원|svc|0|9|1|5|1|0|미화원,환경미화원;경비원|svc|2|5|3|5|1|0|경비,아파트 경비;여행 가이드|svc|3|3|4|3|3|1|가이드,관광통역;웨딩플래너|svc|5|1|4|3|3|0|웨딩;헬스 트레이너|svc|1|5|4|3|3|0|트레이너,PT,필라테스 강사;반려동물 미용사|svc|0|8|2|3|2|0|애견미용;농업인|etc|2|8|0|3|3|0|농부,농업;어업인|etc|1|9|0|3|3|1|어부,선원;자영업자(소상공인)|etc|4|3|3|3|3|0|자영업,사장님,가게 사장;프리랜서 지식노동자|etc|9|0|1|3|3|0|프리랜서';
-  var CAT = {
-    office: ['경영·사무·행정', ['문서 작성·요약·정리', '데이터 입력·집계·대조', '메일·일정·보고서 초안'], ['이해관계 조율과 협상', '최종 결정과 그 책임', '사람 관리·조직 운영']],
-    fin: ['금융·보험·회계', ['서류 심사·대조', '정형 분석·보고서 작성', '상품 비교·설명'], ['고객과의 신뢰 관계', '복잡한 판단과 서명 책임', '규제·감독 대응']],
-    law: ['법률·공공·안전', ['판례·자료 조사', '서면·서류 초안', '정형 민원 처리'], ['변론·협상·설득', '최종 판단과 법적 책임', '위험한 현장 대응']],
-    it: ['IT·개발', ['정형 코드 작성·테스트', '문서화·단순 버그 수정', '화면·데이터 처리 반복 작업'], ['무엇을 만들지 정하는 일', '시스템 설계와 장애 책임', 'AI 결과물 검증·보안']],
-    eng: ['연구·공학', ['계산·도면·시뮬레이션', '자료 조사·보고서', '정형 설계 변경'], ['현장 문제 해결', '안전과 품질 책임', '새로운 문제 정의·실험']],
-    edu: ['교육', ['자료·문제 제작', '채점·피드백 초안', '정해진 지식 전달 강의'], ['동기부여·생활지도', '관계와 돌봄', '평가의 최종 판단']],
-    med: ['의료·보건', ['영상·검사 판독 보조', '기록·서류·보험 청구', '정형 상담·안내'], ['진찰·시술·수술', '환자와의 신뢰·설명', '최종 진단과 책임']],
-    care: ['복지·돌봄', ['기록·일정 관리', '상태 모니터링'], ['몸을 돌보는 일', '정서적 교감', '예측하기 어려운 현장 대응']],
-    media: ['미디어·예술·디자인', ['초안 작성·번역', '이미지·영상 생성', '편집·교정'], ['독창적 기획과 취향', '팬·고객과의 관계와 브랜드', '현장 취재·공연']],
-    sales: ['영업·판매·고객', ['문의 응대·주문 처리', '상품 설명·추천', '계산·결제'], ['큰 거래 협상', '단골과의 신뢰 관계', '복잡한 불만 해결']],
-    trans: ['운송·물류', ['배차·경로 계획', '정형 구간 운전(자율주행)', '창고 분류·운반'], ['예외 상황 대응', '마지막 구간 배송·고객 응대', '안전 책임']],
-    build: ['건설·설비·정비', ['견적·도면 작업', '반복적인 자재 가공'], ['현장마다 다른 설치·수리', '좁고 복잡한 공간 작업', '안전 판단']],
-    mfg: ['제조·생산', ['반복 조립·가공', '육안 검사', '설비 모니터링'], ['설비 고장 대응', '공정 개선', '다품종 소량 작업']],
-    svc: ['음식·숙박·개인 서비스', ['주문·예약·결제', '정형 조리·서빙', '안내·응대 기본'], ['손님 응대와 분위기', '섬세한 손기술', '예외 상황 대응']],
-    etc: ['농림어업·자영업·기타', ['정형 작업·기록', '시세·데이터 분석'], ['현장 판단', '사람 관계', '사업 결정']]
-  };
-  var POP = ['소프트웨어 개발자', '행정 공무원', '중·고교 교사', '간호사', '공인회계사', '그래픽 디자이너', '마케터', '콜센터 상담원', '의사(일반의·내과)', '은행원(창구)'];
-  var GRADE = [['매우 높음', '#f04452'], ['높음', '#fe6d4b'], ['보통', '#fe9800'], ['낮음', '#3182f6'], ['매우 낮음', '#1fa27a']];
-  var JOBS = RAW.split(';').map(function (l) {
-    var a = l.split('|');
-    return { n: a[0], c: a[1], D: +a[2], P: +a[3], H: +a[4], R: +a[5], J: +a[6], L: +a[7], al: a[8] ? a[8].split(',') : [] };
-  });
   function $(id) { return document.getElementById(id); }
   function setT(id, v) { var e = $(id); if (e) e.textContent = v; }
   function setH(id, v) { var e = $(id); if (e) e.innerHTML = v; }
-  function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  var esc = JL.esc;
   function num(id) { var e = $(id); return e ? (parseFloat(String(e.value).replace(/,/g, '')) || 0) : 0; }
-  function amt(id) { var e = $(id); return Math.round(num(id) * ({ eok: 1e8, man: 1e4, won: 1 }[e && e.getAttribute('data-unit')] || 1)); }
   function seg(name) { var b = document.querySelector('.fc-seg[data-name="' + name + '"] .mode-btn.active'); return b ? b.getAttribute('data-v') : null; }
   function setSeg(name, v) { document.querySelectorAll('.fc-seg[data-name="' + name + '"] .mode-btn').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-v') === String(v)); }); }
   function eok(n) {
@@ -25953,135 +26137,156 @@ if (typeof module !== 'undefined') module.exports = JL;
     var e = Math.floor(n / 1e8), m = Math.round((n - e * 1e8) / 1e4);
     return !e ? m.toLocaleString('ko-KR') + '만원' : e.toLocaleString('ko-KR') + '억' + (m ? ' ' + m.toLocaleString('ko-KR') + '만원' : '원');
   }
-  function yrs(y) {                         /* 남은 기간 글자 */
-    if (y == null) return '40년 이상';
-    if (y < 1) return Math.max(1, Math.round(y * 12)) + '개월';
-    var t = Math.round(y * 12), a = Math.floor(t / 12), b = t % 12;
-    return a >= 10 ? '약 ' + Math.round(y) + '년' : a + '년' + (b ? ' ' + b + '개월' : '');
-  }
   var NOW = (function () { var d = new Date(); return d.getFullYear() + d.getMonth() / 12; })();
-  function yearOf(y) { return y == null ? (Math.floor(NOW) + JL.MAXY) + '년 이후' : Math.floor(NOW + y) + '년'; }
-  function byName(n) { for (var i = 0; i < JOBS.length; i++) if (JOBS[i].n === n) return JOBS[i]; return null; }
-  function find(q) {                        /* 이름·별칭 정확히 → 포함 순으로 */
-    q = String(q || '').trim().toLowerCase(); if (!q) return null;
-    var ex = JOBS.filter(function (j) { return j.n.toLowerCase() === q || j.al.some(function (a) { return a.toLowerCase() === q; }); });
-    if (ex.length) return ex[0];
-    var inc = JOBS.filter(function (j) { return j.n.toLowerCase().indexOf(q) >= 0 || j.al.some(function (a) { return a.toLowerCase().indexOf(q) >= 0; }); });
-    return inc.length === 1 ? inc[0] : null;
+  var SPN = { fast: '빠름', mid: '보통', slow: '느림' };
+  var cur = null, moved = null, ready = false, list = { cat: 'all', ord: 'asc', lim: 30 }, sugIdx = -1, sugs = [];
+  function spd() { return seg('jl-spd') || 'mid'; }
+  function setInputs(j) { $('jl-d').value = j.D; $('jl-p').value = j.P; $('jl-r').value = j.R; $('jl-j').value = j.J; setSeg('jl-l', j.L); }
+  function custom(j) { return +$('jl-d').value !== j.D || +$('jl-p').value !== j.P || +$('jl-r').value !== j.R || +$('jl-j').value !== j.J || +(seg('jl-l') || 0) !== j.L; }
+
+  /* ── 검색 제안 ── */
+  function showSug() {
+    var q = $('jl-q').value, box = $('jl-sug');
+    sugs = JL.suggest(q, 8); sugIdx = sugs.length ? 0 : -1;
+    if (!String(q).trim()) { box.hidden = true; $('jl-q').setAttribute('aria-expanded', 'false'); return; }
+    box.innerHTML = sugs.length ? sugs.map(function (x, i) {
+      return '<li role="option" data-job="' + esc(x.n) + '"' + (i === 0 ? ' class="on" aria-selected="true"' : '') + '><span aria-hidden="true">' + JL.CAT[x.c].icon + '</span>' + esc(x.n) + '<small>' + esc(JL.CAT[x.c].name) + '</small></li>';
+    }).join('') : '<li class="none">찾는 직업이 없어요 — 하는 일이 비슷한 직업을 고른 뒤 ‘내 일에 맞게 조정하기’를 써 보세요</li>';
+    box.hidden = false; $('jl-q').setAttribute('aria-expanded', 'true');
   }
-  var cur = null, moved = null, chart = null, share = null, ready = false;
-  function setInputs(j) {                   /* 직업 기본값을 '내 업무 조정' 칸에 */
-    $('jl-d').value = j.D; $('jl-p').value = j.P; $('jl-r').value = j.R; $('jl-j').value = j.J; setSeg('jl-l', j.L);
+  function hideSug() { $('jl-sug').hidden = true; $('jl-q').setAttribute('aria-expanded', 'false'); }
+  function moveSug(d) {
+    if (!sugs.length) return;
+    sugIdx = (sugIdx + d + sugs.length) % sugs.length;
+    $('jl-sug').querySelectorAll('li[data-job]').forEach(function (li, i) { li.classList.toggle('on', i === sugIdx); li.setAttribute('aria-selected', i === sugIdx ? 'true' : 'false'); if (i === sugIdx) li.scrollIntoView({ block: 'nearest' }); });
+  }
+
+  /* ── 직업 고르기 ── */
+  function pick(n, scroll) {
+    var j = JL.byName(n); if (!j) return;
+    cur = j; setInputs(j); hideSug(); $('jl-q').value = j.n; $('jl-q').blur();
+    $('jl-res').hidden = false; render();
+    if (scroll) $('jl-res').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
   function init() {
     if (ready) return; ready = true;
-    var sel = $('jl-job'), html = '';
-    Object.keys(CAT).forEach(function (c) {
-      var list = JOBS.filter(function (j) { return j.c === c; }); if (!list.length) return;
-      html += '<optgroup label="' + esc(CAT[c][0]) + '">' + list.map(function (j) { return '<option value="' + esc(j.n) + '">' + esc(j.n) + '</option>'; }).join('') + '</optgroup>';
+    setT('jl-n', JL.JOBS.length); setT('jl-cnt', JL.JOBS.length);
+    setH('jl-cats', '<button type="button" class="on" data-cat="all">전체</button>' + JL.CATS.map(function (k) { return '<button type="button" data-cat="' + k + '">' + JL.CAT[k].icon + ' ' + esc(JL.CAT[k].name) + '</button>'; }).join(''));
+    var q = $('jl-q');
+    q.addEventListener('input', showSug);
+    q.addEventListener('focus', function () { if (q.value && (!cur || q.value !== cur.n)) showSug(); });
+    q.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown') { e.preventDefault(); if ($('jl-sug').hidden) showSug(); else moveSug(1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); moveSug(-1); }
+      else if (e.key === 'Escape') hideSug();
+      else if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); if ($('jl-sug').hidden) showSug(); if (sugs.length) pick(sugs[Math.max(0, sugIdx)].n, true); }
     });
-    sel.innerHTML = html;
-    var dl = '';
-    JOBS.forEach(function (j) { dl += '<option value="' + esc(j.n) + '">'; j.al.forEach(function (a) { dl += '<option value="' + esc(a) + '" label="' + esc(j.n) + '">'; }); });
-    $('jl-list').innerHTML = dl;
-    $('jl-chips').innerHTML = POP.map(function (n) { return '<button type="button" data-job="' + esc(n) + '">' + esc(n.replace(/\(.*\)/, '')) + '</button>'; }).join('');
-    var h = /(?:^|[#&])job=([^&]+)/.exec(location.hash), start = h ? byName(decodeURIComponent(h[1])) : null;
-    cur = start || byName('소프트웨어 개발자'); sel.value = cur.n; setInputs(cur);
-    function pick(n) { var j = byName(n); if (!j) return; sel.value = j.n; $('jl-q').value = ''; cur = null; render(); }
-    $('jl-chips').addEventListener('click', function (e) { var b = e.target.closest('button[data-job]'); if (b) pick(b.getAttribute('data-job')); });
-    $('jl-cmp').addEventListener('click', function (e) { var r = e.target.closest('tr[data-job]'); if (r) { pick(r.getAttribute('data-job')); $('jl-hero').scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
-    $('jl-rand').addEventListener('click', function () { var j = JOBS[Math.floor(Math.random() * JOBS.length)]; pick(j.n); });
+    q.addEventListener('blur', function () { setTimeout(hideSug, 150); });
+    $('jl-sug').addEventListener('mousedown', function (e) { var li = e.target.closest('li[data-job]'); if (li) { e.preventDefault(); pick(li.getAttribute('data-job'), true); } });
+    $('jl-rand').addEventListener('click', function () { pick(JL.JOBS[Math.floor(Math.random() * JL.JOBS.length)].n, true); });
+    $('jl-close').addEventListener('click', function () {
+      $('jl-res').hidden = true; cur = null; $('jl-q').value = ''; render();
+      try { if (/[#&]job=/.test(location.hash)) history.replaceState(history.state, '', location.pathname + location.search); } catch (e) {}
+    });
     $('jl-reset').addEventListener('click', function () { if (cur) { setInputs(cur); render(); } });
     ['jl-d', 'jl-p'].forEach(function (id) { $(id).addEventListener('input', function () { moved = id; }); });
+    $('page-joblife').addEventListener('click', function (e) {
+      var r = e.target.closest('[data-job]');
+      if (r && (r.classList.contains('jl-row') || r.classList.contains('jl-card'))) { pick(r.getAttribute('data-job'), true); return; }
+      var c = e.target.closest('#jl-cats button[data-cat]');
+      if (c) { list.cat = c.getAttribute('data-cat'); list.lim = 30; drawLists(); return; }
+      var s = e.target.closest('#jl-sort button');
+      if (s) { list.ord = s.getAttribute('data-v'); list.lim = 30; drawLists(); return; }
+      if (e.target.closest('#jl-morebtn')) { list.lim += 60; drawLists(); }
+    });
+    $('page-joblife').addEventListener('keydown', function (e) {   /* 순위 줄·카드: 키보드로도 열기 */
+      var r = e.target.closest && e.target.closest('.jl-row[data-job]');
+      if (r && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); pick(r.getAttribute('data-job'), true); }
+    });
+    var h = /(?:^|[#&])job=([^&]+)/.exec(location.hash), start = null;
+    try { start = h ? JL.byName(decodeURIComponent(h[1])) : null; } catch (e) {}
+    if (start) { cur = start; setInputs(start); $('jl-q').value = start.n; $('jl-res').hidden = false; }
   }
-  function custom(j) {                      /* 조정 칸 값이 직업 기본값과 다른가 */
-    return +$('jl-d').value !== j.D || +$('jl-p').value !== j.P || +$('jl-r').value !== j.R || +$('jl-j').value !== j.J || +(seg('jl-l') || 0) !== j.L;
+
+  /* ── 많이 찾는 직업 · TOP 5 · 전체 순위 ── */
+  function drawLists() {
+    var sp = spd(), all = JL.ranked(sp);
+    setH('jl-pop', JL.POP.map(function (n) {
+      var x = JL.byName(n), r = JL.calc(x, sp);
+      return '<button type="button" class="jl-card" data-job="' + esc(n) + '"><span class="e" aria-hidden="true">' + JL.CAT[x.c].icon + '</span><b>' + esc(n) + '</b><small><em>' + JL.span(r.onset) + '</em> 남음</small></button>';
+    }).join(''));
+    setH('jl-top', all.slice(0, 5).map(function (o, i) { return mark(JL.rowHTML(i + 1, o.x, o.r, NOW), o.x); }).join(''));
+    var rows = list.cat === 'all' ? all : all.filter(function (o) { return o.x.c === list.cat; });
+    if (list.ord === 'desc') rows = rows.slice().reverse();
+    var n = Math.min(list.lim, rows.length);
+    setH('jl-all', rows.slice(0, n).map(function (o, i) { return mark(JL.rowHTML(list.ord === 'desc' ? rows.length - i : i + 1, o.x, o.r, NOW), o.x); }).join(''));
+    setT('jl-shown', (list.cat === 'all' ? '전체' : JL.CAT[list.cat].name) + ' ' + rows.length + '개 중 ' + n + '개 · 속도 ' + SPN[sp]);
+    $('jl-morebtn').hidden = n >= rows.length;
+    document.querySelectorAll('#jl-cats button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-cat') === list.cat); });
+    document.querySelectorAll('#jl-sort button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-v') === list.ord); });
   }
+  function mark(html, x) { return html.replace('<li class="jl-row"', '<li class="jl-row' + (cur && cur.n === x.n ? ' cur' : '') + '" tabindex="0"'); }
+
+  /* ── 결과 카드 ── */
   function render() {
     init();
-    var q = $('jl-q').value, hit = find(q), sel = $('jl-job');
-    if (hit && hit.n !== sel.value) sel.value = hit.n;
-    var j = byName(sel.value) || JOBS[0];
-    if (!cur || cur.n !== j.n) { cur = j; setInputs(j); }
-    /* 화면 일 + 현장 일 ≤ 10 (나머지가 대면 일) */
+    drawLists();
+    if (!cur || $('jl-res').hidden) { (window.dcShareSpec = window.dcShareSpec || {})['job-life'] = null; return; }
+    var j = cur, sp = spd();
     var d = +$('jl-d').value, p = +$('jl-p').value;
     if (d + p > 10) { if (moved === 'jl-p') { d = 10 - p; $('jl-d').value = d; } else { p = 10 - d; $('jl-p').value = p; } }
     var hh = 10 - d - p, R = +$('jl-r').value, J = +$('jl-j').value, L = +(seg('jl-l') || 0);
     setT('jl-d-v', d * 10 + '%'); setT('jl-p-v', p * 10 + '%'); setT('jl-h-v', '→ 사람을 상대하는 일(대면·돌봄·설득) ' + hh * 10 + '%');
     setT('jl-r-v', ['매번 다름', '다른 편', '보통', '비슷한 편', '거의 같음'][R - 1]); setT('jl-j-v', ['거의 없음', '조금', '보통', '많이', '핵심 업무'][J - 1]);
-    var isCustom = custom(j), row = { D: d, P: p, H: hh, R: R, J: J, L: L }, spd = seg('jl-spd') || 'mid';
-    var f = JL.fromRow(row), r = JL.calc(f, spd), g = JL.grade(r.onset);
-    var age = num('jl-age'), ret = num('jl-ret'), toRet = ret > age && age > 0 ? ret - age : null, cost = amt('jl-cost');
-    setT('jl-label', j.n + (isCustom ? ' (내 업무로 조정)' : '') + '의 밥그릇 수명');
-    setT('jl-val', yrs(r.onset));
-    setT('jl-sub', r.onset == null ? '앞으로 ' + JL.MAXY + '년 안에는 AI·로봇이 이 일의 4분의 1도 대신하기 어렵다고 봅니다' : yearOf(r.onset) + '쯤부터 기업이 이 일에 사람을 덜 뽑기 시작합니다');
-    setH('jl-risk', '<span style="background:' + GRADE[g][1] + '1f;color:' + GRADE[g][1] + ';border-color:' + GRADE[g][1] + '55">AI 대체 위험 ' + GRADE[g][0] + '</span><small>' + CAT[j.c][0] + ' · 지금 이미 ' + r.now.toFixed(0) + '% 대체 중 · 끝까지 사람 몫 ' + (100 - r.ceiling).toFixed(0) + '%</small>');
-    setT('jl-k1', yearOf(r.onset)); setT('jl-k2', yearOf(r.half));
-    setT('jl-k3', toRet != null ? Math.floor(NOW + toRet) + '년 (' + toRet + '년 뒤)' : '—');
-    var v = '';
-    if (toRet != null) {
-      if (r.onset == null || r.onset >= toRet) v = '<b class="jl-ok">은퇴가 먼저입니다.</b> 은퇴(' + Math.floor(NOW + toRet) + '년)까지 이 일로 버틸 가능성이 높습니다. 다만 임금 상승은 먼저 둔해질 수 있습니다.';
-      else v = '<b class="jl-bad">밥그릇이 ' + yrs(toRet - r.onset).replace('약 ', '') + ' 먼저 흔들립니다.</b> 은퇴까지 ' + toRet + '년 남았지만, ' + yrs(r.onset) + ' 뒤부터 이 일의 자리가 줄어듭니다.';
-    }
-    setH('jl-verdict', v);
-    /* 그래프 */
-    if (window.Chart) {
-      var labels = r.curve.map(function (_, i) { return i % 2 ? '' : String(Math.floor(NOW) + i / 2); });
-      var dark = document.documentElement.getAttribute('data-theme') !== 'light';
-      var grid = dark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.06)', tick = dark ? '#8b8b94' : '#6b7280';
-      var ds = [{ label: '대체 비중', data: r.curve, borderColor: GRADE[g][1], backgroundColor: GRADE[g][1] + '22', fill: true, pointRadius: 0, borderWidth: 2, tension: 0.25 },
-                { label: '채용 감소 (25%)', data: r.curve.map(function () { return 25; }), borderColor: '#fe9800', borderDash: [5, 4], pointRadius: 0, borderWidth: 1.2, fill: false },
-                { label: '절반 대체 (50%)', data: r.curve.map(function () { return 50; }), borderColor: '#f04452', borderDash: [5, 4], pointRadius: 0, borderWidth: 1.2, fill: false }];
-      if (toRet != null && toRet <= JL.MAXY) ds.push({ label: '내 은퇴', data: r.curve.map(function (_, i) { return Math.abs(i / 2 - toRet) < 0.26 ? r.curve[i] : null; }), borderColor: '#3182f6', backgroundColor: '#3182f6', pointRadius: 6, pointStyle: 'rectRot', showLine: false });
-      var opt = { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: 'index', intersect: false },
-        plugins: { legend: { display: true, labels: { color: tick, boxWidth: 12, font: { size: 11 } } }, tooltip: { callbacks: { title: function (c) { return (Math.floor(NOW) + c[0].dataIndex / 2).toFixed(1).replace('.0', '') + '년'; }, label: function (c) { return c.parsed.y == null ? null : ' ' + c.dataset.label + ': ' + c.parsed.y.toFixed(0) + '%'; } } } },
-        scales: { x: { ticks: { color: tick, font: { size: 11 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 9 }, grid: { display: false } },
-                  y: { min: 0, max: 100, ticks: { color: tick, font: { size: 11 }, stepSize: 25, callback: function (x) { return x + '%'; } }, grid: { color: grid } } } };
-      if (chart) { chart.data.labels = labels; chart.data.datasets = ds; chart.options = opt; chart.update('none'); }
-      else chart = new Chart($('jl-chart'), { type: 'line', data: { labels: labels, datasets: ds }, options: opt });
-    }
-    /* 요인 */
-    var F = [['화면 일 (컴퓨터·문서·데이터)', d / 10, 1, 'AI가 가장 먼저 해내는 일'], ['반복성', (R - 1) / 4, 1, '매번 같을수록 빨리 대체'],
-             ['현장 일 (몸을 쓰는 일)', p / 10, 0, '로봇이 따라오기까지 오래 걸림'], ['사람을 상대하는 일', hh / 10, 0, '신뢰·돌봄은 가장 늦고 일부는 끝까지 사람'],
-             ['판단·창의·책임', (J - 1) / 4, 0, '정답이 없는 결정일수록 늦게'], ['면허·규제', L / 3, 0, L ? '제도가 바뀔 때까지 약 ' + JL.LAG[L] + '년 늦춤' : '면허가 없어 늦추는 효과 없음']];
-    setH('jl-factors', F.map(function (x) {
-      var c = x[2] ? '#f04452' : '#3182f6';
-      return '<div class="jl-f"><div class="jl-f-h"><span>' + x[0] + '</span><b style="color:' + (x[1] > 0.05 ? c : 'var(--text3)') + '">' + (x[1] > 0.05 ? (x[2] ? '빠르게 ▲' : '늦게 ▼') : '영향 작음') + '</b></div>' +
-        '<div class="jl-f-bar"><i style="width:' + Math.round(x[1] * 100) + '%;background:' + c + '"></i></div><small>' + x[3] + '</small></div>';
-    }).join(''));
-    setH('jl-lose', CAT[j.c][1].map(function (t) { return '<li>' + esc(t) + '</li>'; }).join(''));
-    setH('jl-keep', CAT[j.c][2].map(function (t) { return '<li>' + esc(t) + '</li>'; }).join(''));
-    /* 자본소득 준비 */
+    var isC = custom(j), x = { D: d, P: p, H: hh, R: R, J: J, L: L }, r = JL.calc(x, sp), g = JL.grade(r.onset), col = JL.GRADE[g][1];
+    var cat = JL.CAT[j.c];
+    setT('jl-r-ico', cat.icon); setT('jl-r-cat', cat.name + (isC ? ' · 내 일로 조정함' : ''));
+    setT('jl-r-name', j.n);
+    $('jl-r-big').style.setProperty('--g', col); setT('jl-r-big', JL.span(r.onset));
+    setT('jl-r-when', r.onset == null ? JL.when(null, NOW) : JL.when(r.onset, NOW) + '쯤');
+    setH('jl-r-badge', JL.badge(g));
+    var why = JL.reason(x), wh = '';
+    if (why.up.length) wh += '<div class="u"><b>빠르게 만드는 것</b> · ' + why.up.map(esc).join(' · ') + '</div>';
+    if (why.dn.length) wh += '<div class="d"><b>늦추는 것</b> · ' + why.dn.map(esc).join(' · ') + '</div>';
+    setH('jl-r-why', wh);
+    /* 연표 */
+    var age = num('jl-age'), ret = num('jl-ret'), toRet = ret > age && age > 0 ? ret - age : null, cost = num('jl-cost') * 1e4;
+    var tl = [[0, '#8b95a1', '<b>지금</b>이미 이 일의 ' + r.now.toFixed(0) + '%를 AI·로봇이 하고 있어요']];
+    tl.push([r.onset == null ? 99 : r.onset, '#fe9800', '<b>' + JL.when(r.onset, NOW) + '</b>채용 감소 시작 — 이 일에 사람을 덜 뽑기 시작']);
+    tl.push([r.half == null ? 99 : r.half, '#f04452', '<b>' + JL.when(r.half, NOW) + '</b>일의 절반이 대체']);
+    if (toRet != null) tl.push([toRet, '#3182f6', '<b>' + Math.floor(NOW + toRet) + '년</b>내 은퇴 (' + ret + '세)']);
+    tl.sort(function (a, b) { return a[0] - b[0]; });
+    setH('jl-r-tl', tl.map(function (t) { return '<li style="--c:' + t[1] + '">' + t[2] + '</li>'; }).join(''));
+    setH('jl-r-lose', JL.LOSE_KEEP[j.c][0].map(function (t) { return '<li>' + esc(t) + '</li>'; }).join(''));
+    setH('jl-r-keep', JL.LOSE_KEEP[j.c][1].map(function (t) { return '<li>' + esc(t) + '</li>'; }).join(''));
+    var all = JL.ranked(sp), same = all.filter(function (o) { return o.x.c === j.c; });
+    var gi = all.findIndex(function (o) { return o.x.n === j.n; }) + 1, ci = same.findIndex(function (o) { return o.x.n === j.n; }) + 1;
+    setT('jl-r-rank', '직업 기본값 기준 ' + cat.name + ' ' + same.length + '개 중 ' + ci + '번째, 전체 ' + all.length + '개 중 ' + gi + '번째로 빨리 대체 · 속도 ' + SPN[sp]);
+    /* 은퇴 비교 · 자본소득 */
     var cap = '';
-    if (toRet == null) cap = '<p class="fc-note">지금 나이와 은퇴하고 싶은 나이를 넣으면 공백 기간과 준비할 돈을 계산합니다.</p>';
+    if (toRet == null) cap = '<p class="fc-note">지금 나이와 은퇴 나이를 넣으면 노동소득 공백과 준비할 돈을 계산합니다.</p>';
     else {
       var gap = r.onset == null ? 0 : Math.max(0, toRet - r.onset), fire = cost * 300;
       if (gap > 0) {
         var need = cost * 12 * gap, n = Math.max(6, Math.round(r.onset * 12)), m = 0.06 / 12, pmt = need * m / (Math.pow(1 + m, n) - 1);
-        cap += '<div class="jl-cap-g"><div><p>노동소득 공백</p><b>' + yrs(gap).replace('약 ', '') + '</b><small>' + yearOf(r.onset) + ' → 은퇴 ' + Math.floor(NOW + toRet) + '년</small></div>' +
-          '<div><p>공백 기간 생활비</p><b>' + eok(need) + '</b><small>월 ' + eok(cost) + ' × 12 × ' + gap.toFixed(1) + '년</small></div>' +
-          '<div><p>밥그릇 수명 안에 모으려면</p><b>매달 ' + eok(pmt) + '</b><small>' + yrs(n / 12).replace('약 ', '') + ' 동안 연 6% 투자</small></div></div>';
-      } else cap += '<p class="fc-note">직업 수명이 은퇴보다 길어 노동소득 공백은 없을 것으로 봅니다. 그래도 임금이 둔해지는 시기를 대비해 자본소득을 미리 키워 두세요.</p>';
-      cap += '<p class="jl-cap-fire">월 생활비 ' + eok(cost) + '을 <b>평생 자본소득</b>으로 받으려면 (4% 규칙) <b>' + eok(fire) + '</b>이 필요합니다.</p>' +
-        '<p class="jl-cap-links"><a href="/fire/" class="mhg-link">파이어족 계산기로 은퇴 자산 계획 →</a><a href="/compound/" class="mhg-link">복리 계산기 →</a><a href="/passive-income/" class="mhg-link">불로소득 도구 모음 →</a></p>';
+        cap += '<p class="jl-cap-v"><b class="jl-bad">밥그릇이 은퇴보다 ' + JL.span(gap) + ' 먼저 흔들려요.</b></p>' +
+          '<div class="jl-cap-g"><div><p>노동소득 공백</p><b>' + JL.span(gap) + '</b><small>' + Math.floor(NOW + r.onset) + '년 → 은퇴 ' + Math.floor(NOW + toRet) + '년</small></div>' +
+          '<div><p>공백 기간 생활비</p><b>' + eok(need) + '</b><small>월 ' + eok(cost) + ' × ' + gap.toFixed(1) + '년</small></div>' +
+          '<div><p>수명 안에 모으려면</p><b>매달 ' + eok(pmt) + '</b><small>' + JL.span(n / 12) + ' 동안 연 6% 투자</small></div></div>';
+      } else cap += '<p class="jl-cap-v"><b class="jl-ok">은퇴가 먼저예요.</b> 은퇴(' + Math.floor(NOW + toRet) + '년)까지 이 일로 버틸 가능성이 높습니다. 다만 신입 채용과 임금 상승은 먼저 둔해질 수 있어요.</p>';
+      cap += '<p class="jl-cap-v">월 ' + eok(cost) + '을 <b>평생 자본소득</b>으로 받으려면 (4% 규칙) <b>' + eok(fire) + '</b>이 필요합니다.</p>' +
+        '<p class="jl-cap-links"><a href="/fire/" class="mhg-link">파이어족 계산기 →</a><a href="/compound/" class="mhg-link">복리 계산기 →</a><a href="/passive-income/" class="mhg-link">불로소득 도구 모음 →</a></p>';
     }
     setH('jl-cap', cap);
-    /* 같은 분야 비교 */
-    var same = JOBS.filter(function (x) { return x.c === j.c; }).map(function (x) { return { j: x, r: JL.calc(JL.fromRow(x), spd) }; })
-      .sort(function (a, b) { return (a.r.onset == null ? 99 : a.r.onset) - (b.r.onset == null ? 99 : b.r.onset); });
-    setT('jl-cmp-sub', CAT[j.c][0] + ' ' + same.length + '개 직업 · 직업 기본값 · 속도 ' + { fast: '빠름', mid: '보통', slow: '느림' }[spd] + ' · 누르면 그 직업으로 바뀝니다');
-    setH('jl-cmp', same.map(function (x) {
-      return '<tr data-job="' + esc(x.j.n) + '"' + (x.j.n === j.n ? ' class="fc-hl"' : '') + ' style="cursor:pointer"><td>' + esc(x.j.n) + '</td><td>' + yearOf(x.r.onset) + ' <small>(' + yrs(x.r.onset) + ')</small></td><td>' + yearOf(x.r.half) + '</td></tr>';
-    }).join(''));
-    /* 주소(#job=) · 공유 카드 */
+    /* 주소 · 공유 카드 */
     try { var hs = '#job=' + encodeURIComponent(j.n); if (location.hash !== hs && $('page-joblife').classList.contains('active')) history.replaceState(history.state, '', location.pathname + location.search + hs); } catch (e) {}
-    share = { key: 'job-life', chip: '직업 수명 계산기', title: j.n + '의 밥그릇 수명', label: 'AI 대체 위험 ' + GRADE[g][0] + ' · 속도 ' + { fast: '빠름', mid: '보통', slow: '느림' }[spd],
-      big: yrs(r.onset), sub: r.onset == null ? '40년 안에는 대체가 어렵다고 봅니다' : yearOf(r.onset) + '쯤 채용 감소 시작',
-      rows: [['일의 절반이 대체', yearOf(r.half)], ['지금 이미 대체 중', r.now.toFixed(0) + '%'], toRet != null ? ['내 은퇴', Math.floor(NOW + toRet) + '년'] : null],
+    (window.dcShareSpec = window.dcShareSpec || {})['job-life'] = { key: 'job-life', chip: '직업 수명', title: j.n + '의 밥그릇 수명',
+      label: 'AI 대체 위험 ' + JL.GRADE[g][0] + ' · 속도 ' + SPN[sp], big: JL.span(r.onset),
+      sub: r.onset == null ? JL.MAXY + '년 안에는 대체가 어렵다고 봅니다' : JL.when(r.onset, NOW) + '쯤 채용 감소 시작',
+      rows: [['일의 절반이 대체', JL.when(r.half, NOW)], ['지금 이미 대체 중', r.now.toFixed(0) + '%'], toRet != null ? ['내 은퇴', Math.floor(NOW + toRet) + '년'] : null],
       source: '한국은행·ILO·Microsoft·McKinsey 연구 기반 시나리오 모델 · 디코딩 자본주의' };
-    (window.dcShareSpec = window.dcShareSpec || {})['job-life'] = share;
   }
-  window.JLdebug = { render: render, find: find, jobs: function () { return JOBS; } };
+  window.JLdebug = { render: render, pick: pick, find: JL.find, jobs: function () { return JL.JOBS; } };
   window.fcRegister('jl', render, 'joblife');
 })();
 
@@ -27818,7 +28023,7 @@ var YE = (function () {
     <button class="drop-item" id="drop-home" style="display:none" onclick="switchSubTab('home','home',this)">홈</button>
     <button class="drop-item" id="drop-srank" onclick="switchSubTab('srank','me',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="5.5" cy="4.6" r="2.2" stroke="currentColor" stroke-width="1.2"/><path d="M1.8 11.2c.4-2.2 1.9-3.4 3.7-3.4s3.3 1.2 3.7 3.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><rect x="10.2" y="10" width="1.9" height="5.8" rx="0.5" fill="currentColor" opacity="0.55"/><rect x="13" y="7.4" width="1.9" height="8.4" rx="0.5" fill="currentColor" opacity="0.75"/><rect x="15.8" y="4.4" width="1.9" height="11.4" rx="0.5" fill="currentColor"/><path d="M1.6 15.8h8" stroke="currentColor" stroke-width="1" opacity="0.55" stroke-linecap="round"/></svg>국내 나의 연봉 순위</button>
     <button class="drop-item" id="drop-arank" onclick="switchSubTab('arank','me',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2 8.2 7 4l5 4.2V15H2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" opacity="0.6"/><path d="M5.6 15v-3.4h2.8V15" stroke="currentColor" stroke-width="1.1" opacity="0.6"/><rect x="12.6" y="9.6" width="1.8" height="6" rx="0.5" fill="currentColor" opacity="0.75"/><rect x="15.4" y="6.4" width="1.8" height="9.2" rx="0.5" fill="currentColor"/></svg>국내 나의 자산 순위</button>
-    <button class="drop-item" id="drop-joblife" onclick="switchSubTab('joblife','me',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M4.5 2h9M4.5 16h9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M5.5 2c0 3.6 3.5 4.6 3.5 7s-3.5 3.4-3.5 7M12.5 2c0 3.6-3.5 4.6-3.5 7s3.5 3.4 3.5 7" stroke="currentColor" stroke-width="1.2" opacity="0.6"/><path d="M6.6 14.6h4.8L9 11.8z" fill="currentColor"/></svg>나의 직업 수명 계산기</button>
+    <button class="drop-item" id="drop-joblife" onclick="switchSubTab('joblife','me',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M4.5 2h9M4.5 16h9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M5.5 2c0 3.6 3.5 4.6 3.5 7s-3.5 3.4-3.5 7M12.5 2c0 3.6-3.5 4.6-3.5 7s3.5 3.4 3.5 7" stroke="currentColor" stroke-width="1.2" opacity="0.6"/><path d="M6.6 14.6h4.8L9 11.8z" fill="currentColor"/></svg>나의 직업 수명</button>
     <button class="drop-item" id="drop-retire" onclick="switchSubTab('retire','me',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="3" y="2.5" width="12" height="13" rx="1.6" stroke="currentColor" stroke-width="1.3"/><path d="M6 6.5h6M6 9.5h3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M10.2 12.6l1.2 1.1 2.1-2.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>노후 준비 성적표</button>
     <button class="drop-item" id="drop-houseyears" onclick="switchSubTab('houseyears','me',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M2.5 8.5 9 3l6.5 5.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.2 7.3V15h9.6V7.3" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7.2 11.8c0-1 .8-1.6 1.8-1.6s1.8.6 1.8 1.6V15H7.2z" stroke="currentColor" stroke-width="1.1"/></svg>내 연봉으로 집 사기까지 몇 년</button>
     <button class="drop-item" id="drop-whatif" onclick="switchSubTab('whatif','me',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.6" stroke="currentColor" stroke-width="1.3"/><path d="M9 5v4l2.6 1.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.4 4.2 2 7l2.7-.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>그때 샀더라면 계산기</button>

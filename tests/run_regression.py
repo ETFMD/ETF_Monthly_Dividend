@@ -6,7 +6,7 @@
      가로 넘침(문서 폭 > 화면 폭)과 화면 밖으로 잘리는 요소(가로 스크롤 상자 안은 제외)를 찾음
   2. 콘솔 오류·페이지 스크립트 오류 0 (로컬에서 막히는 외부 Worker 호출의 CORS·네트워크 오류는 제외)
   3. 메뉴 항목 수(홈 + 도구 수) · 검색 결과 · 허브 카드 수(같은 그룹 도구 수)
-  5. 나의 직업 수명 계산기 — 직업 데이터·모델 방향(판단·면허·속도)·연구 순서·검색·주소·공유
+  5. 나의 직업 수명 — 776개 직업·21분야 데이터·모델 방향·연구 순서·검색·순위·주소·공유
   4. 무한매수법 — 라오어 카페 원문 예시 숫자로 계산 엔진 검사, 기록 화면 그리기, 가이드북(23장 · 용어 31개 · 자동 숫자 · 장 열기 · 3-6 실제 일봉 백테스트 표)
 
 사용법
@@ -274,35 +274,56 @@ def main():
         bad = [t for t, u in errs if not ignorable(t, u)]
         for t in bad[:3]:
             fail('muhan', '콘솔 오류: ' + t[:200])
-        # 나의 직업 수명 계산기 — 데이터·모델 방향·연구 순서·화면 동작
+        # 나의 직업 수명 — 데이터(776개·21분야)·모델 방향·연구 순서·검색·순위·주소·공유
         if os.path.isdir(os.path.join(ROOT, 'job-life')):
-            print('[4] 나의 직업 수명 계산기', flush=True)
+            print('[4] 나의 직업 수명', flush=True)
             errs.clear()
             page.goto(base + 'job-life/#job=' + '간호사', wait_until='load'); page.wait_for_timeout(2000)
             z = page.evaluate("""async () => {
-              const J = window.JL, D = window.JLdebug, R = [];
+              const J = window.JL, D = window.JLdebug, R = [], W = ms => new Promise(r => setTimeout(r, ms));
               if (!J || !D) return [{ name: 'JL·JLdebug 없음', ok: false }];
               const ok = (name, v, info) => R.push({ name, ok: !!v, info });
-              const jobs = D.jobs(), on = (x, sp) => { const r = J.calc(J.fromRow(x), sp || 'mid'); return r.onset == null ? 99 : r.onset; };
-              ok('직업 163개 · 업무 합 10 · 이름 중복 없음', jobs.length === 163 && jobs.every(x => x.D + x.P + x.H === 10) && new Set(jobs.map(x => x.n)).size === 163, jobs.length);
+              const jobs = D.jobs(), on = (x, sp) => { const r = J.calc(x, sp || 'mid'); return r.onset == null ? 99 : r.onset; };
+              const names = new Set(jobs.map(x => x.n)), als = jobs.flatMap(x => x.al);
+              ok('직업 776개 · 업무 합 10 · 값 범위 · 이름 중복 없음', jobs.length === 776 && names.size === 776 && jobs.every(x => x.D + x.P + x.H === 10 && x.R >= 1 && x.R <= 5 && x.J >= 1 && x.J <= 5 && x.L >= 0 && x.L <= 3), jobs.length);
+              ok('별칭이 다른 직업 이름·별칭과 겹치지 않음', new Set(als).size === als.length && als.every(a => !names.has(a)), '');
+              ok('분야 21개 · 분야마다 직업·잃을 일/남을 일 있음', J.CATS.length === 21 && J.CATS.every(k => jobs.some(x => x.c === k) && J.LOSE_KEEP[k] && J.LOSE_KEEP[k][0].length && J.LOSE_KEEP[k][1].length), J.CATS.length);
               let mono = 0;
               jobs.forEach(x => {
                 const a = on(x), j = on(Object.assign({}, x, { J: Math.min(5, x.J + 1) })), l = on(Object.assign({}, x, { L: Math.min(3, x.L + 1) })), r = on(Object.assign({}, x, { R: Math.max(1, x.R - 1) }));
                 if (j < a - 1e-9 || l < a - 1e-9 || r < a - 1e-9 || !(on(x, 'fast') <= a && a <= on(x, 'slow'))) mono++;
               });
               ok('모델 방향: 판단·면허↑ 반복성↓ 이면 늦어짐 · 빠름 ≤ 보통 ≤ 느림', mono === 0, mono + '개 위반');
-              const by = n => on(jobs.find(x => x.n === n));
-              const early = ['콜센터 상담원', '번역가', '데이터 입력원', '경리·회계사무원'].map(by), late = ['요양보호사', '배관공', '간호사', '외과 의사', '미용사'].map(by);
-              ok('연구 순서: 고노출(상담·번역·입력·경리) < 저노출(돌봄·설비·간호·외과·미용)', Math.max(...early) < Math.min(...late), [early, late]);
-              ok('한국은행 고노출 직업(회계사·자산운용가)이 돌봄·현장보다 이름', Math.max(by('공인회계사'), by('자산운용가(펀드매니저)')) < Math.min(by('요양보호사'), by('배관공')), '');
-              const t = id => document.getElementById(id).textContent;
-              ok('주소 #job=간호사 로 열림', /간호사/.test(t('jl-label')) && /\d/.test(t('jl-val')), t('jl-label'));
-              const q = document.getElementById('jl-q'); q.value = '개발자'; q.dispatchEvent(new Event('input', { bubbles: true }));
-              await new Promise(r => setTimeout(r, 150));
-              ok('검색(별칭 개발자 → 소프트웨어 개발자)', /소프트웨어 개발자/.test(t('jl-label')), t('jl-label'));
-              const mid = t('jl-val'); document.querySelector('.fc-seg[data-name="jl-spd"] [data-v="slow"]').click(); await new Promise(r => setTimeout(r, 150));
-              ok('속도 느림으로 바꾸면 수명이 바뀜', t('jl-val') !== mid, [mid, t('jl-val')]);
-              ok('자본소득 카드·비교표·공유 카드', /4% 규칙/.test(t('jl-cap')) && document.querySelectorAll('#jl-cmp tr').length >= 5 && window.dcShareSpec && window.dcShareSpec['job-life'], '');
+              const by = n => { const x = J.byName(n); return x ? on(x) : -1; };
+              const early = ['콜센터 상담원', '번역가', '데이터 입력원', '경리'].map(by), late = ['요양보호사', '배관공', '간호사', '외과 의사', '헤어디자이너'].map(by);
+              ok('연구 순서: 고노출(상담·번역·입력·경리) < 저노출(돌봄·설비·간호·외과·미용)', Math.min(...early) >= 0 && Math.max(...early) < Math.min(...late), [early, late]);
+              ok('한국은행 고노출 직업(회계사·펀드매니저)이 돌봄·현장보다 이름', by('공인회계사') >= 0 && Math.max(by('공인회계사'), by('펀드매니저')) < Math.min(by('요양보호사'), by('배관공')), '');
+              ok('검색: 별칭·부분 일치', J.find('자산운용가').n === '펀드매니저' && J.find('개발자').n === '소프트웨어 개발자' && J.suggest('간호', 8).length >= 3 && J.POP.every(n => J.byName(n)), '');
+              const t = id => document.getElementById(id).textContent, res = document.getElementById('jl-res');
+              ok('주소 #job=간호사 로 결과가 열림', !res.hidden && t('jl-r-name') === '간호사' && /\\d/.test(t('jl-r-big')) && document.querySelectorAll('#jl-r-tl li').length >= 3, t('jl-r-name'));
+              ok('많이 찾는 직업 8개 · TOP 5 · 순위 30줄 · 분야 버튼 22개', document.querySelectorAll('#jl-pop .jl-card').length === 8 && document.querySelectorAll('#jl-top .jl-row').length === 5 && document.querySelectorAll('#jl-all .jl-row').length === 30 && document.querySelectorAll('#jl-cats button').length === 22, '');
+              const q = document.getElementById('jl-q'); q.value = '자산운용가'; q.dispatchEvent(new Event('input', { bubbles: true })); await W(80);
+              const first = (document.querySelector('#jl-sug li[data-job]') || {}).textContent || '';
+              q.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await W(150);
+              ok('검색창: 제안 → Enter 로 결과', /펀드매니저/.test(first) && t('jl-r-name') === '펀드매니저' && document.getElementById('jl-sug').hidden, [first, t('jl-r-name')]);
+              const mid = t('jl-r-big'); document.querySelector('.fc-seg[data-name="jl-spd"] [data-v="slow"]').click(); await W(150);
+              ok('속도 느림으로 바꾸면 수명이 바뀜', t('jl-r-big') !== mid, [mid, t('jl-r-big')]);
+              document.querySelector('.fc-seg[data-name="jl-spd"] [data-v="mid"]').click(); await W(100);
+              document.querySelector('#jl-cats [data-cat="med"]').click(); await W(100);
+              const medOk = [...document.querySelectorAll('#jl-all .jl-row')].every(li => J.byName(li.dataset.job).c === 'med');
+              document.querySelector('#jl-sort [data-v="desc"]').click(); await W(100);
+              const rows = [...document.querySelectorAll('#jl-all .jl-row')].map(li => by(li.dataset.job));
+              ok('분야 거르기 · 늦은 순 정렬', medOk && rows.length > 5 && rows[0] >= rows[rows.length - 1], rows.slice(0, 3));
+              document.querySelector('#jl-cats [data-cat="all"]').click(); document.querySelector('#jl-sort [data-v="asc"]').click(); await W(80);
+              document.getElementById('jl-morebtn').click(); await W(100);
+              ok('더 보기', document.querySelectorAll('#jl-all .jl-row').length === 90, document.querySelectorAll('#jl-all .jl-row').length);
+              const row = document.querySelectorAll('#jl-all .jl-row')[3]; row.click(); await W(150);
+              ok('순위 줄을 누르면 그 직업 결과', t('jl-r-name') === row.dataset.job && location.hash === '#job=' + encodeURIComponent(row.dataset.job), [t('jl-r-name'), location.hash]);
+              ok('은퇴 비교(4% 규칙)·공유 카드', /4% 규칙/.test(t('jl-cap')) && window.dcShareSpec && window.dcShareSpec['job-life'] && window.dcShareSpec['job-life'].title.indexOf(row.dataset.job) === 0, '');
+              const d = document.getElementById('jl-d'); d.value = 0; d.dispatchEvent(new Event('input', { bubbles: true })); await W(80);
+              ok('내 일에 맞게 조정 → 표시', /조정/.test(t('jl-r-cat')), t('jl-r-cat'));
+              document.getElementById('jl-close').click(); await W(80);
+              ok('닫기 → 결과·공유 카드 비움', res.hidden && window.dcShareSpec['job-life'] === null && !/job=/.test(location.hash), '');
               return R;
             }""")
             for t in z:

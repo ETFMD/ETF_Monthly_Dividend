@@ -4,9 +4,11 @@ name: 도구별 주소 페이지 생성
 # (원본만 고쳐 올려도 모든 주소 페이지가 자동으로 맞춰짐 — 페이지마다 자기 도구 화면만 들어 있음)
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '20 15 1 * *'   # 매월 2일 00:20 KST — 날짜가 들어간 정적 화면(나의 직업 수명 등)을 새 달 기준으로
   push:
     branches: [main]
-    paths: ['src/index.html', 'scripts/routes.json', 'scripts/build_pages.py', 'scripts/i18n/**', 'assets/**', 'CNAME', '.github/workflows/build-pages.yml']
+    paths: ['src/index.html', 'scripts/routes.json', 'scripts/build_pages.py', 'scripts/joblife_snapshot.js', 'scripts/i18n/**', 'assets/**', 'CNAME', '.github/workflows/build-pages.yml']
 
 permissions:
   contents: write
@@ -21,6 +23,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
+      - name: 나의 직업 수명 첫 화면(정적) 날짜 갱신
+        run: node scripts/joblife_snapshot.js
       - name: 페이지 생성
         run: python3 scripts/build_pages.py
       - name: 변경된 경우에만 커밋

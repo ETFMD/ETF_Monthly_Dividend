@@ -34,7 +34,7 @@ TEXT = {
     '대출 이자 계산기': 'Loan interest calculator', '복리 계산기': 'Compound interest calculator', 'CAGR 계산기': 'CAGR calculator',
     '환율 계산기': 'Currency converter', '건강보험료 계산기': 'Korean health insurance', '연봉 실수령액 계산기': 'Korean net salary',
     '퇴직금 계산기': 'Korean severance pay', '주담대 LTV·DSR 한도 계산기': 'Korean mortgage LTV·DSR limit', '부동산 중개수수료 계산기': 'Korean brokerage fee',
-    '공포 &amp; 탐욕 지수': 'Fear &amp; Greed Index', '돈, 자산, 노동의 가치 속도': 'Money, assets & wages in Korea', '무한매수법 기록': 'Infinite buying (TQQQ·SOXL)', '나의 직업 수명 계산기': 'Job lifespan vs AI (Korean)',
+    '공포 &amp; 탐욕 지수': 'Fear &amp; Greed Index', '돈, 자산, 노동의 가치 속도': 'Money, assets & wages in Korea', '무한매수법 기록': 'Infinite buying (TQQQ·SOXL)', '나의 직업 수명': 'Job lifespan vs AI (Korean)',
     'ETF CAGR 비교': 'ETF CAGR comparison', '코스피 성장률': 'KOSPI growth', '코스피 200 성장률': 'KOSPI 200 growth', '코스닥 성장률': 'KOSDAQ growth',
     '세금 계산기': 'Tax calculators', '종합소득세 계산기': 'Korean comprehensive income tax', '해외주식 양도소득세 계산기': 'Korean tax on foreign stock gains', '배당소득세·금융소득종합과세': 'Korean dividend & financial income tax',
     '연금저축·IRP 세액공제': 'Korean pension savings tax credit', '증여세·상속세 계산기': 'Korean gift & inheritance tax', '부동산 취득세 계산기': 'Korean property acquisition tax',
