@@ -81,6 +81,8 @@ def load_nav_labels(src):
 
 def tab_title(r):
     """브라우저 탭 제목: '디코딩 자본주의 | 탭 이름' (탭 이름은 메뉴 글자 그대로 — 메뉴를 바꾸면 제목도 따라 바뀜)"""
+    if r['tab'] == 'home':   # 홈은 메뉴 글자('홈') 대신 사이트 한 줄 소개 — 검색 결과 제목
+        return f"{BRAND} | {r['short']}"
     return f"{BRAND} | {NAV_LABEL[r['tab']]}"
 
 
