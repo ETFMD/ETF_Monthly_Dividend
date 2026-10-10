@@ -1835,14 +1835,26 @@ html[data-theme="light"] #page-muhan{--m-ac-s:rgba(49,130,246,.10);--m-ac-b:rgba
   .dsh-notice button { background:none; border:0; color:var(--text3); cursor:pointer; font-size:14px; padding:2px 4px; }
   @media (max-height: 720px) { .dsh-prev-wrap { display:none !important; } .dsh-b { min-height:48px; } }   /* 낮은 화면: 미리보기 빼고 버튼만 */
   @media print { .dsh-fab, .dsh-pop, .kk-fabs { display:none !important; } }
-  /* [KAKAO-FAB] 공유 버튼(56px) 위로 같은 크기·간격(12px)의 카카오톡 원형 버튼 2개 — 위: 오픈채팅, 아래: 후원 및 문의 */
-  .kk-fabs { position:fixed; right:max(18px, env(safe-area-inset-right)); bottom:calc(88px + env(safe-area-inset-bottom)); z-index:8990; display:flex; flex-direction:column-reverse; gap:12px; margin:0; }
+  /* [KAKAO-FAB] 공유 버튼(56px) 위 12px 간격의 카카오 원형 버튼 1개 — 누르면 공유 창과 같은 방식으로 오픈채팅 · 후원 및 문의 버튼이 펼쳐짐 */
+  .kk-fabs { position:fixed; right:max(18px, env(safe-area-inset-right)); bottom:calc(88px + env(safe-area-inset-bottom)); z-index:8990; margin:0; }
+  .kk-fabs.open { z-index:9002; }   /* 펼쳤을 때는 어두운 막(8999) 위 */
   body:has(.tab-dropdown.open) .kk-fabs { opacity:0; pointer-events:none; }
   body:not(:has(.dsh-fab)) .kk-fabs { bottom:calc(20px + env(safe-area-inset-bottom)); }   /* 공유 버튼이 없는 화면(영어판 등)은 맨 아래부터 */
-  .kk-fab { position:relative; width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#FEE500; text-decoration:none; box-shadow:0 8px 24px rgba(254,229,0,.22), 0 2px 6px rgba(0,0,0,.25); transition:transform .15s, filter .15s; }
+  .kk-fab { position:relative; width:56px; height:56px; border-radius:50%; border:0; padding:0; cursor:pointer; display:flex; align-items:center; justify-content:center; background:#FEE500; color:#191919; box-shadow:0 8px 24px rgba(254,229,0,.22), 0 2px 6px rgba(0,0,0,.25); transition:transform .15s, filter .15s; }
   .kk-fab:hover { transform:translateY(-1px); filter:brightness(1.04); } .kk-fab:active { transform:scale(.96); }
+  .kk-fab.on { background:var(--dsh-s); color:var(--text); box-shadow:var(--dsh-sh), inset 0 0 0 1px var(--dsh-bd); }
   .kk-fab:focus-visible { outline:3px solid rgba(254,229,0,.6); outline-offset:3px; }
   .kk-fab::after { content:attr(aria-label); position:absolute; right:calc(100% + 10px); top:50%; transform:translateY(-50%); white-space:nowrap; padding:6px 10px; border-radius:8px; background:var(--dsh-s); color:var(--text); border:1px solid var(--dsh-bd); box-shadow:var(--dsh-sh); font-size:12px; font-weight:600; opacity:0; pointer-events:none; transition:opacity .15s; }
+  .kk-fab.on::after { display:none; }
+  .kk-pop { position:fixed; right:max(18px, env(safe-area-inset-right)); bottom:calc(156px + env(safe-area-inset-bottom)); z-index:9001; width:min(340px, calc(100vw - 36px)); display:flex; flex-direction:column; gap:10px; animation:dshIn .18s ease-out; }
+  body:not(:has(.dsh-fab)) .kk-pop { bottom:calc(88px + env(safe-area-inset-bottom)); }
+  .kk-pop[hidden] { display:none !important; }
+  .kk-b { min-height:60px; padding:10px 20px; text-decoration:none; }
+  .kk-b .kk-t { display:flex; flex-direction:column; gap:2px; min-width:0; }
+  .kk-b .kk-t b { font-size:15px; font-weight:700; }
+  .kk-b .kk-t small { font-size:11.5px; font-weight:400; line-height:1.4; color:var(--text3); }
+  .dsh-kakao.kk-b .kk-t small { color:#3d3a1e; }
+  .dsh-kakao.kk-b svg { color:#191919; }
   @media (hover:hover) { .kk-fab:hover::after, .kk-fab:focus-visible::after { opacity:1; } }
   .fc-row2 > .fc-field > .fc-input, .fc-row2 > .fc-field > .fc-amt, .fc-row2 > .fc-field > select, .fc-row2 > .fc-field > .fc-seg { margin-top:auto; }   /* 라벨이 두 줄이 돼도 옆 칸과 입력칸 높이 맞춤 */
   .fc-seg { width:100%; }
@@ -26542,9 +26554,41 @@ var YE = (function () {
 </script>
   <!-- ── 카카오톡 바로가기 (오른쪽 아래 공유 버튼 위, 같은 원형 버튼) — 오픈채팅 커뮤니티 · 후원 및 문의 1:1 채팅 ── -->
   <div class="kk-fabs">
-    <a class="kk-fab" href="https://open.kakao.com/o/smk2aSpi" target="_blank" rel="noopener" aria-label="후원 및 문의"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 4.5c-6.08 0-11 3.86-11 8.62 0 3.03 2 5.7 5.03 7.23l-1.08 3.95c-.1.36.31.65.62.44l4.7-3.12c.56.07 1.14.11 1.73.11 6.08 0 11-3.86 11-8.61S20.08 4.5 14 4.5z" fill="#191919"/><path d="M14 16.9l-.43-.39c-1.55-1.4-2.57-2.33-2.57-3.47 0-.93.73-1.66 1.66-1.66.52 0 1.03.25 1.34.63.31-.38.82-.63 1.34-.63.93 0 1.66.73 1.66 1.66 0 1.14-1.02 2.07-2.57 3.47L14 16.9z" fill="#FEE500"/></svg></a>
-    <a class="kk-fab" href="https://open.kakao.com/o/gi9XfRpi" target="_blank" rel="noopener" aria-label="카카오 오픈채팅"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 4.5c-6.08 0-11 3.86-11 8.62 0 3.03 2 5.7 5.03 7.23l-1.08 3.95c-.1.36.31.65.62.44l4.7-3.12c.56.07 1.14.11 1.73.11 6.08 0 11-3.86 11-8.61S20.08 4.5 14 4.5z" fill="#191919"/><circle cx="9.6" cy="13.1" r="1.45" fill="#FEE500"/><circle cx="14" cy="13.1" r="1.45" fill="#FEE500"/><circle cx="18.4" cy="13.1" r="1.45" fill="#FEE500"/></svg></a>
+    <button type="button" class="kk-fab" id="kk-fab" aria-label="카카오 오픈채팅" aria-expanded="false" aria-controls="kk-pop"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 4.5c-6.08 0-11 3.86-11 8.62 0 3.03 2 5.7 5.03 7.23l-1.08 3.95c-.1.36.31.65.62.44l4.7-3.12c.56.07 1.14.11 1.73.11 6.08 0 11-3.86 11-8.61S20.08 4.5 14 4.5z" fill="#191919"/><circle cx="9.6" cy="13.1" r="1.45" fill="#FEE500"/><circle cx="14" cy="13.1" r="1.45" fill="#FEE500"/><circle cx="18.4" cy="13.1" r="1.45" fill="#FEE500"/></svg></button>
   </div>
+  <div class="dsh-scrim kk-scrim" id="kk-scrim" hidden></div>
+  <div class="kk-pop" id="kk-pop" role="dialog" aria-label="카카오 오픈채팅" hidden>
+    <a class="dsh-b dsh-kakao kk-b" href="https://open.kakao.com/o/gi9XfRpi" target="_blank" rel="noopener"><svg width="22" height="22" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 4.5c-6.08 0-11 3.86-11 8.62 0 3.03 2 5.7 5.03 7.23l-1.08 3.95c-.1.36.31.65.62.44l4.7-3.12c.56.07 1.14.11 1.73.11 6.08 0 11-3.86 11-8.61S20.08 4.5 14 4.5z" fill="#191919"/><circle cx="9.6" cy="13.1" r="1.45" fill="#FEE500"/><circle cx="14" cy="13.1" r="1.45" fill="#FEE500"/><circle cx="18.4" cy="13.1" r="1.45" fill="#FEE500"/></svg><span class="kk-t"><b>카카오 오픈채팅</b><small>ETF 커버드콜 + 배당투자 + 성장주 함께 장기투자를 위한 오픈톡방 가기</small></span></a>
+    <a class="dsh-b kk-b" href="https://open.kakao.com/o/smk2aSpi" target="_blank" rel="noopener"><svg width="22" height="22" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 4.5c-6.08 0-11 3.86-11 8.62 0 3.03 2 5.7 5.03 7.23l-1.08 3.95c-.1.36.31.65.62.44l4.7-3.12c.56.07 1.14.11 1.73.11 6.08 0 11-3.86 11-8.61S20.08 4.5 14 4.5z" fill="currentColor"/><path d="M14 16.9l-.43-.39c-1.55-1.4-2.57-2.33-2.57-3.47 0-.93.73-1.66 1.66-1.66.52 0 1.03.25 1.34.63.31-.38.82-.63 1.34-.63.93 0 1.66.73 1.66 1.66 0 1.14-1.02 2.07-2.57 3.47L14 16.9z" fill="var(--dsh-s)"/></svg><span class="kk-t"><b>후원 및 문의</b><small>카카오 오픈 1:1채팅으로 연결됩니다</small></span></a>
+  </div>
+  <script>
+  /* [KAKAO-FAB] 카카오 버튼 하나 → 누르면 공유 창처럼 오픈채팅 · 후원 및 문의 두 버튼이 펼쳐짐 (바깥 클릭·Esc·링크 선택 시 닫힘) */
+  (function () {
+    var fab = document.getElementById('kk-fab'), pop = document.getElementById('kk-pop'), scrim = document.getElementById('kk-scrim');
+    if (!fab || !pop) return;
+    var ICON0 = fab.innerHTML, ICONX = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
+    var EN = (document.documentElement.getAttribute('lang') || '').indexOf('en') === 0, LBL = fab.getAttribute('aria-label'), openedAt = 0;
+    function set(open, back) {
+      if (open === !pop.hidden) return;
+      pop.hidden = !open; scrim.hidden = !open; openedAt = Date.now();
+      fab.classList.toggle('on', open); fab.parentNode.classList.toggle('open', open);
+      fab.setAttribute('aria-expanded', String(open)); fab.setAttribute('aria-label', open ? (EN ? 'Close' : '닫기') : LBL);
+      fab.innerHTML = open ? ICONX : ICON0;
+      if (open) { var f = pop.querySelector('a'); if (f) f.focus({ preventScroll: true }); } else if (back) fab.focus({ preventScroll: true });
+    }
+    fab.addEventListener('click', function () { set(pop.hidden); });
+    pop.addEventListener('click', function (e) { if (e.target.closest('a')) setTimeout(function () { set(false); }, 0); });
+    scrim.addEventListener('click', function () { set(false); });
+    document.addEventListener('click', function (e) {
+      if (pop.hidden || Date.now() - openedAt < 80) return;
+      var path = e.composedPath ? e.composedPath() : [];
+      if (path.indexOf(pop) >= 0 || path.indexOf(fab) >= 0) return;
+      set(false);
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pop.hidden) set(false, true); });
+    window.addEventListener('popstate', function () { set(false); });
+  })();
+  </script>
 
   <!-- [FOOTER] 모든 화면 하단 공통: 저작권 · 개인정보처리방침 · 문의 -->
   <footer class="site-footer"><!--FOOTMAP--><!--/FOOTMAP--><div class="sf-in">

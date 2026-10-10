@@ -252,7 +252,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>(function(){try{var m=localStorage.getItem("site-theme")||"dark";var l=m==="light"||(m==="auto"&&window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches);document.documentElement.setAttribute("data-theme",l?"light":"dark");}catch(e){}})();</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<link rel="stylesheet" href="assets/app.5ad42f5a39.css">
+<link rel="stylesheet" href="assets/app.267ad9992b.css">
 </head>
 <body>
 <div class="wrap">
@@ -749,9 +749,41 @@
 <script src="assets/app.e8f7bdad21.js"></script>
   <!-- ── 카카오톡 바로가기 (오른쪽 아래 공유 버튼 위, 같은 원형 버튼) — 오픈채팅 커뮤니티 · 후원 및 문의 1:1 채팅 ── -->
   <div class="kk-fabs">
-    <a class="kk-fab" href="https://open.kakao.com/o/smk2aSpi" target="_blank" rel="noopener" aria-label="Support & contact"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 4.5c-6.08 0-11 3.86-11 8.62 0 3.03 2 5.7 5.03 7.23l-1.08 3.95c-.1.36.31.65.62.44l4.7-3.12c.56.07 1.14.11 1.73.11 6.08 0 11-3.86 11-8.61S20.08 4.5 14 4.5z" fill="#191919"/><path d="M14 16.9l-.43-.39c-1.55-1.4-2.57-2.33-2.57-3.47 0-.93.73-1.66 1.66-1.66.52 0 1.03.25 1.34.63.31-.38.82-.63 1.34-.63.93 0 1.66.73 1.66 1.66 0 1.14-1.02 2.07-2.57 3.47L14 16.9z" fill="#FEE500"/></svg></a>
-    <a class="kk-fab" href="https://open.kakao.com/o/gi9XfRpi" target="_blank" rel="noopener" aria-label="KakaoTalk open chat (Korean)"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 4.5c-6.08 0-11 3.86-11 8.62 0 3.03 2 5.7 5.03 7.23l-1.08 3.95c-.1.36.31.65.62.44l4.7-3.12c.56.07 1.14.11 1.73.11 6.08 0 11-3.86 11-8.61S20.08 4.5 14 4.5z" fill="#191919"/><circle cx="9.6" cy="13.1" r="1.45" fill="#FEE500"/><circle cx="14" cy="13.1" r="1.45" fill="#FEE500"/><circle cx="18.4" cy="13.1" r="1.45" fill="#FEE500"/></svg></a>
+    <button type="button" class="kk-fab" id="kk-fab" aria-label="KakaoTalk open chat (Korean)" aria-expanded="false" aria-controls="kk-pop"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 4.5c-6.08 0-11 3.86-11 8.62 0 3.03 2 5.7 5.03 7.23l-1.08 3.95c-.1.36.31.65.62.44l4.7-3.12c.56.07 1.14.11 1.73.11 6.08 0 11-3.86 11-8.61S20.08 4.5 14 4.5z" fill="#191919"/><circle cx="9.6" cy="13.1" r="1.45" fill="#FEE500"/><circle cx="14" cy="13.1" r="1.45" fill="#FEE500"/><circle cx="18.4" cy="13.1" r="1.45" fill="#FEE500"/></svg></button>
   </div>
+  <div class="dsh-scrim kk-scrim" id="kk-scrim" hidden></div>
+  <div class="kk-pop" id="kk-pop" role="dialog" aria-label="KakaoTalk open chat (Korean)" hidden>
+    <a class="dsh-b dsh-kakao kk-b" href="https://open.kakao.com/o/gi9XfRpi" target="_blank" rel="noopener"><svg width="22" height="22" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 4.5c-6.08 0-11 3.86-11 8.62 0 3.03 2 5.7 5.03 7.23l-1.08 3.95c-.1.36.31.65.62.44l4.7-3.12c.56.07 1.14.11 1.73.11 6.08 0 11-3.86 11-8.61S20.08 4.5 14 4.5z" fill="#191919"/><circle cx="9.6" cy="13.1" r="1.45" fill="#FEE500"/><circle cx="14" cy="13.1" r="1.45" fill="#FEE500"/><circle cx="18.4" cy="13.1" r="1.45" fill="#FEE500"/></svg><span class="kk-t"><b>KakaoTalk open chat (Korean)</b><small>Join our Korean-language community for long-term investing in covered-call ETFs, dividends and growth stocks</small></span></a>
+    <a class="dsh-b kk-b" href="https://open.kakao.com/o/smk2aSpi" target="_blank" rel="noopener"><svg width="22" height="22" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 4.5c-6.08 0-11 3.86-11 8.62 0 3.03 2 5.7 5.03 7.23l-1.08 3.95c-.1.36.31.65.62.44l4.7-3.12c.56.07 1.14.11 1.73.11 6.08 0 11-3.86 11-8.61S20.08 4.5 14 4.5z" fill="currentColor"/><path d="M14 16.9l-.43-.39c-1.55-1.4-2.57-2.33-2.57-3.47 0-.93.73-1.66 1.66-1.66.52 0 1.03.25 1.34.63.31-.38.82-.63 1.34-.63.93 0 1.66.73 1.66 1.66 0 1.14-1.02 2.07-2.57 3.47L14 16.9z" fill="var(--dsh-s)"/></svg><span class="kk-t"><b>Support & contact</b><small>Opens a KakaoTalk 1:1 chat (Korean)</small></span></a>
+  </div>
+  <script>
+  /* [KAKAO-FAB] 카카오 버튼 하나 → 누르면 공유 창처럼 오픈채팅 · 후원 및 문의 두 버튼이 펼쳐짐 (바깥 클릭·Esc·링크 선택 시 닫힘) */
+  (function () {
+    var fab = document.getElementById('kk-fab'), pop = document.getElementById('kk-pop'), scrim = document.getElementById('kk-scrim');
+    if (!fab || !pop) return;
+    var ICON0 = fab.innerHTML, ICONX = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
+    var EN = (document.documentElement.getAttribute('lang') || '').indexOf('en') === 0, LBL = fab.getAttribute('aria-label'), openedAt = 0;
+    function set(open, back) {
+      if (open === !pop.hidden) return;
+      pop.hidden = !open; scrim.hidden = !open; openedAt = Date.now();
+      fab.classList.toggle('on', open); fab.parentNode.classList.toggle('open', open);
+      fab.setAttribute('aria-expanded', String(open)); fab.setAttribute('aria-label', open ? (EN ? 'Close' : '닫기') : LBL);
+      fab.innerHTML = open ? ICONX : ICON0;
+      if (open) { var f = pop.querySelector('a'); if (f) f.focus({ preventScroll: true }); } else if (back) fab.focus({ preventScroll: true });
+    }
+    fab.addEventListener('click', function () { set(pop.hidden); });
+    pop.addEventListener('click', function (e) { if (e.target.closest('a')) setTimeout(function () { set(false); }, 0); });
+    scrim.addEventListener('click', function () { set(false); });
+    document.addEventListener('click', function (e) {
+      if (pop.hidden || Date.now() - openedAt < 80) return;
+      var path = e.composedPath ? e.composedPath() : [];
+      if (path.indexOf(pop) >= 0 || path.indexOf(fab) >= 0) return;
+      set(false);
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pop.hidden) set(false, true); });
+    window.addEventListener('popstate', function () { set(false); });
+  })();
+  </script>
 
   <!-- [FOOTER] 모든 화면 하단 공통: 저작권 · 개인정보처리방침 · 문의 -->
   <footer class="site-footer"><!--FOOTMAP--><nav class="sf-map" aria-label="All tools"><div class="sf-col"><p class="sf-h"><a href="my-position/">Where I stand</a></p><a href="salary-rank/">My salary rank in Korea</a><a href="asset-rank/">My net-worth rank in Korea</a><a href="retirement-score/">Retirement Readiness Score</a><a href="house-years/">Years to Buy a Home on My Salary</a><a href="what-if/">What-If Investment Calculator</a><a href="moneyspeed/">Money, assets &amp; wages in Korea</a></div><div class="sf-col"><p class="sf-h"><a href="labor/">Worker</a></p><a href="salary/">Korean net salary</a><a href="severance/">Korean severance pay</a><a href="year-end-tax/">Year-End Tax Refund Calculator</a><a href="pension/">Korean pension savings tax credit</a><a href="national-pension/">National Pension ROI Calculator</a></div><div class="sf-col"><p class="sf-h"><a href="invest/">Investing</a></p><a href="compound/">Compound interest calculator</a><a href="averaging-down/">Stock Averaging-Down Calculator</a><a href="stocktax/">Korean tax on foreign stock gains</a><a href="fx/">Currency converter</a><a href="fear/">Fear &amp; Greed Index</a><a href="cagr/">CAGR calculator</a><a href="etfcagr/">ETF CAGR comparison</a><a href="marketcap/">Global market cap TOP 100</a><a href="muhan/">Infinite buying (TQQQ·SOXL)</a><a href="nasdaq/">NASDAQ Composite growth</a><a href="nasdaq100/">Nasdaq-100 growth</a><a href="dowjones/">Dow Jones growth</a><a href="sp500/">S&amp;P 500 growth</a><a href="sox/">PHLX Semiconductor (SOX) growth</a><a href="djsemi/">DJ US Semiconductors growth</a><a href="kospi/">KOSPI growth</a><a href="kospi200/">KOSPI 200 growth</a><a href="kosdaq/">KOSDAQ growth</a><a href="n225/">Nikkei 225 growth</a><a href="topix/">TOPIX growth</a><a href="sse/">SSE Composite growth</a><a href="csi300/">CSI 300 growth</a><a href="szse/">SZSE Component growth</a><a href="chinext/">ChiNext growth</a><a href="star50/">STAR 50 growth</a><a href="hsi/">Hang Seng growth</a><a href="hscei/">Hang Seng China Enterprises growth</a><a href="hstech/">Hang Seng TECH growth</a><a href="taiex/">TAIEX growth</a></div><div class="sf-col"><p class="sf-h"><a href="real-estate/">Real estate</a></p><a href="loan/">Loan interest calculator</a><a href="acquisition/">Korean property acquisition tax</a><a href="capital-gains-tax/">Real Estate Capital Gains Tax Calculator</a><a href="brokerage/">Korean brokerage fee</a><a href="mortgage/">Korean mortgage LTV·DSR limit</a><a href="cheongyak-score/">Housing Subscription Score Calculator</a><a href="apt-rank/">Korean apartment price ranking</a><a href="jongbu/">Comprehensive Real Estate Holding Tax Calculator</a></div><div class="sf-col"><p class="sf-h"><a href="capitalist/">Capitalist</a></p><a href="incometax/">Korean comprehensive income tax</a><a href="health/">Korean health insurance</a><a href="gift/">Korean gift &amp; inheritance tax</a><a href="corporate-tax/">Korean corporate tax</a><a href="property-tax/">Property Tax Calculator</a></div><div class="sf-col"><p class="sf-h"><a href="passive-income/">Passive income</a></p><a href="dividend-calendar/">Korean ETF distribution calendar</a><a href="dividend-calculator/">Dividend Calculator</a><a href="dividend/">Korean dividend income tax</a><a href="fire/">FIRE Calculator</a><a href="kodex/">KODEX 200 Target Weekly Covered Call</a><a href="sol/">SOL 200 Target Weekly Covered Call</a><a href="tiger/">TIGER 200 Target Weekly Covered Call</a><a href="tigerdiv/">TIGER Dividend Covered Call Active</a><a href="tigersemi/">TIGER Semiconductor TOP10 Covered Call Active</a></div></nav><!--/FOOTMAP--><div class="sf-in">
