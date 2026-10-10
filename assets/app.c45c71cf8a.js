@@ -9927,10 +9927,10 @@ var MHE = (function () {
 if (typeof module !== 'undefined') module.exports = MHE;
 
 /* ════════════════════════════════════════════════════════════
-   [MUHAN] 무한매수법 기록 — 화면 (muhan4.pages.dev 동일 기능 · 로그인하면 계정에 자동 저장 · 로그인 없이도 데이터 코드로 이동)
+   [MUHAN] 무한매수법 기록 — 화면 (muhan4.pages.dev 동일 기능 · 로그인하면 계정에 자동 저장)
    구조: 저장소(세션들) → MH.state → render() 가 #mh-root 를 다시 그림
          버튼/입력은 data-act / data-in 속성 → 아래 이벤트 위임에서 처리
-   데이터: localStorage 'muhan4-store' (이 기기) + 로그인 시 계정(Worker /udata/muhan)에 자동 저장·불러오기 [MUHAN-SYNC] · 코드 내보내기/불러오기도 그대로
+   데이터: localStorage 'muhan4-store' (이 기기) + 로그인 시 계정(Worker /udata/muhan)에 자동 저장·불러오기 [MUHAN-SYNC] (예전 데이터 코드 기능은 로그인 저장으로 대체해 삭제)
    시세: data/muhan.json (GitHub Actions) → 없으면 data/market.json → 프록시
 ════════════════════════════════════════════════════════════ */
 (function () {
@@ -10086,7 +10086,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
   window.addEventListener('online', function () { if (SY.inited && SY.uid && meta().dirty) push(); });
   function syncChip() {
     var b = function (cls, act, txt, title) { return '<button id="mh-sync" class="mh-btn' + cls + '" style="padding:5px 9px;font-size:11px;white-space:nowrap" data-act="' + act + '" title="' + title + '">' + txt + '</button>'; };
-    if (!window.dcAuth || (!SY.uid && SY.can !== true)) return b('', 'code-export', '☁ 코드', '데이터 코드 내보내기');   /* 로그인 기능이 꺼져 있으면 예전처럼 코드 */
+    if (!window.dcAuth || (!SY.uid && SY.can !== true)) return '<span id="mh-sync" hidden></span>';   /* 로그인 기능을 쓸 수 없으면 표시 없음 (기록은 이 기기에 저장) */
     if (!SY.uid) return b('', 'sync-login', '☁ 로그인 저장', '로그인하면 기록이 계정에 자동 저장되어 어느 기기에서든 이어서 쓸 수 있어요');
     if (SY.st === 'saving') return b('', 'sync-info', '☁ 저장 중…', '계정에 저장하는 중');
     if (SY.st === 'pull') return b('', 'sync-info', '☁ 불러오는 중…', '계정 기록을 불러오는 중');
@@ -10314,7 +10314,6 @@ if (typeof module !== 'undefined') module.exports = MHE;
       '<div><label class="mh-lbl">원금 (' + sym + ')</label><input class="mh-in" type="number" placeholder="' + (u.currency === 'KRW' ? '30000000' : '20000') + '" value="' + esc(u.cap) + '" data-in="su:cap"></div>';
     return '<div style="text-align:center;padding:18px 0 14px"><h1 style="margin:0;font-size:22px;font-weight:800">무한매수법</h1><p class="mh-ac" style="margin:2px 0 10px;font-weight:700">V4.0</p>' +
       (window.dcAuth && !SY.uid && SY.can ? '<button class="mh-btn mh-btn-p" style="font-size:12px;margin-right:6px" data-act="sync-login">로그인하고 내 기록 불러오기</button>' : '') +
-      '<button class="mh-btn" style="font-size:12px" data-act="code-import">☁ 코드로 데이터 불러오기</button>' +
       (window.dcAuth && SY.uid ? '<div style="margin-top:8px;display:flex;justify-content:center;align-items:center;gap:6px"><span class="mh-tiny mh-faint">로그인 상태 — 계정에 자동 저장</span>' + syncChip() + '</div>' :
        window.dcAuth && SY.can ? '<p class="mh-tiny mh-faint" style="margin:8px 0 0">로그인하면 기록이 계정에 자동 저장되어 어느 기기에서든 이어서 쓸 수 있어요</p>' : '') + '</div>' +
       '<div class="mh-card" style="padding:18px;display:flex;flex-direction:column;gap:18px">' +
@@ -10372,7 +10371,6 @@ if (typeof module !== 'undefined') module.exports = MHE;
       '<div class="mh-grid3" style="margin-top:6px">' + E.STD_SPLITS.map(sb).join('') + '</div><div class="mh-tiny" style="margin:6px 0"><span class="mh-warn">⚠ 비권장</span> <span class="mh-faint">라오어 문서 범위(20~40) 밖</span></div>' +
       '<div class="mh-grid3">' + E.EXT_SPLITS.map(sb).join('') + '</div>' + (D.txs.length > 0 ? '<div class="mh-tiny mh-warn" style="margin-top:6px">⚠ 진행 중인 거래가 있어요. 변경 시 계산 재산출</div>' : '') + '</div>' +
       applyRow('원금 (' + (cur === 'KRW' ? '₩' : '$') + ')', '현재 ' + fmtL(s.totalCapital, cur), 'mh-m-cap', s.totalCapital, '', '1', '1', '', 'ap-cap', '잔금/매수금 계산 기준. 추가 입금 시 늘리기') +
-      '<div class="mh-msec"><button class="mh-mbtn mh-ac" data-act="code-export">☁ 코드 내보내기</button><button class="mh-mbtn" data-act="code-import">☁ 코드로 불러오기</button></div>' +
       '<div class="mh-msec"><button class="mh-mbtn mh-ac" data-act="ses-add">세션 추가</button><button class="mh-mbtn" data-act="archive-box">📦 보관함' + (nArch > 0 ? ' (' + nArch + ')' : '') + '</button>' +
       (live().length > 1 ? '<button class="mh-mbtn" data-act="ses-archive" data-v="' + D.ses.id + '">📦 이 세션 보관</button>' : '') +
       '<button class="mh-mbtn mh-bad" data-act="ses-reset">세션 초기화</button>' + (live().length > 1 ? '<button class="mh-mbtn mh-bad" data-act="ses-del" data-v="' + D.ses.id + '">세션 삭제</button>' : '') + '</div></div>';
@@ -10767,8 +10765,6 @@ if (typeof module !== 'undefined') module.exports = MHE;
     if (k === 'archive') return viewArchiveBox();
     if (k === 'rename') return viewRename();
     if (k === 'delete') return viewDelete();
-    if (k === 'code-export') return viewCodeExport();
-    if (k === 'code-import') return viewCodeImport();
     if (k === 'sync-conflict' || k === 'sync-first') return viewSync(k);
     if (k === 'sync-info') return viewSyncInfo();
     if (k === 'celebrate') return viewCelebrate();
@@ -11000,20 +10996,6 @@ if (typeof module !== 'undefined') module.exports = MHE;
       '<label class="mh-lbl" style="margin-top:12px">정말 삭제하려면 아래에 <b class="mh-bad">삭제</b> 를 입력하세요</label><input class="mh-in" style="font-family:var(--font)" type="text" placeholder="삭제" autocomplete="off" value="' + esc(S.typed || '') + '" data-in="del:typed">' +
       '<div class="mh-grid2" style="margin-top:12px"><button class="mh-btn" data-act="sheet-close">취소</button><button class="mh-btn mh-btn-danger" id="mh-del-go" data-act="del-go" data-v="' + d.id + '"' + (ok ? '' : ' disabled') + '>영구 삭제</button></div>');
   }
-  /* ── 데이터 코드 (로그인 대신 기기 간 이동) ── */
-  function toCode(o) { var j = JSON.stringify(o); try { return btoa(unescape(encodeURIComponent(j))); } catch (e) { return btoa(j); } }
-  function fromCode(c) { var t = String(c).replace(/\s/g, ''); try { return JSON.parse(decodeURIComponent(escape(atob(t)))); } catch (e) { try { return JSON.parse(atob(t)); } catch (e2) { return null; } } }
-  function viewCodeExport() {
-    var code = toCode({ v: 4, exportedAt: new Date().toISOString(), sessions: store.sessions, activeSessionId: store.activeSessionId });
-    return sheet('☁ 데이터 코드 내보내기', '모든 세션·기록·완료 사이클이 들어 있어요', '<textarea class="mh-in" id="mh-code-out" rows="5" readonly style="resize:none;font-size:11px">' + code + '</textarea>' +
-      '<p class="mh-help">이 코드를 복사해 다른 기기의 무한매수법 탭에서 <b>☁ 코드로 불러오기</b>에 붙여넣으면 그대로 이어서 쓸 수 있어요. 기록이 바뀔 때마다 새 코드를 저장해 두세요.</p>' +
-      '<div class="mh-grid2" style="margin-top:12px"><button class="mh-btn" data-act="sheet-close">닫기</button><button class="mh-btn mh-btn-p" data-act="code-copy">' + (MH.sheet.copied ? '✓ 복사됨' : '📋 복사') + '</button></div>');
-  }
-  function viewCodeImport() {
-    return sheet('☁ 코드로 데이터 불러오기', '다른 기기에서 복사한 코드를 붙여넣으세요', '<textarea class="mh-in" rows="5" style="resize:none;font-size:11px" placeholder="코드 붙여넣기" data-in="imp:code">' + esc(MH.sheet.code || '') + '</textarea>' +
-      (MH.sheet.err ? '<div class="mh-note bad" style="margin-top:8px">' + MH.sheet.err + '</div>' : '') + '<p class="mh-help">불러오면 이 기기의 현재 무한매수법 기록이 코드 내용으로 <b>바뀝니다</b>. 필요하면 먼저 코드 내보내기로 백업하세요.</p>' +
-      '<div class="mh-grid2" style="margin-top:12px"><button class="mh-btn" data-act="sheet-close">취소</button><button class="mh-btn mh-btn-p" data-act="code-apply">불러오기</button></div>');
-  }
   function viewSync(k) {
     var S = MH.sheet, t = S.st ? new Date(S.st) : null, when = t ? t.getFullYear() + '.' + (t.getMonth() + 1) + '.' + t.getDate() + ' ' + String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0') : '';
     if (k === 'sync-first') return sheet('☁ 이 기기 기록을 계정에 저장할까요?', '이 기기에 다른 계정으로 쓰던 기록이 남아 있어요',
@@ -11022,7 +11004,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
     return sheet('☁ 어떤 기록을 쓸까요?', '계정에 저장된 기록과 이 기기의 기록이 달라요',
       '<div class="mh-note ac" style="margin-bottom:8px"><b>계정 기록</b>' + (when ? ' <span class="mh-faint">(' + when + ' 저장)</span>' : '') + '<br>' + syncLine(S.sv) + '</div>' +
       '<div class="mh-note"><b>이 기기 기록</b><br>' + syncLine(S.mine) + '</div>' +
-      '<p class="mh-help">고르지 않은 쪽은 사라집니다. 필요하면 먼저 메뉴의 ‘코드 내보내기’로 이 기기 기록을 복사해 두세요.</p>' +
+      '<p class="mh-help">고르지 않은 쪽은 사라집니다.</p>' +
       '<div class="mh-grid2" style="margin-top:12px"><button class="mh-btn" data-act="sync-use-local">이 기기 기록 쓰기</button><button class="mh-btn mh-btn-p" data-act="sync-use-server">계정 기록 불러오기</button></div>');
   }
   function viewSyncInfo() {
@@ -11030,15 +11012,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
     return sheet('☁ 계정 자동 저장', SY.st === 'saving' ? '저장하는 중…' : SY.st === 'pull' ? '불러오는 중…' : '로그인한 계정에 저장되어 있어요',
       '<p class="mh-help" style="margin-top:0">기록을 바꿀 때마다 계정에 자동 저장되고, 다른 기기에서 로그인하면 같은 기록이 열립니다. 이 기기에도 사본이 남아 있어 인터넷이 끊겨도 쓸 수 있고, 다시 연결되면 저장됩니다.</p>' +
       '<div class="mh-note">' + syncLine(store) + (t ? '<br><span class="mh-faint">마지막 저장 ' + t.getFullYear() + '.' + (t.getMonth() + 1) + '.' + t.getDate() + ' ' + String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0') + '</span>' : '') + '</div>' +
-      '<div class="mh-grid2" style="margin-top:12px"><button class="mh-btn" data-act="code-export">☁ 코드 내보내기</button><button class="mh-btn mh-btn-p" data-act="sheet-close">닫기</button></div>');
-  }
-  function applyCode() {
-    var d = fromCode(MH.sheet.code || ''), n = null;
-    if (d && d.sessions) n = normalize(d);
-    else if (d && (d.settings || d.sessions === undefined && d.trades)) n = migrateOld(d);
-    else if (d && d.settings !== undefined) n = migrateOld(d);
-    if (!n) { MH.sheet.err = '올바른 코드가 아니에요. 코드 내보내기로 만든 문자열을 그대로 붙여넣어 주세요.'; render(); return; }
-    store = n; save(); MH.sheet = null; MH.view = 'now'; MH.setup = null; render();
+      '<button class="mh-btn mh-btn-p" style="width:100%;margin-top:12px" data-act="sheet-close">닫기</button>');
   }
   /* ── 사이클 완료 축하 ── */
   function viewCelebrate() {
@@ -11206,8 +11180,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
       case 'ed-save': saveEdit(); break;
       case 'tx-del': if (confirm('이 기록을 삭제할까요?')) mut(function () { ses.transactions = ses.transactions.filter(function (t) { return t.id !== v; }); }); break;
       case 'realized-detail': MH.sheet = { kind: 'realized', cycleId: v || null }; render(); break;
-      /* 데이터 코드 */
-      case 'code-export': MH.menu = false; MH.sheet = { kind: 'code-export' }; render(); break;
+      /* 계정 동기화 */
       case 'sync-login': if (window.dcAuth) window.dcAuth.ready().then(function (ok) { if (ok) window.dcAuth.open(); else if (window.dcAuth.toast) window.dcAuth.toast('로그인을 준비하고 있습니다. 잠시 뒤 다시 눌러 주세요'); }); break;
       case 'sync-info': MH.menu = false; MH.sheet = { kind: 'sync-info' }; render(); break;
       case 'sync-retry': push(); break;
@@ -11215,10 +11188,6 @@ if (typeof module !== 'undefined') module.exports = MHE;
       case 'sync-use-server': if (MH.sheet && MH.sheet.sv) adopt(MH.sheet.sv, MH.sheet.st); break;
       case 'sync-use-local': MH.sheet = null; SY.st = 'saving'; render(); push(true); break;
       case 'sync-fresh': MH.sheet = null; var s1 = newSession(); store = { sessions: [s1], activeSessionId: s1.id }; try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} setMeta({ uid: SY.uid, t: 0, dirty: false }); SY.st = 'ok'; MH.setup = null; render(); break;
-      case 'code-import': MH.menu = false; MH.sheet = { kind: 'code-import', code: '' }; render(); break;
-      case 'code-copy': var ta = $('mh-code-out'); (navigator.clipboard ? navigator.clipboard.writeText(ta.value) : Promise.reject()).catch(function () { ta.select(); document.execCommand('copy'); });
-        MH.sheet.copied = true; render(); break;
-      case 'code-apply': applyCode(); break;
       case 'sheet-bg': case 'sheet-close': MH.sheet = null; render(); break;
       default: if (INFO[a] || a === 'i-fear-range') { MH.sheet = { kind: a }; render(); }
     }
@@ -11244,7 +11213,6 @@ if (typeof module !== 'undefined') module.exports = MHE;
     if (p[0] === 'ed') { MH.sheet[p[1]] = val; editLive(); return; }
     if (p[0] === 'rn') { MH.sheet[p[1]] = val; return; }
     if (p[0] === 'del') { MH.sheet.typed = val; var b = $('mh-del-go'); if (b) b.disabled = val.trim() !== '삭제'; return; }
-    if (p[0] === 'imp') { MH.sheet.code = val; return; }
     if (k === 'font') { MH.fontScale = Number(val); localStorage.setItem('muhan4-fontScale', val); $('mh-root').style.zoom = MH.fontScale; return; }
     if (k === 'cap') { MH.capVal = val; MH.capEdited = true; var n = Number(val), ok = isFinite(n) && n > 0, cur = active().settings.currency || 'USD', t = ok ? fmt(Math.floor(n * 1.2 * 100) / 100, cur, 2) : '-';
       if ($('mh-cap-out')) $('mh-cap-out').textContent = t; if ($('mh-cap-out2')) $('mh-cap-out2').textContent = ok ? t : '—'; return; }
