@@ -13,3 +13,5 @@ CREATE INDEX IF NOT EXISTS saves_uid ON saves (uid, id);
 -- 실시간 접속: 브라우저별 무작위 번호 · 마지막 신호 시각 (10분 지나면 정리)
 CREATE TABLE IF NOT EXISTS live (s TEXT PRIMARY KEY, t INTEGER NOT NULL);
 CREATE INDEX IF NOT EXISTS live_t ON live (t);
+-- 계정에 담는 도구 자료 (예: 무한매수법 기록) — 키별 한 덩어리 JSON · t 는 버전(밀리초, 충돌 확인용) · 탈퇴하면 즉시 삭제
+CREATE TABLE IF NOT EXISTS udata (uid INTEGER NOT NULL, k TEXT NOT NULL, v TEXT NOT NULL, t INTEGER NOT NULL, PRIMARY KEY (uid, k));

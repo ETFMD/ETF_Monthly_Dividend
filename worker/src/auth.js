@@ -7,12 +7,14 @@
  *      · 이미 회원이면 로그인 토큰 발급 · 처음이면 10분짜리 가입 티켓을 주고, 약관·개인정보·만 14세 이상 동의 후 POST /auth/signup 으로 가입
  *   4) 로그인 토큰 = HMAC-SHA256(AUTH_SECRET) 서명한 {uid, ver, exp} (30일) — 사이트가 localStorage 에 두고 Authorization: Bearer 로 보냄
  * 저장하는 개인정보: 로그인 제공자, 제공자 회원 식별값, 닉네임, 가입·최근 로그인 시각, 동의 시각, 저장한 계산 입력값 (이메일·전화번호·프로필 사진은 받지 않음)
- * 탈퇴: DELETE /auth/me → 회원·저장함 즉시 삭제 (카카오는 KAKAO_ADMIN_KEY 가 있으면 앱 연결도 끊음)
+ * 계정 자료: GET/POST /udata/<키> — 도구별 기록(무한매수법 등)을 계정에 통째로 보관 · base 버전이 다르면 409(다른 기기에서 먼저 바뀜)
+ * 탈퇴: DELETE /auth/me → 회원·저장함·계정 자료 즉시 삭제 (카카오는 KAKAO_ADMIN_KEY 가 있으면 앱 연결도 끊음)
  * 비밀값(Worker secret): AUTH_SECRET(자동 생성) · KAKAO_CLIENT_ID(REST API 키) · KAKAO_CLIENT_SECRET(선택) · KAKAO_ADMIN_KEY(선택)
  *                        NAVER_CLIENT_ID · NAVER_CLIENT_SECRET · GOOGLE_CLIENT_ID · GOOGLE_CLIENT_SECRET — 있는 제공자만 켜짐
  */
 const enc = new TextEncoder();
 const TOKEN_DAYS = 30, TICKET_MIN = 10, MAX_SAVES = 200, MAX_DATA = 16000, TERMS_VER = '2026-10-09';
+const UDATA_KEYS = ['muhan'], MAX_UDATA = 1800000;   /* 계정 자료 키 (허용 목록) · 한 덩어리 최대 크기(UTF-8 바이트, D1 한 칸 한도 2MB 안쪽) */
 
 function b64u(buf) {
   const s = typeof buf === 'string' ? btoa(unescape(encodeURIComponent(buf))) : btoa(String.fromCharCode(...new Uint8Array(buf)));
@@ -147,7 +149,7 @@ export async function auth(req, env, url, json) {
     if (u.provider === 'kakao' && env.KAKAO_ADMIN_KEY) {
       try { await form('https://kapi.kakao.com/v1/user/unlink', { target_id_type: 'user_id', target_id: u.pid }, { Authorization: 'KakaoAK ' + env.KAKAO_ADMIN_KEY }); } catch (e) {}
     }
-    await env.DB.batch([env.DB.prepare('DELETE FROM saves WHERE uid = ?').bind(u.id), env.DB.prepare('DELETE FROM users WHERE id = ?').bind(u.id)]);
+    await env.DB.batch([env.DB.prepare('DELETE FROM saves WHERE uid = ?').bind(u.id), env.DB.prepare('DELETE FROM udata WHERE uid = ?').bind(u.id), env.DB.prepare('DELETE FROM users WHERE id = ?').bind(u.id)]);
     return json({ ok: true });
   }
   if (path === '/saves' && req.method === 'GET') {
@@ -162,6 +164,26 @@ export async function auth(req, env, url, json) {
     if (c && c.n >= MAX_SAVES) return json({ error: 'full', max: MAX_SAVES }, 409);
     const r = await env.DB.prepare('INSERT INTO saves (uid, page, title, data, created) VALUES (?, ?, ?, ?, ?)').bind(u.id, page, title, data, now).run();
     return json({ ok: true, id: r.meta && r.meta.last_row_id });
+  }
+  const ud = path.match(/^\/udata\/([a-z0-9-]{1,30})$/);
+  if (ud) {                                                       /* 계정 자료: 읽기 · 쓰기(낙관적 잠금) · 지우기 */
+    const k = ud[1];
+    if (!UDATA_KEYS.includes(k)) return json({ error: 'unknown key' }, 404);
+    const row = await env.DB.prepare('SELECT v, t FROM udata WHERE uid = ? AND k = ?').bind(u.id, k).first();
+    if (req.method === 'GET') return json(row ? { v: JSON.parse(row.v), t: row.t } : { v: null, t: 0 });
+    if (req.method === 'POST') {
+      const v = JSON.stringify(body.v === undefined ? null : body.v), base = Number(body.base) || 0;
+      if (body.v == null || typeof body.v !== 'object') return json({ error: 'bad request' }, 400);
+      if (enc.encode(v).length > MAX_UDATA) return json({ error: 'too large', max: MAX_UDATA }, 413);
+      if (row && row.t !== base && !body.force) return json({ error: 'conflict', v: JSON.parse(row.v), t: row.t }, 409);   /* 다른 기기에서 먼저 바뀜 */
+      const t = Math.max(Date.now(), row ? row.t + 1 : 0);
+      await env.DB.prepare('INSERT INTO udata (uid, k, v, t) VALUES (?, ?, ?, ?) ON CONFLICT (uid, k) DO UPDATE SET v = excluded.v, t = excluded.t').bind(u.id, k, v, t).run();
+      return json({ ok: true, t });
+    }
+    if (req.method === 'DELETE') {
+      await env.DB.prepare('DELETE FROM udata WHERE uid = ? AND k = ?').bind(u.id, k).run();
+      return json({ ok: true, t: 0 });
+    }
   }
   const m = path.match(/^\/saves\/(\d+)$/);
   if (m) {

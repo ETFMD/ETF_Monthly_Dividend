@@ -9927,10 +9927,10 @@ var MHE = (function () {
 if (typeof module !== 'undefined') module.exports = MHE;
 
 /* ════════════════════════════════════════════════════════════
-   [MUHAN] 무한매수법 기록 — 화면 (muhan4.pages.dev 동일 기능 · 로그인 대신 데이터 코드)
+   [MUHAN] 무한매수법 기록 — 화면 (muhan4.pages.dev 동일 기능 · 로그인하면 계정에 자동 저장 · 로그인 없이도 데이터 코드로 이동)
    구조: 저장소(세션들) → MH.state → render() 가 #mh-root 를 다시 그림
          버튼/입력은 data-act / data-in 속성 → 아래 이벤트 위임에서 처리
-   데이터: localStorage 'muhan4-store' · 코드 내보내기/불러오기로 기기 간 이동
+   데이터: localStorage 'muhan4-store' (이 기기) + 로그인 시 계정(Worker /udata/muhan)에 자동 저장·불러오기 [MUHAN-SYNC] · 코드 내보내기/불러오기도 그대로
    시세: data/muhan.json (GitHub Actions) → 없으면 data/market.json → 프록시
 ════════════════════════════════════════════════════════════ */
 (function () {
@@ -10003,7 +10003,98 @@ if (typeof module !== 'undefined') module.exports = MHE;
     var s = newSession(); return { sessions: [s], activeSessionId: s.id };
   }
   var store = load();
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} syncLater(); }
+
+  /* ── [MUHAN-SYNC] 계정 동기화 — 로그인하면 기록 전체를 계정에 자동 저장, 다른 기기에서 로그인하면 그대로 불러옴 ──
+     · 이 기기 사본(localStorage)은 그대로 두고, 바뀔 때마다 1.2초 모아서 서버에 올림 (base = 마지막으로 받은 서버 버전)
+     · 다른 기기에서 먼저 바뀌었으면 서버가 409 → 덮어쓰지 않고 어느 쪽을 쓸지 고르게 함
+     · 로그아웃: 계정에 다 올라간 기록이면 이 기기 사본을 지움 (공용 기기에 남지 않게) */
+  var SYNC_KEY = 'muhan4-sync';
+  var SY = { uid: null, st: 'off', rev: 0, timer: null, busy: false, again: false, inited: false, can: null };   /* can: 로그인 기능이 켜져 있는지 (/auth/config) */
+  function meta() { try { return JSON.parse(localStorage.getItem(SYNC_KEY) || 'null') || {}; } catch (e) { return {}; } }
+  function setMeta(m) { try { if (m) localStorage.setItem(SYNC_KEY, JSON.stringify(m)); else localStorage.removeItem(SYNC_KEY); } catch (e) {} }
+  function authUid() { return window.dcAuth && window.dcAuth.uid ? window.dcAuth.uid() : null; }
+  function sapi(m, p, b) { return (window.dcConfig ? window.dcConfig() : Promise.resolve()).then(function () { return window.dcAuth.api(m, p, b); }); }
+  function stats(d) { var ses = 0, tx = 0, cyc = 0; ((d && d.sessions) || []).forEach(function (x) { ses++; tx += (x.transactions || []).length; cyc += (x.archivedCycles || []).length; }); return { ses: ses, tx: tx, cyc: cyc }; }
+  function meaningful(d) { return ((d && d.sessions) || []).some(function (x) { return x.settings || (x.transactions || []).length || (x.archivedCycles || []).length; }); }
+  function same(a, b) { try { return JSON.stringify(normalize(JSON.parse(JSON.stringify(a)))) === JSON.stringify(normalize(JSON.parse(JSON.stringify(b)))); } catch (e) { return false; } }
+  function setSt(st) { SY.st = st; var el = $('mh-sync'); if (el) el.outerHTML = syncChip(); }
+  function syncLater() {
+    if (typeof SY === 'undefined' || !SY.uid || SY.st === 'conflict' || SY.st === 'pull') return;
+    SY.rev++; var m = meta(); if (!m.dirty || m.uid !== SY.uid) setMeta({ uid: SY.uid, t: m.uid === SY.uid ? m.t || 0 : 0, dirty: true });
+    clearTimeout(SY.timer); SY.timer = setTimeout(push, 1200); setSt('saving');
+  }
+  function push(force) {
+    if (!SY.uid) return;
+    if (SY.busy) { SY.again = true; return; }
+    SY.busy = true; var rev = SY.rev, m = meta(), uid = SY.uid;
+    setSt('saving');
+    sapi('POST', '/udata/muhan', { v: store, base: m.uid === uid ? m.t || 0 : 0, force: !!force }).then(function (r) {
+      if (SY.uid !== uid) return;
+      setMeta({ uid: uid, t: r.t, dirty: SY.rev !== rev }); setSt(SY.rev !== rev ? 'saving' : 'ok');
+      if (SY.rev !== rev) SY.again = true;
+    }).catch(function (e) {
+      if (SY.uid !== uid) return;
+      if (e && e.status === 409 && e.body) return conflict(e.body.v, e.body.t);
+      if (e && e.status === 413) { setSt('err'); if (window.dcAuth.toast) window.dcAuth.toast('기록이 너무 커서 계정에 저장하지 못했습니다. 보관함의 오래된 세션을 지워 주세요'); return; }
+      setSt(e && e.status === 401 ? 'off' : 'err');
+    }).then(function () { SY.busy = false; if (SY.again && SY.st !== 'conflict') { SY.again = false; push(); } });
+  }
+  function adopt(v, t) {
+    var n = normalize(v); if (!n) { setSt('err'); return; }
+    store = n; try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {}
+    setMeta({ uid: SY.uid, t: t, dirty: false }); SY.rev++;
+    MH.setup = null; if (MH.sheet && /^sync/.test(MH.sheet.kind)) MH.sheet = null; SY.st = 'ok';
+    if (document.getElementById('mh-root') && document.getElementById('mh-root').childNodes.length) render();
+  }
+  function conflict(v, t) { SY.st = 'conflict'; MH.sheet = { kind: 'sync-conflict', sv: v, st: t, mine: JSON.parse(JSON.stringify(store)) }; render(); }
+  function pull() {
+    var uid = SY.uid; if (!uid || SY.busy) return;
+    var m = meta();
+    if (m.uid === uid && m.dirty) { push(); return; }                       /* 올리지 못한 변경이 있으면 먼저 올려 봄 (서버가 바뀌었으면 409 → 선택) */
+    setSt('pull');
+    sapi('GET', '/udata/muhan').then(function (r) {
+      if (SY.uid !== uid) return;
+      var m2 = meta();
+      if (r.v == null) {                                                     /* 계정에 아직 기록 없음 */
+        SY.st = 'ok';
+        if (!meaningful(store)) { setMeta({ uid: uid, t: 0, dirty: false }); setSt('ok'); return; }
+        if (m2.uid != null && m2.uid !== uid) { MH.sheet = { kind: 'sync-first', mine: JSON.parse(JSON.stringify(store)) }; SY.st = 'conflict'; render(); return; }
+        setMeta({ uid: uid, t: 0, dirty: true }); push();
+        if (window.dcAuth.toast) window.dcAuth.toast('이 기기의 무한매수법 기록을 계정에 저장했습니다');
+        return;
+      }
+      if (m2.uid === uid && m2.t === r.t) { setSt('ok'); return; }            /* 이미 최신 */
+      if (m2.uid === uid || !meaningful(store) || same(store, r.v)) { adopt(r.v, r.t); return; }   /* 내 계정의 더 새 기록 · 이 기기는 비어 있음 */
+      conflict(r.v, r.t);                                                    /* 로그인 전 이 기기에서 쓴 기록 ≠ 계정 기록 → 고르기 */
+    }).catch(function (e) { if (SY.uid === uid) setSt(e && e.status === 401 ? 'off' : 'err'); });
+  }
+  function onAuth() {
+    var uid = authUid(); if (uid === SY.uid) return;
+    var was = SY.uid; SY.uid = uid; clearTimeout(SY.timer);
+    if (!uid) {                                                              /* 로그아웃 */
+      var m = meta();
+      if (was && m.uid === was && !m.dirty) { var s0 = newSession(); store = { sessions: [s0], activeSessionId: s0.id }; try { localStorage.removeItem(KEY); } catch (e) {} setMeta(null); }
+      if (MH.sheet && /^sync/.test(MH.sheet.kind)) MH.sheet = null;
+      SY.st = 'off'; if (SY.inited) render(); return;
+    }
+    SY.st = 'pull'; if (SY.inited) { render(); pull(); }
+  }
+  window.addEventListener('dc-auth', onAuth);
+  window.addEventListener('storage', function (e) { if (e.key === 'dc_auth') onAuth(); });   /* 다른 탭에서 로그인·로그아웃 */
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && SY.inited && SY.uid && SY.st !== 'conflict') pull(); });
+  window.addEventListener('online', function () { if (SY.inited && SY.uid && meta().dirty) push(); });
+  function syncChip() {
+    var b = function (cls, act, txt, title) { return '<button id="mh-sync" class="mh-btn' + cls + '" style="padding:5px 9px;font-size:11px;white-space:nowrap" data-act="' + act + '" title="' + title + '">' + txt + '</button>'; };
+    if (!window.dcAuth || (!SY.uid && SY.can !== true)) return b('', 'code-export', '☁ 코드', '데이터 코드 내보내기');   /* 로그인 기능이 꺼져 있으면 예전처럼 코드 */
+    if (!SY.uid) return b('', 'sync-login', '☁ 로그인 저장', '로그인하면 기록이 계정에 자동 저장되어 어느 기기에서든 이어서 쓸 수 있어요');
+    if (SY.st === 'saving') return b('', 'sync-info', '☁ 저장 중…', '계정에 저장하는 중');
+    if (SY.st === 'pull') return b('', 'sync-info', '☁ 불러오는 중…', '계정 기록을 불러오는 중');
+    if (SY.st === 'err') return b(' mh-bad', 'sync-retry', '⚠ 저장 실패', '눌러서 다시 시도 (이 기기에는 저장되어 있어요)');
+    if (SY.st === 'conflict') return b(' mh-warn', 'sync-resolve', '⚠ 선택 필요', '계정 기록과 이 기기 기록이 달라요');
+    return b('', 'sync-info', '☁ 계정 저장됨', '로그인한 계정에 자동 저장되고 있어요');
+  }
+  function syncLine(d) { var x = stats(d); return '세션 ' + x.ses + '개 · 거래 ' + x.tx + '건' + (x.cyc ? ' · 완료 회차 ' + x.cyc + '개' : ''); }
   function active() { var a = store.sessions.filter(function (s) { return s.id === store.activeSessionId; })[0];
     return a && !a.archived ? a : (store.sessions.filter(function (s) { return !s.archived; })[0] || a || store.sessions[0]); }
   function live() { return store.sessions.filter(function (s) { return !s.archived; }); }
@@ -10222,7 +10313,10 @@ if (typeof module !== 'undefined') module.exports = MHE;
         .map(function (f) { return '<div><label class="mh-lbl">' + f[1] + '</label><input class="mh-in" type="number" step="' + f[2] + '" placeholder="' + f[3] + '" value="' + esc(u[f[0]]) + '" data-in="su:' + f[0] + '"></div>'; }).join('') + '</div>' :
       '<div><label class="mh-lbl">원금 (' + sym + ')</label><input class="mh-in" type="number" placeholder="' + (u.currency === 'KRW' ? '30000000' : '20000') + '" value="' + esc(u.cap) + '" data-in="su:cap"></div>';
     return '<div style="text-align:center;padding:18px 0 14px"><h1 style="margin:0;font-size:22px;font-weight:800">무한매수법</h1><p class="mh-ac" style="margin:2px 0 10px;font-weight:700">V4.0</p>' +
-      '<button class="mh-btn" style="font-size:12px" data-act="code-import">☁ 코드로 데이터 불러오기</button></div>' +
+      (window.dcAuth && !SY.uid && SY.can ? '<button class="mh-btn mh-btn-p" style="font-size:12px;margin-right:6px" data-act="sync-login">로그인하고 내 기록 불러오기</button>' : '') +
+      '<button class="mh-btn" style="font-size:12px" data-act="code-import">☁ 코드로 데이터 불러오기</button>' +
+      (window.dcAuth && SY.uid ? '<div style="margin-top:8px;display:flex;justify-content:center;align-items:center;gap:6px"><span class="mh-tiny mh-faint">로그인 상태 — 계정에 자동 저장</span>' + syncChip() + '</div>' :
+       window.dcAuth && SY.can ? '<p class="mh-tiny mh-faint" style="margin:8px 0 0">로그인하면 기록이 계정에 자동 저장되어 어느 기기에서든 이어서 쓸 수 있어요</p>' : '') + '</div>' +
       '<div class="mh-card" style="padding:18px;display:flex;flex-direction:column;gap:18px">' +
       '<div><label class="mh-lbl">종목</label><div style="display:flex;gap:6px">' + tickerBtns + '</div>' + custom + '</div>' +
       '<div><label class="mh-lbl">분할 수</label><div class="mh-grid3">' + E.STD_SPLITS.map(splitBtn).join('') + '</div>' +
@@ -10291,7 +10385,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
       '<div style="display:flex;align-items:center;gap:5px;margin-top:3px;flex-wrap:wrap"><span class="mh-small mh-muted">' + esc(s.ticker) + ' · ' + s.splits + '분할 · ' + (D.cur === 'KRW' ? '₩' : '$') + s.totalCapital.toLocaleString() + '</span>' +
       (MH.todo ? '<span class="mh-chip ' + (D.orderDone ? 'mh-chip-ac' : 'mh-chip-warn') + '">' + (D.orderDone ? '주문 ✓' : '주문 전') + '</span>' : '') +
       '<span class="mh-chip ' + (D.recorded ? 'mh-chip-ac' : 'mh-chip-warn') + '">' + (D.recorded ? '기록 ✓' : '기록 전') + '</span></div></div>' +
-      '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0"><button class="mh-btn" style="padding:5px 9px;font-size:11px" data-act="code-export">☁ 코드</button>' +
+      '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0">' + syncChip() +
       '<button class="mh-ico" style="font-size:20px" data-act="menu" aria-label="설정 메뉴">⋮</button>' + (MH.menu ? viewMenu(D) : '') + '</div></div></div>' +
       '<div class="mh-tabs"><button class="mh-tab' + (MH.view !== 'an' ? ' on' : '') + '" data-act="view" data-v="now">현재</button>' +
       '<button class="mh-tab' + (MH.view === 'an' ? ' on' : '') + '" data-act="view" data-v="an">분석' + (D.ses.archivedCycles.length > 0 ? ' (' + D.ses.archivedCycles.length + ')' : '') + '</button>' +
@@ -10675,6 +10769,8 @@ if (typeof module !== 'undefined') module.exports = MHE;
     if (k === 'delete') return viewDelete();
     if (k === 'code-export') return viewCodeExport();
     if (k === 'code-import') return viewCodeImport();
+    if (k === 'sync-conflict' || k === 'sync-first') return viewSync(k);
+    if (k === 'sync-info') return viewSyncInfo();
     if (k === 'celebrate') return viewCelebrate();
     return '';
   }
@@ -10918,6 +11014,24 @@ if (typeof module !== 'undefined') module.exports = MHE;
       (MH.sheet.err ? '<div class="mh-note bad" style="margin-top:8px">' + MH.sheet.err + '</div>' : '') + '<p class="mh-help">불러오면 이 기기의 현재 무한매수법 기록이 코드 내용으로 <b>바뀝니다</b>. 필요하면 먼저 코드 내보내기로 백업하세요.</p>' +
       '<div class="mh-grid2" style="margin-top:12px"><button class="mh-btn" data-act="sheet-close">취소</button><button class="mh-btn mh-btn-p" data-act="code-apply">불러오기</button></div>');
   }
+  function viewSync(k) {
+    var S = MH.sheet, t = S.st ? new Date(S.st) : null, when = t ? t.getFullYear() + '.' + (t.getMonth() + 1) + '.' + t.getDate() + ' ' + String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0') : '';
+    if (k === 'sync-first') return sheet('☁ 이 기기 기록을 계정에 저장할까요?', '이 기기에 다른 계정으로 쓰던 기록이 남아 있어요',
+      '<div class="mh-note">이 기기 기록 — ' + syncLine(S.mine) + '</div><p class="mh-help">이 계정에는 아직 무한매수법 기록이 없습니다. 이 기기의 기록을 이 계정에 저장하거나, 비우고 새로 시작할 수 있어요.</p>' +
+      '<div class="mh-grid2" style="margin-top:12px"><button class="mh-btn" data-act="sync-fresh">비우고 새로 시작</button><button class="mh-btn mh-btn-p" data-act="sync-use-local">이 기록을 계정에 저장</button></div>');
+    return sheet('☁ 어떤 기록을 쓸까요?', '계정에 저장된 기록과 이 기기의 기록이 달라요',
+      '<div class="mh-note ac" style="margin-bottom:8px"><b>계정 기록</b>' + (when ? ' <span class="mh-faint">(' + when + ' 저장)</span>' : '') + '<br>' + syncLine(S.sv) + '</div>' +
+      '<div class="mh-note"><b>이 기기 기록</b><br>' + syncLine(S.mine) + '</div>' +
+      '<p class="mh-help">고르지 않은 쪽은 사라집니다. 필요하면 먼저 메뉴의 ‘코드 내보내기’로 이 기기 기록을 복사해 두세요.</p>' +
+      '<div class="mh-grid2" style="margin-top:12px"><button class="mh-btn" data-act="sync-use-local">이 기기 기록 쓰기</button><button class="mh-btn mh-btn-p" data-act="sync-use-server">계정 기록 불러오기</button></div>');
+  }
+  function viewSyncInfo() {
+    var m = meta(), t = m.t ? new Date(m.t) : null;
+    return sheet('☁ 계정 자동 저장', SY.st === 'saving' ? '저장하는 중…' : SY.st === 'pull' ? '불러오는 중…' : '로그인한 계정에 저장되어 있어요',
+      '<p class="mh-help" style="margin-top:0">기록을 바꿀 때마다 계정에 자동 저장되고, 다른 기기에서 로그인하면 같은 기록이 열립니다. 이 기기에도 사본이 남아 있어 인터넷이 끊겨도 쓸 수 있고, 다시 연결되면 저장됩니다.</p>' +
+      '<div class="mh-note">' + syncLine(store) + (t ? '<br><span class="mh-faint">마지막 저장 ' + t.getFullYear() + '.' + (t.getMonth() + 1) + '.' + t.getDate() + ' ' + String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0') + '</span>' : '') + '</div>' +
+      '<div class="mh-grid2" style="margin-top:12px"><button class="mh-btn" data-act="code-export">☁ 코드 내보내기</button><button class="mh-btn mh-btn-p" data-act="sheet-close">닫기</button></div>');
+  }
   function applyCode() {
     var d = fromCode(MH.sheet.code || ''), n = null;
     if (d && d.sessions) n = normalize(d);
@@ -11094,6 +11208,13 @@ if (typeof module !== 'undefined') module.exports = MHE;
       case 'realized-detail': MH.sheet = { kind: 'realized', cycleId: v || null }; render(); break;
       /* 데이터 코드 */
       case 'code-export': MH.menu = false; MH.sheet = { kind: 'code-export' }; render(); break;
+      case 'sync-login': if (window.dcAuth) window.dcAuth.ready().then(function (ok) { if (ok) window.dcAuth.open(); else if (window.dcAuth.toast) window.dcAuth.toast('로그인을 준비하고 있습니다. 잠시 뒤 다시 눌러 주세요'); }); break;
+      case 'sync-info': MH.menu = false; MH.sheet = { kind: 'sync-info' }; render(); break;
+      case 'sync-retry': push(); break;
+      case 'sync-resolve': if (SY.st === 'conflict') { SY.st = 'pull'; render(); sapi('GET', '/udata/muhan').then(function (r) { if (r.v == null) { MH.sheet = { kind: 'sync-first', mine: JSON.parse(JSON.stringify(store)) }; SY.st = 'conflict'; render(); } else conflict(r.v, r.t); }).catch(function () { SY.st = 'conflict'; render(); }); } break;
+      case 'sync-use-server': if (MH.sheet && MH.sheet.sv) adopt(MH.sheet.sv, MH.sheet.st); break;
+      case 'sync-use-local': MH.sheet = null; SY.st = 'saving'; render(); push(true); break;
+      case 'sync-fresh': MH.sheet = null; var s1 = newSession(); store = { sessions: [s1], activeSessionId: s1.id }; try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} setMeta({ uid: SY.uid, t: 0, dirty: false }); SY.st = 'ok'; MH.setup = null; render(); break;
       case 'code-import': MH.menu = false; MH.sheet = { kind: 'code-import', code: '' }; render(); break;
       case 'code-copy': var ta = $('mh-code-out'); (navigator.clipboard ? navigator.clipboard.writeText(ta.value) : Promise.reject()).catch(function () { ta.select(); document.execCommand('copy'); });
         MH.sheet.copied = true; render(); break;
@@ -11157,7 +11278,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
     setInterval(function () { MH.now = new Date(); }, 60000);
   }
   /* 탭 진입 시 호출 ([NAV] switchSubTab 의 훅) */
-  window.muhanInit = function () { bind(); MH.now = new Date(); render(); };
+  window.muhanInit = function () { bind(); MH.now = new Date(); if (!SY.inited) { SY.inited = true; SY.uid = authUid(); if (SY.uid) SY.st = 'pull'; if (window.dcAuth && window.dcAuth.ready) window.dcAuth.ready().then(function (ok) { if (SY.can !== ok) { SY.can = ok; render(); } }).catch(function () {}); } render(); if (SY.uid && SY.st === 'pull') pull(); };
   window.MHdebug = { get store() { return store; }, derive: derive, render: render };
 })();
 
@@ -15340,7 +15461,10 @@ var YE = (function () {
   function $(id) { return document.getElementById(id); }
   function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function getAuth() { try { var a = JSON.parse(localStorage.getItem(KEY) || 'null'); return a && a.token && a.exp * 1000 > Date.now() ? a : null; } catch (e) { return null; } }
-  function setAuth(a) { try { if (a) localStorage.setItem(KEY, JSON.stringify(a)); else localStorage.removeItem(KEY); } catch (e) {} }
+  function setAuth(a) { try { if (a) localStorage.setItem(KEY, JSON.stringify(a)); else localStorage.removeItem(KEY); } catch (e) {}
+    try { window.dispatchEvent(new CustomEvent('dc-auth')); } catch (e) {} }   /* 로그인·로그아웃 알림 — 무한매수법 기록 동기화 등이 받음 */
+  function uidOf(a) { if (!a) return null; if (a.user && a.user.id != null) return a.user.id;
+    try { var p = a.token.split('.')[0].replace(/-/g, '+').replace(/_/g, '/'); while (p.length % 4) p += '='; return JSON.parse(atob(p)).uid; } catch (e) { return null; } }
   function api(method, path, body) {
     var a = getAuth(), h = { 'Content-Type': 'application/json' };
     if (a) h.Authorization = 'Bearer ' + a.token;
@@ -15426,7 +15550,7 @@ var YE = (function () {
   }
   function saveBtn() {
     var key = pageKey(), pg = activePage(), old = document.getElementById('dca-save');
-    if (!key || !pg || key === 'saved' || !PROV || !Object.keys(PROV).length) { if (old) old.remove(); return; }
+    if (!key || !pg || key === 'saved' || key === 'muhan' || !PROV || !Object.keys(PROV).length) { if (old) old.remove(); return; }   /* 무한매수법은 기록 전체가 계정에 자동 저장 */
     var host = pg.querySelector('.header-left'); if (!host) return;
     if (!old) { old = document.createElement('button'); old.type = 'button'; old.id = 'dca-save'; old.className = 'dca-save'; host.appendChild(old); }
     old.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2h8a1 1 0 0 1 1 1v11l-5-3-5 3V3a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>' + (getAuth() ? '이 계산 내 저장함에 저장' : '로그인하고 이 계산 저장');
@@ -15457,7 +15581,9 @@ var YE = (function () {
     if (e.target.closest('[data-act="logout"]')) { setAuth(null); paint(); toast('로그아웃했습니다'); return; }
     if (menu && !e.target.closest('#dc-auth')) { menu.classList.remove('open'); if ($('dca-me')) $('dca-me').setAttribute('aria-expanded', 'false'); }
   });
-  window.dcAuth = { get: getAuth, set: setAuth, open: function () { if (PROV) modal(); }, api: function (m, p, b) { return api(m, p, b); } };
+  window.dcAuth = { get: getAuth, set: setAuth, open: function () { if (PROV) modal(); }, api: function (m, p, b) { return api(m, p, b); },
+    uid: function () { return uidOf(getAuth()); }, toast: toast,
+    ready: function () { return window.dcConfig ? window.dcConfig().then(function (j) { EP = EP || (window.__counterEP || '').replace(/\/$/, ''); return !!(j && j.providers && Object.keys(j.providers).length); }) : Promise.resolve(false); } };
   function init() {
     endpoint().then(function (ep) {
       if (!ep) return; EP = ep.replace(/\/$/, '');

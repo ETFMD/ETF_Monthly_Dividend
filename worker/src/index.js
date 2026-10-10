@@ -283,7 +283,7 @@ export default {
           Referer: target.origin + '/' }, redirect: 'follow' });
         return new Response(r.body, { status: r.status, headers: { 'Content-Type': r.headers.get('Content-Type') || 'text/plain', 'Cache-Control': 'no-store' } });
       }
-      if (url.pathname.startsWith('/auth/') || url.pathname === '/saves' || url.pathname.startsWith('/saves/')) {   /* 간편 로그인 · 내 저장함 (worker/src/auth.js) */
+      if (url.pathname.startsWith('/auth/') || url.pathname === '/saves' || url.pathname.startsWith('/saves/') || url.pathname.startsWith('/udata/')) {   /* 간편 로그인 · 내 저장함 (worker/src/auth.js) */
         if (url.pathname !== '/auth/config' && !cors.ok) return json({ error: 'origin' }, 403);
         return await auth(req, env, url, json);
       }
