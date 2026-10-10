@@ -9660,7 +9660,7 @@ async function fetchMSAll() {
 ════════════════════════════════════════════════════════════ */
 var MHE = (function () {
   var STD_SPLITS = [20, 30, 40], EXT_SPLITS = [50, 60, 70, 80, 90, 100];
-  var EXT_WARN = '50분할 이상은 라오어 원문 규칙(20·40분할) 밖이에요.\n\n' +
+  var EXT_WARN = '50분할 이상은 라오어 원문 규칙(20·30·40분할 권장) 밖이에요.\n\n' +
     '· 리버스모드 매도 배수가 문서에 없어 앱이 자체 공식(1 − 2/분할수)으로 계산해요\n' +
     '· 1회 매수금이 작아져서, 원금이 부족하면 1주 값이 1회 매수금을 넘을 수 있어요\n\n계속할까요?';
   var DEF_BIGNUM = 12, DEF_LOC_SHARES = 1, DEF_LOC_LINES = 8;
@@ -9762,7 +9762,9 @@ var MHE = (function () {
     }
     return out;
   }
-  /* 하방 LOC 사다리: amount ÷ (기준수량 + i × 줄당수량) */
+  /* 하방 LOC 사다리: amount ÷ (기준수량 + i × 줄당수량), 소수점 버림
+     줄 수(기본 8)는 라오어 V4.0 원문 예시 표 기준 — 후반전·리버스 8줄, 전반전(메인 2줄)·처음매수는 1줄 적게 7줄
+     (cafe.naver.com/infinitebuying/79263 · 79264) */
   function ladder(list, amount, baseQty, lines, perLine, tick) {
     for (var i = 1; i <= lines; i++) {
       var p = snap(Math.floor(amount / (baseQty + i * perLine) * 100) / 100, tick);
@@ -9780,7 +9782,7 @@ var MHE = (function () {
       if (!close || st.buyAmount <= 0) return out;
       var q0 = Math.max(1, Math.floor(st.buyAmount / bigNum));
       out.push({ label: '★ 처음매수', type: 'buy', method: 'LOC', price: bigNum, quantity: q0 });
-      ladder(out, st.buyAmount, q0, locLines(s.lowerLocLines) + 2, locShares(s.lowerLocShares), s.tickSize);
+      ladder(out, st.buyAmount, q0, Math.max(1, locLines(s.lowerLocLines) - 1), locShares(s.lowerLocShares), s.tickSize);
       return out;
     }
     if (rev) {
@@ -9822,7 +9824,7 @@ var MHE = (function () {
         if (big) main.altPrice = st.buyPoint;
         out.push(main);
       }
-      ladder(out, st.buyAmount, base, locLines(s.lowerLocLines), locShares(s.lowerLocShares), s.tickSize);
+      ladder(out, st.buyAmount, base, st.isFirstHalf ? Math.max(1, locLines(s.lowerLocLines) - 1) : locLines(s.lowerLocLines), locShares(s.lowerLocShares), s.tickSize);
     }
     if (st.totalQuantity > 0 && st.sellPoint > 0) {
       var qs = Math.max(1, Math.floor(st.totalQuantity / 4)), rest = st.totalQuantity - qs;
@@ -10321,12 +10323,12 @@ if (typeof module !== 'undefined') module.exports = MHE;
       '<div class="mh-card" style="padding:18px;display:flex;flex-direction:column;gap:18px">' +
       '<div><label class="mh-lbl">종목</label><div style="display:flex;gap:6px">' + tickerBtns + '</div>' + custom + '</div>' +
       '<div><label class="mh-lbl">분할 수</label><div class="mh-grid3">' + E.STD_SPLITS.map(splitBtn).join('') + '</div>' +
-      '<p class="mh-tiny mh-faint" style="margin:6px 0 0">20·40분할은 라오어 원문 규칙 · 30분할은 같은 공식으로 계산한 중간값</p>' +
-      '<p class="mh-tiny" style="margin:8px 0 6px"><span class="mh-warn" style="font-weight:700">⚠ 비권장</span> <span class="mh-faint">라오어 원문 규칙(20·40분할) 밖</span></p>' +
+      '<p class="mh-tiny mh-faint" style="margin:6px 0 0">20·30·40분할은 라오어 원문 권장 · 공식은 원문이 20·40분할만 밝혀 30분할은 같은 꼴로 계산</p>' +
+      '<p class="mh-tiny" style="margin:8px 0 6px"><span class="mh-warn" style="font-weight:700">⚠ 비권장</span> <span class="mh-faint">라오어 원문 권장(20·30·40분할) 밖</span></p>' +
       '<div class="mh-grid3">' + E.EXT_SPLITS.map(splitBtn).join('') + '</div><p class="mh-help">적을수록 공격적, 클수록 안정적</p></div>' +
       field('목표 수익률 (%)', '기본 ' + E.defaultTarget(u.custom ? u.name : u.ticker) + '% (라오어 원칙)', 'target', '0.5', '1', '50', '별%, 지정가매도 가격, 리버스 복귀 조건에 적용됩니다') +
       field('큰수 % (종가 × 배수)', '기본 12% · 범위 0~40%', 'big', '0.5', '0', '40', '증권사 LOC 상한 회피용 매수 가격. 낮을수록 보수적(체결 조건 까다로움), 높을수록 공격적. 급등락장에서 조정 필요') +
-      field('하방 LOC 줄 수', '기본 8줄 · 범위 1~80줄', 'lines', '1', '1', '80', '메인 매수 아래 LOC를 몇 줄 깔지 설정. 값이 클수록 더 깊은 하락까지 대비 (처음매수는 +2줄)') +
+      field('하방 LOC 줄 수', '기본 8줄 · 범위 1~80줄', 'lines', '1', '1', '80', '메인 매수 아래 LOC를 몇 줄 깔지 설정. 값이 클수록 더 깊은 하락까지 대비 (전반전·처음매수는 1줄 적게 — 라오어 원문 예시 표 기준)') +
       field('하방 LOC 주식 수 (1줄당)', '기본 1주 · 범위 1~20주', 'shares', '1', '1', '20', '하방 LOC 1줄에 몇 주씩 걸지 설정. 값이 클수록 LOC 가격 간격이 넓어져 촘촘함이 줄어듦. 투자금이 클 때 활용') +
       '<div style="display:flex;gap:6px"><button class="mh-btn' + (!u.mid ? ' mh-btn-sel' : '') + '" style="flex:1" data-act="su-mid" data-v="0">새로 시작</button><button class="mh-btn' + (u.mid ? ' mh-btn-sel' : '') + '" style="flex:1" data-act="su-mid" data-v="1">중간 진입</button></div>' +
       amounts + '<div id="mh-su-dyn">' + setupDyn() + '</div></div>' +
@@ -10368,11 +10370,11 @@ if (typeof module !== 'undefined') module.exports = MHE;
       applyRow('목표 수익률', '기본 ' + E.defaultTarget(s.ticker) + '%', 'mh-m-target', E.targetOf(s.ticker, s.targetProfit), '%', '0.5', '1', '50', 'ap-target', '별%, 지정가매도, 리버스복귀에 적용') +
       applyRow('큰수 %', '기본 12% · 0~40', 'mh-m-big', E.bigNumOf(s.bigNumPercent), '%', '0.5', '0', '40', 'ap-big', '큰수 매수가 = 종가 × (1+%/100). 급등락장에서 조정') +
       toggleRow('큰수 미사용 (별지점만)', s.disableBigNum === true, 'tg-nobig', '큰수로 안 낮추고 항상 별지점에 LOC 매수 (거부 한도 증권사별 상이: 메리츠 ~120% 주의 · 키움 ~150% 여유 · 처음매수 제외)') +
-      applyRow('하방 LOC 줄 수', '기본 8줄 · 1~80', 'mh-m-lines', E.locLines(s.lowerLocLines), '줄', '1', '1', '80', 'ap-lines', '메인 매수 아래 LOC 줄 수. 클수록 더 깊은 하락까지 대비 (처음매수 +2)') +
+      applyRow('하방 LOC 줄 수', '기본 8줄 · 1~80', 'mh-m-lines', E.locLines(s.lowerLocLines), '줄', '1', '1', '80', 'ap-lines', '메인 매수 아래 LOC 줄 수. 클수록 더 깊은 하락까지 대비 (전반전·처음매수는 1줄 적게 — 라오어 원문 예시 표 기준)') +
       applyRow('하방 LOC 주식 수', '기본 1주 · 1~20', 'mh-m-shares', E.locShares(s.lowerLocShares), '주', '1', '1', '20', 'ap-shares', '하방 LOC 1줄당 주식 수. 클수록 가격 간격 넓어짐') +
       (D.isCustom ? applyRow('호가 단위', '', 'mh-m-tick', s.tickSize || '', cur === 'KRW' ? '원' : '', '1', '0', '', 'ap-tick', '모든 주문·기준 가격을 이 단위로 맞춤. 비우면 스냅 안 함') : '') +
       '<div class="mh-msec"><div class="mh-row"><span style="font-size:13px">분할 수</span><span class="mh-tiny mh-faint">현재 ' + s.splits + '분할</span></div>' +
-      '<div class="mh-grid3" style="margin-top:6px">' + E.STD_SPLITS.map(sb).join('') + '</div><div class="mh-tiny" style="margin:6px 0"><span class="mh-warn">⚠ 비권장</span> <span class="mh-faint">라오어 원문 규칙(20·40분할) 밖</span></div>' +
+      '<div class="mh-grid3" style="margin-top:6px">' + E.STD_SPLITS.map(sb).join('') + '</div><div class="mh-tiny" style="margin:6px 0"><span class="mh-warn">⚠ 비권장</span> <span class="mh-faint">라오어 원문 권장(20·30·40분할) 밖</span></div>' +
       '<div class="mh-grid3">' + E.EXT_SPLITS.map(sb).join('') + '</div>' + (D.txs.length > 0 ? '<div class="mh-tiny mh-warn" style="margin-top:6px">⚠ 진행 중인 거래가 있어요. 변경 시 계산 재산출</div>' : '') + '</div>' +
       applyRow('원금 (' + (cur === 'KRW' ? '₩' : '$') + ')', '현재 ' + fmtL(s.totalCapital, cur), 'mh-m-cap', s.totalCapital, '', '1', '1', '', 'ap-cap', '잔금/매수금 계산 기준. 추가 입금 시 늘리기') +
       '<div class="mh-msec"><button class="mh-mbtn mh-ac" data-act="ses-add">세션 추가</button><button class="mh-mbtn" data-act="archive-box">📦 보관함' + (nArch > 0 ? ' (' + nArch + ')' : '') + '</button>' +
@@ -10612,7 +10614,7 @@ if (typeof module !== 'undefined') module.exports = MHE;
       h += '<div style="text-align:left;margin-top:10px"><div class="mh-row"><span class="mh-small">원금 (' + (cur === 'KRW' ? '₩' : '$') + ')</span><div style="display:flex;gap:4px"><button class="mh-btn" style="padding:3px 8px;font-size:11px" data-act="rs-cap" data-v="' + cmp + '" title="복리 = ' + fmtL(cmp, cur) + '">복리</button><button class="mh-btn" style="padding:3px 8px;font-size:11px" data-act="rs-cap" data-v="' + s.totalCapital + '" title="단리 = ' + fmtL(s.totalCapital, cur) + '">단리</button></div></div>' +
         '<input class="mh-in" style="margin-top:6px" type="number" step="1" min="1" value="' + esc(MH.restartCap) + '" data-in="rs-cap">' +
         '<div class="mh-row" style="margin-top:10px"><span class="mh-small">분할 수</span><span class="mh-tiny mh-faint">기존 ' + s.splits + '분할</span></div><div class="mh-grid3" style="margin-top:6px">' + E.STD_SPLITS.map(sb).join('') + '</div>' +
-        '<div class="mh-tiny" style="margin:6px 0"><span class="mh-warn">⚠ 비권장</span> <span class="mh-faint">라오어 원문 규칙(20·40분할) 밖</span></div><div class="mh-grid3">' + E.EXT_SPLITS.map(sb).join('') + '</div>' +
+        '<div class="mh-tiny" style="margin:6px 0"><span class="mh-warn">⚠ 비권장</span> <span class="mh-faint">라오어 원문 권장(20·30·40분할) 밖</span></div><div class="mh-grid3">' + E.EXT_SPLITS.map(sb).join('') + '</div>' +
         '<button class="mh-btn mh-btn-p" style="width:100%;margin-top:10px" data-act="rs-apply">적용 후 재시작</button></div>';
     }
     return h + '</div>';
